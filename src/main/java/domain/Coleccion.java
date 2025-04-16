@@ -1,5 +1,6 @@
 package domain;
 
+import domain.criterios.Criterio;
 import domain.fuentes.Fuente;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +14,6 @@ public class Coleccion {
   @Getter private Fuente fuente;
   @Setter @Getter private Set<Criterio> criterios;
   @Getter private Set<Hecho> hechosDeLaColeccion;
-
 
   public Coleccion(String titulo, String descripcion, Fuente fuente){
     this.titulo = titulo;
