@@ -8,7 +8,7 @@ public class CriterioCategoria implements Criterio{
   @Override
   public boolean cumpleCriterio(Hecho hecho) {
 
-    return categoria.equals(hecho.categoria);
+    return categoria.equalsIgnoreCase(hecho.categoria);
   }
 
 }
