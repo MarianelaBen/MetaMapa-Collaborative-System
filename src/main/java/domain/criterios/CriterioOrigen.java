@@ -3,7 +3,7 @@ package domain.criterios;
 import domain.Hecho;
 import domain.enumerados.Origen;
 
-public class CriterioOrigen extends Criterio{
+public class CriterioOrigen implements Criterio{
   private Origen origen;
 
   @Override

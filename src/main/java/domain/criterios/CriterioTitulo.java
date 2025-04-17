@@ -2,7 +2,7 @@ package domain.criterios;
 
 import domain.Hecho;
 
-public class CriterioTitulo extends Criterio{
+public class CriterioTitulo implements Criterio{
   private String titulo;
 
   @Override

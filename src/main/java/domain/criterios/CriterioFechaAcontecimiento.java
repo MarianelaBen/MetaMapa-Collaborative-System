@@ -3,7 +3,7 @@ package domain.criterios;
 import domain.Hecho;
 import java.time.LocalDateTime;
 
-public class CriterioFechaAcontecimiento extends Criterio{
+public class CriterioFechaAcontecimiento implements Criterio{
   private LocalDateTime fechaAcontecimiento;
 
   @Override

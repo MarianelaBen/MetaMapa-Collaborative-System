@@ -2,7 +2,7 @@ package domain.criterios;
 
 import domain.Hecho;
 
-public class CriterioContenidoMultimedial extends Criterio{
+public class CriterioContenidoMultimedial implements Criterio{
   private String contenidoMultimedial;
 
   @Override
