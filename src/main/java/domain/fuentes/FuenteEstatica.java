@@ -1,8 +1,7 @@
 package domain.fuentes;
 
 import domain.Hecho;
-import domain.Origen;
-import domain.fuentes.Fuente;
+import domain.enumerados.Origen;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;

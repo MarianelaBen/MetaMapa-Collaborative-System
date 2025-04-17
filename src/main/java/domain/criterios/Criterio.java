@@ -1,4 +1,8 @@
 package domain.criterios;
 
-public class Criterio {
+import domain.Hecho;
+
+public abstract class Criterio {
+
+  public abstract boolean cumpleCriterio(Hecho hecho);
 }

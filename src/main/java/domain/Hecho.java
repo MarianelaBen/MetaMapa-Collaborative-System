@@ -1,19 +1,20 @@
 package domain;
 
 import java.time.LocalDateTime;
+import domain.enumerados.Origen;
 import lombok.Getter;
 import lombok.Setter;
 
 public class Hecho {
-  @Getter private String titulo;
-  @Getter private String descripcion;
-  @Getter private String categoria;
-  @Setter @Getter private String contenidoMultimedia;
-  @Getter private String lugar;
-  @Getter private LocalDateTime fechaAcontecimmiento;
-  @Getter private LocalDateTime fechaCarga;
-  @Getter private Origen origen;
-  @Setter @Getter private boolean fueEliminado;
+  @Getter public String titulo;
+  @Getter public String descripcion;
+  @Getter public String categoria;
+  @Setter @Getter public String contenidoMultimedia;
+  @Getter public String lugar;
+  @Getter public LocalDateTime fechaAcontecimmiento;
+  @Getter public LocalDateTime fechaCarga;
+  @Getter public Origen origen;
+  @Setter @Getter public boolean fueEliminado;
 
   //  @Setter @Getter private String nombreAportante;
   //  @Setter @Getter private String apellidoAportante;
