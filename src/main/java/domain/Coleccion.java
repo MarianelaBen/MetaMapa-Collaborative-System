@@ -2,11 +2,13 @@ package domain;
 
 import domain.criterios.Criterio;
 import domain.fuentes.Fuente;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import domain.fuentes.FuenteEstatica;
 import lombok.Getter;
 import lombok.Setter;
-
+import java.time.LocalDateTime;
 
 public class Coleccion {
   @Getter private String titulo;
@@ -21,4 +23,21 @@ public class Coleccion {
     this.fuente = fuente;
     this.hechosDeLaColeccion = new HashSet<>();
   }
+
+  public void filtrarHechos(){
+    this.agregarHechos((Hecho) fuente.leerHechos().stream().filter(this::cumpleLosCriterios).toList());
+  }
+
+  public void agregarHechos(Hecho ... hechos){
+
+    Collections.addAll(this.hechosDeLaColeccion, hechos);
+  }
+
+  public boolean cumpleLosCriterios(Hecho hecho){
+    return this.criterios.stream().allMatch(c -> c.cumpleCriterio(hecho));
+  }
+
 }
+
+
+

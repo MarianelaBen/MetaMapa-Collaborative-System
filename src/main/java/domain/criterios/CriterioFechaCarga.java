@@ -1,13 +1,13 @@
 package domain.criterios;
 
 import domain.Hecho;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class CriterioFechaCarga implements Criterio{
-  private LocalDateTime desde;
-  private LocalDateTime hasta;
+  private LocalDate desde;
+  private LocalDate hasta;
 
-  public CriterioFechaCarga(LocalDateTime desde, LocalDateTime hasta) {
+  public CriterioFechaCarga(LocalDate desde, LocalDate hasta) {
     this.desde = desde;
     this.hasta = hasta;
   }

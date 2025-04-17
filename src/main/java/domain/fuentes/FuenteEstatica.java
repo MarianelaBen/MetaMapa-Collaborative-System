@@ -13,15 +13,25 @@ import java.time.LocalDateTime;
 
 public class FuenteEstatica extends Fuente {
   @Getter private String ruta;
-  @Getter private Set<Hecho> hechosCargados;
+  @Getter public Set<Hecho> hechosCargados;
 
   public FuenteEstatica(String ruta) {
     this.ruta = ruta;
     this.hechosCargados = new HashSet<>(); //se necesita el historial para luego ver si hay alguno repetido
   }
 
+  public void cargarHecho(Hecho nuevoHecho){
+    hechosCargados.add(nuevoHecho);
+  }
+
   @Override
   public Set<Hecho> leerHechos() {
+    return hechosCargados;
+  }
+
+/*
+  @Override
+  public Set<Hecho> leerHechos() { //este metodo lee hechos de un archivo CSV
     Set<Hecho> hechosACargar = new HashSet<>();
 
     try(BufferedReader br = new BufferedReader(new FileReader(ruta))){
@@ -40,7 +50,7 @@ public class FuenteEstatica extends Fuente {
         String lugar = "Latitud: " + latitud + ", Longitud: " + longitud;
 
         Hecho hechoACargar = new Hecho(
-            titulo, descripcion, categoria, lugar, fecha,
+            titulo, descripcion, categoria, latitud, longitud , fecha,
             Origen.PROVENIENTE_DE_DATASET
         );
 
@@ -61,6 +71,6 @@ public class FuenteEstatica extends Fuente {
 
     return hechosCargados;
 
-  }
+  }*/
 
 }
