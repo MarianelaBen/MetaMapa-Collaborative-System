@@ -1,4 +1,4 @@
-package domain.criterios;
+/*package domain.criterios;
 
 import domain.Hecho;
 
@@ -14,4 +14,4 @@ public class CriterioLugar implements Criterio{
 
     return lugar.equalsIgnoreCase(hecho.lugar);
   }
-}
+}*/

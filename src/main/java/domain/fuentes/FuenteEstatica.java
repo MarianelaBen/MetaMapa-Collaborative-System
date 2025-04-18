@@ -4,6 +4,7 @@ import domain.Hecho;
 import domain.enumerados.Origen;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
@@ -17,11 +18,12 @@ public class FuenteEstatica extends Fuente {
 
   public FuenteEstatica(String ruta) {
     this.ruta = ruta;
-    this.hechosCargados = new HashSet<>(); //se necesita el historial para luego ver si hay alguno repetido
+    this.hechosCargados = new HashSet<>(); //se necesita el historial para dsp ver si hay alguno repetido
   }
 
-  public void cargarHecho(Hecho nuevoHecho){
-    hechosCargados.add(nuevoHecho);
+  public void cargarHechos(Hecho ... nuevosHechos){
+    Collections.addAll(hechosCargados, nuevosHechos);
+    System.out.println("cargue los hechos");
   }
 
   @Override

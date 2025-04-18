@@ -1,6 +1,7 @@
 package domain;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 import domain.criterios.Criterio;
 import domain.enumerados.Origen;
@@ -33,6 +34,16 @@ public class Hecho {
     this.fechaCarga = LocalDate.now();
     this.origen = origen;
     this.fueEliminado = false;
+  }
+
+  private Set<String> etiquetas = new HashSet<>(); //seguro cambia el tipo
+
+  public void agregarEtiqueta(String etiqueta) {
+    this.etiquetas.add(etiqueta);
+  }
+
+  public Set<String> getEtiquetas() {
+    return etiquetas;
   }
 
 }

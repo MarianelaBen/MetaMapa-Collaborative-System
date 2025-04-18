@@ -5,6 +5,10 @@ import domain.Hecho;
 public class CriterioContenidoMultimedial implements Criterio{
   private String contenidoMultimedial;
 
+  public CriterioContenidoMultimedial(String contenidoMultimedial) {
+    this.contenidoMultimedial = contenidoMultimedial;
+  }
+
   @Override
   public boolean cumpleCriterio(Hecho hecho) {
 

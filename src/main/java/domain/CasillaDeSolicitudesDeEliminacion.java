@@ -1,13 +1,17 @@
 package domain;
 
 import domain.enumerados.EstadoSolicitud;
+import lombok.Getter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CasillaDeSolicitudesDeEliminacion {
-  private List<Solicitud> solicitudesDeEliminacion;
+  @Getter public List<Solicitud> solicitudesPendientes;
+  @Getter public List<Solicitud> solicitudesAtendidas;
 
-  public CasillaDeSolicitudesDeEliminacion(List<Solicitud> solicitudesDeEliminacion) {
-    this.solicitudesDeEliminacion = solicitudesDeEliminacion;
+  public CasillaDeSolicitudesDeEliminacion() {
+    this.solicitudesPendientes = new ArrayList<Solicitud>();
+    this.solicitudesAtendidas = new ArrayList<Solicitud>();
   }
 
   public boolean esValida(Solicitud solicitud){
@@ -16,7 +20,7 @@ public class CasillaDeSolicitudesDeEliminacion {
 
   public void recibirSolicitud(Solicitud solicitud){
     if(this.esValida(solicitud)){
-      solicitudesDeEliminacion.add(solicitud);
+      solicitudesPendientes.add(solicitud);
       return;
     }
     this.rechazar(solicitud);
@@ -24,7 +28,23 @@ public class CasillaDeSolicitudesDeEliminacion {
 
   public void rechazar(Solicitud solicitud){
     solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
-    System.out.println("Hola, esto es un log en consola.");
+    this.enviarARegistro(solicitud);
+    System.out.println("Hola, rechace.");
+  }
+
+  public void aceptar(Solicitud solicitud){
+    solicitud.cambiarEstado(EstadoSolicitud.ACEPTADA );
+    solicitud.getHecho().fueEliminado = true;
+    this.enviarARegistro(solicitud);
+    System.out.println("Hola, acepte.");
+  }
+
+  public void enviarARegistro(Solicitud solicitud){
+    this.solicitudesAtendidas.add(solicitud);
+  }
+
+  public Solicitud pedidoDeSolicitud(){
+    return solicitudesPendientes.remove(0); //Esta sin tomar en cuenta caso lista vacia, por que es solo para test
   }
 }
 
