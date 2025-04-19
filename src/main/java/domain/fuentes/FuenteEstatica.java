@@ -1,78 +1,72 @@
 package domain.fuentes;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import domain.Hecho;
 import domain.enumerados.Origen;
-import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.time.LocalDateTime;
+
+
 
 public class FuenteEstatica extends Fuente {
   @Getter private String ruta;
-  @Getter public Set<Hecho> hechosCargados;
+  @Getter public Set<Hecho> hechosCargados; //historial
 
   public FuenteEstatica(String ruta) {
     this.ruta = ruta;
-    this.hechosCargados = new HashSet<>(); //se necesita el historial para dsp ver si hay alguno repetido
+    this.hechosCargados = new HashSet<>();
   }
 
-  public void cargarHechos(Hecho ... nuevosHechos){
+  public void cargarHechos(Hecho ... nuevosHechos) {
     Collections.addAll(hechosCargados, nuevosHechos);
     System.out.println("cargue los hechos");
   }
 
+/*
   @Override
   public Set<Hecho> leerHechos() {
     return hechosCargados;
-  }
+  }*/
 
-/*
   @Override
-  public Set<Hecho> leerHechos() { //este metodo lee hechos de un archivo CSV
+  public Set<Hecho> leerHechos() {
     Set<Hecho> hechosACargar = new HashSet<>();
 
-    try(BufferedReader br = new BufferedReader(new FileReader(ruta))){
-      String fila;
-      br.readLine(); //lee la primer fila y la saltea
+    try (CSVReader reader = new CSVReader(new FileReader(this.ruta))) {
+      String[] fila;
+      reader.readNext(); //lee la primer fila y la saltea
 
-      while ((fila = br.readLine()) != null){
-        String[] datos = fila.split(","); //se divide la fila por comas y cada dato pasa a ser un lugar en el array datos (son STRINGS)
+      while ((fila = reader.readNext()) != null) {
 
-        String titulo = datos[0];
-        String descripcion = datos[1];
-        String categoria = datos[2];
-        String latitud = datos[3];
-        String longitud = datos[4];
-        LocalDateTime fecha = LocalDateTime.parse(datos[5]); //parse convierte el string del array en LocalDateTime para guardarlo en fecha
-        String lugar = "Latitud: " + latitud + ", Longitud: " + longitud;
+        String titulo = fila[0];
+        String descripcion = fila[1];
+        String categoria = fila[2];
+        Integer latitud = Integer.parseInt(fila[3]);
+        Integer longitud = Integer.parseInt(fila[4]);
+        LocalDate fechaAcontecimiento = LocalDate.parse(fila[5]);
+        //TODO unificar tipo de dato con los CSV que nos dieron
 
         Hecho hechoACargar = new Hecho(
-            titulo, descripcion, categoria, latitud, longitud , fecha,
+            titulo, descripcion, categoria, latitud, longitud, fechaAcontecimiento,
             Origen.PROVENIENTE_DE_DATASET
         );
 
-        //Se considerará que un hecho está repetido si el “título” es el mismo. De ser así, se pisarán los atributos del existente
-        //TODO
-
-        hechosCargados.add(hechoACargar);
+        //Un hecho está repetido si el “título” es el mismo. Se pisarán los atributos del existente
+        this.hechosCargados.removeIf(hecho -> hecho.getTitulo().equals(hechoACargar.getTitulo()));
+        this.hechosCargados.add(hechoACargar); //lo agrega al historial
         hechosACargar.add(hechoACargar);
 
       }
 
-    } catch (FileNotFoundException e) {
+    } catch (IOException | CsvValidationException e) {
       throw new RuntimeException("No se pudo leer el archivo CSV");
-    } catch (IOException e) {
-      //TODO
-      throw new RuntimeException(e);
     }
-
-    return hechosCargados;
-
-  }*/
-
+    return hechosACargar; //devuelve solo los que se cargaron en esta ejecucion del metodo
+  }
 }
