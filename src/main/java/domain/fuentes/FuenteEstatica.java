@@ -11,16 +11,21 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
-
-
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.ArrayList;
 
 public class FuenteEstatica extends Fuente {
   @Getter private String ruta;
-  @Getter public Set<Hecho> hechosCargados; //historial
+  @Getter public List<Hecho> hechosCargados; //historial , pusimos lista para el test
 
   public FuenteEstatica(String ruta) {
     this.ruta = ruta;
-    this.hechosCargados = new HashSet<>();
+    this.hechosCargados = new ArrayList<>();
+  }
+
+  public void CambiarRuta(String string){
+    this.ruta = string;
   }
 
   public void cargarHechos(Hecho ... nuevosHechos) {
@@ -28,29 +33,29 @@ public class FuenteEstatica extends Fuente {
     System.out.println("cargue los hechos");
   }
 
-/*
-  @Override
-  public Set<Hecho> leerHechos() {
-    return hechosCargados;
-  }*/
 
   @Override
-  public Set<Hecho> leerHechos() {
-    Set<Hecho> hechosACargar = new HashSet<>();
+  public List<Hecho> getHechos() {
+    return hechosCargados;
+  }
+
+  @Override
+  public List<Hecho> leerHechos() {
+    List<Hecho> hechosACargar = new ArrayList<>();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
     try (CSVReader reader = new CSVReader(new FileReader(this.ruta))) {
       String[] fila;
       reader.readNext(); //lee la primer fila y la saltea
 
       while ((fila = reader.readNext()) != null) {
-
+        System.out.println("La direccion esta bien");
         String titulo = fila[0];
         String descripcion = fila[1];
         String categoria = fila[2];
-        Integer latitud = Integer.parseInt(fila[3]);
-        Integer longitud = Integer.parseInt(fila[4]);
-        LocalDate fechaAcontecimiento = LocalDate.parse(fila[5]);
-        //TODO unificar tipo de dato con los CSV que nos dieron
+        Double latitud = Double.parseDouble(fila[3]);
+        Double longitud = Double.parseDouble(fila[4]);
+        LocalDate fechaAcontecimiento = LocalDate.parse(fila[5], formatter);
 
         Hecho hechoACargar = new Hecho(
             titulo, descripcion, categoria, latitud, longitud, fechaAcontecimiento,
@@ -61,7 +66,6 @@ public class FuenteEstatica extends Fuente {
         this.hechosCargados.removeIf(hecho -> hecho.getTitulo().equals(hechoACargar.getTitulo()));
         this.hechosCargados.add(hechoACargar); //lo agrega al historial
         hechosACargar.add(hechoACargar);
-
       }
 
     } catch (IOException | CsvValidationException e) {

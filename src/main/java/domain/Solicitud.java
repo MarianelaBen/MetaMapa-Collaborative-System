@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class Solicitud {
   @Getter public Hecho hecho;
   @Getter public String justificacion;
-  private EstadoSolicitud estado;
+  @Getter private EstadoSolicitud estado;
   @Getter @Setter private Administrador administradorQueAtendio;
   @Getter @Setter private LocalDateTime fechaEntrada;
   @Getter @Setter private LocalDateTime fechaAtencion;

@@ -10,39 +10,42 @@ import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Coleccion {
   @Getter private String titulo;
   @Getter private String descripcion;
   @Getter private Fuente fuente;
   @Getter private Set<Criterio> criterios;
-  @Getter public Set<Hecho> hechosDeLaColeccion;
+  @Getter public List<Hecho> hechosDeLaColeccion;
 
   public Coleccion(String titulo, String descripcion, Fuente fuente){
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.fuente = fuente;
     this.criterios = new HashSet<>();
-    this.hechosDeLaColeccion = new HashSet<>();
+    this.hechosDeLaColeccion = new ArrayList<>();
   }
 
   public void filtrarHechos(){
     this.hechosDeLaColeccion.clear();
+    List<Hecho> hechosFiltrados = fuente.getHechos().stream().filter(this::noFueEliminado).collect(Collectors.toList());
     if(this.criterios.isEmpty()){
-      this.agregarHechos(fuente.leerHechos());}
-    else {
-      Set<Hecho> hechosFiltrados = fuente.leerHechos().stream().filter(this::cumpleLosCriterios).collect(Collectors.toSet());
-        this.agregarHechos(hechosFiltrados);}
+      this.agregarHechos(hechosFiltrados);}
+    else {this.agregarHechos(hechosFiltrados.stream().filter(this::cumpleLosCriterios).collect(Collectors.toList()));}
     }
 
-
-
-  public void agregarHechos(Set<Hecho> hechos){
+  public void agregarHechos(List<Hecho> hechos){
     this.hechosDeLaColeccion.addAll(hechos);
   }
 
   public boolean cumpleLosCriterios(Hecho hecho){
     return this.criterios.stream().allMatch(c -> c.cumpleCriterio(hecho));
+  }
+
+  public boolean noFueEliminado(Hecho hecho){
+    return !hecho.fueEliminado;
   }
 
   public void agregarCriterios(Criterio ... nuevosCriterios){

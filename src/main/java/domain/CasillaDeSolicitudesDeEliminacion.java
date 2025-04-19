@@ -15,7 +15,7 @@ public class CasillaDeSolicitudesDeEliminacion {
   }
 
   public boolean esValida(Solicitud solicitud){
-    return solicitud.justificacion.length() > 500;
+    return solicitud.justificacion.length() >= 500;
   }
 
   public void recibirSolicitud(Solicitud solicitud){
@@ -23,6 +23,7 @@ public class CasillaDeSolicitudesDeEliminacion {
       solicitudesPendientes.add(solicitud);
       return;
     }
+    System.out.println("No valida");
     this.rechazar(solicitud);
   }
 
@@ -44,7 +45,10 @@ public class CasillaDeSolicitudesDeEliminacion {
   }
 
   public Solicitud pedidoDeSolicitud(){
-    return solicitudesPendientes.remove(0); //Esta sin tomar en cuenta caso lista vacia, por que es solo para test
+    if(this.solicitudesPendientes.isEmpty()){
+      return null;
+    }
+    else{return solicitudesPendientes.remove(0);}
   }
 }
 
