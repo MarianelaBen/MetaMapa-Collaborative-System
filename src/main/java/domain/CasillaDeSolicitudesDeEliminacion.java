@@ -29,34 +29,27 @@ public class CasillaDeSolicitudesDeEliminacion {
       solicitudesPendientes.add(solicitud);
       return;
     }
-    System.out.println("No es valida");
+    System.out.println("No es valida la solicitud");
     this.rechazar(solicitud);
   }
 
   public void rechazar(Solicitud solicitud) {
     solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
     this.enviarARegistro(solicitud);
-    System.out.println("Hola, rechace.");
+    System.out.println("Rechace solicitud.");
   }
 
   public void aceptar(Solicitud solicitud) {
     solicitud.cambiarEstado(EstadoSolicitud.ACEPTADA);
     solicitud.getHecho().setFueEliminado(true);
     this.enviarARegistro(solicitud);
-    System.out.println("Hola, acepte.");
+    System.out.println("Acepte solicitud.");
   }
 
   public void enviarARegistro(Solicitud solicitud) {
     this.solicitudesAtendidas.add(solicitud);
   }
 
-  public Solicitud pedidoDeSolicitud() {
-    if (this.solicitudesPendientes.isEmpty()) {
-      return null;
-    } else {
-      return solicitudesPendientes.remove(0);
-    }
-  }
 }
 
 

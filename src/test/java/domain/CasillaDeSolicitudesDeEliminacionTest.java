@@ -19,6 +19,7 @@ class CasillaDeSolicitudesDeEliminacionTest {
   private Administrador administrador;
   private FuenteEstatica fuente;
 
+
   @Test
   @DisplayName("Tests de solicitud de eliminación")
   public void eliminarHecho(){
@@ -35,6 +36,8 @@ class CasillaDeSolicitudesDeEliminacionTest {
         Origen.CARGA_MANUAL
     );
 
+
+
     Solicitud solicitud1 = new Solicitud(h6, "QvzBhELgRnyJxAUcpMkTFeiWdsaYoNqKhmCltVrbPZjfXuwOGDEyHNmvqLiKRCxTJgSpnbuzYAlwMfBdXQJeVRstkwNypZxgiUoLDaFbMHErjKnCVUgzqlBfOXehcsAMRWnJduKYIvTxpNZGqLromphXbVECtwUDzYnkgfSaMJqiLBorNXcuPtvmWGFzdkHljQEaRTBSHyCMOvUdFPKnxyrzGHqiaWcTEbJYLMvoZDwfKtpbnrsXmgUOeVhRCyqAlWtJKzgfNPdvhmeTuSWRaiLkMXnOYqZcXJbPlgfTQvzBhELgRnyJxAUcpMkTFeiWdsaYoNqKhmCltVrbPZjfXuwOGDEyHNmvqLiKRCxTJgSpnbuzYAlwMfBdXQJeVRstkwNypZxgiUoLDaFbMHErjKnCVUgzqlBfOXehcsAMRWnJduKYIvTxpNZGqLromphXbVECtwUDzYnkgfSaMJqiLBorNXcuPtvmWGFzdkHljQEaRTBSHyCM");
 
     casilla = CasillaDeSolicitudesDeEliminacion.getInstancia();
@@ -48,7 +51,7 @@ class CasillaDeSolicitudesDeEliminacionTest {
     coleccion.filtrarHechos();
 
     casilla.recibirSolicitud(solicitud1);
-    casilla.pedidoDeSolicitud();
+    casilla.getSolicitudesPendientes().remove(0);
 
     solicitud1.setAdministradorQueAtendio(administrador);
     solicitud1.setFechaAtencion(LocalDateTime.now());
@@ -64,7 +67,7 @@ class CasillaDeSolicitudesDeEliminacionTest {
     Solicitud solicitud2 = new Solicitud(h6, "QvzBhELgRnyJxAUcpMkTFeiWdsaYoNqKhmCltVrbPZjfXuwOGDEyHNmvqLiKRCxTJgSpnbuzYAlwMfBdXQJeVRstkwNypZxgiUoLDaFbMHErjKnCVUgzqlBfOXehcsAMRWnJduKYIvTxpNZGqLromphXbVECtwUDzYnkgfSaMJqiLBorNXcuPtvmWGFzdkHljQEaRTBSHyCMOvUdFPKnxyrzGHqiaWcTEbJYLMvoZDwfKtpbnrsXmgUOeVhRCyqAlWtJKzgfNPdvhmeTuSWRaiLkMXnOYqZcXJbPlgfTQvzBhELgRnyJxAUcpMkTFeiWdsaYoNqKhmCltVrbPZjfXuwOGDEyHNmvqLiKRCxTJgSpnbuzYAlwMfBdXQJeVRstkwNypZxgiUoLDaFbMHErjKnCVUgzqlBfOXehcsAMRWnJduKYIvTxpNZGqLromphXbVECtwUDzYnkgfSaMJqiLBorNXcuPtvmWGFzdkHljQEaRTBSHyCM");
 
     casilla.recibirSolicitud(solicitud2);
-    casilla.pedidoDeSolicitud();
+    casilla.getSolicitudesPendientes().remove(0);
 
     solicitud2.setAdministradorQueAtendio(administrador);
     solicitud2.setFechaAtencion(LocalDateTime.now());
