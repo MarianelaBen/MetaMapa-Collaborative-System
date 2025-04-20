@@ -18,7 +18,7 @@ public class Coleccion {
   @Getter private String descripcion;
   @Getter private Fuente fuente;
   @Getter private Set<Criterio> criterios;
-  @Getter public List<Hecho> hechosDeLaColeccion;
+  @Getter private List<Hecho> hechosDeLaColeccion;
 
   public Coleccion(String titulo, String descripcion, Fuente fuente){
     this.titulo = titulo;
@@ -45,7 +45,7 @@ public class Coleccion {
   }
 
   public boolean noFueEliminado(Hecho hecho){
-    return !hecho.fueEliminado;
+    return !hecho.isFueEliminado();
   }
 
   public void agregarCriterios(Criterio ... nuevosCriterios){

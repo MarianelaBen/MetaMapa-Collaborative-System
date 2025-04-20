@@ -15,6 +15,6 @@ public class CriterioFechaCarga implements Criterio{
   @Override
   public boolean cumpleCriterio(Hecho hecho) {
 
-    return hecho.fechaCarga.isAfter(desde) && hecho.fechaCarga.isBefore(hasta);
+    return hecho.getFechaCarga().isAfter(desde) && hecho.getFechaCarga().isBefore(hasta);
   }
 }

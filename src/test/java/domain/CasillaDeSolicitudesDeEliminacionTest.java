@@ -56,8 +56,8 @@ class CasillaDeSolicitudesDeEliminacionTest {
 
     coleccion.filtrarHechos();
 
-    assertFalse(casilla.solicitudesPendientes.contains(solicitud1));
-    assertTrue(casilla.solicitudesAtendidas.contains(solicitud1));
+    assertFalse(casilla.getSolicitudesPendientes().contains(solicitud1));
+    assertTrue(casilla.getSolicitudesAtendidas().contains(solicitud1));
     assertSame(EstadoSolicitud.RECHAZADA, solicitud1.getEstado());
     assertTrue(coleccion.getHechosDeLaColeccion().contains(h6));
 
@@ -72,8 +72,8 @@ class CasillaDeSolicitudesDeEliminacionTest {
 
     coleccion.filtrarHechos();
 
-    assertFalse(casilla.solicitudesPendientes.contains(solicitud2));
-    assertTrue(casilla.solicitudesAtendidas.contains(solicitud2));
+    assertFalse(casilla.getSolicitudesPendientes().contains(solicitud2));
+    assertTrue(casilla.getSolicitudesAtendidas().contains(solicitud2));
     assertSame(EstadoSolicitud.ACEPTADA, solicitud2.getEstado());
     assertFalse(coleccion.getHechosDeLaColeccion().contains(h6));
   }

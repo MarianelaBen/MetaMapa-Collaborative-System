@@ -11,9 +11,9 @@ public class CasillaDeSolicitudesDeEliminacion {
   private static final CasillaDeSolicitudesDeEliminacion instancia = new CasillaDeSolicitudesDeEliminacion(); //ahora es SINGLETON
 
   @Getter
-  public List<Solicitud> solicitudesPendientes;
+  private List<Solicitud> solicitudesPendientes;
   @Getter
-  public List<Solicitud> solicitudesAtendidas;
+  private List<Solicitud> solicitudesAtendidas;
 
   public CasillaDeSolicitudesDeEliminacion() {
     this.solicitudesPendientes = new ArrayList<Solicitud>();
@@ -21,7 +21,7 @@ public class CasillaDeSolicitudesDeEliminacion {
   }
 
   public boolean esValida(Solicitud solicitud) {
-    return solicitud.justificacion.length() >= 500;
+    return solicitud.getJustificacion().length() >= 500;
   }
 
   public void recibirSolicitud(Solicitud solicitud) {
@@ -41,7 +41,7 @@ public class CasillaDeSolicitudesDeEliminacion {
 
   public void aceptar(Solicitud solicitud) {
     solicitud.cambiarEstado(EstadoSolicitud.ACEPTADA);
-    solicitud.getHecho().fueEliminado = true;
+    solicitud.getHecho().setFueEliminado(true);
     this.enviarARegistro(solicitud);
     System.out.println("Hola, acepte.");
   }

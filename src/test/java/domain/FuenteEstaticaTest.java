@@ -22,11 +22,11 @@ class FuenteEstaticaTest {
 
     fuente.leerHechos();
 
-    assertEquals("Ráfagas de más de 100 km/h causa estragos en San Vicente, Misiones",fuente.hechosCargados.get(0).titulo);
-    assertEquals(10,fuente.hechosCargados.size());
-    System.out.println(fuente.hechosCargados.get(0).titulo);
-    System.out.println(fuente.hechosCargados.get(1).fechaAcontecimiento);
-    System.out.println(fuente.hechosCargados.get(2).fechaAcontecimiento);
-    System.out.println(fuente.hechosCargados.size());
+    assertEquals("Ráfagas de más de 100 km/h causa estragos en San Vicente, Misiones", fuente.getHechosCargados().get(0).getTitulo());
+    assertEquals(10,fuente.getHechosCargados().size());
+    System.out.println(fuente.getHechosCargados().get(0).getTitulo());
+    System.out.println(fuente.getHechosCargados().get(1).getFechaAcontecimiento());
+    System.out.println(fuente.getHechosCargados().get(2).getFechaAcontecimiento());
+    System.out.println(fuente.getHechosCargados().size());
   }
 }

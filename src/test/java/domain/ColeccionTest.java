@@ -107,11 +107,11 @@ class ColeccionTest {
 
     assertTrue(coleccion.getHechosDeLaColeccion().containsAll(List.of(h1, h2, h3, h4, h5)));
 
-    System.out.println("Titulo del hecho 1: " + h1.titulo);
-    System.out.println("Titulo del hecho 2: " + h2.titulo);
-    System.out.println("Titulo del hecho 3: " + h3.titulo);
-    System.out.println("Titulo del hecho 4: " + h4.titulo);
-    System.out.println("Titulo del hecho 5: " + h5.titulo);
+    System.out.println("Titulo del hecho 1: " + h1.getTitulo());
+    System.out.println("Titulo del hecho 2: " + h2.getTitulo());
+    System.out.println("Titulo del hecho 3: " + h3.getTitulo());
+    System.out.println("Titulo del hecho 4: " + h4.getTitulo());
+    System.out.println("Titulo del hecho 5: " + h5.getTitulo());
 
     // test.escenario 1.2
 
@@ -125,9 +125,9 @@ class ColeccionTest {
     assertTrue(coleccion.getHechosDeLaColeccion().containsAll(List.of(h1, h2, h3)));
     assertFalse(coleccion.getHechosDeLaColeccion().containsAll(List.of(h4, h5)));
 
-    System.out.println("Titulo del hecho 1: " + h1.titulo);
-    System.out.println("Titulo del hecho 2: " + h2.titulo);
-    System.out.println("Titulo del hecho 3: " + h3.titulo);
+    System.out.println("Titulo del hecho 1: " + h1.getTitulo());
+    System.out.println("Titulo del hecho 2: " + h2.getTitulo());
+    System.out.println("Titulo del hecho 3: " + h3.getTitulo());
 
     CriterioCategoria c2 = new CriterioCategoria("Caída de aeronave");
     coleccion.agregarCriterios(c2);
@@ -136,8 +136,8 @@ class ColeccionTest {
     assertTrue(coleccion.getHechosDeLaColeccion().containsAll(List.of(h1, h3)));
     assertFalse(coleccion.getHechosDeLaColeccion().containsAll(List.of(h2,h4,h5)));
 
-    System.out.println("Titulo del hecho 1: " + h1.titulo);
-    System.out.println("Titulo del hecho 3: " + h3.titulo);
+    System.out.println("Titulo del hecho 1: " + h1.getTitulo());
+    System.out.println("Titulo del hecho 3: " + h3.getTitulo());
 
     // test.escenario 1.3
 
@@ -146,7 +146,7 @@ class ColeccionTest {
     coleccion.agregarCriterios(c3,c4);
     coleccion.filtrarHechos();
 
-    assertTrue(coleccion.hechosDeLaColeccion.isEmpty());
+    assertTrue(coleccion.getHechosDeLaColeccion().isEmpty());
     assertFalse(coleccion.getHechosDeLaColeccion().containsAll(List.of(h1,h2,h3,h4,h5)));
 
     // test.escenario 1.4

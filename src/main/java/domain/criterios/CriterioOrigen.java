@@ -13,6 +13,6 @@ public class CriterioOrigen implements Criterio{
   @Override
   public boolean cumpleCriterio(Hecho hecho) {
 
-    return origen.equals(hecho.origen);
+    return origen.equals(hecho.getOrigen());
   }
 }

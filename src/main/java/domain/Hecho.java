@@ -9,16 +9,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class Hecho {
-  @Getter public String titulo;
-  @Getter public String descripcion;
-  @Getter public String categoria;
-  @Getter public Double latitud;
-  @Getter public Double longitud;
-  @Getter public LocalDate fechaAcontecimiento;
-  @Getter public LocalDate fechaCarga;
-  @Getter public Origen origen;
-  @Setter @Getter public boolean fueEliminado;
-  @Setter @Getter public Set<Etiqueta> etiquetas;
+  @Getter private String titulo;
+  @Getter private String descripcion;
+  @Getter private String categoria;
+  @Getter private Double latitud;
+  @Getter private Double longitud;
+  @Getter private LocalDate fechaAcontecimiento;
+  @Getter private LocalDate fechaCarga;
+  @Getter private Origen origen;
+  @Setter @Getter private boolean fueEliminado;
+  @Setter @Getter private Set<Etiqueta> etiquetas;
 
   //  @Setter @Getter private String nombreAportante;
   //  @Setter @Getter private String apellidoAportante;

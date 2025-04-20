@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class FuenteEstatica extends Fuente {
   @Getter private String ruta;
-  @Getter public List<Hecho> hechosCargados; //historial , pusimos lista para el test
+  @Getter private List<Hecho> hechosCargados; //historial , pusimos lista para el test
 
   public FuenteEstatica(String ruta) {
     this.ruta = ruta;

@@ -12,6 +12,6 @@ public class CriterioTitulo implements Criterio{
   @Override
   public boolean cumpleCriterio(Hecho hecho){
 
-    return titulo.equalsIgnoreCase(hecho.titulo);
+    return titulo.equalsIgnoreCase(hecho.getTitulo());
   }
 }
