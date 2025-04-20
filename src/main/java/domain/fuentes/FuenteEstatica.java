@@ -8,8 +8,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.Getter;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -30,7 +28,7 @@ public class FuenteEstatica extends Fuente {
 
   public void cargarHechos(Hecho ... nuevosHechos) {
     Collections.addAll(hechosCargados, nuevosHechos);
-    System.out.println("cargue los hechos");
+    System.out.println("Los hechos fueron cargados");
   }
 
 
@@ -40,8 +38,7 @@ public class FuenteEstatica extends Fuente {
   }
 
   @Override
-  public List<Hecho> leerHechos() {
-    List<Hecho> hechosACargar = new ArrayList<>();
+  public void leerHechos() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
     try (CSVReader reader = new CSVReader(new FileReader(this.ruta))) {
@@ -65,12 +62,10 @@ public class FuenteEstatica extends Fuente {
         //Un hecho está repetido si el “título” es el mismo. Se pisarán los atributos del existente
         this.hechosCargados.removeIf(hecho -> hecho.getTitulo().equals(hechoACargar.getTitulo()));
         this.hechosCargados.add(hechoACargar); //lo agrega al historial
-        hechosACargar.add(hechoACargar);
       }
 
     } catch (IOException | CsvValidationException e) {
       throw new RuntimeException("No se pudo leer el archivo CSV");
     }
-    return hechosACargar; //devuelve solo los que se cargaron en esta ejecucion del metodo
   }
 }

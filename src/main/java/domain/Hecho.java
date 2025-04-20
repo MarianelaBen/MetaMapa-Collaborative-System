@@ -12,7 +12,6 @@ public class Hecho {
   @Getter public String titulo;
   @Getter public String descripcion;
   @Getter public String categoria;
-  @Setter @Getter public String contenidoMultimedia; //Lo dejamos como string y mas adelante vemos.
   @Getter public Double latitud;
   @Getter public Double longitud;
   @Getter public LocalDate fechaAcontecimiento;

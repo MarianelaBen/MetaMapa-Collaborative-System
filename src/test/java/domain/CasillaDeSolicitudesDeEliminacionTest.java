@@ -37,9 +37,9 @@ class CasillaDeSolicitudesDeEliminacionTest {
 
     Solicitud solicitud1 = new Solicitud(h6, "QvzBhELgRnyJxAUcpMkTFeiWdsaYoNqKhmCltVrbPZjfXuwOGDEyHNmvqLiKRCxTJgSpnbuzYAlwMfBdXQJeVRstkwNypZxgiUoLDaFbMHErjKnCVUgzqlBfOXehcsAMRWnJduKYIvTxpNZGqLromphXbVECtwUDzYnkgfSaMJqiLBorNXcuPtvmWGFzdkHljQEaRTBSHyCMOvUdFPKnxyrzGHqiaWcTEbJYLMvoZDwfKtpbnrsXmgUOeVhRCyqAlWtJKzgfNPdvhmeTuSWRaiLkMXnOYqZcXJbPlgfTQvzBhELgRnyJxAUcpMkTFeiWdsaYoNqKhmCltVrbPZjfXuwOGDEyHNmvqLiKRCxTJgSpnbuzYAlwMfBdXQJeVRstkwNypZxgiUoLDaFbMHErjKnCVUgzqlBfOXehcsAMRWnJduKYIvTxpNZGqLromphXbVECtwUDzYnkgfSaMJqiLBorNXcuPtvmWGFzdkHljQEaRTBSHyCM");
 
-    CasillaDeSolicitudesDeEliminacion casilla = new CasillaDeSolicitudesDeEliminacion();
+    casilla = CasillaDeSolicitudesDeEliminacion.getInstancia();
 
-    Administrador administrador = new Administrador(casilla);
+    Administrador administrador = new Administrador();
     this.fuente = new FuenteEstatica("ruta.csv");
     fuente.cargarHechos(h6);
 

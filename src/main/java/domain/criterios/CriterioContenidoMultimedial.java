@@ -1,4 +1,4 @@
-package domain.criterios;
+/*package domain.criterios;
 
 import domain.Hecho;
 
@@ -16,4 +16,4 @@ public class CriterioContenidoMultimedial implements Criterio{
     //Lo dejamos implementado como string y más adelante vemos.
   }
 
-}
+}*/
