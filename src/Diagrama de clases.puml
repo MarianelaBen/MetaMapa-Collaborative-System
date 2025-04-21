@@ -1,0 +1,155 @@
+@startuml
+
+interface Criterio {
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+abstract class Fuente {
+    +leerHechos(): void
+    +getHechos(): List<Hecho>
+}
+
+class Coleccion {
+    -titulo: String
+    -descripcion: String
+    -fuente: Fuente
+    -criterios: Set<Criterio>
+    -hechosDeLaColeccion: List<Hecho>
+
+    +filtrarHechos(): void
+    +agregarHechos(hechos: List<Hecho>): void
+    +cumpleLosCriterios(hecho: Hecho): boolean
+    +noFueEliminado(hecho: Hecho): boolean
+    +agregarCriterios(criterio: Criterio...): void
+}
+
+class FuenteEstatica extends Fuente{
+    -ruta: String
+    -hechosCargados: List<Hecho>
+
+    +cargarHechos(nuevosHechos: Hecho...): void
+    +getHechos(): List<Hecho>
+    +leerHechos(): void
+}
+
+class Hecho {
+    -titulo: String
+    -descripcion: String
+    -categoria: String
+    -latitud: double
+    -longitud: double
+    -fecha_acontecimiento: LocalDate
+    -fecha_carga: LocalDate
+    -origen: Origen
+    -fueEliminado: boolean
+    -etiquetas: Set<Etiqueta>
+
+    +agregarEtiqueta(etiqueta: Etiqueta): void
+}
+
+enum Origen {
+    CARGA_MANUAL
+    PROVENIENTE_DE_DATASET
+    PROVISTO_POR_CONTRIBUYENTE
+}
+
+class Etiqueta {
+}
+
+class CriterioTitulo extends Criterio{
+    -titulo: String
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioDescripcion extends Criterio{
+    -descripcion: String
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioCategoria extends Criterio{
+    -categoria: String
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioLugar extends Criterio {
+    -latitudReferencia: double
+    -longitudReferencia: double
+    -rangoMaximo: Integer
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioFechaAcontecimiento extends Criterio{
+    -desde: LocalDate
+    -hasta: LocalDate
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioFechaCarga extends Criterio{
+    -desde: LocalDate
+    -hasta: LocalDate
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioOrigen extends Criterio{
+    -origen: Origen
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class Solicitud {
+    -hecho: Hecho
+    -justificacion: String
+    -estado: EstadoSolicitud
+    -administradorQueAtendio: Administrador
+    -fechaEntrada: LocalDateTime
+    -fechaAtencion: LocalDateTime
+
+    +cambiarEstado(nuevoEstado: EstadoSolicitud): void
+}
+
+class Contribuyente {
+    -nombre: String
+    -apellido: String
+    -edad: Integer
+}
+
+class CasillaDeSolicitudesDeEliminacion {
+    -solicitudesPendientes: List<Solicitud>
+    -solicitudesAtendidas: List<Solicitud>
+
+    +esValida(solicitud: Solicitud): boolean
+    +recibirSolicitud(solicitud: Solicitud): void
+    +rechazar(solicitud: Solicitud): void
+    +aceptar(solicitud: Solicitud): void
+    +enviarAlRegistro(solicitud: Solicitud): void
+    +pedidoDeSolicitud(): Solicitud
+}
+
+enum EstadoSolicitud {
+    PENDIENTE
+    RECHAZADA
+    ACEPTADA
+}
+
+class Administrador {
+}
+
+
+Coleccion --> "*" Criterio
+Coleccion --> "*" Hecho
+Coleccion --> Fuente
+Hecho --> Origen
+Hecho --> "*" Etiqueta
+CasillaDeSolicitudesDeEliminacion --> "*" Solicitud
+Solicitud --> Hecho
+Solicitud --> EstadoSolicitud
+Administrador --> Solicitud
+Contribuyente --> "*" Solicitud
+
+@enduml
