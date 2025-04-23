@@ -2,6 +2,7 @@ package domain.fuentes;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import domain.Categoria;
 import domain.Hecho;
 import domain.Ubicacion;
 import domain.enumerados.Origen;
@@ -50,7 +51,7 @@ public class FuenteEstatica extends Fuente {
         System.out.println("La direccion esta bien");
         String titulo = fila[0];
         String descripcion = fila[1];
-        String categoria = fila[2];
+        Categoria categoria = new Categoria(fila[2]);
         Ubicacion ubicacion = new Ubicacion(Double.parseDouble(fila[3]), Double.parseDouble(fila[4]));
         LocalDate fechaAcontecimiento = LocalDate.parse(fila[5], formatter);
 

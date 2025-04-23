@@ -1,5 +1,6 @@
 package domain.criterios;
 
+import domain.Categoria;
 import domain.Hecho;
 import domain.Ubicacion;
 import domain.enumerados.Origen;
@@ -23,7 +24,7 @@ class CriterioLugarTest {
             "Olavarría, Buenos Aires. El incidente provocó pánico entre " +
             "los residentes locales. Voluntarios de diversas organizaciones " +
             "se han sumado a las tareas de auxilio.",
-        "Caída de aeronave",
+        new Categoria("Caída de aeronave"),
         new Ubicacion(-36.86837, -60.343297),
         LocalDate.of(2001, 11, 29),
         Origen.CARGA_MANUAL);

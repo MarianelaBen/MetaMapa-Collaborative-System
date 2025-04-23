@@ -11,7 +11,7 @@ import lombok.Setter;
 public class Hecho {
   @Getter private String titulo;
   @Getter private String descripcion;
-  @Getter private String categoria;
+  @Getter private Categoria categoria;
   @Getter private Ubicacion ubicacion;
   @Getter private LocalDate fechaAcontecimiento;
   @Getter private LocalDate fechaCarga;
@@ -23,7 +23,7 @@ public class Hecho {
   //  @Setter @Getter private String apellidoAportante;
   //  @Setter @Getter private Integer edadAportante;
 
-  public Hecho(String titulo, String descripcion, String categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen){
+  public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen){
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
