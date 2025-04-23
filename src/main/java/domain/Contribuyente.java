@@ -1,13 +1,15 @@
 package domain;
 
+import java.time.LocalDate;
+
 public class Contribuyente {
   private String nombre;
   private String apellido;
-  private Integer edad;
+  private LocalDate fechaDeNacimiento;
 
-  public Contribuyente(String nombre, Integer edad, String apellido) {
+  public Contribuyente(String nombre, LocalDate fechaDeNacimiento, String apellido) {
     this.nombre = nombre;
-    this.edad = edad;
+    this.fechaDeNacimiento = fechaDeNacimiento;
     this.apellido = apellido;
   }
 
