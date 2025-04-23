@@ -15,7 +15,6 @@ class Coleccion {
     -fuente: Fuente
     -criterios: Set<Criterio>
     -hechosDeLaColeccion: List<Hecho>
-
     +filtrarHechos(): void
     +agregarHechos(hechos: List<Hecho>): void
     +cumpleLosCriterios(hecho: Hecho): boolean
@@ -35,9 +34,8 @@ class FuenteEstatica extends Fuente{
 class Hecho {
     -titulo: String
     -descripcion: String
-    -categoria: String
-    -latitud: double
-    -longitud: double
+    -categoria: Categoria
+    -ubicacion: Ubicacion
     -fecha_acontecimiento: LocalDate
     -fecha_carga: LocalDate
     -origen: Origen
@@ -47,6 +45,10 @@ class Hecho {
     +agregarEtiqueta(etiqueta: Etiqueta): void
 }
 
+class Categoria {
+    -nombre: String
+}
+
 enum Origen {
     CARGA_MANUAL
     PROVENIENTE_DE_DATASET
@@ -54,27 +56,29 @@ enum Origen {
 }
 
 class Etiqueta {
+    -nombre: String
+
 }
 
-class CriterioTitulo extends Criterio{
+class CriterioTitulo implements Criterio{
     -titulo: String
 
     +cumpleCriterio(hecho: Hecho): boolean
 }
 
-class CriterioDescripcion extends Criterio{
+class CriterioDescripcion implements Criterio{
     -descripcion: String
 
     +cumpleCriterio(hecho: Hecho): boolean
 }
 
-class CriterioCategoria extends Criterio{
+class CriterioCategoria implements Criterio{
     -categoria: String
 
     +cumpleCriterio(hecho: Hecho): boolean
 }
 
-class CriterioLugar extends Criterio {
+class CriterioLugar implements Criterio {
     -latitudReferencia: double
     -longitudReferencia: double
     -rangoMaximo: Integer
@@ -82,21 +86,21 @@ class CriterioLugar extends Criterio {
     +cumpleCriterio(hecho: Hecho): boolean
 }
 
-class CriterioFechaAcontecimiento extends Criterio{
+class CriterioFechaAcontecimiento implements Criterio{
     -desde: LocalDate
     -hasta: LocalDate
 
     +cumpleCriterio(hecho: Hecho): boolean
 }
 
-class CriterioFechaCarga extends Criterio{
+class CriterioFechaCarga implements Criterio{
     -desde: LocalDate
     -hasta: LocalDate
 
     +cumpleCriterio(hecho: Hecho): boolean
 }
 
-class CriterioOrigen extends Criterio{
+class CriterioOrigen implements Criterio{
     -origen: Origen
 
     +cumpleCriterio(hecho: Hecho): boolean
@@ -116,7 +120,7 @@ class Solicitud {
 class Contribuyente {
     -nombre: String
     -apellido: String
-    -edad: Integer
+    -fechaDeNacimiento: LocalDate
 }
 
 class CasillaDeSolicitudesDeEliminacion {
@@ -131,6 +135,11 @@ class CasillaDeSolicitudesDeEliminacion {
     +pedidoDeSolicitud(): Solicitud
 }
 
+class Ubicacion{
+    -latitud: double
+    -longitud: double
+}
+
 enum EstadoSolicitud {
     PENDIENTE
     RECHAZADA
@@ -138,6 +147,8 @@ enum EstadoSolicitud {
 }
 
 class Administrador {
+    -nombre: String
+    -apellido: String
 }
 
 
@@ -149,7 +160,10 @@ Hecho --> "*" Etiqueta
 CasillaDeSolicitudesDeEliminacion --> "*" Solicitud
 Solicitud --> Hecho
 Solicitud --> EstadoSolicitud
-Administrador --> Solicitud
-Contribuyente --> "*" Solicitud
+Solicitud --> Administrador
+Solicitud --> "*" Contribuyente
+FuenteEstatica --> Hecho
+Hecho --> Ubicacion
+Hecho --> Categoria
 
 @enduml

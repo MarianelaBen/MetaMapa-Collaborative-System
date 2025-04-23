@@ -31,10 +31,10 @@ frame "Sistema de gestión de mapeos colaborativos" {
 
   Contribuyente -- SolicitarEliminacion
   Contribuyente -- SubirHecho
-  SubirHecho ..> Identificarse : <<includes>>
+  SubirHecho <.. Identificarse : <<extends>>
 
   Visualizador -- NavegarHechos
-  NavegarHechos ..> AplicarFiltros : <<includes>>
+  NavegarHechos <.. AplicarFiltros : <<extends>>
 }
 
 @enduml
