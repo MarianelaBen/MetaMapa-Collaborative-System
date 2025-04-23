@@ -151,8 +151,8 @@ class ColeccionTest {
 
     // test.escenario 1.4
 
-    Etiqueta Olavarria = new Etiqueta();
-    Etiqueta Grave = new Etiqueta();
+    Etiqueta Olavarria = new Etiqueta("Olavarria");
+    Etiqueta Grave = new Etiqueta("Grave");
 
     h1.agregarEtiqueta(Olavarria);
     h1.agregarEtiqueta(Grave);
