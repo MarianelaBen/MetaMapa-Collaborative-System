@@ -1,6 +1,7 @@
 package domain.criterios;
 
 import domain.Hecho;
+import domain.Ubicacion;
 import domain.enumerados.Origen;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,7 @@ class CriterioLugarTest {
             "los residentes locales. Voluntarios de diversas organizaciones " +
             "se han sumado a las tareas de auxilio.",
         "Caída de aeronave",
-        -36.86837,
-        -60.343297,
+        new Ubicacion(-36.86837, -60.343297),
         LocalDate.of(2001, 11, 29),
         Origen.CARGA_MANUAL);
 

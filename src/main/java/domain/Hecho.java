@@ -12,8 +12,7 @@ public class Hecho {
   @Getter private String titulo;
   @Getter private String descripcion;
   @Getter private String categoria;
-  @Getter private Double latitud;
-  @Getter private Double longitud;
+  @Getter private Ubicacion ubicacion;
   @Getter private LocalDate fechaAcontecimiento;
   @Getter private LocalDate fechaCarga;
   @Getter private Origen origen;
@@ -24,12 +23,11 @@ public class Hecho {
   //  @Setter @Getter private String apellidoAportante;
   //  @Setter @Getter private Integer edadAportante;
 
-  public Hecho(String titulo, String descripcion, String categoria, Double latitud, Double longitud, LocalDate fechaAcontecimiento, Origen origen){
+  public Hecho(String titulo, String descripcion, String categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen){
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
-    this.latitud = latitud;
-    this.longitud = longitud;
+    this.ubicacion = ubicacion;
     this.fechaAcontecimiento = fechaAcontecimiento;
     this.fechaCarga = LocalDate.now();
     this.origen = origen;

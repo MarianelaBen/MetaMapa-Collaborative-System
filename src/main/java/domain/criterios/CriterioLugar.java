@@ -17,8 +17,8 @@ public class CriterioLugar implements Criterio {
 
   @Override
   public boolean cumpleCriterio(Hecho hecho) {
-    double distanciaLatitud = Math.abs(hecho.getLatitud() - latitudReferencia);
-    double distanciaLongitud = Math.abs(hecho.getLongitud() - longitudReferencia);
+    double distanciaLatitud = Math.abs(hecho.getUbicacion().getLatitud() - latitudReferencia);
+    double distanciaLongitud = Math.abs(hecho.getUbicacion().getLongitud() - longitudReferencia);
     double distancia = distanciaLatitud + distanciaLongitud;
 
     return distancia <= rangoMaximo;

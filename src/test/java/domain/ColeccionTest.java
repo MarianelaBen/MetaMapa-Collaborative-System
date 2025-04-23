@@ -34,8 +34,7 @@ class ColeccionTest {
             "los residentes locales. Voluntarios de diversas organizaciones " +
             "se han sumado a las tareas de auxilio.",
         "Caída de aeronave",
-        -36.86837,
-        -60.343297,
+        new Ubicacion(-36.86837, -60.343297),
         LocalDate.of(2001, 11, 29),
         Origen.CARGA_MANUAL
     );
@@ -46,8 +45,7 @@ class ColeccionTest {
             "Neuquén. El incidente dejó a varios sectores sin comunicación. Voluntarios de " +
             "diversas organizaciones se han sumado a las tareas de auxilio.",
         "Accidente con maquinaria industrial",
-        -37.345571,
-        -70.241485,
+        new Ubicacion(-37.345571,-70.241485),
         LocalDate.of(2001, 8, 16),
         Origen.CARGA_MANUAL
     );
@@ -59,8 +57,7 @@ class ColeccionTest {
             "y dejó a familias evacuadas. Autoridades nacionales se han " +
             "puesto a disposición para brindar asistencia.",
         "Caída de aeronave",
-        -33.768051,
-        -61.921032,
+        new Ubicacion(-33.768051,-61.921032),
         LocalDate.of(2008, 8, 8),
         Origen.CARGA_MANUAL
     );
@@ -71,8 +68,7 @@ class ColeccionTest {
             "Buenos Aires. El incidente generó preocupación entre las autoridades provinciales. " +
             "El Ministerio de Desarrollo Social está brindando apoyo a los damnificados.",
         "Accidente en paso a nivel",
-        -35.855811,
-        -61.940589,
+        new Ubicacion(-35.855811,-61.940589),
         LocalDate.of(2020, 1, 27),
         Origen.CARGA_MANUAL
     );
@@ -83,8 +79,7 @@ class ColeccionTest {
             "Peña, Chaco. El incidente generó preocupación entre las autoridades provinciales. El " +
             "intendente local se ha trasladado al lugar para supervisar las operaciones.",
         "Derrumbe en obra en construcción",
-        -26.780008,
-        -60.458782,
+        new Ubicacion(-35.855811,-60.458782),
         LocalDate.of(2016, 6, 4),
         Origen.CARGA_MANUAL
     );

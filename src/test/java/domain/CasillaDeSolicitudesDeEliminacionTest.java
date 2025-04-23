@@ -30,8 +30,7 @@ class CasillaDeSolicitudesDeEliminacionTest {
             "de San Lorenzo, Santa Fe. El incidente dejó varios heridos y daños materiales. " +
             "Se ha declarado estado de emergencia en la región para facilitar la asistencia.",
         "Desastre Tecnológico - Evento sanitario",
-        -32.786098,
-        -60.741543,
+        new Ubicacion(-32.786098, -60.741543),
         LocalDate.of(2005, 7, 5),
         Origen.CARGA_MANUAL
     );

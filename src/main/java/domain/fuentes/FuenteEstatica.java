@@ -3,6 +3,7 @@ package domain.fuentes;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import domain.Hecho;
+import domain.Ubicacion;
 import domain.enumerados.Origen;
 import java.io.FileReader;
 import java.io.IOException;
@@ -50,12 +51,11 @@ public class FuenteEstatica extends Fuente {
         String titulo = fila[0];
         String descripcion = fila[1];
         String categoria = fila[2];
-        Double latitud = Double.parseDouble(fila[3]);
-        Double longitud = Double.parseDouble(fila[4]);
+        Ubicacion ubicacion = new Ubicacion(Double.parseDouble(fila[3]), Double.parseDouble(fila[4]));
         LocalDate fechaAcontecimiento = LocalDate.parse(fila[5], formatter);
 
         Hecho hechoACargar = new Hecho(
-            titulo, descripcion, categoria, latitud, longitud, fechaAcontecimiento,
+            titulo, descripcion, categoria, ubicacion, fechaAcontecimiento,
             Origen.PROVENIENTE_DE_DATASET
         );
 
