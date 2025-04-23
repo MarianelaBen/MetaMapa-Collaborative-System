@@ -42,7 +42,7 @@ class CasillaDeSolicitudesDeEliminacionTest {
 
     casilla = CasillaDeSolicitudesDeEliminacion.getInstancia();
 
-    Administrador administrador = new Administrador();
+    Administrador administrador = new Administrador("Tomás", "Sagrada");
     this.fuente = new FuenteEstatica("ruta.csv");
     fuente.cargarHechos(h6);
 
