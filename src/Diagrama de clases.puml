@@ -123,18 +123,6 @@ class Contribuyente {
     -fechaDeNacimiento: LocalDate
 }
 
-class CasillaDeSolicitudesDeEliminacion {
-    -solicitudesPendientes: List<Solicitud>
-    -solicitudesAtendidas: List<Solicitud>
-
-    +esValida(solicitud: Solicitud): boolean
-    +recibirSolicitud(solicitud: Solicitud): void
-    +rechazar(solicitud: Solicitud): void
-    +aceptar(solicitud: Solicitud): void
-    +enviarAlRegistro(solicitud: Solicitud): void
-    +pedidoDeSolicitud(): Solicitud
-}
-
 class Ubicacion{
     -latitud: double
     -longitud: double
@@ -157,7 +145,6 @@ Coleccion --> "*" Hecho
 Coleccion --> Fuente
 Hecho --> Origen
 Hecho --> "*" Etiqueta
-CasillaDeSolicitudesDeEliminacion --> "*" Solicitud
 Solicitud --> Hecho
 Solicitud --> EstadoSolicitud
 Solicitud --> Administrador

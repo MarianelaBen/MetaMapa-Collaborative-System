@@ -15,7 +15,6 @@ class CasillaDeSolicitudesDeEliminacionTest {
   private Hecho h6;
   private Solicitud solicitud1;
   private Solicitud solicitud2;
-  private CasillaDeSolicitudesDeEliminacion casilla;
   private Administrador administrador;
   private FuenteEstatica fuente;
 
@@ -39,7 +38,6 @@ class CasillaDeSolicitudesDeEliminacionTest {
 
     Solicitud solicitud1 = new Solicitud(h6, "QvzBhELgRnyJxAUcpMkTFeiWdsaYoNqKhmCltVrbPZjfXuwOGDEyHNmvqLiKRCxTJgSpnbuzYAlwMfBdXQJeVRstkwNypZxgiUoLDaFbMHErjKnCVUgzqlBfOXehcsAMRWnJduKYIvTxpNZGqLromphXbVECtwUDzYnkgfSaMJqiLBorNXcuPtvmWGFzdkHljQEaRTBSHyCMOvUdFPKnxyrzGHqiaWcTEbJYLMvoZDwfKtpbnrsXmgUOeVhRCyqAlWtJKzgfNPdvhmeTuSWRaiLkMXnOYqZcXJbPlgfTQvzBhELgRnyJxAUcpMkTFeiWdsaYoNqKhmCltVrbPZjfXuwOGDEyHNmvqLiKRCxTJgSpnbuzYAlwMfBdXQJeVRstkwNypZxgiUoLDaFbMHErjKnCVUgzqlBfOXehcsAMRWnJduKYIvTxpNZGqLromphXbVECtwUDzYnkgfSaMJqiLBorNXcuPtvmWGFzdkHljQEaRTBSHyCM");
 
-    casilla = CasillaDeSolicitudesDeEliminacion.getInstancia();
 
     Administrador administrador = new Administrador("Tomás", "Sagrada");
     this.fuente = new FuenteEstatica("ruta.csv");
@@ -49,33 +47,26 @@ class CasillaDeSolicitudesDeEliminacionTest {
 
     coleccion.filtrarHechos();
 
-    casilla.recibirSolicitud(solicitud1);
-    casilla.getSolicitudesPendientes().remove(0);
 
     solicitud1.setAdministradorQueAtendio(administrador);
     solicitud1.setFechaAtencion(LocalDateTime.now());
-    casilla.rechazar(solicitud1);
+    solicitud1.cambiarEstado(EstadoSolicitud.RECHAZADA);
 
     coleccion.filtrarHechos();
 
-    assertFalse(casilla.getSolicitudesPendientes().contains(solicitud1));
-    assertTrue(casilla.getSolicitudesAtendidas().contains(solicitud1));
     assertSame(EstadoSolicitud.RECHAZADA, solicitud1.getEstado());
     assertTrue(coleccion.getHechosDeLaColeccion().contains(h6));
 
     Solicitud solicitud2 = new Solicitud(h6, "QvzBhELgRnyJxAUcpMkTFeiWdsaYoNqKhmCltVrbPZjfXuwOGDEyHNmvqLiKRCxTJgSpnbuzYAlwMfBdXQJeVRstkwNypZxgiUoLDaFbMHErjKnCVUgzqlBfOXehcsAMRWnJduKYIvTxpNZGqLromphXbVECtwUDzYnkgfSaMJqiLBorNXcuPtvmWGFzdkHljQEaRTBSHyCMOvUdFPKnxyrzGHqiaWcTEbJYLMvoZDwfKtpbnrsXmgUOeVhRCyqAlWtJKzgfNPdvhmeTuSWRaiLkMXnOYqZcXJbPlgfTQvzBhELgRnyJxAUcpMkTFeiWdsaYoNqKhmCltVrbPZjfXuwOGDEyHNmvqLiKRCxTJgSpnbuzYAlwMfBdXQJeVRstkwNypZxgiUoLDaFbMHErjKnCVUgzqlBfOXehcsAMRWnJduKYIvTxpNZGqLromphXbVECtwUDzYnkgfSaMJqiLBorNXcuPtvmWGFzdkHljQEaRTBSHyCM");
 
-    casilla.recibirSolicitud(solicitud2);
-    casilla.getSolicitudesPendientes().remove(0);
 
     solicitud2.setAdministradorQueAtendio(administrador);
     solicitud2.setFechaAtencion(LocalDateTime.now());
-    casilla.aceptar(solicitud2);
+    solicitud2.cambiarEstado(EstadoSolicitud.ACEPTADA);
+    h6.setFueEliminado(true);
 
     coleccion.filtrarHechos();
 
-    assertFalse(casilla.getSolicitudesPendientes().contains(solicitud2));
-    assertTrue(casilla.getSolicitudesAtendidas().contains(solicitud2));
     assertSame(EstadoSolicitud.ACEPTADA, solicitud2.getEstado());
     assertFalse(coleccion.getHechosDeLaColeccion().contains(h6));
   }
