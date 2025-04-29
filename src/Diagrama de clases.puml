@@ -121,6 +121,8 @@ class Contribuyente {
     -nombre: String
     -apellido: String
     -fechaDeNacimiento: LocalDate
+
+    +getEdad(): Integer
 }
 
 class Ubicacion{

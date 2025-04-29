@@ -1,6 +1,8 @@
 package domain;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 
 public class Contribuyente {
   private String nombre;
@@ -13,4 +15,9 @@ public class Contribuyente {
     this.apellido = apellido;
   }
 
+  public Integer getEdad(){
+    LocalDate hoy = LocalDate.now();
+    Period periodo = Period.between(fechaDeNacimiento, hoy);
+    return periodo.getYears();
+  }
 }
