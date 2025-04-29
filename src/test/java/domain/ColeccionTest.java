@@ -124,7 +124,7 @@ class ColeccionTest {
     System.out.println("Titulo del hecho 2: " + h2.getTitulo());
     System.out.println("Titulo del hecho 3: " + h3.getTitulo());
 
-    CriterioCategoria c2 = new CriterioCategoria("Caída de aeronave");
+    CriterioCategoria c2 = new CriterioCategoria(new Categoria("Caída de aeronave"));
     coleccion.agregarCriterios(c2);
     coleccion.filtrarHechos();
 
@@ -136,7 +136,7 @@ class ColeccionTest {
 
     // test.escenario 1.3
 
-    CriterioCategoria c3 = new CriterioCategoria("Caída de aeronave");
+    CriterioCategoria c3 = new CriterioCategoria(new Categoria("Caída de aeronave"));
     CriterioTitulo c4 = new CriterioTitulo("un título");
     coleccion.agregarCriterios(c3,c4);
     coleccion.filtrarHechos();

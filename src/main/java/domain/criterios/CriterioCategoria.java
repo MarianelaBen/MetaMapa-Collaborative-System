@@ -1,18 +1,19 @@
 package domain.criterios;
 
+import domain.Categoria;
 import domain.Hecho;
 
 public class CriterioCategoria implements Criterio{
-  private String categoria;
+  private Categoria categoria;
 
-  public CriterioCategoria(String categoria){
+  public CriterioCategoria(Categoria categoria){
     this.categoria = categoria;
   }
 
   @Override
   public boolean cumpleCriterio(Hecho hecho) {
 
-    return categoria.equalsIgnoreCase(hecho.getCategoria().getNombre());
+    return categoria.getNombre().equalsIgnoreCase(hecho.getCategoria().getNombre());
   }
 
 }
