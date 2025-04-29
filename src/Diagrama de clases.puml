@@ -79,8 +79,7 @@ class CriterioCategoria implements Criterio{
 }
 
 class CriterioLugar implements Criterio {
-    -latitudReferencia: double
-    -longitudReferencia: double
+    -ubicacion: Ubicacion
     -rangoMaximo: Integer
 
     +cumpleCriterio(hecho: Hecho): boolean

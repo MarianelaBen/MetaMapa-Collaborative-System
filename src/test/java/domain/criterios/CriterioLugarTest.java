@@ -29,8 +29,8 @@ class CriterioLugarTest {
         LocalDate.of(2001, 11, 29),
         Origen.CARGA_MANUAL);
 
-    CriterioLugar unCriterio = new CriterioLugar(-22.86837, -59.343297, 30000);
-    CriterioLugar otroCriterio = new CriterioLugar(-22.86837, -59.343297, 10);
+    CriterioLugar unCriterio = new CriterioLugar( new Ubicacion(-22.86837,-59.343297), 30000);
+    CriterioLugar otroCriterio = new CriterioLugar(new Ubicacion(-22.86837, -59.343297), 10);
 
     assertTrue(unCriterio.cumpleCriterio(h1));
     assertFalse(otroCriterio.cumpleCriterio(h1));
