@@ -31,6 +31,22 @@ class FuenteEstatica extends Fuente{
     +leerHechos(): void
 }
 
+class FuenteDinamica extends Fuente{
+    -hechosCargados: List<Hecho>
+
+    +cargarHechos(nuevosHechos: Hecho...): void
+    +getHechos(): List<Hecho>
+    +leerHechos(): void
+}
+
+class FuenteIntermedia extends Fuente{
+    -hechosCargados: List<Hecho>
+
+    +cargarHechos(nuevosHechos: Hecho...): void
+    +getHechos(): List<Hecho>
+    +leerHechos(): void
+}
+
 class Hecho {
     -titulo: String
     -descripcion: String
@@ -140,6 +156,9 @@ class Administrador {
     -apellido: String
 }
 
+class Servicio_Agregacion{
+
+}
 
 Coleccion --> "*" Criterio
 Coleccion --> "*" Hecho

@@ -11,7 +11,8 @@
 	<groupId>ar.utn.ba.ddsi</groupId>
 	<artifactId>MetaMapa</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>MetaMapa</name>
+    <packaging>pom</packaging>
+    <name>MetaMapa</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -20,7 +21,13 @@
 	<developers>
 		<developer/>
 	</developers>
-	<scm>
+    <modules>
+        <module>agregador</module>
+		<module>fuenteEstatica</module>
+		<module>fuenteDinamica</module>
+		<module>fuenteProxy</module>
+	</modules>
+    <scm>
 		<connection/>
 		<developerConnection/>
 		<tag/>
@@ -50,6 +57,15 @@
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>5.9</version>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 
 	</dependencies>
