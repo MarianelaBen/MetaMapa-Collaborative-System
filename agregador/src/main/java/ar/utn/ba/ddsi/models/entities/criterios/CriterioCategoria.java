@@ -1,7 +1,7 @@
 package ar.utn.ba.ddsi.models.entities.criterios;
 
-import ar.utn.ba.ddsi.MetaMapa.models.entities.Categoria;
-import ar.utn.ba.ddsi.MetaMapa.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.Categoria;
+import ar.utn.ba.ddsi.models.entities.Hecho;
 
 public class CriterioCategoria implements Criterio{
   private Categoria categoria;

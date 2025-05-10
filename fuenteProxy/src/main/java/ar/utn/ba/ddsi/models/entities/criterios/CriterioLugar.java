@@ -1,8 +1,8 @@
 
 package ar.utn.ba.ddsi.models.entities.criterios;
 
-import ar.utn.ba.ddsi.MetaMapa.models.entities.Hecho;
-import ar.utn.ba.ddsi.MetaMapa.models.entities.Ubicacion;
+import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.Ubicacion;
 
 public class CriterioLugar implements Criterio {
   private Ubicacion ubicacion;

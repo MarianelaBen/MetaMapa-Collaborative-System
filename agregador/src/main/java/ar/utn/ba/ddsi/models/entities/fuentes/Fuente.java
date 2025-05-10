@@ -1,5 +1,5 @@
 package ar.utn.ba.ddsi.models.entities.fuentes;
-import ar.utn.ba.ddsi.MetaMapa.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.Hecho;
 import java.util.List;
 
 public abstract class Fuente {

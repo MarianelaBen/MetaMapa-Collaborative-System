@@ -1,7 +1,7 @@
 package ar.utn.ba.ddsi.models.entities.criterios;
 
-import ar.utn.ba.ddsi.MetaMapa.models.entities.Hecho;
-import ar.utn.ba.ddsi.MetaMapa.models.entities.enumerados.Origen;
+import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 
 public class CriterioOrigen implements Criterio{
   private Origen origen;

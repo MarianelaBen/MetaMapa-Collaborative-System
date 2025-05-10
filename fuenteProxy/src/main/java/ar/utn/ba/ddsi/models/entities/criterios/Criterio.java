@@ -1,6 +1,6 @@
 package ar.utn.ba.ddsi.models.entities.criterios;
 
-import ar.utn.ba.ddsi.MetaMapa.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.Hecho;
 
 public interface Criterio {
 
