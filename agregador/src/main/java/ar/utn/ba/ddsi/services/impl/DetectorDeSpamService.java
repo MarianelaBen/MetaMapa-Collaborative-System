@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-public class ServicioDeAgregacion   {
+public class DetectorDeSpam   {
 
   private IDetectorDeSpam detectorDeSpam;
 
-  public ServicioDeAgregacion(IDetectorDeSpam detectorDeSpam){
+  public DetectorDeSpam(IDetectorDeSpam detectorDeSpam){
     this.detectorDeSpam = detectorDeSpam;
   }
 

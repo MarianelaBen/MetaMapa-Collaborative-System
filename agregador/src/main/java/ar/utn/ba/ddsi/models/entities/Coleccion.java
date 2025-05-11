@@ -49,6 +49,11 @@ public class Coleccion {
     Collections.addAll(criterios, nuevosCriterios);
   }
 
+  public List<Hecho> actualizar() {
+    //TODO implementacion del metodo
+    //TODO pensar si esto deberia estar en service de coleccion
+    return hechosDeLaColeccion;
+  }
 }
 
 
