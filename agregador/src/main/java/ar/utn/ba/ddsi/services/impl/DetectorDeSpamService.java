@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-public class DetectorDeSpam   {
+public class DetectorDeSpamService {
 
   private IDetectorDeSpam detectorDeSpam;
 
-  public DetectorDeSpam(IDetectorDeSpam detectorDeSpam){
+  public DetectorDeSpamService(IDetectorDeSpam detectorDeSpam){
     this.detectorDeSpam = detectorDeSpam;
   }
 
@@ -28,6 +28,7 @@ public class DetectorDeSpam   {
       } else { //si no es spam y no existe el hecho se rechaza
         solicitud.setFechaAtencion(LocalDateTime.now());
         solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
+        //TODO crear repositorio y guardar
       }
     }
   }
