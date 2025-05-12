@@ -9,7 +9,6 @@ import java.util.Set;
 @Data
 public class HechoInputDTO {
 
-
     private String titulo;
     private String descripcion;
     private Integer idCategoria;
