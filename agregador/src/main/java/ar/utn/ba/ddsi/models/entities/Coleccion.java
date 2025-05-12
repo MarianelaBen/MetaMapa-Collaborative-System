@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
+import lombok.Setter;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class Coleccion {
   @Getter private Set<Fuente> fuentes;
   @Getter private Set<Criterio> criterios;
   @Getter private List<Hecho> hechosDeLaColeccion;
+  @Getter @Setter private String handle;
 
   public Coleccion(String titulo, String descripcion){
     this.titulo = titulo;
@@ -29,13 +31,14 @@ public class Coleccion {
     Collections.addAll(fuentes, nuevasFuentes);
   }
 
-  public void filtrarHechos(){
+  public List<Hecho> filtrarHechos(){
     this.hechosDeLaColeccion.clear();
     List<Hecho> hechosFiltrados = fuentes.stream().flatMap(fuente -> fuente.getHechos().stream()).filter(this::noFueEliminado).collect(Collectors.toList());
     if(this.criterios.isEmpty()){
       this.agregarHechos(hechosFiltrados);}
     else {this.agregarHechos(hechosFiltrados.stream().filter(this::cumpleLosCriterios).collect(Collectors.toList()));}
-    }
+    return this.hechosDeLaColeccion;
+  }
 
   public void agregarHechos(List<Hecho> hechos){
     this.hechosDeLaColeccion.addAll(hechos);
