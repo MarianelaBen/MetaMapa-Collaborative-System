@@ -13,21 +13,25 @@ import java.util.ArrayList;
 public class Coleccion {
   @Getter private String titulo;
   @Getter private String descripcion;
-  @Getter private Fuente fuente;
+  @Getter private Set<Fuente> fuentes;
   @Getter private Set<Criterio> criterios;
   @Getter private List<Hecho> hechosDeLaColeccion;
 
-  public Coleccion(String titulo, String descripcion, Fuente fuente){
+  public Coleccion(String titulo, String descripcion){
     this.titulo = titulo;
     this.descripcion = descripcion;
-    this.fuente = fuente;
+    this.fuentes = new HashSet<>();
     this.criterios = new HashSet<>();
     this.hechosDeLaColeccion = new ArrayList<>();
   }
 
+  public void agregarFuentes(Fuente ... nuevasFuentes){
+    Collections.addAll(fuentes, nuevasFuentes);
+  }
+
   public void filtrarHechos(){
     this.hechosDeLaColeccion.clear();
-    List<Hecho> hechosFiltrados = fuente.getHechos().stream().filter(this::noFueEliminado).collect(Collectors.toList());
+    List<Hecho> hechosFiltrados = fuentes.stream().flatMap(fuente -> fuente.getHechos().stream()).filter(this::noFueEliminado).collect(Collectors.toList());
     if(this.criterios.isEmpty()){
       this.agregarHechos(hechosFiltrados);}
     else {this.agregarHechos(hechosFiltrados.stream().filter(this::cumpleLosCriterios).collect(Collectors.toList()));}
@@ -49,11 +53,7 @@ public class Coleccion {
     Collections.addAll(criterios, nuevosCriterios);
   }
 
-  public List<Hecho> actualizar() {
-    //TODO implementacion del metodo
-    //TODO pensar si esto deberia estar en service de coleccion
-    return hechosDeLaColeccion;
-  }
+
 }
 
 
