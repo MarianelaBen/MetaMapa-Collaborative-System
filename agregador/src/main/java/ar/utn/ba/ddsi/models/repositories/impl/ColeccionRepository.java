@@ -12,12 +12,15 @@ public class ColeccionRepository implements IColeccionRepository {
 
   @Override
   public void save(Coleccion coleccion){
+    //TODO tenemos que ver si se tienen que generar handlers de forma automatica
+    //TODO coleccion.setHandle();
     colecciones.add(coleccion);
-    //TODO no se como funciona el handle, si se pone como atributo en la entidad de dominio o donde
   }
 
   @Override
   public List<Coleccion> findAll(){
     return colecciones;
   }
+
+
 }

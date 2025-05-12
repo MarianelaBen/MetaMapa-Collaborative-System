@@ -19,13 +19,11 @@ public class ColeccionService implements IColeccion {
   @Override
   public void actualizarColecciones(){
     //TODO implementar que sea cada una hora
-    List<Hecho> coleccionesActualizadas = colecciones.stream()
-        .flatMap(c -> c.actualizar().stream())
-        .collect((Collectors.toList()));
-    //TODO actualizar en el repositorio
+    for (Coleccion coleccion : colecciones){
+      coleccion.filtrarHechos();
+      coleccionRepository.save(coleccion);
+    }
   }
-
-  //findByHandle(handle);
 
   }
 
