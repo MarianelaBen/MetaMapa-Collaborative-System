@@ -7,16 +7,20 @@ import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 public class Hecho {
-  @Getter private String titulo;
-  @Getter private String descripcion;
-  @Getter private Categoria categoria;
-  @Getter private Ubicacion ubicacion;
-  @Getter private LocalDate fechaAcontecimiento;
-  @Getter private LocalDate fechaCarga;
-  @Getter private Origen origen;
-  @Setter @Getter private boolean fueEliminado;
-  @Setter @Getter private Set<Etiqueta> etiquetas;
+
+  private Long id;
+  private String titulo;
+  private String descripcion;
+  private Categoria categoria;
+  private Ubicacion ubicacion;
+  private LocalDate fechaAcontecimiento;
+  private LocalDate fechaCarga;
+  private Origen origen;
+  private boolean fueEliminado;
+  private Set<Etiqueta> etiquetas;
 
   //  @Setter @Getter private String nombreAportante;
   //  @Setter @Getter private String apellidoAportante;
@@ -32,10 +36,10 @@ public class Hecho {
     this.origen = origen;
     this.fueEliminado = false;
     this.etiquetas = new HashSet<>();
+    // el id no lo agrego al constructor xq se asigna en el repo
   }
 
   public void agregarEtiqueta(Etiqueta etiqueta) {
     this.etiquetas.add(etiqueta);
   }
-
 }
