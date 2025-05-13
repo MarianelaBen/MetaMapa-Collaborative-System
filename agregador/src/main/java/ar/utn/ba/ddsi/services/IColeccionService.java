@@ -1,5 +1,5 @@
 package ar.utn.ba.ddsi.services;
 
-public interface IColeccion {
+public interface IColeccionService {
   public void actualizarColecciones();
 }

@@ -17,6 +17,6 @@ public class SolicitudRepository implements ISolicitudRepository {
 
     @Override
     public List<Solicitud> findAll(){
-      return solicitudes;
+      return this.solicitudes;
     }
 }

@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.services.impl;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Solicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
+import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IDetectorDeSpam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ public abstract class SolicitudService implements IDetectorDeSpam{
 
   @Autowired
   private ISolicitudRepository solicitudRepository;
+  private IColeccionRepository coleccionRepository;
 
   public void gestionarSolicitudDeEliminacion(Solicitud solicitud){
     if (esSpam(solicitud.getHecho().getTitulo())){
@@ -24,6 +26,7 @@ public abstract class SolicitudService implements IDetectorDeSpam{
         solicitud.setFechaAtencion(LocalDateTime.now());
         solicitud.cambiarEstado(EstadoSolicitud.ACEPTADA);
         hecho.setFueEliminado(true);
+        coleccionRepository.update(hecho);
       } else { //si no es spam y no existe el hecho se rechaza
         solicitud.setFechaAtencion(LocalDateTime.now());
         solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
