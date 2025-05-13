@@ -19,6 +19,7 @@ public class ColeccionService implements IColeccion {
   @Override
   public void actualizarColecciones(){
     //TODO implementar que sea cada una hora
+    this.colecciones = coleccionRepository.findAll();
     for (Coleccion coleccion : colecciones){
       coleccion.filtrarHechos();
       coleccionRepository.save(coleccion);
