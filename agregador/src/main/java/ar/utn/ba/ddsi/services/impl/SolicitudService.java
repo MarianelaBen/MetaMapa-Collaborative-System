@@ -11,31 +11,31 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-public abstract class SolicitudService implements IDetectorDeSpam{
+public abstract class SolicitudService implements IDetectorDeSpam {
 
   @Autowired
   private ISolicitudRepository solicitudRepository;
   //TODO preguntar si acá deberíamos pasarle un colecciónService o si está bien que se pase el repository
   private IColeccionRepository coleccionRepository;
 
-  public void gestionarSolicitudDeEliminacion(Solicitud solicitud){
-    if (esSpam(solicitud.getHecho().getTitulo())){
-      solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA); //si es spam se rechaza
-    } else {
-      Hecho hecho = solicitud.getHecho();
-      if(hecho != null) { //si no es spam y existe el hecho
-        solicitud.setFechaAtencion(LocalDateTime.now());
-        solicitud.cambiarEstado(EstadoSolicitud.ACEPTADA);
-        hecho.setFueEliminado(true);
-        coleccionRepository.update(hecho);
-      } else { //si no es spam y no existe el hecho se rechaza
-        solicitud.setFechaAtencion(LocalDateTime.now());
-        solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
-      }
+  public Solicitud save(Solicitud solicitud) {
+    if (solicitud.getHecho() == null || esSpam(solicitud.getHecho().getTitulo())) {
+      solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
     }
     solicitudRepository.save(solicitud);
+    return solicitud;
   }
 
-
+  public Solicitud aceptarSolicitud(Solicitud solicitud) {
+    Hecho hecho = solicitud.getHecho();
+    if (hecho != null) {
+      solicitud.setFechaAtencion(LocalDateTime.now());
+      hecho.setFueEliminado(true);
+      coleccionRepository.update(hecho);
     }
+    solicitudRepository.save(solicitud);
+    return solicitud;
+  }
+}
+  //el administrador mismo va a cambiar el estado
 

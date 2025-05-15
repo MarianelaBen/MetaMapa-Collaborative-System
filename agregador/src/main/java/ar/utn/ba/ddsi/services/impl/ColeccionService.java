@@ -37,11 +37,8 @@ public class ColeccionService implements IColeccionService {
     return coleccion;
   }
 
-
-  //@Scheduled(fixedRate = unaHora)
   @Override
   public void actualizarColecciones(){
-    //TODO implementar que sea cada una hora
     colecciones = coleccionRepository.findAll();
     for (Coleccion coleccion : colecciones){
       this.filtrarHechos(coleccion);
