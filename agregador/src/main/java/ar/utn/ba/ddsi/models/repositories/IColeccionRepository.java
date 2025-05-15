@@ -5,7 +5,7 @@ import ar.utn.ba.ddsi.models.entities.Hecho;
 import java.util.List;
 
 public interface IColeccionRepository {
-  public void save(Coleccion coleccion);
+  public Coleccion save(Coleccion coleccion);
   public List<Coleccion> findAll();
   public void update(Hecho hecho);
 }

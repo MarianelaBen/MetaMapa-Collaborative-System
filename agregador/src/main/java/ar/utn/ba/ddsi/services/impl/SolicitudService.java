@@ -15,6 +15,7 @@ public abstract class SolicitudService implements IDetectorDeSpam{
 
   @Autowired
   private ISolicitudRepository solicitudRepository;
+  //TODO preguntar si acá deberíamos pasarle un colecciónService o si está bien que se pase el repository
   private IColeccionRepository coleccionRepository;
 
   public void gestionarSolicitudDeEliminacion(Solicitud solicitud){

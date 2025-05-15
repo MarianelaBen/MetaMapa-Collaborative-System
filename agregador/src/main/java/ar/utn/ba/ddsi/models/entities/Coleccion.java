@@ -31,16 +31,6 @@ public class Coleccion {
     Collections.addAll(fuentes, nuevasFuentes);
   }
 
-  //TODO esto se va al service
-  public List<Hecho> filtrarHechos(){
-    this.hechosDeLaColeccion.clear();
-    List<Hecho> hechosFiltrados = fuentes.stream().flatMap(fuente -> fuente.getHechos().stream()).filter(this::noFueEliminado).collect(Collectors.toList());
-    if(this.criterios.isEmpty()){
-      this.agregarHechos(hechosFiltrados);}
-    else {this.agregarHechos(hechosFiltrados.stream().filter(this::cumpleLosCriterios).collect(Collectors.toList()));}
-    return this.hechosDeLaColeccion;
-  }
-
   public void agregarHechos(List<Hecho> hechos){
     this.hechosDeLaColeccion.addAll(hechos);
   }

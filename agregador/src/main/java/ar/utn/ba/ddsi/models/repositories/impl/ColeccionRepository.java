@@ -12,7 +12,7 @@ public class ColeccionRepository implements IColeccionRepository {
   private List<Coleccion> colecciones = new ArrayList<>();
 
   @Override
-  public void save(Coleccion coleccion){
+    public Coleccion save(Coleccion coleccion){
     if (coleccion.getHandle() == null) {
       // Handle -> título sin espacios
       String nombreSinEspacios = coleccion.getTitulo().replaceAll("\\s+", "");
@@ -25,6 +25,7 @@ public class ColeccionRepository implements IColeccionRepository {
       coleccion.setHandle(handle);
     }
     colecciones.add(coleccion);
+    return coleccion;
   }
 
   private boolean existsHandle(String h) {
