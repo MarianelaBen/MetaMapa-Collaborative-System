@@ -18,24 +18,26 @@ public abstract class SolicitudService implements IDetectorDeSpam {
   //TODO preguntar si acá deberíamos pasarle un colecciónService o si está bien que se pase el repository
   private IColeccionRepository coleccionRepository;
 
-  public Solicitud save(Solicitud solicitud) {
+
+  //al crear la solicitud se llama a este metodo, que filtra spams
+  //metodo del agregador, que suponemos que va antes de que se meta el administrador
+  public Solicitud filtrarSpams(Solicitud solicitud) {
+    //Otra opcion: cada cierto tiempo se ejecuta este metodo y se deberia traer solo las pendientes para gestionarlas
     if (solicitud.getHecho() == null || esSpam(solicitud.getHecho().getTitulo())) {
       solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
     }
-    solicitudRepository.save(solicitud);
+    solicitudRepository.save(solicitud); //guarda en un repositorio propio
     return solicitud;
   }
 
-  public Solicitud aceptarSolicitud(Solicitud solicitud) {
+
+  // metodo que va a llamar el administrador cuando acepte una solicitud
+  // el administrador mismo va a cambiar el estado y setear fechaDeAtencion
+  public void ocultarHecho(Solicitud solicitud) { //solicitudes aceptadas
     Hecho hecho = solicitud.getHecho();
-    if (hecho != null) {
-      solicitud.setFechaAtencion(LocalDateTime.now());
       hecho.setFueEliminado(true);
       coleccionRepository.update(hecho);
-    }
-    solicitudRepository.save(solicitud);
-    return solicitud;
   }
 }
-  //el administrador mismo va a cambiar el estado
+
 
