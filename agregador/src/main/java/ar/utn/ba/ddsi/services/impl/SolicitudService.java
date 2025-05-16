@@ -25,6 +25,7 @@ public abstract class SolicitudService implements IDetectorDeSpam {
     //Otra opcion: cada cierto tiempo se ejecuta este metodo y se deberia traer solo las pendientes para gestionarlas
     if (solicitud.getHecho() == null || esSpam(solicitud.getHecho().getTitulo())) {
       solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
+      solicitud.setFechaAtencion(LocalDateTime.now());
     }
     solicitudRepository.save(solicitud); //guarda en un repositorio propio
     return solicitud;
