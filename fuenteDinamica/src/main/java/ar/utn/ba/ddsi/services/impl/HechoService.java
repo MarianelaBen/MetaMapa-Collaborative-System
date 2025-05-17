@@ -24,6 +24,7 @@ public class HechoService implements IHechoService {
 
   @Autowired
   private IHechoRepository hechoRepository;
+  @Autowired
   private ICategoriaRepository categoriaRepository;
 
   @Override
@@ -61,8 +62,15 @@ public class HechoService implements IHechoService {
     dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     dto.setFechaCarga(hecho.getFechaCarga());
     dto.setOrigen(hecho.getOrigen());
-    dto.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet());
+    dto.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
     return dto;                             // extrae el id de cada etiqueta y los junta en un Set<Integer>
+  }
+
+  public void eliminar(Long id) {
+    var hecho = this.hechoRepository.findById(id);
+    if (hecho != null) {
+      this.hechoRepository.delete(hecho);
+    }
   }
 }
 

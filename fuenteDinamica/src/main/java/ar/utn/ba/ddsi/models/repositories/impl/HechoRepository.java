@@ -14,6 +14,7 @@ public class HechoRepository implements IHechoRepository {
   public HechoRepository() {
     this.hechos = new ArrayList<Hecho>();
   }
+
   @Override
   public void save(Hecho hecho) {
 
@@ -27,11 +28,20 @@ public class HechoRepository implements IHechoRepository {
     }
     this.hechos.add(hecho);
   }
-
-  private Long generarNuevoId() {
+  @Override
+  public Long generarNuevoId() {
     return hechos.stream()
         .mapToLong(Hecho::getId)
         .max()
         .orElse(0L) + 1; // si la lista está vacía (O de valor Long), empezamos desde ID 1
+  }
+  @Override
+  public void delete(Hecho hecho) {
+    this.hechos.remove(hecho);
+  }
+
+  @Override
+  public Hecho findById(Long id) {
+    return this.hechos.stream().filter(h -> h.getId().equals(id)).findFirst().orElse(null);
   }
 }
