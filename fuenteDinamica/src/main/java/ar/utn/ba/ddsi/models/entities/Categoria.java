@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class Categoria {
   private String nombre;
-  private Integer id;
+  private Long id;
 
   public Categoria(String nombre) {
     this.nombre = nombre;

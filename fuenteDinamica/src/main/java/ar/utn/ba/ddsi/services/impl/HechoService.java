@@ -5,6 +5,7 @@ import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Etiqueta;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
+import ar.utn.ba.ddsi.services.ICategoriaService;
 import ar.utn.ba.ddsi.services.IHechoService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,13 @@ public class HechoService implements IHechoService {
   private IHechoRepository hechoRepository;
   @Autowired
   private ICategoriaRepository categoriaRepository;
+  @Autowired
+  private ICategoriaService categoriaService;
 
   @Override
   public HechoOutputDTO crear(HechoInputDTO hechoInputDTO) {
 
-    Categoria categoria = this.categoriaRepository.findById(hechoInputDTO.getIdCategoria());
+    Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
 
     if (categoria == null) {
       throw new RuntimeException("Categoria no encontrada");
@@ -38,7 +41,7 @@ public class HechoService implements IHechoService {
       // TODO ver de hacer expecion personalizada
       // TODO si no encuentra la categoria, que pueda crear una nueva (preguntar)
     }
-    Ubicacion ubicacion = determinarUbicacion(hechoInputDTO.getCiudad());
+    Ubicacion ubicacion = hechoInputDTO.getCiudad();
 
     Hecho hecho = new Hecho(
         hechoInputDTO.getTitulo(),
@@ -47,13 +50,15 @@ public class HechoService implements IHechoService {
         ubicacion,
         hechoInputDTO.getFechaAcontecimiento(),
         Origen.CARGA_MANUAL);
+    hecho.agregarEtiqueta(new Etiqueta("prueba"));
 
     this.hechoRepository.save(hecho);
 
     return this.hechoOutputDTO(hecho);
   }
 
-  private HechoOutputDTO hechoOutputDTO(Hecho hecho) {
+  @Override
+  public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     HechoOutputDTO dto = new HechoOutputDTO();
     dto.setTitulo(hecho.getTitulo());
     dto.setDescripcion(hecho.getDescripcion());
@@ -66,6 +71,7 @@ public class HechoService implements IHechoService {
     return dto;                             // extrae el id de cada etiqueta y los junta en un Set<Integer>
   }
 
+  @Override
   public void eliminar(Long id) {
     var hecho = this.hechoRepository.findById(id);
     if (hecho != null) {

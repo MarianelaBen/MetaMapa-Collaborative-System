@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class Etiqueta {
   private String nombre;
-  private Integer id;
+  private Long id;
 
   public Etiqueta(String nombre) {
     this.nombre = nombre;

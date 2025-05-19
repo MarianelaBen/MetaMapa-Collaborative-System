@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.models.repositories.impl;
 
 import ar.utn.ba.ddsi.models.entities.Categoria;
+import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 
 import java.util.ArrayList;
@@ -11,11 +12,27 @@ public class CategoriaRepository implements ICategoriaRepository {
   private List<Categoria> categorias = new ArrayList<>();
 
   @Override
-  public Categoria findById(Integer id) {
+  public Categoria findById(Long id) {
     return categorias
         .stream()
         .filter(c -> c.getId().equals(id))
         .findFirst()
         .orElse(null);
+  }
+
+  @Override
+  public Long save(Categoria categoria) {
+
+    categoria.setId(generarNuevoId());
+    this.categorias.add(categoria);
+    return categoria.getId();
+  }
+
+  @Override
+  public Long generarNuevoId() {
+    return categorias.stream()
+        .mapToLong(Categoria::getId)
+        .max()
+        .orElse(0L) + 1; // si la lista está vacía (O de valor Long), empezamos desde ID 1
   }
 }

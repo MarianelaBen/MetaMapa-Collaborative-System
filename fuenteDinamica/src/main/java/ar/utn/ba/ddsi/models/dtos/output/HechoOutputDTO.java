@@ -12,13 +12,13 @@ import java.util.Set;
 public class HechoOutputDTO {
   private String titulo;
   private String descripcion;
-  private Integer idCategoria;
+  private Long idCategoria;
   private Ubicacion ubicacion;
   private LocalDate fechaAcontecimiento;
   private LocalDate fechaCarga;
   private Origen origen;
   // private boolean fueEliminado;    no es un dato que se pueda enviar
-  private Set<Integer> idEtiquetas;
+  private Set<Long> idEtiquetas;
 }
 
 /*
