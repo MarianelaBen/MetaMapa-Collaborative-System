@@ -21,6 +21,8 @@ public class Hecho {
   private Origen origen;
   private boolean fueEliminado;
   private Set<Etiqueta> etiquetas;
+  private Long idContribuyente;
+  private ContenidoMultimedia contenidoMultimedia;
 
   //  @Setter @Getter private String nombreAportante;
   //  @Setter @Getter private String apellidoAportante;
@@ -41,5 +43,13 @@ public class Hecho {
 
   public void agregarEtiqueta(Etiqueta etiqueta) {
     this.etiquetas.add(etiqueta);
+  }
+
+  public void actualizarHecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento) {
+    this.titulo = titulo;
+    this.descripcion = descripcion;
+    this.categoria = categoria;
+    this.ubicacion = ubicacion;
+    this.fechaAcontecimiento = fechaAcontecimiento;
   }
 }
