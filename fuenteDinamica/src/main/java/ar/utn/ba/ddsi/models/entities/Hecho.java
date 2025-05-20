@@ -1,7 +1,9 @@
 package ar.utn.ba.ddsi.models.entities;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import lombok.Getter;
@@ -22,7 +24,7 @@ public class Hecho {
   private boolean fueEliminado;
   private Set<Etiqueta> etiquetas;
   private Long idContribuyente;
-  private ContenidoMultimedia contenidoMultimedia;
+  private List<ContenidoMultimedia> contenidosMultimedia;
 
   //  @Setter @Getter private String nombreAportante;
   //  @Setter @Getter private String apellidoAportante;
@@ -38,6 +40,7 @@ public class Hecho {
     this.origen = origen;
     this.fueEliminado = false;
     this.etiquetas = new HashSet<>();
+    this.contenidosMultimedia = new ArrayList<>();
     // el id no lo agrego al constructor xq se asigna en el repo
   }
 

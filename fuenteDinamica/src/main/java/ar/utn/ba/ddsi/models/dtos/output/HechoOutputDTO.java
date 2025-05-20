@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.List;
 
 @Data
 public class HechoOutputDTO {
@@ -30,7 +31,7 @@ public class HechoOutputDTO {
   @NotNull
   private Long idContribuyente;
 
-  private Long idContenidoMultimedia;
+  private List<Long> idContenidoMultimedia;
 }
 
 /*

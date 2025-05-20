@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,18 +40,9 @@ public class HechoService implements IHechoService {
   public HechoOutputDTO crear(HechoInputDTO hechoInputDTO) {
 
     Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
-
-    /*if (categoria == null) { // NUEVADUDA esto se va no?
-      throw new RuntimeException("Categoria no encontrada");
-
-      //ver de hacer expecion personalizada
-      //si no encuentra la categoria, que pueda crear una nueva (preguntar)
-    }*/
     Ubicacion ubicacion = hechoInputDTO.getCiudad();
 
-    ContenidoMultimedia contenidoMultimedia = new ContenidoMultimedia();
-    contenidoMultimedia.setDatos(hechoInputDTO.getDatos());
-    contenidoMultimedia.setIdContenidoMultimedia(contenidoMultimediaRepository.save(contenidoMultimedia));
+    List<ContenidoMultimedia> contenidosMultimedia = this.mapeosMultimedia(hechoInputDTO);
 
     Hecho hecho = new Hecho(
         hechoInputDTO.getTitulo(),
@@ -58,11 +51,11 @@ public class HechoService implements IHechoService {
         ubicacion,
         hechoInputDTO.getFechaAcontecimiento(),
         Origen.CARGA_MANUAL);
-    hecho.agregarEtiqueta(new Etiqueta("prueba"));
 
+    hecho.agregarEtiqueta(new Etiqueta("prueba")); // Mas adelante cambiar por DTO
+
+    hecho.setContenidosMultimedia(contenidosMultimedia);
     hecho.setIdContribuyente(hechoInputDTO.getIdContribuyente());
-
-    hecho.setContenidoMultimedia(contenidoMultimedia);
 
     this.hechoRepository.save(hecho);
 
@@ -81,7 +74,7 @@ public class HechoService implements IHechoService {
     dto.setOrigen(hecho.getOrigen());       // extrae el id de cada etiqueta y los junta en un Set<Integer>
     dto.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
     dto.setIdContribuyente(hecho.getIdContribuyente());
-    dto.setIdContenidoMultimedia(hecho.getContenidoMultimedia().getIdContenidoMultimedia());
+    dto.setIdContenidoMultimedia(hecho.getContenidosMultimedia().stream().map(ContenidoMultimedia::getIdContenidoMultimedia).collect(Collectors.toList()));
     return dto;
   }
 
@@ -110,11 +103,37 @@ public class HechoService implements IHechoService {
     }
   }
 
+  public List<ContenidoMultimedia> mapeosMultimedia(HechoInputDTO hechoInputDTO) {
+    return hechoInputDTO.getDatosMultimedia().stream()
+        .map(datos -> {
+          ContenidoMultimedia nuevoContenido = new ContenidoMultimedia();
+          nuevoContenido.setDatosMultimedia(datos);
+          nuevoContenido.setIdContenidoMultimedia(contenidoMultimediaRepository.save(nuevoContenido));
+          return nuevoContenido;
+        })
+        .collect(Collectors.toList());
+  }
+
   @Override
   public HechoOutputDTO edicion(Long idEditor, HechoInputDTO hechoInputDTO, Long idHecho) {
     Hecho hecho = this.hechoRepository.findById(idHecho);
+
     Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
-    hecho.actualizarHecho(hechoInputDTO.getTitulo(),hechoInputDTO.getDescripcion(),categoria,hechoInputDTO.getCiudad(), hechoInputDTO.getFechaAcontecimiento());
+    List<ContenidoMultimedia> contenidosMultimedia = this.mapeosMultimedia(hechoInputDTO);
+
+    if (hecho.getContenidosMultimedia() != null) {
+      hecho.getContenidosMultimedia().forEach(
+          c -> contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia()));
+    }
+    hecho.actualizarHecho(
+        hechoInputDTO.getTitulo(),
+        hechoInputDTO.getDescripcion(),
+        categoria, hechoInputDTO.getCiudad(),
+        hechoInputDTO.getFechaAcontecimiento());
+
+    if (contenidosMultimedia != null) {
+      hecho.setContenidosMultimedia(contenidosMultimedia);
+    }
     this.hechoRepository.save(hecho);
     return this.hechoOutputDTO(hecho);
   }

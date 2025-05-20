@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ContenidoMultimedia {
-  private byte[] datos;
+  private byte[] datosMultimedia;
   //private String tipoContenido;  // "image/png", "video/mp4"
   private Long idContenidoMultimedia;
 }

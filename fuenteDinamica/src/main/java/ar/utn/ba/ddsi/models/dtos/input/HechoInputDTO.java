@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -32,7 +33,8 @@ public class HechoInputDTO {
     @NotNull
     private LocalDate fechaAcontecimiento;
     @NotNull
-    private Long idContribuyente; // NUEVO
+    private Long idContribuyente;
 
-    private byte[] datos;
+    @Schema(description = "Fotos o videos sobre el hecho", example = "Inserte o arrastre una foto/video")
+    private List<byte[]> datosMultimedia;
 }

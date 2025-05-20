@@ -20,7 +20,6 @@ public class ContenidoMultimediaRepository implements IContenidoMultimediaReposi
   }
 
   public Long save(ContenidoMultimedia contenidoMultimedia) {
-
     contenidoMultimedia.setIdContenidoMultimedia(generarNuevoId());
     this.contenidosMultimedia.add(contenidoMultimedia);
     return contenidoMultimedia.getIdContenidoMultimedia();
@@ -32,5 +31,10 @@ public class ContenidoMultimediaRepository implements IContenidoMultimediaReposi
         .mapToLong(ContenidoMultimedia::getIdContenidoMultimedia)
         .max()
         .orElse(0L) + 1; // si la lista está vacía (O de valor Long), empezamos desde ID 1
+  }
+
+  @Override
+  public void delete(Long idContenidoMultimedia){
+    contenidosMultimedia.removeIf(contenido -> contenido.getIdContenidoMultimedia().equals(idContenidoMultimedia));
   }
 }

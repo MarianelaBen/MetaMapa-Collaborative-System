@@ -7,4 +7,5 @@ public interface IContenidoMultimediaRepository {
   ContenidoMultimedia findById(Long id);
   Long save(ContenidoMultimedia contenidoMultimedia);
   Long generarNuevoId();
+  void delete(Long idContenidoMultimedia);
 }
