@@ -12,7 +12,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Hecho {
-
   private Long id;
   private String titulo;
   private String descripcion;
@@ -55,4 +54,8 @@ public class Hecho {
     this.ubicacion = ubicacion;
     this.fechaAcontecimiento = fechaAcontecimiento;
   }
+
+  /*public void restaurarDesde(HechoEstadoPrevio previo) {
+
+  }*/
 }

@@ -2,10 +2,13 @@ package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.entities.*;
+import ar.utn.ba.ddsi.models.entities.enumerados.TipoSolicitud;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IContenidoMultimediaRepository;
 import ar.utn.ba.ddsi.services.ICategoriaService;
+import ar.utn.ba.ddsi.services.IContenidoMultimediaService;
 import ar.utn.ba.ddsi.services.IHechoService;
+import ar.utn.ba.ddsi.services.ISolicitudService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +38,10 @@ public class HechoService implements IHechoService {
   private ICategoriaService categoriaService;
   @Autowired
   private IContenidoMultimediaRepository contenidoMultimediaRepository;
+  @Autowired
+  private IContenidoMultimediaService contenidoMultimediaService;
+  @Autowired
+  private ISolicitudService solicitudService;
 
   @Override
   public HechoOutputDTO crear(HechoInputDTO hechoInputDTO) {
@@ -42,7 +49,7 @@ public class HechoService implements IHechoService {
     Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
     Ubicacion ubicacion = hechoInputDTO.getCiudad();
 
-    List<ContenidoMultimedia> contenidosMultimedia = this.mapeosMultimedia(hechoInputDTO);
+    List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO);
 
     Hecho hecho = new Hecho(
         hechoInputDTO.getTitulo(),
@@ -57,8 +64,8 @@ public class HechoService implements IHechoService {
     hecho.setContenidosMultimedia(contenidosMultimedia);
     hecho.setIdContribuyente(hechoInputDTO.getIdContribuyente());
 
+    this.solicitudService.create(hecho,TipoSolicitud.CREACION);
     this.hechoRepository.save(hecho);
-
     return this.hechoOutputDTO(hecho);
   }
 
@@ -103,23 +110,12 @@ public class HechoService implements IHechoService {
     }
   }
 
-  public List<ContenidoMultimedia> mapeosMultimedia(HechoInputDTO hechoInputDTO) {
-    return hechoInputDTO.getDatosMultimedia().stream()
-        .map(datos -> {
-          ContenidoMultimedia nuevoContenido = new ContenidoMultimedia();
-          nuevoContenido.setDatosMultimedia(datos);
-          nuevoContenido.setIdContenidoMultimedia(contenidoMultimediaRepository.save(nuevoContenido));
-          return nuevoContenido;
-        })
-        .collect(Collectors.toList());
-  }
-
   @Override
   public HechoOutputDTO edicion(Long idEditor, HechoInputDTO hechoInputDTO, Long idHecho) {
     Hecho hecho = this.hechoRepository.findById(idHecho);
 
     Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
-    List<ContenidoMultimedia> contenidosMultimedia = this.mapeosMultimedia(hechoInputDTO);
+    List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO);
 
     if (hecho.getContenidosMultimedia() != null) {
       hecho.getContenidosMultimedia().forEach(
