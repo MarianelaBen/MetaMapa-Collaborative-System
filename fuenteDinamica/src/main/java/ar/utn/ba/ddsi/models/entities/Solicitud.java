@@ -2,7 +2,6 @@ package ar.utn.ba.ddsi.models.entities;
 
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoSolicitud;
-import ar.utn.ba.ddsi.models.entities.HechoEstadoPrevio;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
@@ -19,7 +18,6 @@ public class Solicitud {
   private LocalDate fechaAtencion;
   private String comentario;
   private Administrador administradorQueAtendio;
-  private HechoEstadoPrevio estadoPrevio; // Solo para solicitudes de edicion
 
   public Solicitud(Hecho hecho, TipoSolicitud tipo) {
     this.hecho = hecho;
@@ -31,9 +29,8 @@ public class Solicitud {
     this.estado = EstadoSolicitud.PENDIENTE;
     this.tipoSolicitud = tipo;
   }
-}
-/*  public void cambiarEstado(EstadoSolicitud nuevoEstado){
+
+  public void cambiarEstado(EstadoSolicitud nuevoEstado){
     this.estado = nuevoEstado;
   }
 }
-*/

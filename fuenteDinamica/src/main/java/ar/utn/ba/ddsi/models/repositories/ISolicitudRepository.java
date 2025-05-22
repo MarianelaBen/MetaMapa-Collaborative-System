@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface ISolicitudRepository {
   void save(Solicitud solicitud);
-  Optional<Solicitud> findById(Long id);
+  Solicitud findById(Long id);
 }

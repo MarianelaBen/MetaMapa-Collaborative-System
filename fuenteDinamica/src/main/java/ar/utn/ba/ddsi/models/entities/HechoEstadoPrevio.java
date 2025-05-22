@@ -16,7 +16,6 @@ public class HechoEstadoPrevio {
   private Categoria categoria;
   private Ubicacion ubicacion;
   private LocalDate fechaAcontecimiento;
-  private Set<Etiqueta> etiquetas;
   private List<ContenidoMultimedia> contenidosMultimedia;
 
 
@@ -26,7 +25,6 @@ public class HechoEstadoPrevio {
     this.categoria = hecho.getCategoria();
     this.ubicacion = hecho.getUbicacion();
     this.fechaAcontecimiento = hecho.getFechaAcontecimiento();
-    this.etiquetas = new HashSet<>(hecho.getEtiquetas()); // Copia defensiva
     this.contenidosMultimedia = new ArrayList<>(hecho.getContenidosMultimedia());
   }
 }

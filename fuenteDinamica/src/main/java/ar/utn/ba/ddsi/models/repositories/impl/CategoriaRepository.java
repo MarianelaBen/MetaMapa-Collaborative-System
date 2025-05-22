@@ -3,10 +3,12 @@ package ar.utn.ba.ddsi.models.repositories.impl;
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class CategoriaRepository implements ICategoriaRepository {
 
   private List<Categoria> categorias = new ArrayList<>();

@@ -51,6 +51,7 @@ public class HechoService implements IHechoService {
 
     List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO);
 
+    //TODO agregar esto al hecho builder
     Hecho hecho = new Hecho(
         hechoInputDTO.getTitulo(),
         hechoInputDTO.getDescripcion(),
@@ -64,8 +65,8 @@ public class HechoService implements IHechoService {
     hecho.setContenidosMultimedia(contenidosMultimedia);
     hecho.setIdContribuyente(hechoInputDTO.getIdContribuyente());
 
-    this.solicitudService.create(hecho,TipoSolicitud.CREACION);
     this.hechoRepository.save(hecho);
+    this.solicitudService.create(hecho, TipoSolicitud.EDICION);
     return this.hechoOutputDTO(hecho);
   }
 
@@ -113,6 +114,7 @@ public class HechoService implements IHechoService {
   @Override
   public HechoOutputDTO edicion(Long idEditor, HechoInputDTO hechoInputDTO, Long idHecho) {
     Hecho hecho = this.hechoRepository.findById(idHecho);
+    HechoEstadoPrevio estadoPrevio = new HechoEstadoPrevio(hecho);
 
     Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
     List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO);
@@ -121,6 +123,7 @@ public class HechoService implements IHechoService {
       hecho.getContenidosMultimedia().forEach(
           c -> contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia()));
     }
+
     hecho.actualizarHecho(
         hechoInputDTO.getTitulo(),
         hechoInputDTO.getDescripcion(),
@@ -130,6 +133,9 @@ public class HechoService implements IHechoService {
     if (contenidosMultimedia != null) {
       hecho.setContenidosMultimedia(contenidosMultimedia);
     }
+    hecho.setEstadoPrevio(estadoPrevio);
+
+
     this.hechoRepository.save(hecho);
     return this.hechoOutputDTO(hecho);
   }

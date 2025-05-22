@@ -34,7 +34,6 @@ public class HechoInputDTO {
     private LocalDate fechaAcontecimiento;
     @NotNull
     private Long idContribuyente;
-
     @Schema(description = "Fotos o videos sobre el hecho", example = "Inserte o arrastre una foto/video")
-    private List<byte[]> datosMultimedia;
+    private List<String> pathsMultimedia;
 }

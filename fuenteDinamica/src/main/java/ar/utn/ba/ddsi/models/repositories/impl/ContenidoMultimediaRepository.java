@@ -3,9 +3,11 @@ package ar.utn.ba.ddsi.models.repositories.impl;
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.ContenidoMultimedia;
 import ar.utn.ba.ddsi.models.repositories.IContenidoMultimediaRepository;
+import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class ContenidoMultimediaRepository implements IContenidoMultimediaRepository {
 
   private List<ContenidoMultimedia> contenidosMultimedia = new ArrayList<>();

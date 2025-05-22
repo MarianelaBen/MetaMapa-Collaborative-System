@@ -24,10 +24,7 @@ public class Hecho {
   private Set<Etiqueta> etiquetas;
   private Long idContribuyente;
   private List<ContenidoMultimedia> contenidosMultimedia;
-
-  //  @Setter @Getter private String nombreAportante;
-  //  @Setter @Getter private String apellidoAportante;
-  //  @Setter @Getter private Integer edadAportante;
+  private HechoEstadoPrevio estadoPrevio;
 
   public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen){
     this.titulo = titulo;
@@ -40,7 +37,6 @@ public class Hecho {
     this.fueEliminado = false;
     this.etiquetas = new HashSet<>();
     this.contenidosMultimedia = new ArrayList<>();
-    // el id no lo agrego al constructor xq se asigna en el repo
   }
 
   public void agregarEtiqueta(Etiqueta etiqueta) {

@@ -5,11 +5,13 @@ import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Solicitud;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
+import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Repository
 public class SolicitudRepository implements ISolicitudRepository {
 
   private Map<Long, Solicitud> solicitudes = new HashMap<>();
@@ -24,8 +26,8 @@ public class SolicitudRepository implements ISolicitudRepository {
   }
 
   @Override
-  public Optional<Solicitud> findById(Long id) {
-    return Optional.ofNullable(solicitudes.get(id));
+  public Solicitud findById(Long id) {
+    return solicitudes.get(id);
   }
 
 }
