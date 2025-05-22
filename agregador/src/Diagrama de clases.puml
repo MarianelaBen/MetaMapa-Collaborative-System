@@ -1,0 +1,125 @@
+@startuml
+
+interface Criterio {
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+abstract class Fuente {
+    +leerHechos(): void
+    +getHechos(): List<Hecho>
+    +getTipo(): TipoFuente
+}
+
+class Coleccion {
+    -titulo: String
+    -descripcion: String
+    -fuentes: Set<Fuente>
+    -criterios: Set<Criterio>
+    -hechosDeLaColeccion: List<Hecho>
+    -handle: String
+    +agregarHechos(hechos: List<Hecho>): void
+    +cumpleLosCriterios(hecho: Hecho): boolean
+    +noFueEliminado(hecho: Hecho): boolean
+    +agregarCriterios(criterio: Criterio...): void
+    +agregarFuentes(fuente: Fuente...): void
+}
+
+class Hecho {
+    -titulo: String
+    -descripcion: String
+    -categoria: Categoria
+    -ubicacion: Ubicacion
+    -fecha_acontecimiento: LocalDate
+    -fecha_carga: LocalDate
+    -origen: Origen
+    -fueEliminado: boolean
+    -etiquetas: Set<Etiqueta>
+
+    +agregarEtiqueta(etiqueta: Etiqueta): void
+}
+
+class Categoria {
+    -nombre: String
+}
+
+enum Origen {
+    CARGA_MANUAL
+    PROVENIENTE_DE_DATASET
+    PROVISTO_POR_CONTRIBUYENTE
+}
+
+class Etiqueta {
+    -nombre: String
+
+}
+
+class Solicitud {
+    -hecho: Hecho
+    -justificacion: String
+    -estado: EstadoSolicitud
+    -fechaEntrada: LocalDateTime
+    -fechaAtencion: LocalDateTime
+
+    +cambiarEstado(nuevoEstado: EstadoSolicitud): void
+}
+
+
+enum EstadoSolicitud {
+    PENDIENTE
+    RECHAZADA
+    ACEPTADA
+}
+
+enum TipoFuente {
+    ESTATICA
+    DINAMICA
+    PROXY
+}
+
+class AgregadorService implements IAgregadorService{
+  - List<Fuente> fuentes
+  + obtenerHechosDeFuentes(List<Fuente>): List<Hecho>
+  + obtenerHechosPorTipoDeFuente(TipoFuente): List<Hecho>
+}
+
+class ColeccionService implements IColeccionService{
+  - List<Coleccion> colecciones
+  - IColeccionRepository coleccionRepository
+  + crearColeccion(Coleccion): Coleccion
+  + filtrarHechos(Coleccion): Coleccion
+  + actualizarColecciones(): void
+}
+
+
+abstract class SolicitudService implements IDetectorDeSpam{
+  - ISolicitudRepository solicitudRepository
+  - IColeccionRepository coleccionRepository
+  + filtrarSpams(Solicitud): Solicitud
+  + aceptarSolicitud(Solicitud): void
+  + rechazarSolicitud(Solicitud): void
+}
+
+
+Coleccion --> "*" Criterio
+Coleccion --> "*" Hecho
+Coleccion --> Fuente
+Hecho --> Origen
+Hecho --> "*" Etiqueta
+Solicitud --> Hecho
+Solicitud --> EstadoSolicitud
+Hecho --> Ubicacion
+Hecho --> Categoria
+Fuente --> TipoFuente
+
+
+ColeccionService -->  "*" Coleccion
+
+
+AgregadorService --> "*" Fuente
+AgregadorService --> "*" Hecho
+
+SolicitudService --> Solicitud
+
+
+
+@enduml
