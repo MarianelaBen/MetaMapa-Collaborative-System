@@ -33,6 +33,10 @@ public class FuenteEstatica extends Fuente {
     System.out.println("Los hechos fueron cargados");
   }
 
+  @Override
+  public TipoFuente getTipo() {
+    return TipoFuente.ESTATICA;
+  }
 
   @Override
   public List<Hecho> getHechos() {
