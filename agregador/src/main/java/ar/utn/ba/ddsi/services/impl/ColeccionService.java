@@ -31,6 +31,9 @@ public class ColeccionService implements IColeccionService {
 
   public Coleccion filtrarHechos(Coleccion coleccion){
     coleccion.getHechosDeLaColeccion().clear();
+    //TODO aca se podria llamar al service del aagregador -> reutilizamos logica del agregador y desacoplamos logica pesada del service de colecciones
+    //List<Hecho> hechos = agregador.obtenerHechosDeFuentes(coleccion.getFuentes());
+    //y aen la linea de abajo en vez de coleccio.getFuentes() le mandas directamente hechos.stream().filter(hecho -> coleccion.noFueEliminado(hecho)).. etc
     List<Hecho> hechosFiltrados = coleccion.getFuentes().stream().flatMap(fuente -> fuente.getHechos().stream()).filter(hecho -> coleccion.noFueEliminado(hecho)).collect(Collectors.toList());
       if( coleccion.getCriterios().isEmpty() ) { coleccion.agregarHechos(hechosFiltrados); }
       else { coleccion.agregarHechos(hechosFiltrados.stream().filter(coleccion::cumpleLosCriterios).collect(Collectors.toList())); }
@@ -45,11 +48,6 @@ public class ColeccionService implements IColeccionService {
       coleccionRepository.save(coleccion);
     }
   }
-
-
-
-
-
 
   }
 
