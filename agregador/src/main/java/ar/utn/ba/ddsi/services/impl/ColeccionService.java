@@ -39,6 +39,10 @@ public class ColeccionService implements IColeccionService {
       else { coleccion.agregarHechos(hechosFiltrados.stream().filter(coleccion::cumpleLosCriterios).collect(Collectors.toList())); }
     return coleccion;
   }
+  @Override
+  public void eliminarHechoDeColeccion(Hecho hecho){
+    coleccionRepository.eliminarHechoDeColeccion(hecho);
+  }
 
   @Override
   public void actualizarColecciones(){

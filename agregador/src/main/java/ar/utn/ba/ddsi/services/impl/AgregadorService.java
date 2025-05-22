@@ -24,7 +24,7 @@ public class AgregadorService implements IAgregadorService {
   public List<Hecho> obtenerHechosDeFuentes(List<Fuente> fuentes) {
     return fuentes.stream().flatMap(f -> f.getHechos().stream()).collect(Collectors.toList());
   }
-
+  @Override
   public List<Hecho> obtenerHechosPorTipoDeFuente(TipoFuente tipo) {
     return fuentes.stream().filter(f -> f.getTipo() == tipo).flatMap(f -> f.getHechos().stream()).collect(Collectors.toList());
   }

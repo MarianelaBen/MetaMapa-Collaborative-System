@@ -37,7 +37,7 @@ public class ColeccionRepository implements IColeccionRepository {
     return colecciones;
   }
 
-  public void update(Hecho hechoEliminado){
+  public void eliminarHechoDeColeccion(Hecho hechoEliminado){
     for(Coleccion coleccion : colecciones){
       coleccion.getHechosDeLaColeccion().remove(hechoEliminado);
     }
