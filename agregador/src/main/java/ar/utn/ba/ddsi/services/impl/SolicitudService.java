@@ -22,7 +22,7 @@ public abstract class SolicitudService implements IDetectorDeSpam {
   //al crear la solicitud se llama a este metodo, que filtra spams
   //metodo del agregador, que suponemos que va antes de que se meta el administrador
   public Solicitud filtrarSpams(Solicitud solicitud) {
-    //Otra opcion: cada cierto tiempo se ejecuta este metodo y se deberia traer solo las pendientes para gestionarlas
+
     if (solicitud.getHecho() == null || esSpam(solicitud.getHecho().getTitulo())) {
       solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
       solicitud.setFechaAtencion(LocalDateTime.now());
@@ -32,13 +32,32 @@ public abstract class SolicitudService implements IDetectorDeSpam {
   }
 
 
-  // metodo que va a llamar el administrador cuando acepte una solicitud
+  // metodos que va a llamar el administrador cuando acepte / rechace una solicitud
+
+  public void aceptarSolicitud(Solicitud solicitud){
+    Hecho hecho = solicitud.getHecho();
+    solicitud.setFechaAtencion(LocalDateTime.now());
+    solicitud.cambiarEstado(EstadoSolicitud.ACEPTADA);
+    hecho.setFueEliminado(true);
+    coleccionRepository.update(hecho);
+  }
+
+  public void rechazarSolicitud(Solicitud solicitud){
+    solicitud.setFechaAtencion(LocalDateTime.now());
+    solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
+  }
+
+  /*Saque esto:
   // el administrador mismo va a cambiar el estado y setear fechaDeAtencion
-  public void ocultarHecho(Solicitud solicitud) { //solicitudes aceptadas
+    public void ocultarHecho(Solicitud solicitud) { //solicitudes aceptadas
     Hecho hecho = solicitud.getHecho();
       hecho.setFueEliminado(true);
       coleccionRepository.update(hecho);
-  }
+  }*/
+
+
 }
+
+
 
 
