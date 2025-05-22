@@ -1,13 +1,14 @@
 package ar.utn.ba.ddsi.services.impl;
 
+import ar.utn.ba.ddsi.adapters.IFuenteProxyAdapter;
 import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
-import ar.utn.ba.ddsi.models.entities.fuentes.Fuente;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FuenteProxyMetaMapa extends Fuente {
+ //ADAPTADOR
+public class FuenteProxyMetaMapa implements IFuenteProxyAdapter {
 
     private ApiMetaMapaService apiMetaMapaService;
     private List<Hecho> hechos = new ArrayList<>();
@@ -17,20 +18,15 @@ public class FuenteProxyMetaMapa extends Fuente {
     }
 
     @Override
-    public void leerHechos() {
+    public List<Hecho> getHechos() {
       List<HechoDTO> hechosDTO =  apiMetaMapaService.obtenerHechos().block();
       //  bloqueamos para esperar el resultado porque obtenerHechos devuelve un Mono<List<HechoDTO>>
 
       if (hechosDTO!=null) {
-        this.hechos = hechosDTO.stream().map(hDTO -> hDTO.toHecho()).collect(Collectors.toList());
+        return this.hechos = hechosDTO.stream().map(hDTO -> hDTO.toHecho()).collect(Collectors.toList());
+      }
+      else {
+        return List.of();
       }
     }
-
-    @Override
-    public List<Hecho> getHechos() {
-      return this.hechos;
-      //a este metodo llama el agregador
-    }
 }
-
-//TODO chequear donde va esta clase
