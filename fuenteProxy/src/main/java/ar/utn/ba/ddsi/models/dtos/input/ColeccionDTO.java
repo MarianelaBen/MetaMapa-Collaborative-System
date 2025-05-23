@@ -17,13 +17,20 @@ public class ColeccionDTO {
   private String descripcion;
   private Fuente fuente;
   private Set<Criterio> criterios;
-  private List<Hecho> hechos;
+  private List<HechoDTO> hechosDeLaColeccion;
 
   public Coleccion toColeccion(){
-    return new Coleccion(
+    Coleccion coleccion =  new Coleccion(
         this.titulo,
         this.descripcion,
         this.fuente
     );
+    List<Hecho> hechos = hechosDeLaColeccion.stream()
+        .map(HechoDTO::toHecho)
+        .toList();
+    coleccion.setHechosDeLaColeccion(hechos);
+    return coleccion;
+    //agrego que cuando se instancia una nueva coleccion tambien se instancien sus hechos
   }
 }
+

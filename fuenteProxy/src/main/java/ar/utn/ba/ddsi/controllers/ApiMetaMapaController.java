@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.controllers;
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudDTO;
+import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.services.impl.ApiMetaMapaService;
@@ -33,39 +34,23 @@ public class ApiMetaMapaController {
     return apiMetaMapaService.obtenerColecciones();
   }
 
-  @GetMapping("coleccion/:identificador/hechos")
+  @GetMapping("coleccion/{id}/hechos")
   public Mono<List<HechoDTO>> obtenerHechosDeColeccion(@PathVariable long id){
     return apiMetaMapaService.obtenerColeccionPorId(id)
-        .map(ColeccionDTO::getHechos)
-        .map(hechos -> hechos.stream()
-            .map(this::convertirAHechoDTO)
+        .map(ColeccionDTO::toColeccion)
+        .map(coleccion -> coleccion.getHechosDeLaColeccion().stream()
+            .map(HechoOutputDTO::convertirAHechoDTO)
             .toList());
   }
 
   @PostMapping("/solicitudes")
   public Mono<SolicitudDTO> crearSolicitud(){
     //TODO
+    return null;
   }
 
-  private HechoDTO convertirAHechoDTO(Hecho hecho) {
-    HechoDTO dto = new HechoDTO();
-    dto.setId(hecho.getId());
-    dto.setTitulo(hecho.getTitulo());
-    dto.setDescripcion(hecho.getDescripcion());
-    dto.setCategoria(hecho.getCategoria().getNombre());
-    dto.setLatitud(hecho.getUbicacion().getLatitud());
-    dto.setLongitud(hecho.getUbicacion().getLongitud());
-    dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
-    dto.setFechaCarga(hecho.getFechaCarga());
-    return dto;
-  }
+  //movi hechoDTO a los DTO outputs
 
 }
 
-//ENDPOINTS
-/*GET /hechos
-GET /colecciones
-GET /colecciones/:identificador/hechos
-POST /solicitudes
-*/
 
