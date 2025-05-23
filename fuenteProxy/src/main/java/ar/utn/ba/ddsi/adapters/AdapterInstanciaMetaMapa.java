@@ -1,19 +1,19 @@
-package ar.utn.ba.ddsi.services.impl;
+package ar.utn.ba.ddsi.adapters;
 
-import ar.utn.ba.ddsi.adapters.IFuenteProxyAdapter;
 import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.services.impl.ApiMetaMapaService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
  //ADAPTADOR
-public class FuenteProxyMetaMapa implements IFuenteProxyAdapter {
+public class AdapterInstanciaMetaMapa implements IFuenteProxyAdapter {
 
     private ApiMetaMapaService apiMetaMapaService;
     private List<Hecho> hechos = new ArrayList<>();
 
-    public FuenteProxyMetaMapa(ApiMetaMapaService apiMetaMapaService) {
+    public AdapterInstanciaMetaMapa(ApiMetaMapaService apiMetaMapaService) {
       this.apiMetaMapaService= apiMetaMapaService;
     }
 
