@@ -7,20 +7,19 @@ import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 public class Hecho {
-  @Getter private String titulo;
-  @Getter private String descripcion;
-  @Getter private Categoria categoria;
-  @Getter private Ubicacion ubicacion;
-  @Getter private LocalDate fechaAcontecimiento;
-  @Getter private LocalDate fechaCarga;
-  @Getter private Origen origen;
-  @Setter @Getter private boolean fueEliminado;
-  @Setter @Getter private Set<Etiqueta> etiquetas;
-
-  //  @Setter @Getter private String nombreAportante;
-  //  @Setter @Getter private String apellidoAportante;
-  //  @Setter @Getter private Integer edadAportante;
+  private Long id;
+  private String titulo;
+  private String descripcion;
+  private Categoria categoria;
+  private Ubicacion ubicacion;
+  private LocalDate fechaAcontecimiento;
+  private LocalDate fechaCarga;
+  private Origen origen;
+  private boolean fueEliminado;
+  private Set<Etiqueta> etiquetas;
 
   public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen){
     this.titulo = titulo;

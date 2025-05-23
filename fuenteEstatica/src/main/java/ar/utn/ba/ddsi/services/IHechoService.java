@@ -1,4 +1,4 @@
 package ar.utn.ba.ddsi.services;
 
-public class IPruebaService {
+public interface IHechoService {
 }
