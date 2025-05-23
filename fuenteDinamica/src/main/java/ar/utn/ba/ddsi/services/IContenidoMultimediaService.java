@@ -5,5 +5,5 @@ import ar.utn.ba.ddsi.models.entities.ContenidoMultimedia;
 import java.util.List;
 
 public interface IContenidoMultimediaService {
-  List<ContenidoMultimedia> mapeosMultimedia(HechoInputDTO hechoInputDTO);
+  List<ContenidoMultimedia> mapeosMultimedia(List<String> paths);
 }

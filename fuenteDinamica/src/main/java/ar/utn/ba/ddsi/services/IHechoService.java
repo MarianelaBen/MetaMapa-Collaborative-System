@@ -12,4 +12,6 @@ public interface IHechoService {
   boolean puedeEditar(Long id1 , Long id2, LocalDate fecha);
   HechoOutputDTO permisoDeEdicion(Long idEditor, Long idHecho);
   HechoOutputDTO edicion(Long idEditor, HechoInputDTO hechoInputDTO, Long idHecho);
+  void creacionRechazada(Hecho hecho);
+  void edicionRechazada(Hecho hecho);
 }

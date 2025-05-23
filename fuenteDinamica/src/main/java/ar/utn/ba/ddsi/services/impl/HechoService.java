@@ -45,29 +45,33 @@ public class HechoService implements IHechoService {
 
   @Override
   public HechoOutputDTO crear(HechoInputDTO hechoInputDTO) {
+    try {
+      Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
+      Ubicacion ubicacion = hechoInputDTO.getCiudad();
 
-    Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
-    Ubicacion ubicacion = hechoInputDTO.getCiudad();
+      List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO.getPathsMultimedia());
 
-    List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO);
+      //TODO agregar esto al hecho builder
+      Hecho hecho = new Hecho(
+          hechoInputDTO.getTitulo(),
+          hechoInputDTO.getDescripcion(),
+          categoria,
+          ubicacion,
+          hechoInputDTO.getFechaAcontecimiento(),
+          Origen.CARGA_MANUAL);
 
-    //TODO agregar esto al hecho builder
-    Hecho hecho = new Hecho(
-        hechoInputDTO.getTitulo(),
-        hechoInputDTO.getDescripcion(),
-        categoria,
-        ubicacion,
-        hechoInputDTO.getFechaAcontecimiento(),
-        Origen.CARGA_MANUAL);
+      hecho.agregarEtiqueta(new Etiqueta("prueba")); // Mas adelante cambiar por DTO
 
-    hecho.agregarEtiqueta(new Etiqueta("prueba")); // Mas adelante cambiar por DTO
+      hecho.setContenidosMultimedia(contenidosMultimedia);
+      hecho.setIdContribuyente(hechoInputDTO.getIdContribuyente());
 
-    hecho.setContenidosMultimedia(contenidosMultimedia);
-    hecho.setIdContribuyente(hechoInputDTO.getIdContribuyente());
+      this.hechoRepository.save(hecho);
+      this.solicitudService.create(hecho, TipoSolicitud.EDICION);
 
-    this.hechoRepository.save(hecho);
-    this.solicitudService.create(hecho, TipoSolicitud.EDICION);
-    return this.hechoOutputDTO(hecho);
+      return this.hechoOutputDTO(hecho);
+    } catch (Exception e) {
+      throw new HechoCreacionException("Error al crear el hecho: " + e.getMessage(), e);
+    }
   }
 
   @Override
@@ -89,20 +93,21 @@ public class HechoService implements IHechoService {
   @Override
   public void eliminar(Long id) {
     var hecho = this.hechoRepository.findById(id);
-    if (hecho != null) {
-      this.hechoRepository.delete(hecho);
+    if (hecho == null) {
+      throw new HechoNotFoundException("Hecho no encontrado ID: " + id);
     }
+      this.hechoRepository.delete(hecho);
   }
 
   @Override
   public boolean puedeEditar(Long id1 , Long id2, LocalDate fecha){
-    return Objects.equals(id1,id2) && ChronoUnit.DAYS.between(fecha, LocalDate.now()) > 7;
+    return Objects.equals(id1, id2) && ChronoUnit.DAYS.between(fecha, LocalDate.now()) <= 7;
   }
 
   @Override
   public HechoOutputDTO permisoDeEdicion(Long idEditor, Long idHecho) {
     Hecho hecho = this.hechoRepository.findById(idHecho);
-    if (puedeEditar(idEditor , hecho.getIdContribuyente(), hecho.getFechaCarga())) {
+    if (puedeEditar(idEditor, hecho.getIdContribuyente(), hecho.getFechaCarga())) {
       return this.hechoOutputDTO(hecho);
     }
     else{
@@ -117,7 +122,7 @@ public class HechoService implements IHechoService {
     HechoEstadoPrevio estadoPrevio = new HechoEstadoPrevio(hecho);
 
     Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
-    List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO);
+    List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO.getPathsMultimedia());
 
     if (hecho.getContenidosMultimedia() != null) {
       hecho.getContenidosMultimedia().forEach(
@@ -135,8 +140,32 @@ public class HechoService implements IHechoService {
     }
     hecho.setEstadoPrevio(estadoPrevio);
 
+    this.solicitudService.create(hecho, TipoSolicitud.EDICION);
 
     this.hechoRepository.save(hecho);
     return this.hechoOutputDTO(hecho);
+  }
+
+  @Override
+  public void creacionRechazada(Hecho hecho){
+    hecho.setFueEliminado(true);
+    this.hechoRepository.save(hecho);
+  }
+
+  @Override
+  public void edicionRechazada(Hecho hecho){
+    HechoEstadoPrevio estadoPrevio = hecho.getEstadoPrevio();
+    hecho.setEstadoPrevio(null);
+    hecho.actualizarHecho(estadoPrevio.getTitulo(), estadoPrevio.getDescripcion(), estadoPrevio.getCategoria(), estadoPrevio.getUbicacion(), estadoPrevio.getFechaAcontecimiento());
+    List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hecho.getPathsMultimedia(hecho.getContenidosMultimedia()));
+    if (hecho.getContenidosMultimedia() != null) {
+      hecho.getContenidosMultimedia().forEach(
+          c -> contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia()));
+    }
+    if (contenidosMultimedia != null) {
+      hecho.setContenidosMultimedia(contenidosMultimedia);
+    }
+
+    this.hechoRepository.save(hecho);
   }
 }

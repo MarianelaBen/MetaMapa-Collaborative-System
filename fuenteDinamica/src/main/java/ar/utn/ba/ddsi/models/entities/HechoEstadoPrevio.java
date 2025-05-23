@@ -18,7 +18,6 @@ public class HechoEstadoPrevio {
   private LocalDate fechaAcontecimiento;
   private List<ContenidoMultimedia> contenidosMultimedia;
 
-
   public HechoEstadoPrevio(Hecho hecho) {
     this.titulo = hecho.getTitulo();
     this.descripcion = hecho.getDescripcion();

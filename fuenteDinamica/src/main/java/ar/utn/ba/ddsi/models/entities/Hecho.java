@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,6 +50,10 @@ public class Hecho {
     this.categoria = categoria;
     this.ubicacion = ubicacion;
     this.fechaAcontecimiento = fechaAcontecimiento;
+  }
+
+  public List<String> getPathsMultimedia(List<ContenidoMultimedia> contenidos){
+    return contenidos.stream().map(ContenidoMultimedia::getPath).collect(Collectors.toList());
   }
 
   /*public void restaurarDesde(HechoEstadoPrevio previo) {

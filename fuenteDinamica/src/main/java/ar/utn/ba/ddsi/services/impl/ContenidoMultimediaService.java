@@ -16,8 +16,8 @@ public class ContenidoMultimediaService implements IContenidoMultimediaService {
   private IContenidoMultimediaRepository contenidoMultimediaRepository;
 
   @Override
-  public List<ContenidoMultimedia> mapeosMultimedia(HechoInputDTO hechoInputDTO) {
-    return hechoInputDTO.getPathsMultimedia().stream()
+  public List<ContenidoMultimedia> mapeosMultimedia(List<String> paths) {
+    return paths.stream()
         .map(path -> {
           ContenidoMultimedia nuevoContenido = new ContenidoMultimedia();
           nuevoContenido.setPath(path);
