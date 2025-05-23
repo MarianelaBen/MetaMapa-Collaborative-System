@@ -26,7 +26,7 @@ public class AdapterInstanciaMetaMapa implements IFuenteProxyAdapter {
         return this.hechos = hechosDTO.stream().map(hDTO -> hDTO.toHecho()).collect(Collectors.toList());
       }
       else {
-        return List.of();
+        return this.hechos;
       }
     }
 }
