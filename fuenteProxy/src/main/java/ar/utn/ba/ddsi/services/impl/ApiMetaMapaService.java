@@ -1,7 +1,9 @@
 package ar.utn.ba.ddsi.services.impl;
 
+import ar.utn.ba.ddsi.models.dtos.input.ColeccionDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoResponseDTO;
+import ar.utn.ba.ddsi.models.entities.Coleccion;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,20 @@ public class ApiMetaMapaService {
         .retrieve()
         .bodyToMono(HechoResponseDTO.class) //Puede cambiar, depende como ser la respuesta de la API
         .map(HechoResponseDTO::getData);
+  }
+
+  public Mono<ColeccionDTO> obtenerColeccionPorId(long id){
+    return webClient.get()
+        .uri("/colecciones/:identificador", id)
+        .retrieve()
+        .bodyToMono(ColeccionDTO.class);
+  }
+
+  public Mono<ColeccionDTO> obtenerColecciones(){
+    return webClient.get()
+        .uri("/colecciones")
+        .retrieve()
+        .bodyToMono(ColeccionDTO.class); //TODO terminar
   }
 
 }
