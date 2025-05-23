@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionDTO;
+import ar.utn.ba.ddsi.models.dtos.input.ColeccionResponseDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoResponseDTO;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
@@ -29,16 +30,17 @@ public class ApiMetaMapaService {
 
   public Mono<ColeccionDTO> obtenerColeccionPorId(long id){
     return webClient.get()
-        .uri("/colecciones/:identificador", id)
+        .uri("/colecciones/:identificador/hechos", id)
         .retrieve()
         .bodyToMono(ColeccionDTO.class);
   }
 
-  public Mono<ColeccionDTO> obtenerColecciones(){
+  public Mono<List<ColeccionDTO>> obtenerColecciones(){
     return webClient.get()
         .uri("/colecciones")
         .retrieve()
-        .bodyToMono(ColeccionDTO.class); //TODO terminar
+        .bodyToMono(ColeccionResponseDTO.class)
+        .map(ColeccionResponseDTO::getData);
   }
 
 }

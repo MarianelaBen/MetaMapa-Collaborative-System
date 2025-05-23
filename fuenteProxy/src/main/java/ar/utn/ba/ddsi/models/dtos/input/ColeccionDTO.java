@@ -17,7 +17,7 @@ public class ColeccionDTO {
   private String descripcion;
   private Fuente fuente;
   private Set<Criterio> criterios;
-  private List<Hecho> hechosDeLaColeccion;
+  private List<Hecho> hechos;
 
   public Coleccion toColeccion(){
     return new Coleccion(

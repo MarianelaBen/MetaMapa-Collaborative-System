@@ -1,10 +1,14 @@
 package ar.utn.ba.ddsi.controllers;
 
+import ar.utn.ba.ddsi.models.dtos.input.ColeccionDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
+import ar.utn.ba.ddsi.models.dtos.input.SolicitudDTO;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
+import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.services.impl.ApiMetaMapaService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -25,16 +29,37 @@ public class ApiMetaMapaController {
   }
 
   @GetMapping("/colecciones")
-  public Mono<List<Coleccion>> obtenerColecciones(){
-    return apiMetaMapaService.obtenerColeccion();
+  public Mono<List<ColeccionDTO>> obtenerColecciones(){
+    return apiMetaMapaService.obtenerColecciones();
   }
-
-
 
   @GetMapping("coleccion/:identificador/hechos")
   public Mono<List<HechoDTO>> obtenerHechosDeColeccion(@PathVariable long id){
-
+    return apiMetaMapaService.obtenerColeccionPorId(id)
+        .map(ColeccionDTO::getHechos)
+        .map(hechos -> hechos.stream()
+            .map(this::convertirAHechoDTO)
+            .toList());
   }
+
+  @PostMapping("/solicitudes")
+  public Mono<SolicitudDTO> crearSolicitud(){
+    //TODO
+  }
+
+  private HechoDTO convertirAHechoDTO(Hecho hecho) {
+    HechoDTO dto = new HechoDTO();
+    dto.setId(hecho.getId());
+    dto.setTitulo(hecho.getTitulo());
+    dto.setDescripcion(hecho.getDescripcion());
+    dto.setCategoria(hecho.getCategoria().getNombre());
+    dto.setLatitud(hecho.getUbicacion().getLatitud());
+    dto.setLongitud(hecho.getUbicacion().getLongitud());
+    dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
+    dto.setFechaCarga(hecho.getFechaCarga());
+    return dto;
+  }
+
 }
 
 //ENDPOINTS

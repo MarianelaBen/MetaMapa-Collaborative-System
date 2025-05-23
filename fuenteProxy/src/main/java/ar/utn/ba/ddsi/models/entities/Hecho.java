@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class Hecho {
+  @Getter private Integer id;
   @Getter private String titulo;
   @Getter private String descripcion;
   @Getter private Categoria categoria;
