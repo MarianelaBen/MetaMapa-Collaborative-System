@@ -76,33 +76,11 @@ enum TipoFuente {
     PROXY
 }
 
-class AgregadorService implements IAgregadorService{
-  - List<Fuente> fuentes
-  + obtenerHechosDeFuentes(List<Fuente>): List<Hecho>
-  + obtenerHechosPorTipoDeFuente(TipoFuente): List<Hecho>
-}
-
-class ColeccionService implements IColeccionService{
-  - List<Coleccion> colecciones
-  - IColeccionRepository coleccionRepository
-  + crearColeccion(Coleccion): Coleccion
-  + filtrarHechos(Coleccion): Coleccion
-  + actualizarColecciones(): void
-}
-
-
-abstract class SolicitudService implements IDetectorDeSpam{
-  - ISolicitudRepository solicitudRepository
-  - IColeccionRepository coleccionRepository
-  + filtrarSpams(Solicitud): Solicitud
-  + aceptarSolicitud(Solicitud): void
-  + rechazarSolicitud(Solicitud): void
-}
 
 
 Coleccion --> "*" Criterio
 Coleccion --> "*" Hecho
-Coleccion --> Fuente
+Coleccion --> "*" Fuente
 Hecho --> Origen
 Hecho --> "*" Etiqueta
 Solicitud --> Hecho
@@ -110,15 +88,6 @@ Solicitud --> EstadoSolicitud
 Hecho --> Ubicacion
 Hecho --> Categoria
 Fuente --> TipoFuente
-
-
-ColeccionService -->  "*" Coleccion
-
-
-AgregadorService --> "*" Fuente
-AgregadorService --> "*" Hecho
-
-SolicitudService --> Solicitud
 
 
 
