@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.controllers;
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudDTO;
+import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.services.impl.ApiMetaMapaService;
@@ -34,13 +35,10 @@ public class ApiMetaMapaController {
     return apiMetaMapaService.obtenerColecciones();
   }
 
-  @GetMapping("coleccion/:identificador/hechos")
+  @GetMapping("colecciones/{id}/hechos")
   public Mono<List<HechoDTO>> obtenerHechosDeColeccion(@PathVariable long id){
     return apiMetaMapaService.obtenerColeccionPorId(id)
-        .map(ColeccionDTO::getHechos)
-        .map(hechos -> hechos.stream()
-            .map(this::convertirAHechoDTO)
-            .toList());
+        .map(ColeccionDTO::getHechosDeLaColeccion);
   }
 
   @PostMapping("/solicitudes")
