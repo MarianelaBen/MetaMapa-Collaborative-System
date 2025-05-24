@@ -4,6 +4,8 @@ import ar.utn.ba.ddsi.models.dtos.input.ColeccionDTO;
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionResponseDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoResponseDTO;
+import ar.utn.ba.ddsi.models.dtos.input.SolicitudDTO;
+import ar.utn.ba.ddsi.models.dtos.input.SolicitudResponseDTO;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,6 +43,16 @@ public class ApiMetaMapaService {
         .retrieve()
         .bodyToMono(ColeccionResponseDTO.class)
         .map(ColeccionResponseDTO::getData);
+  }
+
+  public Mono<List<SolicitudDTO>> crearSolicitud(SolicitudDTO solicitud) {
+    return webClient.post()
+        .uri("/solicitudes")
+        .bodyValue(solicitud)
+        .retrieve()
+        // suponiendo que la API responde un JSON que envuelve la lista en un "data"
+        .bodyToMono(SolicitudResponseDTO.class)
+        .map(SolicitudResponseDTO::getData);
   }
 
 }
