@@ -12,6 +12,8 @@ import ar.utn.ba.ddsi.services.ICategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
 @Service
 public class CategoriaService implements ICategoriaService {
 
@@ -25,7 +27,12 @@ public class CategoriaService implements ICategoriaService {
       return this.crear(categoria);
     }
     else{
-    return categoriaRepository.findById(categoriaInputDTO.getId());
+    Categoria categoria = categoriaRepository.findById(categoriaInputDTO.getId());
+
+    if (categoria == null) {
+      throw new NoSuchElementException("Categoria no encontrada");
+    }
+    return categoria;
     }
   }
 

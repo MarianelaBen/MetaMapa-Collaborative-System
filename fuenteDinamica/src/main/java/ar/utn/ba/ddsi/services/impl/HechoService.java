@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.services.impl;
 
+import ar.utn.ba.ddsi.Exceptions.HechoCreacionException;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoSolicitud;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -69,6 +71,7 @@ public class HechoService implements IHechoService {
       this.solicitudService.create(hecho, TipoSolicitud.EDICION);
 
       return this.hechoOutputDTO(hecho);
+
     } catch (Exception e) {
       throw new HechoCreacionException("Error al crear el hecho: " + e.getMessage(), e);
     }
@@ -94,14 +97,18 @@ public class HechoService implements IHechoService {
   public void eliminar(Long id) {
     var hecho = this.hechoRepository.findById(id);
     if (hecho == null) {
-      throw new HechoNotFoundException("Hecho no encontrado ID: " + id);
+      throw new NoSuchElementException("No se puede eliminar. Hecho no encontrado con ID: " + id);
     }
       this.hechoRepository.delete(hecho);
   }
 
   @Override
-  public boolean puedeEditar(Long id1 , Long id2, LocalDate fecha){
-    return Objects.equals(id1, id2) && ChronoUnit.DAYS.between(fecha, LocalDate.now()) <= 7;
+  public boolean puedeEditar(Long id1 , Long id2, LocalDate fecha) {
+
+    boolean esMismoUsuario = Objects.equals(id1, id2);
+    boolean estaDentroDelPlazo = ChronoUnit.DAYS.between(fecha, LocalDate.now()) <= 7;
+
+    return  esMismoUsuario && estaDentroDelPlazo;
   }
 
   @Override
@@ -109,10 +116,8 @@ public class HechoService implements IHechoService {
     Hecho hecho = this.hechoRepository.findById(idHecho);
     if (puedeEditar(idEditor, hecho.getIdContribuyente(), hecho.getFechaCarga())) {
       return this.hechoOutputDTO(hecho);
-    }
-    else{
-      //TODO excepcion
-      return null;
+    } else {
+      throw new IllegalStateException("El plazo de edicion ha expirado");
     }
   }
 
