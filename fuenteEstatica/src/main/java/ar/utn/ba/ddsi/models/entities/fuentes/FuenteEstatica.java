@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.models.entities.fuentes;
 
+import ar.utn.ba.ddsi.models.entities.Ruta;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import ar.utn.ba.ddsi.models.entities.Categoria;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class FuenteEstatica{
-  @Getter @Setter private List<String> rutas;
+  @Getter @Setter private List<Ruta> rutas;
 
   public FuenteEstatica() {
     this.rutas = new ArrayList<>();

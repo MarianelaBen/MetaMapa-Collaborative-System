@@ -2,12 +2,12 @@ package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.Ruta;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.models.repositories.IRutasRepository;
 import ar.utn.ba.ddsi.services.IFuenteEstaticaService;
-import ar.utn.ba.ddsi.services.IHechoService;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +27,11 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
   public IRutasRepository rutasRepository;
 
   @Override
-  public void leerHechos() {
+  public void leerHechos(Long idRuta) {
+    Ruta ruta = rutasRepository.findById(idRuta);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
-    List<String> rutas = this.rutasRepository.findAll();
-
-    for (String ruta : rutas) {
-      try (CSVReader reader = new CSVReader(new FileReader(ruta))) {
+      try (CSVReader reader = new CSVReader(new FileReader(ruta.getPath()))) {
         String[] fila;
         reader.readNext(); //lee la primer fila y la saltea
 
@@ -50,12 +48,10 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
               Origen.PROVENIENTE_DE_DATASET
           );
 
-          this.hechoRepository.save(hechoACargar); //lo agrega al historial
+          this.hechoRepository.save(hechoACargar);
         }
-
       } catch (IOException | CsvValidationException e) {
         throw new RuntimeException("No se pudo leer el archivo CSV");
       }
     }
-  }
 }

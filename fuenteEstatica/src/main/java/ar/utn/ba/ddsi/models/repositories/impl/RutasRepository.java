@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.models.repositories.impl;
 
+import ar.utn.ba.ddsi.models.entities.Ruta;
 import ar.utn.ba.ddsi.models.repositories.IRutasRepository;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
@@ -7,21 +8,32 @@ import java.util.List;
 
 @Repository
 public class RutasRepository implements IRutasRepository {
-  private List<String> rutas;
+  private List<Ruta> rutas;
 
   public RutasRepository() {
-    this.rutas = new ArrayList<String>();
+    this.rutas = new ArrayList<Ruta>();
   }
 
   @Override
-  public void save(String ruta) {
-    if (!this.rutas.contains(ruta)) {
-      this.rutas.add(ruta);
+  public void save(Ruta ruta) {
+    if (ruta.getIdRuta() == null) {
+      ruta.setIdRuta(generarNuevoId());
+    } else{
+      rutas.removeIf(h -> h.getIdRuta().equals(ruta.getIdRuta()));
     }
+    this.rutas.add(ruta);
   }
 
   @Override
-  public List<String> findAll() {
-    return this.rutas;
+  public Ruta findById(Long id) {
+    return this.rutas.stream().filter(h -> h.getIdRuta().equals(id)).findFirst().orElse(null);
+  }
+
+  @Override
+  public Long generarNuevoId() {
+    return rutas.stream()
+        .mapToLong(Ruta::getIdRuta)
+        .max()
+        .orElse(0L) + 1; // si la lista está vacía (O de valor Long), empezamos desde ID 1
   }
 }

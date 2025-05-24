@@ -1,8 +1,10 @@
 package ar.utn.ba.ddsi.models.repositories;
 
+import ar.utn.ba.ddsi.models.entities.Ruta;
 import java.util.List;
 
 public interface IRutasRepository {
-  void save(String path);
-  List<String> findAll();
+  void save(Ruta ruta);
+  Ruta findById(Long id);
+  Long generarNuevoId();
 }
