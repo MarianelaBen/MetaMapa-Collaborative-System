@@ -32,7 +32,7 @@ public class ApiMetaMapaService {
 
   public Mono<ColeccionDTO> obtenerColeccionPorId(long id){
     return webClient.get()
-        .uri("/colecciones/:identificador/hechos", id)
+        .uri("/colecciones/{id}/hechos", id)
         .retrieve()
         .bodyToMono(ColeccionDTO.class);
   }

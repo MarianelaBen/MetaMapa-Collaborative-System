@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
+import lombok.Setter;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ public class Coleccion {
   @Getter private String descripcion;
   @Getter private Fuente fuente;
   @Getter private Set<Criterio> criterios;
-  @Getter private List<Hecho> hechosDeLaColeccion;
+ @Setter
+ @Getter private List<Hecho> hechosDeLaColeccion;
 
   public Coleccion(String titulo, String descripcion, Fuente fuente){
     this.titulo = titulo;
