@@ -29,22 +29,20 @@ public class SolicitudService implements ISolicitudService {
     }
 
     @Override
-    public void atencionDeSolicitud(Long idSolicitud, EstadoSolicitud estado, String comentario, Administrador administrador){
+    public void atencionDeSolicitud(Long idSolicitud, EstadoSolicitud estado, String comentario, Long idAdministrador){
       Solicitud solicitud = solicitudRepository.findById(idSolicitud);
       solicitud.cambiarEstado(estado);
-      //solicitud.setAdministradorQueAtendio(Administrador); TODO habria que hacer que llegue el id de admin y de ahi sacar al admin y gurdarlo
       solicitud.setComentario(comentario);
 
-      //TODO todo el tema de rechazar y aceptar cada tipo de solicitud
       switch (estado) {
         case ACEPTADA:
           solicitud.setEstado(EstadoSolicitud.ACEPTADA);
-          guardadoDeCredencial(solicitud, comentario, administrador);
+          guardadoDeCredencial(solicitud, comentario, idAdministrador);
           break;
         case RECHAZADA:
             solicitud.setEstado(EstadoSolicitud.RECHAZADA);
-            guardadoDeCredencial(solicitud, comentario, administrador);
-          if(solicitud.getTipoSolicitud() == TipoSolicitud.CREACION){
+            guardadoDeCredencial(solicitud, comentario, idAdministrador);
+          if (solicitud.getTipoSolicitud() == TipoSolicitud.CREACION){
             this.hechoService.creacionRechazada(solicitud.getHecho());
           }
           else{
@@ -52,14 +50,13 @@ public class SolicitudService implements ISolicitudService {
           }
           break;
       }
-
       solicitudRepository.save(solicitud);
 
     }
 
-    public void guardadoDeCredencial(Solicitud solicitud ,String comentario, Administrador administrador){
+    public void guardadoDeCredencial(Solicitud solicitud ,String comentario, Long idAdministrador){
       solicitud.setComentario(comentario);
-      solicitud.setAdministradorQueAtendio(administrador);
+      solicitud.setIdAdministradorQueAtendio(idAdministrador);
       solicitud.setFechaAtencion(LocalDate.now());
     }
 }

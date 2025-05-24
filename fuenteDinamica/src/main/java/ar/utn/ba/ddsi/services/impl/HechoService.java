@@ -53,7 +53,6 @@ public class HechoService implements IHechoService {
 
       List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO.getPathsMultimedia());
 
-      //TODO agregar esto al hecho builder
       Hecho hecho = new Hecho(
           hechoInputDTO.getTitulo(),
           hechoInputDTO.getDescripcion(),
@@ -73,7 +72,7 @@ public class HechoService implements IHechoService {
       return this.hechoOutputDTO(hecho);
 
     } catch (Exception e) {
-      throw new HechoCreacionException("Error al crear el hecho: " + e.getMessage(), e);
+      throw new HechoCreacionException("Error al crear el hecho: " + e.getMessage());
     }
   }
 
@@ -133,7 +132,6 @@ public class HechoService implements IHechoService {
       hecho.getContenidosMultimedia().forEach(
           c -> contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia()));
     }
-
     hecho.actualizarHecho(
         hechoInputDTO.getTitulo(),
         hechoInputDTO.getDescripcion(),

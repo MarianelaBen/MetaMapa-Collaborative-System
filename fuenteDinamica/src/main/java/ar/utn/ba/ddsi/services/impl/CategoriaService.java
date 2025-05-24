@@ -27,12 +27,10 @@ public class CategoriaService implements ICategoriaService {
       return this.crear(categoria);
     }
     else{
-    Categoria categoria = categoriaRepository.findById(categoriaInputDTO.getId());
-
-    if (categoria == null) {
-      throw new NoSuchElementException("Categoria no encontrada");
-    }
-    return categoria;
+      if (categoriaInputDTO.getNombre() == null) {
+        throw new NoSuchElementException("Categoria no encontrada");
+      }
+    return categoriaRepository.findById(categoriaInputDTO.getId());
     }
   }
 

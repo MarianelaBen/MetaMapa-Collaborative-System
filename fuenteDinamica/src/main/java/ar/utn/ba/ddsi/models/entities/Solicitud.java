@@ -17,13 +17,13 @@ public class Solicitud {
   private LocalDate fechaSolicitud;
   private LocalDate fechaAtencion;
   private String comentario;
-  private Administrador administradorQueAtendio;
+  private Long idAdministradorQueAtendio;
 
   public Solicitud(Hecho hecho, TipoSolicitud tipo) {
     this.hecho = hecho;
     this.comentario = null;
     this.estado = EstadoSolicitud.PENDIENTE;
-    this.administradorQueAtendio = null;
+    this.idAdministradorQueAtendio = null;
     this.fechaSolicitud = LocalDate.now();
     this.fechaAtencion = null;
     this.estado = EstadoSolicitud.PENDIENTE;
