@@ -52,6 +52,22 @@ class AdapterInstanciaMetaMapa implements IFuenteProxyAdapter{
     +getHechos(): List<Hecho>
 }
 
+class ApiCatedraService{
+    -webClient: WebClient
+
+    +obtenerHechos(): Mono<List<HechoDTO>>
+    +obtenerHechosPorId(): Mono<HechoDTO>
+}
+
+class ApiMetaMapaService{
+    -webClient: WebClient
+
+    +obtenerHechos(): Mono<List<HechoDTO>>
+    +obtenerColeccionPorId(): Mono<ColeccionDTO>
+    +obtenerColecciones(): Mono<List<ColeccionDTO>>
+    +crearSolicitud(): Mono<List<SolicitudDTO>>
+}
+
 Hecho --> Origen
 Hecho --> "*" Etiqueta
 
@@ -59,5 +75,7 @@ Hecho --> Ubicacion
 Hecho --> Categoria
 
 IFuenteProxyAdapter --> Hecho
+AdapterInstanciaMetaMapa --> ApiMetaMapaService
+AdapterCatedra --> ApiCatedraService
 
 @enduml
