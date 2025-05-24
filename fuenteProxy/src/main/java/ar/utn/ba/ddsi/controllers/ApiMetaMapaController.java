@@ -34,13 +34,11 @@ public class ApiMetaMapaController {
     return apiMetaMapaService.obtenerColecciones();
   }
 
-  @GetMapping("coleccion/{id}/hechos")
+  @GetMapping("colecciones/{id}/hechos")
   public Mono<List<HechoDTO>> obtenerHechosDeColeccion(@PathVariable long id){
     return apiMetaMapaService.obtenerColeccionPorId(id)
-        .map(ColeccionDTO::toColeccion)
-        .map(coleccion -> coleccion.getHechosDeLaColeccion().stream()
-            .map(HechoOutputDTO::convertirAHechoDTO)
-            .toList());
+        .map(ColeccionDTO::getHechosDeLaColeccion);
+    //corrigo, antes haciamos DTO->entidadDeDominio->DTO
   }
 
   @PostMapping("/solicitudes")
