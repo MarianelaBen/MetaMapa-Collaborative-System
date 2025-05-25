@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.services.impl;
 
+import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.fuentes.Fuente;
@@ -22,11 +23,11 @@ public class AgregadorService implements IAgregadorService {
   }
 
   @Override
-  public List<Hecho> obtenerHechosDeFuentes(List<Fuente> fuentes) {
+  public List<HechoDTO> obtenerHechosDeFuentes(List<Fuente> fuentes) {
     return fuentes.stream().flatMap(f -> f.getHechos().stream()).collect(Collectors.toList());
   }
   @Override
-  public List<Hecho> obtenerHechosPorTipoDeFuente(TipoFuente tipo) {
+  public List<HechoDTO> obtenerHechosPorTipoDeFuente(TipoFuente tipo) {
     return fuentes.stream().filter(f -> f.getTipo() == tipo).flatMap(f -> f.getHechos().stream()).collect(Collectors.toList());
   }
 

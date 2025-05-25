@@ -5,8 +5,7 @@ interface Criterio {
 }
 
 abstract class Fuente {
-    +leerHechos(): void
-    +getHechos(): List<Hecho>
+    +getHechos(): List<HechoDTO>
     +getTipo(): TipoFuente
 }
 
