@@ -5,19 +5,6 @@ class Categoria {
     - id: Long
 }
 
-class Coleccion {
-    - titulo: String
-    - descripcion: String
-    - fuente: Fuente
-    - criterios: Set<Criterio>
-    - hechosDeLaColeccion: List<Hecho>
-    + filtrarHechos(): void
-    + agregarHechos(List<Hecho> hechos): void
-    + cumpleLosCriterios(Hecho hecho): boolean
-    + noFueEliminado(Hecho hecho): boolean
-    + agregarCriterios(Criterio ... nuevosCriterios): void
-}
-
 class ContenidoMultimedia {
     - path: String
     - idContenidoMultimedia: Long
@@ -80,58 +67,9 @@ class Solicitud {
     + cambiarEstado(nuevoEstado: EstadoSolicitud): void
 }
 
-interface Criterio {
-    +cumpleCriterio(hecho: Hecho): boolean
-}
-
 class Ubicacion {
     - latitud: Double
     - longitud: Double
-}
-
-class CriterioTitulo implements Criterio{
-    -titulo: String
-
-    +cumpleCriterio(hecho: Hecho): boolean
-}
-
-class CriterioDescripcion implements Criterio{
-    -descripcion: String
-
-    +cumpleCriterio(hecho: Hecho): boolean
-}
-
-class CriterioCategoria implements Criterio{
-    -categoria: String
-
-    +cumpleCriterio(hecho: Hecho): boolean
-}
-
-class CriterioLugar implements Criterio {
-    -ubicacion: Ubicacion
-    -rangoMaximo: Integer
-
-    +cumpleCriterio(hecho: Hecho): boolean
-}
-
-class CriterioFechaAcontecimiento implements Criterio{
-    -desde: LocalDate
-    -hasta: LocalDate
-
-    +cumpleCriterio(hecho: Hecho): boolean
-}
-
-class CriterioFechaCarga implements Criterio{
-    -desde: LocalDate
-    -hasta: LocalDate
-
-    +cumpleCriterio(hecho: Hecho): boolean
-}
-
-class CriterioOrigen implements Criterio{
-    -origen: Origen
-
-    +cumpleCriterio(hecho: Hecho): boolean
 }
 
 enum EstadoSolicitud {
@@ -151,9 +89,6 @@ enum TipoSolicitud {
   EDICION
 }
 
-Coleccion --> "*" Criterio
-Coleccion --> "*" Hecho
-Coleccion --> Fuente
 Hecho --> Origen
 Hecho --> "*" Etiqueta
 Solicitud --> Hecho
@@ -164,8 +99,6 @@ Hecho --> Ubicacion
 Hecho --> Categoria
 Hecho --> "*" ContenidoMultimedia
 Hecho --> HechoEstadoPrevio
-CriterioLugar --> Ubicacion
-CriterioCategoria --> Categoria
 Solicitud --> TipoSolicitud
 
 @enduml
