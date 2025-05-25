@@ -56,7 +56,4 @@ public class Hecho {
     return contenidos.stream().map(ContenidoMultimedia::getPath).collect(Collectors.toList());
   }
 
-  /*public void restaurarDesde(HechoEstadoPrevio previo) {
-
-  }*/
 }
