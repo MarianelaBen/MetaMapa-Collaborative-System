@@ -1,9 +1,10 @@
 package ar.utn.ba.ddsi.adapters;
 
+import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import java.util.List;
 
 // se define el contrato que van a cumplir todas las fuentes proxy externas
 public interface IFuenteProxyAdapter {
-  List<Hecho> getHechos();
+  List<HechoDTO> getHechos();
 }

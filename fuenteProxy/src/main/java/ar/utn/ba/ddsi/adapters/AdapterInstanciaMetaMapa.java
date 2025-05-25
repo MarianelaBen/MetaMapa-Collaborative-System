@@ -11,22 +11,21 @@ import java.util.stream.Collectors;
 public class AdapterInstanciaMetaMapa implements IFuenteProxyAdapter {
 
     private ApiMetaMapaService apiMetaMapaService;
-    private List<Hecho> hechos = new ArrayList<>();
 
     public AdapterInstanciaMetaMapa(ApiMetaMapaService apiMetaMapaService) {
       this.apiMetaMapaService= apiMetaMapaService;
     }
 
-    @Override
-    public List<Hecho> getHechos() {
+@Override
+    public List<HechoDTO> getHechos() {
       List<HechoDTO> hechosDTO =  apiMetaMapaService.obtenerHechos().block();
       //  bloqueamos para esperar el resultado porque obtenerHechos devuelve un Mono<List<HechoDTO>>
-
-      if (hechosDTO!=null) {
-        return this.hechos = hechosDTO.stream().map(hDTO -> hDTO.toHecho()).collect(Collectors.toList());
+        if (hechosDTO!=null) {
+          return hechosDTO;
+          //saco .stream().map(hDTO -> hDTO.toHecho()).collect(Collectors.toList());
       }
       else {
-        return this.hechos;
+        return List.of();
       }
     }
 }
