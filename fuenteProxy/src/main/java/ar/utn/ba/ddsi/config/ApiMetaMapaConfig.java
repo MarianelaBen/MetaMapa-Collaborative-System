@@ -9,7 +9,7 @@ public class ApiMetaMapaConfig {
   @Bean(name="apiMetaMapaClient")
   public WebClient apiClient(WebClient.Builder builder) {
     return builder
-        .baseUrl("https://metaMapa.com/api").build(); //todavia no sabemos la URL
+        .baseUrl("").build(); //todavia no sabemos la URL
 
   }
 }

@@ -20,7 +20,8 @@ public class AdapterInstanciaMetaMapa implements IFuenteProxyAdapter {
     public List<HechoDTO> getHechos() {
       List<HechoDTO> hechosDTO =  apiMetaMapaService.obtenerHechos().block();
       //  bloqueamos para esperar el resultado porque obtenerHechos devuelve un Mono<List<HechoDTO>>
-        if (hechosDTO!=null) {
+
+    if (hechosDTO!=null) {
           return hechosDTO;
           //saco .stream().map(hDTO -> hDTO.toHecho()).collect(Collectors.toList());
       }

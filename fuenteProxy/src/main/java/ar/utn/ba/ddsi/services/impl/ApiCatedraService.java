@@ -31,5 +31,6 @@ public class ApiCatedraService {
         .uri("/desastres/{id}", id)
         .retrieve()
         .bodyToMono(HechoDTO.class);
+    //TODO ver si necesita mapeo
   }
 }

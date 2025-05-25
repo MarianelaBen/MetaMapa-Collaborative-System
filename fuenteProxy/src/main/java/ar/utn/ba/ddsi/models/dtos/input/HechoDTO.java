@@ -21,6 +21,7 @@ public class HechoDTO {
   private LocalDate fechaAcontecimiento;
   private LocalDate fechaCarga;
 
+/*
 public Hecho toHecho(){
   return new Hecho(
       this.titulo,
@@ -30,7 +31,7 @@ public Hecho toHecho(){
       this.fechaAcontecimiento,
       Origen.PROVENIENTE_DE_DATASET
   );
-}
+}*/
 
 }
 

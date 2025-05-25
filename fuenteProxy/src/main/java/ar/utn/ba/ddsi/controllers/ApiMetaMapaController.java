@@ -3,7 +3,6 @@ package ar.utn.ba.ddsi.controllers;
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudDTO;
-import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.services.impl.ApiMetaMapaService;
@@ -46,6 +45,7 @@ public class ApiMetaMapaController {
     return apiMetaMapaService.crearSolicitud(solicitud);
   }
 
+  /*
   private HechoDTO convertirAHechoDTO(Hecho hecho) {
     HechoDTO dto = new HechoDTO();
     dto.setId(hecho.getId());
@@ -57,14 +57,8 @@ public class ApiMetaMapaController {
     dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     dto.setFechaCarga(hecho.getFechaCarga());
     return dto;
-  }
+  }*/
 
 }
 
-//ENDPOINTS
-/*GET /hechos
-GET /colecciones
-GET /colecciones/:identificador/hechos
-POST /solicitudes
-*/
 

@@ -19,6 +19,7 @@ public class ColeccionDTO {
   private Set<Criterio> criterios;
   private List<HechoDTO> hechosDeLaColeccion;
 
+  /*
   public Coleccion toColeccion(){
     Coleccion coleccion =  new Coleccion(
         this.titulo,
@@ -31,6 +32,6 @@ public class ColeccionDTO {
     coleccion.setHechosDeLaColeccion(hechos);
     return coleccion;
     //agrego que cuando se instancia una nueva coleccion tambien se instancien sus hechos
-  }
+  }*/
 }
 
