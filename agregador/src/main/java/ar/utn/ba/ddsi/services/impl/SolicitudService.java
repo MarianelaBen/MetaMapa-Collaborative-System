@@ -46,15 +46,6 @@ public abstract class SolicitudService implements IDetectorDeSpam {
     solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
   }
 
-  /*Saque esto:
-  // el administrador mismo va a cambiar el estado y setear fechaDeAtencion
-    public void ocultarHecho(Solicitud solicitud) { //solicitudes aceptadas
-    Hecho hecho = solicitud.getHecho();
-      hecho.setFueEliminado(true);
-      coleccionService.update(hecho);
-  }*/
-
-
 }
 
 

@@ -1,13 +1,11 @@
 package ar.utn.ba.ddsi.models.entities;
 
 import ar.utn.ba.ddsi.models.entities.criterios.Criterio;
-import ar.utn.ba.ddsi.models.entities.fuentes.Fuente;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
 

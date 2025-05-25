@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 @Getter
-  @Data
-public class HechoDTO {
+public class HechoInputDTO {
   private long id;
   private String titulo;
   private String descripcion;
@@ -25,18 +24,15 @@ public class HechoDTO {
   private Set<Long> idEtiquetas;
   private List<Long> idContenidoMultimedia;
 
-}
-  /*
-  //TODAVIA NO SE USA
-public Hecho toHecho() {
+  public Hecho toHecho() {
     return new Hecho(
-          this.titulo,
-          this.descripcion,
-          new Categoria(this.categoria),
-          new Ubicacion(this.latitud, this.longitud),
-          this.fechaAcontecimiento,
-          Origen.PROVENIENTE_DE_DATASET
+        this.titulo,
+        this.descripcion,
+        new Categoria(this.categoria),
+        new Ubicacion(this.latitud, this.longitud),
+        this.fechaAcontecimiento,
+        Origen.PROVENIENTE_DE_DATASET
         //TODO manejar todos los origenes
-      );
-    }
-*/
+    );
+  }
+}
