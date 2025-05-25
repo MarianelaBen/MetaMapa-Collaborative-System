@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @Service
 public class ColeccionService implements IColeccionService {
   private List<Coleccion> colecciones;
-  //private final long unaHora = 3600000;
 
   @Autowired
   private IColeccionRepository coleccionRepository;

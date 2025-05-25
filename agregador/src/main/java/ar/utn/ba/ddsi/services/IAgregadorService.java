@@ -6,7 +6,7 @@ import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuente;
 import java.util.List;
 
 public interface IAgregadorService {
-  public List<HechoInputDTO> obtenerHechosDeFuentes(List<Fuente> fuentes);
+  public List<HechoInputDTO> obtenerHechosDeFuentes();
   public List <HechoInputDTO> obtenerHechosPorTipoDeFuente(TipoFuente tipo);
-  //public List <Coleccion> obtenerColeccion(Fuente fuente, Coleccion coleccion);
+  public void agregarFuente(Fuente fuente);
 }

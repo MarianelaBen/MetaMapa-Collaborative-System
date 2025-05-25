@@ -26,13 +26,12 @@ public abstract class SolicitudService implements IDetectorDeSpam {
       solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
       solicitud.setFechaAtencion(LocalDateTime.now());
     }
-    solicitudRepository.save(solicitud); //guarda en un repositorio propio
+    solicitudRepository.save(solicitud);
     return solicitud;
   }
 
 
   // metodos que va a llamar el administrador cuando acepte / rechace una solicitud
-
   public void aceptarSolicitud(Solicitud solicitud){
     Hecho hecho = solicitud.getHecho();
     solicitud.setFechaAtencion(LocalDateTime.now());
