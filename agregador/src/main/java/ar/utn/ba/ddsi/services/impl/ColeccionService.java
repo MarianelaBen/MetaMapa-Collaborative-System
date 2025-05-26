@@ -1,0 +1,58 @@
+package ar.utn.ba.ddsi.services.impl;
+
+import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.models.entities.Coleccion;
+import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
+import ar.utn.ba.ddsi.services.IColeccionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class ColeccionService implements IColeccionService {
+  private List<Coleccion> colecciones;
+
+  @Autowired
+  private IColeccionRepository coleccionRepository;
+
+  @Override
+  public Coleccion crearColeccion(Coleccion coleccion){
+    this.filtrarHechos(coleccion);
+
+    return coleccionRepository.save(coleccion);
+
+  }
+
+
+  public Coleccion filtrarHechos(Coleccion coleccion){
+    coleccion.getHechosDeLaColeccion().clear();
+    List<Hecho> hechosFiltrados = coleccion.getFuentes().stream()
+        .flatMap(fuente -> fuente.getHechos().stream())
+        .map(HechoInputDTO::toHecho)
+        .filter(hecho -> coleccion.noFueEliminado(hecho))
+        .collect(Collectors.toList());
+      if( coleccion.getCriterios().isEmpty() ) { coleccion.agregarHechos(hechosFiltrados); }
+      else { coleccion.agregarHechos(hechosFiltrados.stream()
+          .filter(coleccion::cumpleLosCriterios)
+          .collect(Collectors.toList())); }
+    return coleccion;
+  }
+
+  @Override
+  public void eliminarHechoDeColeccion(Hecho hecho){
+    coleccionRepository.eliminarHechoDeColeccion(hecho);
+  }
+
+  @Override
+  public void actualizarColecciones(){
+    colecciones = coleccionRepository.findAll();
+    for (Coleccion coleccion : colecciones){
+      this.filtrarHechos(coleccion);
+      coleccionRepository.save(coleccion);
+    }
+  }
+
+  }
+
