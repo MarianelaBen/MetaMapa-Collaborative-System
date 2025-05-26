@@ -2,10 +2,10 @@ package ar.utn.ba.ddsi.models.entities.fuentes;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import ar.utn.ba.ddsi.MetaMapa.models.entities.Categoria;
-import ar.utn.ba.ddsi.MetaMapa.models.entities.Hecho;
-import ar.utn.ba.ddsi.MetaMapa.models.entities.Ubicacion;
-import ar.utn.ba.ddsi.MetaMapa.models.entities.enumerados.Origen;
+import ar.utn.ba.ddsi.models.entities.Categoria;
+import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.Ubicacion;
+import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
