@@ -1,6 +1,6 @@
 package ar.utn.ba.ddsi.services.impl;
 
-import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
+import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoResponseDTO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class ApiCatedraService {
     this.webClient = webClient;
   }
 
-  public Mono<List<HechoDTO>> obtenerHechos() {
+  public Mono<List<HechoInputDTO>> obtenerHechos() {
     return webClient.get()
         .uri("/desastres")
         .retrieve()
@@ -26,11 +26,11 @@ public class ApiCatedraService {
         .map(HechoResponseDTO::getData);
   }
 
-  public Mono<HechoDTO> obtenerHechoPorId(long id) {
+  public Mono<HechoInputDTO> obtenerHechoPorId(long id) {
     return webClient.get()
         .uri("/desastres/{id}", id)
         .retrieve()
-        .bodyToMono(HechoDTO.class);
+        .bodyToMono(HechoInputDTO.class);
     //TODO ver si necesita mapeo
   }
 }

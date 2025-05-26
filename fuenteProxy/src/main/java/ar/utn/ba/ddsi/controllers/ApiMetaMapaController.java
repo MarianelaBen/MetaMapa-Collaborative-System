@@ -1,10 +1,8 @@
 package ar.utn.ba.ddsi.controllers;
-
-import ar.utn.ba.ddsi.models.dtos.input.ColeccionDTO;
-import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
-import ar.utn.ba.ddsi.models.dtos.input.SolicitudDTO;
-import ar.utn.ba.ddsi.models.entities.Coleccion;
-import ar.utn.ba.ddsi.models.entities.Hecho;
+/*
+import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
+import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
 import ar.utn.ba.ddsi.services.impl.ApiMetaMapaService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,40 +23,27 @@ public class ApiMetaMapaController {
   }
 
   @GetMapping("/hechos")
-  public Mono<List<HechoDTO>> obtenerHechos(){
+  public Mono<List<HechoInputDTO>> obtenerHechos(){
     return apiMetaMapaService.obtenerHechos();
   }
 
   @GetMapping("/colecciones")
-  public Mono<List<ColeccionDTO>> obtenerColecciones(){
+  public Mono<List<ColeccionInputDTO>> obtenerColecciones(){
     return apiMetaMapaService.obtenerColecciones();
   }
 
   @GetMapping("colecciones/{id}/hechos")
-  public Mono<List<HechoDTO>> obtenerHechosDeColeccion(@PathVariable long id){
+  public Mono<List<HechoInputDTO>> obtenerHechosDeColeccion(@PathVariable long id){
     return apiMetaMapaService.obtenerColeccionPorId(id)
-        .map(ColeccionDTO::getHechosDeLaColeccion);
+        .map(ColeccionInputDTO::getHechosDeLaColeccion);
   }
 
   @PostMapping("/solicitudes")
-  public Mono<List<SolicitudDTO>> crearSolicitud(@RequestBody SolicitudDTO solicitud) {
+  public Mono<List<SolicitudInputDTO>> crearSolicitud(@RequestBody SolicitudInputDTO solicitud) {
     return apiMetaMapaService.crearSolicitud(solicitud);
   }
 
-  /*
-  private HechoDTO convertirAHechoDTO(Hecho hecho) {
-    HechoDTO dto = new HechoDTO();
-    dto.setId(hecho.getId());
-    dto.setTitulo(hecho.getTitulo());
-    dto.setDescripcion(hecho.getDescripcion());
-    dto.setCategoria(hecho.getCategoria().getNombre());
-    dto.setLatitud(hecho.getUbicacion().getLatitud());
-    dto.setLongitud(hecho.getUbicacion().getLongitud());
-    dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
-    dto.setFechaCarga(hecho.getFechaCarga());
-    return dto;
-  }*/
 
 }
-
+*/
 

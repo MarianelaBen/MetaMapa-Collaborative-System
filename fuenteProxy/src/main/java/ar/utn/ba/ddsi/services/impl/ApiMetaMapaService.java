@@ -1,19 +1,17 @@
 package ar.utn.ba.ddsi.services.impl;
 
-import ar.utn.ba.ddsi.models.dtos.input.ColeccionDTO;
+import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionResponseDTO;
-import ar.utn.ba.ddsi.models.dtos.input.HechoDTO;
+import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoResponseDTO;
-import ar.utn.ba.ddsi.models.dtos.input.SolicitudDTO;
+import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudResponseDTO;
-import ar.utn.ba.ddsi.models.entities.Coleccion;
-import lombok.Value;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import java.util.List;
-
+/*
 @Service
 public class ApiMetaMapaService {
   private final WebClient webClient;
@@ -22,7 +20,7 @@ public class ApiMetaMapaService {
     this.webClient = webClient;
   }
 
-  public Mono<List<HechoDTO>> obtenerHechos() { //Puede cambiar, depende como ser la respuesta de la API
+  public Mono<List<HechoInputDTO>> obtenerHechos() { //Puede cambiar, depende como ser la respuesta de la API
     return webClient.get()
         .uri("/hechos")
         .retrieve()
@@ -30,14 +28,14 @@ public class ApiMetaMapaService {
         .map(HechoResponseDTO::getData);
   }
 
-  public Mono<ColeccionDTO> obtenerColeccionPorId(long id){
+  public Mono<ColeccionInputDTO> obtenerColeccionPorId(long id){
     return webClient.get()
         .uri("/colecciones/{id}/hechos", id)
         .retrieve()
-        .bodyToMono(ColeccionDTO.class);
+        .bodyToMono(ColeccionInputDTO.class);
   }
 
-  public Mono<List<ColeccionDTO>> obtenerColecciones(){
+  public Mono<List<ColeccionInputDTO>> obtenerColecciones(){
     return webClient.get()
         .uri("/colecciones")
         .retrieve()
@@ -45,7 +43,7 @@ public class ApiMetaMapaService {
         .map(ColeccionResponseDTO::getData);
   }
 
-  public Mono<List<SolicitudDTO>> crearSolicitud(SolicitudDTO solicitud) {
+  public Mono<List<SolicitudInputDTO>> crearSolicitud(SolicitudInputDTO solicitud) {
     return webClient.post()
         .uri("/solicitudes")
         .bodyValue(solicitud)
@@ -55,4 +53,4 @@ public class ApiMetaMapaService {
         .map(SolicitudResponseDTO::getData);
   }
 
-}
+}*/

@@ -5,5 +5,5 @@ import java.util.List;
 
 @Data
 public class ColeccionResponseDTO {
-  private List<ColeccionDTO> data;
+  private List<ColeccionInputDTO> data;
 }

@@ -1,5 +1,5 @@
 package ar.utn.ba.ddsi.config;
-
+/*
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -13,5 +13,5 @@ public class ApiMetaMapaConfig {
 
   }
 }
-
+*/
 //Si la api necesita autenticacion como la de la catedra tendriamos que cambiar esto
