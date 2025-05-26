@@ -24,7 +24,10 @@ public class CategoriaRepository implements ICategoriaRepository {
 
   @Override
   public Long save(Categoria categoria) {
-
+    Categoria yaExistente = categorias.stream().filter(c -> categoria.getNombre().equals(c.getNombre())).findFirst().orElse(null);
+    if (yaExistente != null){
+      return yaExistente.getId();
+    }
     categoria.setId(generarNuevoId());
     this.categorias.add(categoria);
     return categoria.getId();

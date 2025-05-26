@@ -23,7 +23,7 @@ public class CategoriaService implements ICategoriaService {
   @Override
   public Categoria findCategory(CategoriaInputDTO categoriaInputDTO){
     if (categoriaInputDTO.getId() == null){
-      Categoria categoria = new Categoria(categoriaInputDTO.getNombre());
+      Categoria categoria = new Categoria(categoriaInputDTO.getNombre().toUpperCase());
       return this.crear(categoria);
     }
     else{
