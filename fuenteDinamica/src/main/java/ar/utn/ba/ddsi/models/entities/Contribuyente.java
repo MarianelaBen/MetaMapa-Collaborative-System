@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.Period;
 
 public class Contribuyente {
+  private Long idContribuyente;
   private String nombre;
   private String apellido;
   private LocalDate fechaDeNacimiento;
