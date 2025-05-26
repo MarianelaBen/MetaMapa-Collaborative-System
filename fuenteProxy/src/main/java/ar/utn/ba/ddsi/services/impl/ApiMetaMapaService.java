@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import java.util.List;
-/*
+
 @Service
 public class ApiMetaMapaService {
   private final WebClient webClient;
@@ -24,8 +24,8 @@ public class ApiMetaMapaService {
     return webClient.get()
         .uri("/hechos")
         .retrieve()
-        .bodyToMono(HechoResponseDTO.class) //Puede cambiar, depende como ser la respuesta de la API
-        .map(HechoResponseDTO::getData);
+        .bodyToMono(HechoResponseDTO.class)
+        .map(HechoResponseDTO::getData); //si no viene el campo data, no hace falta este mapeo
   }
 
   public Mono<ColeccionInputDTO> obtenerColeccionPorId(long id){
@@ -43,14 +43,14 @@ public class ApiMetaMapaService {
         .map(ColeccionResponseDTO::getData);
   }
 
-  public Mono<List<SolicitudInputDTO>> crearSolicitud(SolicitudInputDTO solicitud) {
+  public Mono<List<SolicitudInputDTO>> crearSolicitud(List<SolicitudInputDTO>  solicitudes) {
     return webClient.post()
         .uri("/solicitudes")
-        .bodyValue(solicitud)
+        .bodyValue(solicitudes)
         .retrieve()
         // suponiendo que la API responde un JSON que envuelve la lista en un "data"
         .bodyToMono(SolicitudResponseDTO.class)
         .map(SolicitudResponseDTO::getData);
   }
 
-}*/
+}

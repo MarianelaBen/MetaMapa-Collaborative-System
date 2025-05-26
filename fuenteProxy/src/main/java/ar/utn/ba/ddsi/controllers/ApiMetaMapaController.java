@@ -1,5 +1,5 @@
 package ar.utn.ba.ddsi.controllers;
-/*
+
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
@@ -39,11 +39,11 @@ public class ApiMetaMapaController {
   }
 
   @PostMapping("/solicitudes")
-  public Mono<List<SolicitudInputDTO>> crearSolicitud(@RequestBody SolicitudInputDTO solicitud) {
-    return apiMetaMapaService.crearSolicitud(solicitud);
+  public Mono<List<SolicitudInputDTO>> crearSolicitud(@RequestBody List<SolicitudInputDTO> solicitudes) {
+    return apiMetaMapaService.crearSolicitud(solicitudes);
   }
 
 
 }
-*/
+
 

@@ -1,5 +1,5 @@
 package ar.utn.ba.ddsi.adapters;
-/*
+
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.services.impl.ApiMetaMapaService;
 import java.util.List;
@@ -26,4 +26,3 @@ public class AdapterInstanciaMetaMapa implements IFuenteProxyAdapter {
       }
     }
 }
-*/
