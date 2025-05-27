@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.models.repositories.impl;
 
+import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 import org.springframework.stereotype.Repository;
@@ -43,5 +44,10 @@ public class HechoRepository implements IHechoRepository {
   @Override
   public Hecho findById(Long id) {
     return this.hechos.stream().filter(h -> h.getId().equals(id)).findFirst().orElse(null);
+  }
+
+  @Override
+  public List<Hecho> findAll(){
+    return this.hechos;
   }
 }

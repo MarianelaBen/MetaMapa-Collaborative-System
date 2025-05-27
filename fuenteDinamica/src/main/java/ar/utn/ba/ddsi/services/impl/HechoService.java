@@ -27,7 +27,9 @@ import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 
 import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 
-import java.time.temporal.ChronoUnit; // biblioteca que permite la comparacion de dias NUEVO
+import java.time.temporal.ChronoUnit;
+
+import org.springframework.context.annotation.Lazy;
 
 @Service
 public class HechoService implements IHechoService {
@@ -42,6 +44,7 @@ public class HechoService implements IHechoService {
   private IContenidoMultimediaRepository contenidoMultimediaRepository;
   @Autowired
   private IContenidoMultimediaService contenidoMultimediaService;
+  @Lazy
   @Autowired
   private ISolicitudService solicitudService;
 
@@ -51,8 +54,6 @@ public class HechoService implements IHechoService {
       Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
       Ubicacion ubicacion = hechoInputDTO.getCiudad();
 
-      List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO.getPathsMultimedia());
-
       Hecho hecho = new Hecho(
           hechoInputDTO.getTitulo(),
           hechoInputDTO.getDescripcion(),
@@ -61,9 +62,12 @@ public class HechoService implements IHechoService {
           hechoInputDTO.getFechaAcontecimiento(),
           Origen.CARGA_MANUAL);
 
-      hecho.agregarEtiqueta(new Etiqueta("prueba")); // Mas adelante cambiar por DTO
 
-      hecho.setContenidosMultimedia(contenidosMultimedia);
+      if(hechoInputDTO.getPathsMultimedia() != null) {
+        List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO.getPathsMultimedia());
+        hecho.setContenidosMultimedia(contenidosMultimedia);}
+
+      hecho.agregarEtiqueta(new Etiqueta("prueba")); // Mas adelante cambiar por DTO
       hecho.setIdContribuyente(hechoInputDTO.getIdContribuyente());
 
       this.hechoRepository.save(hecho);
@@ -126,21 +130,26 @@ public class HechoService implements IHechoService {
     HechoEstadoPrevio estadoPrevio = new HechoEstadoPrevio(hecho);
 
     Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
-    List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO.getPathsMultimedia());
 
-    if (hecho.getContenidosMultimedia() != null) {
-      hecho.getContenidosMultimedia().forEach(
-          c -> contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia()));
-    }
     hecho.actualizarHecho(
         hechoInputDTO.getTitulo(),
         hechoInputDTO.getDescripcion(),
         categoria, hechoInputDTO.getCiudad(),
         hechoInputDTO.getFechaAcontecimiento());
 
-    if (contenidosMultimedia != null) {
-      hecho.setContenidosMultimedia(contenidosMultimedia);
+
+    if(hechoInputDTO.getPathsMultimedia() != null) {
+      List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO.getPathsMultimedia());
+      if (hecho.getContenidosMultimedia() != null) {
+        hecho.getContenidosMultimedia().forEach(
+            c -> contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia()));
+      }
+      if (contenidosMultimedia != null) {
+        hecho.setContenidosMultimedia(contenidosMultimedia);
+      }
     }
+
+
     hecho.setEstadoPrevio(estadoPrevio);
 
     this.solicitudService.create(hecho, TipoSolicitud.EDICION);
@@ -160,15 +169,27 @@ public class HechoService implements IHechoService {
     HechoEstadoPrevio estadoPrevio = hecho.getEstadoPrevio();
     hecho.setEstadoPrevio(null);
     hecho.actualizarHecho(estadoPrevio.getTitulo(), estadoPrevio.getDescripcion(), estadoPrevio.getCategoria(), estadoPrevio.getUbicacion(), estadoPrevio.getFechaAcontecimiento());
-    List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hecho.getPathsMultimedia(hecho.getContenidosMultimedia()));
-    if (hecho.getContenidosMultimedia() != null) {
-      hecho.getContenidosMultimedia().forEach(
-          c -> contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia()));
-    }
-    if (contenidosMultimedia != null) {
-      hecho.setContenidosMultimedia(contenidosMultimedia);
+
+    if(hecho.getContenidosMultimedia() != null) {
+      List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hecho.getPathsMultimedia(hecho.getContenidosMultimedia()));
+      if (hecho.getContenidosMultimedia() != null) {
+        hecho.getContenidosMultimedia().forEach(
+            c -> contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia()));
+      }
+      if (contenidosMultimedia != null) {
+        hecho.setContenidosMultimedia(contenidosMultimedia);
+      }
     }
 
     this.hechoRepository.save(hecho);
+  }
+
+  @Override
+  public List<HechoOutputDTO> buscarTodos() {
+    return this.hechoRepository
+        .findAll()
+        .stream()
+        .map(this::hechoOutputDTO)
+        .toList();
   }
 }
