@@ -68,6 +68,28 @@ class ApiMetaMapaService{
     +crearSolicitud(): Mono<List<SolicitudDTO>>
 }
 
+class Solicitud {
+    -hecho: Hecho
+    -justificacion: String
+    -estado: EstadoSolicitud
+    -administradorQueAtendio: Administrador
+    -fechaEntrada: LocalDateTime
+    -fechaAtencion: LocalDateTime
+
+    +cambiarEstado(nuevoEstado: EstadoSolicitud): void
+}
+
+enum EstadoSolicitud {
+    PENDIENTE
+    RECHAZADA
+    ACEPTADA
+}
+
+class Administrador {
+    -nombre: String
+    -apellido: String
+}
+
 Hecho --> Origen
 Hecho --> "*" Etiqueta
 
@@ -77,5 +99,9 @@ Hecho --> Categoria
 IFuenteProxyAdapter --> Hecho
 AdapterInstanciaMetaMapa --> ApiMetaMapaService
 AdapterCatedra --> ApiCatedraService
+
+Solicitud --> Hecho
+Solicitud --> EstadoSolicitud
+Solicitud --> Administrador
 
 @enduml
