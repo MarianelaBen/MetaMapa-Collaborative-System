@@ -4,6 +4,52 @@ interface Criterio {
     +cumpleCriterio(hecho: Hecho): boolean
 }
 
+
+class CriterioTitulo implements Criterio{
+    -titulo: String
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioDescripcion implements Criterio{
+    -descripcion: String
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioCategoria implements Criterio{
+    -categoria: String
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioLugar implements Criterio {
+    -ubicacion: Ubicacion
+    -rangoMaximo: Integer
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioFechaAcontecimiento implements Criterio{
+    -desde: LocalDate
+    -hasta: LocalDate
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioFechaCarga implements Criterio{
+    -desde: LocalDate
+    -hasta: LocalDate
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
+class CriterioOrigen implements Criterio{
+    -origen: Origen
+
+    +cumpleCriterio(hecho: Hecho): boolean
+}
+
 abstract class Fuente {
     +getHechos(): List<HechoDTO>
     +getTipo(): TipoFuente
@@ -73,6 +119,11 @@ enum TipoFuente {
     ESTATICA
     DINAMICA
     PROXY
+}
+
+class Ubicacion{
+    -latitud: double
+    -longitud: double
 }
 
 
