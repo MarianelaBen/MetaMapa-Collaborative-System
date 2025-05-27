@@ -2,12 +2,13 @@ package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.models.dtos.input.LoginDTO;
 import ar.utn.ba.ddsi.models.dtos.input.LoginResponseDTO;
+import ar.utn.ba.ddsi.services.ILoginService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Service
-public class LoginService {
+public class LoginService implements ILoginService {
 
   private final WebClient authClient;
   private String token;
@@ -20,6 +21,7 @@ public class LoginService {
         .build();
   }
 
+  @Override
   public Mono<LoginResponseDTO> loginAndStore(LoginDTO creds) {
     return authClient.post()
         .uri("/login")
@@ -33,6 +35,7 @@ public class LoginService {
         });
   }
 
+  @Override
   public String getToken() {
     if (token == null) {
       throw new IllegalStateException("No se ha hecho login todavía");
