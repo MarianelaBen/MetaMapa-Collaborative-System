@@ -1,8 +1,5 @@
 @startuml
 
-class FuenteEstatica extends Fuente{
-    -ruta: Ruta
-}
 
 class Hecho {
     -titulo: String
@@ -37,11 +34,6 @@ class Ubicacion{
     -longitud: double
 }
 
-class Administrador {
-    -rutas: List<Ruta>
-    -apellido: String
-}
-
 class Ruta {
   -path: String
   -nombre: String
@@ -50,7 +42,6 @@ class Ruta {
 
 Hecho --> Origen
 Hecho --> "*" Etiqueta
-FuenteEstatica --> Hecho
 Hecho --> Ubicacion
 Hecho --> Categoria
 
