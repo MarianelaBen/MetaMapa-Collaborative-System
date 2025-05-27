@@ -4,6 +4,7 @@ import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import java.time.LocalDate;
+import java.util.List;
 
 public interface IHechoService {
   HechoOutputDTO crear(HechoInputDTO hechoInputDTO);
@@ -14,4 +15,5 @@ public interface IHechoService {
   HechoOutputDTO edicion(Long idEditor, HechoInputDTO hechoInputDTO, Long idHecho);
   void creacionRechazada(Hecho hecho);
   void edicionRechazada(Hecho hecho);
+  List<HechoOutputDTO> buscarTodos();
 }

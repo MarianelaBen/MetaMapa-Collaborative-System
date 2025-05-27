@@ -156,10 +156,6 @@ class Administrador {
     -apellido: String
 }
 
-class Servicio_Agregacion{
-
-}
-
 Coleccion --> "*" Criterio
 Coleccion --> "*" Hecho
 Coleccion --> Fuente
