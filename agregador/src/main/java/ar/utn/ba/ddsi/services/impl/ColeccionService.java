@@ -41,11 +41,6 @@ public class ColeccionService implements IColeccionService {
   }
 
   @Override
-  public void eliminarHechoDeColeccion(Hecho hecho){
-    coleccionRepository.eliminarHechoDeColeccion(hecho);
-  }
-
-  @Override
   public void actualizarColecciones(){
     colecciones = coleccionRepository.findAll();
     for (Coleccion coleccion : colecciones){

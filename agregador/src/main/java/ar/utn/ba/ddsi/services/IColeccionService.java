@@ -6,5 +6,4 @@ import ar.utn.ba.ddsi.models.entities.Hecho;
 public interface IColeccionService {
   public void actualizarColecciones();
   public Coleccion crearColeccion(Coleccion coleccion);
-  public void eliminarHechoDeColeccion(Hecho hecho);
 }

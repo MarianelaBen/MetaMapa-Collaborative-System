@@ -37,7 +37,6 @@ public abstract class SolicitudService implements IDetectorDeSpam {
     solicitud.setFechaAtencion(LocalDateTime.now());
     solicitud.cambiarEstado(EstadoSolicitud.ACEPTADA);
     hecho.setFueEliminado(true);
-    coleccionService.eliminarHechoDeColeccion(hecho);
   }
 
   public void rechazarSolicitud(Solicitud solicitud){
