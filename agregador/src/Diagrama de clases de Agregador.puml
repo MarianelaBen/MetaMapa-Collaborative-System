@@ -115,12 +115,6 @@ enum EstadoSolicitud {
     ACEPTADA
 }
 
-enum TipoFuente {
-    ESTATICA
-    DINAMICA
-    PROXY
-}
-
 
 class Ubicacion{
     -latitud: double
@@ -138,7 +132,6 @@ Solicitud --> Hecho
 Solicitud --> EstadoSolicitud
 Hecho --> Ubicacion
 Hecho --> Categoria
-Fuente --> TipoFuente
 
 
 
