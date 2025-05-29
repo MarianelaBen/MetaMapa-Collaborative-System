@@ -7,6 +7,7 @@ import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
 import ar.utn.ba.ddsi.services.IColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,14 @@ public class ColeccionService implements IColeccionService {
       this.filtrarHechos(coleccion);
       coleccionRepository.save(coleccion);
     }
+  }
+
+  @Override
+  public List<Hecho> obtenerHechosDeColeccion() {
+    return coleccionRepository.findAll().stream()
+        .flatMap(c -> c.getHechosDeLaColeccion().stream())
+        .filter(h -> !h.isFueEliminado())
+        .collect(Collectors.toList());
   }
 
   }
