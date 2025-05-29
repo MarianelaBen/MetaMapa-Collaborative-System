@@ -4,6 +4,7 @@ import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
+import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuenteExterna;
 import lombok.Data;
 import lombok.Getter;
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class HechoInputDTO {
   //campos no obligatorios, pueden llegar como null
   private Set<Long> idEtiquetas;
   private List<Long> idContenidoMultimedia;
+  private TipoFuenteExterna fuenteExterna;
 
   public Hecho toHecho() {
     return new Hecho(
@@ -32,7 +34,7 @@ public class HechoInputDTO {
         new Ubicacion(this.latitud, this.longitud),
         this.fechaAcontecimiento,
         Origen.PROVENIENTE_DE_DATASET
-        //TODO manejar todos los origenes
+        //TODO manejar todos los origenes y mover TipoFuenteExterna aca porque es solo de proxy
     );
   }
 }

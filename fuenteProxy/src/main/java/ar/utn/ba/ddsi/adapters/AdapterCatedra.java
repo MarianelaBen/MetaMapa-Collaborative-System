@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.adapters;
 
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuenteExterna;
 import ar.utn.ba.ddsi.services.impl.ApiCatedraService;
 import java.util.List;
 
@@ -18,9 +19,9 @@ public class AdapterCatedra implements IFuenteProxyAdapter {
   @Override
   public List<HechoInputDTO> getHechos() {
     List<HechoInputDTO> hechosDTO = apiCatedraService.obtenerHechos().block();
-    //  bloqueamos para esperar el resultado porque obtenerHechos devuelve un Mono<List<HechoDTO>>
 
     if (hechosDTO != null) {
+      hechosDTO.forEach(hDTO -> hDTO.setFuenteExterna(TipoFuenteExterna.API_CATEDRA));
       return hechosDTO;
     }
     else {
