@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.models.dtos.input;
 
+import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuenteExterna;
 import lombok.Data;
 import lombok.Getter;
 import java.time.LocalDate;
@@ -16,7 +17,7 @@ public class HechoInputDTO {
   private Double longitud;
   private LocalDate fechaAcontecimiento;
   private LocalDate fechaCarga;
-
+  private TipoFuenteExterna fuenteExterna;
 
 }
 

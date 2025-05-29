@@ -1,7 +1,7 @@
+/*
 package ar.utn.ba.ddsi.models.entities;
 
 import ar.utn.ba.ddsi.models.entities.criterios.Criterio;
-import ar.utn.ba.ddsi.models.entities.fuentes.Fuente;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,6 +52,4 @@ public class Coleccion {
   }
 
 }
-
-
-
+*/

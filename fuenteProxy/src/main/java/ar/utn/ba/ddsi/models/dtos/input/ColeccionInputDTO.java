@@ -1,7 +1,7 @@
 package ar.utn.ba.ddsi.models.dtos.input;
 
+import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.criterios.Criterio;
-import ar.utn.ba.ddsi.models.entities.fuentes.Fuente;
 import lombok.Data;
 import lombok.Getter;
 import java.util.List;
@@ -17,4 +17,3 @@ public class ColeccionInputDTO {
   private List<HechoInputDTO> hechosDeLaColeccion;
 
 }
-
