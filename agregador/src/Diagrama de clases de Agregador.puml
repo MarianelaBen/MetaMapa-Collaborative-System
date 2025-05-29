@@ -121,6 +121,7 @@ enum TipoFuente {
     PROXY
 }
 
+
 class Ubicacion{
     -latitud: double
     -longitud: double
