@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.models.dtos.input;
 
+import ar.utn.ba.ddsi.models.entities.Contribuyente;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +34,7 @@ public class HechoInputDTO {
     @NotNull
     private LocalDate fechaAcontecimiento;
     @NotNull
-    private Long idContribuyente;
+    private Contribuyente contribuyente;
     @Schema(description = "Fotos o videos sobre el hecho", example = "Inserte o arrastre una foto/video")
     private List<String> pathsMultimedia;
 }

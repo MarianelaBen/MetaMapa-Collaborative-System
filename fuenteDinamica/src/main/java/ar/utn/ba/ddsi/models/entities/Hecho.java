@@ -23,9 +23,10 @@ public class Hecho {
   private Origen origen;
   private boolean fueEliminado;
   private Set<Etiqueta> etiquetas;
-  private Long idContribuyente;
+  private Contribuyente contribuyente;
   private List<ContenidoMultimedia> contenidosMultimedia;
   private HechoEstadoPrevio estadoPrevio;
+  private LocalDate fechaActualizacion;
 
   public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen){
     this.titulo = titulo;
@@ -38,18 +39,11 @@ public class Hecho {
     this.fueEliminado = false;
     this.etiquetas = new HashSet<>();
     this.contenidosMultimedia = new ArrayList<>();
+    this.fechaActualizacion = null;
   }
 
   public void agregarEtiqueta(Etiqueta etiqueta) {
     this.etiquetas.add(etiqueta);
-  }
-
-  public void actualizarHecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento) {
-    this.titulo = titulo;
-    this.descripcion = descripcion;
-    this.categoria = categoria;
-    this.ubicacion = ubicacion;
-    this.fechaAcontecimiento = fechaAcontecimiento;
   }
 
   public List<String> getPathsMultimedia(List<ContenidoMultimedia> contenidos){

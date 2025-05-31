@@ -1,8 +1,12 @@
 package ar.utn.ba.ddsi.models.entities;
 
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDate;
 import java.time.Period;
 
+@Getter
+@Setter
 public class Contribuyente {
   private Long idContribuyente;
   private String nombre;
@@ -20,4 +24,5 @@ public class Contribuyente {
     Period periodo = Period.between(fechaDeNacimiento, hoy);
     return periodo.getYears();
   }
+
 }

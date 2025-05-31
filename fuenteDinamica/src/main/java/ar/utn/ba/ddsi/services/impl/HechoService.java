@@ -68,10 +68,10 @@ public class HechoService implements IHechoService {
         hecho.setContenidosMultimedia(contenidosMultimedia);}
 
       hecho.agregarEtiqueta(new Etiqueta("prueba")); // Mas adelante cambiar por DTO
-      hecho.setIdContribuyente(hechoInputDTO.getIdContribuyente());
+      hecho.setContribuyente(hechoInputDTO.getContribuyente());
 
       this.hechoRepository.save(hecho);
-      this.solicitudService.create(hecho, TipoSolicitud.EDICION);
+      this.solicitudService.create(hecho, TipoSolicitud.CREACION);
 
       return this.hechoOutputDTO(hecho);
 
@@ -91,7 +91,7 @@ public class HechoService implements IHechoService {
     dto.setFechaCarga(hecho.getFechaCarga());
     dto.setOrigen(hecho.getOrigen());       // extrae el id de cada etiqueta y los junta en un Set<Integer>
     dto.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
-    dto.setIdContribuyente(hecho.getIdContribuyente());
+    dto.setContribuyente(hecho.getContribuyente());
     dto.setIdContenidoMultimedia(hecho.getContenidosMultimedia().stream().map(ContenidoMultimedia::getIdContenidoMultimedia).collect(Collectors.toList()));
     return dto;
   }
@@ -117,7 +117,7 @@ public class HechoService implements IHechoService {
   @Override
   public HechoOutputDTO permisoDeEdicion(Long idEditor, Long idHecho) {
     Hecho hecho = this.hechoRepository.findById(idHecho);
-    if (puedeEditar(idEditor, hecho.getIdContribuyente(), hecho.getFechaCarga())) {
+    if (puedeEditar(idEditor, hecho.getContribuyente().getIdContribuyente(), hecho.getFechaCarga())) {
       return this.hechoOutputDTO(hecho);
     } else {
       throw new IllegalStateException("El plazo de edicion ha expirado");
@@ -131,7 +131,7 @@ public class HechoService implements IHechoService {
 
     Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
 
-    hecho.actualizarHecho(
+    this.actualizarHecho(hecho,
         hechoInputDTO.getTitulo(),
         hechoInputDTO.getDescripcion(),
         categoria, hechoInputDTO.getCiudad(),
@@ -148,7 +148,6 @@ public class HechoService implements IHechoService {
         hecho.setContenidosMultimedia(contenidosMultimedia);
       }
     }
-
 
     hecho.setEstadoPrevio(estadoPrevio);
 
@@ -168,7 +167,7 @@ public class HechoService implements IHechoService {
   public void edicionRechazada(Hecho hecho){
     HechoEstadoPrevio estadoPrevio = hecho.getEstadoPrevio();
     hecho.setEstadoPrevio(null);
-    hecho.actualizarHecho(estadoPrevio.getTitulo(), estadoPrevio.getDescripcion(), estadoPrevio.getCategoria(), estadoPrevio.getUbicacion(), estadoPrevio.getFechaAcontecimiento());
+    this.actualizarHecho(hecho, estadoPrevio.getTitulo(), estadoPrevio.getDescripcion(), estadoPrevio.getCategoria(), estadoPrevio.getUbicacion(), estadoPrevio.getFechaAcontecimiento());
 
     if(hecho.getContenidosMultimedia() != null) {
       List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hecho.getPathsMultimedia(hecho.getContenidosMultimedia()));
@@ -191,5 +190,15 @@ public class HechoService implements IHechoService {
         .stream()
         .map(this::hechoOutputDTO)
         .toList();
+  }
+
+  @Override
+  public void actualizarHecho(Hecho hecho, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento) {
+    hecho.setTitulo(titulo);
+    hecho.setDescripcion(descripcion);
+    hecho.setCategoria(categoria);
+    hecho.setUbicacion(ubicacion);
+    hecho.setFechaAcontecimiento(fechaAcontecimiento);
+    hecho.setFechaActualizacion(LocalDate.now());
   }
 }

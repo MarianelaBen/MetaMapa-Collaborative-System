@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.models.dtos.output;
 
+import ar.utn.ba.ddsi.models.entities.Contribuyente;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +30,7 @@ public class HechoOutputDTO {
   // private boolean fueEliminado;    no es un dato que se pueda enviar
   private Set<Long> idEtiquetas;
   @NotNull
-  private Long idContribuyente;
+  private Contribuyente contribuyente;
 
   private List<Long> idContenidoMultimedia;
 }
