@@ -6,28 +6,22 @@ import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class ColeccionRepository implements IColeccionRepository {
   private List<Coleccion> colecciones = new ArrayList<>();
 
   @Override
-    public Coleccion save(Coleccion coleccion){
+  public Coleccion save(Coleccion coleccion) {
     if (coleccion.getHandle() == null) {
-      // Handle -> título sin espacios
-      String nombreSinEspacios = coleccion.getTitulo().replaceAll("\\s+", "");
-      String handle = nombreSinEspacios;
-      int i = 1;
-      // si ya existe, le agregamos un sufijo numérico
-      while (existsHandle(handle)) {
-        handle = nombreSinEspacios + i++;
-      }
-      coleccion.setHandle(handle);
+      // generamos un UUID aleatorio y lo usamos directamente como handle
+      String uuid = UUID.randomUUID().toString();
+      coleccion.setHandle(uuid);
     }
     colecciones.add(coleccion);
     return coleccion;
   }
-
   private boolean existsHandle(String h) {
     return colecciones.stream().anyMatch(c -> h.equals(c.getHandle()));
   }
