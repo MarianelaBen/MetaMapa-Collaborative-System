@@ -93,6 +93,13 @@ enum Origen {
     PROVISTO_POR_CONTRIBUYENTE
 }
 
+enum TipoFuente {
+    ESTATICA
+    DINAMICA
+    PROXY
+}
+
+
 class Etiqueta {
     -nombre: String
 
@@ -132,7 +139,7 @@ Solicitud --> Hecho
 Solicitud --> EstadoSolicitud
 Hecho --> Ubicacion
 Hecho --> Categoria
-
+Fuente --> TipoFuente
 
 
 @enduml
