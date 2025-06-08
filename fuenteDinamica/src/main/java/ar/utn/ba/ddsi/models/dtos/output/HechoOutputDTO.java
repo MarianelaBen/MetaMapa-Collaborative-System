@@ -27,7 +27,7 @@ public class HechoOutputDTO {
   private LocalDate fechaCarga;
   @NotNull
   private Origen origen;
-  // private boolean fueEliminado;    no es un dato que se pueda enviar
+  // private boolean fueEliminado; no es un dato que se pueda enviar
   private Set<Long> idEtiquetas;
   @NotNull
   private Contribuyente contribuyente;

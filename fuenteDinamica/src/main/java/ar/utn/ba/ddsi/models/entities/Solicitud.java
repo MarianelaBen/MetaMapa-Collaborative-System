@@ -26,7 +26,6 @@ public class Solicitud {
     this.idAdministradorQueAtendio = null;
     this.fechaSolicitud = LocalDate.now();
     this.fechaAtencion = null;
-    this.estado = EstadoSolicitud.PENDIENTE;
     this.tipoSolicitud = tipo;
   }
 
