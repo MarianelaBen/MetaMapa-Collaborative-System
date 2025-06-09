@@ -2,18 +2,18 @@ package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.models.dtos.input.LoginDTO;
 import ar.utn.ba.ddsi.models.dtos.input.LoginResponseDTO;
-import ar.utn.ba.ddsi.services.ILoginService;
+import ar.utn.ba.ddsi.services.ILoginApiCatedra;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Service
-public class LoginService implements ILoginService {
+public class LoginApiCatedra implements ILoginApiCatedra {
 
   private final WebClient authClient;
   private String token;
 
-  public LoginService(WebClient.Builder webClientBuilder) {
+  public LoginApiCatedra(WebClient.Builder webClientBuilder) {
     this.authClient = webClientBuilder
         .baseUrl("https://api-ddsi.disilab.ar/public/api")
         .defaultHeader("Accept", "application/json")

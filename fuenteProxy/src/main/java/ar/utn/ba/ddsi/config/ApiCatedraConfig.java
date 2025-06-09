@@ -1,6 +1,6 @@
 package ar.utn.ba.ddsi.config;
 
-import ar.utn.ba.ddsi.services.impl.LoginService;
+import ar.utn.ba.ddsi.services.impl.LoginApiCatedra;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -11,10 +11,10 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class ApiCatedraConfig {
 
-  private final LoginService loginService;
+  private final LoginApiCatedra loginApiCatedra;
 
-  public ApiCatedraConfig(LoginService loginService) {
-    this.loginService = loginService;
+  public ApiCatedraConfig(LoginApiCatedra loginApiCatedra) {
+    this.loginApiCatedra = loginApiCatedra;
   }
 
   @Bean
@@ -22,7 +22,7 @@ public class ApiCatedraConfig {
     return builder
         .baseUrl("https://api-ddsi.disilab.ar/public/api")
         .filter((req, next) ->
-            Mono.fromSupplier(loginService::getToken)
+            Mono.fromSupplier(loginApiCatedra::getToken)
                 .flatMap(token -> {
                   ClientRequest authed = ClientRequest.from(req)
                       .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
