@@ -24,7 +24,7 @@ public class HechoInputDTO {
   //campos no obligatorios, pueden llegar como null
   private Set<Long> idEtiquetas;
   private List<Long> idContenidoMultimedia;
-  private TipoFuenteExterna fuenteExterna;
+  private String fuenteExterna;
 
   public Hecho toHecho() {
     return new Hecho(
