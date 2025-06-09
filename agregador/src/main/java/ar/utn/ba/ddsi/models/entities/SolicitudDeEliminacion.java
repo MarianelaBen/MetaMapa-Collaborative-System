@@ -6,7 +6,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 
-public class Solicitud {
+public class SolicitudDeEliminacion {
   @Getter private Hecho hecho;
   @Getter private String justificacion;
   @Getter private EstadoSolicitud estado;
@@ -15,7 +15,7 @@ public class Solicitud {
   @Getter @Setter private LocalDateTime fechaEntrada;
   @Getter @Setter private LocalDateTime fechaAtencion;
 
-  public Solicitud(Hecho hecho, String justificacion) {
+  public SolicitudDeEliminacion(Hecho hecho, String justificacion) {
     this.hecho = hecho;
     this.justificacion = justificacion;
     this.estado = EstadoSolicitud.PENDIENTE;

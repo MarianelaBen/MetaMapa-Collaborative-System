@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ColeccionesScheduler {
   private final IColeccionService coleccionService;
-  private final long unaHora = 3600000;
+  private final long unaHoraEnMs = 3600000;
 
   public ColeccionesScheduler(IColeccionService coleccionService){
     this.coleccionService = coleccionService;
@@ -16,7 +16,7 @@ public class ColeccionesScheduler {
 
   //el fixedRate cada ese tiempo toma un hilo
 
-  @Scheduled( fixedRate = unaHora )
+  @Scheduled( fixedRate = unaHoraEnMs )
   public void actualizarHechosColecciones() {
     coleccionService.actualizarColecciones();
   }
