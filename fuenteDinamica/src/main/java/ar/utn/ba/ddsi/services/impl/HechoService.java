@@ -67,7 +67,7 @@ public class HechoService implements IHechoService {
         List<ContenidoMultimedia> contenidosMultimedia = mapearMultimedia(hechoInputDTO.getPathsMultimedia());
         hecho.setContenidosMultimedia(contenidosMultimedia);}
 
-      hecho.agregarEtiqueta(new Etiqueta("prueba")); // Mas adelante cambiar por DTO
+      // hecho.agregarEtiqueta(new Etiqueta("prueba"));  Mas adelante cambiar por DTO
       hecho.setContribuyente(hechoInputDTO.getContribuyente());
 
       this.hechoRepository.save(hecho);
@@ -90,7 +90,7 @@ public class HechoService implements IHechoService {
     dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     dto.setFechaCarga(hecho.getFechaCarga());
     dto.setOrigen(hecho.getOrigen());       // extrae el id de cada etiqueta y los junta en un Set<Integer>
-    dto.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
+    // dto.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
     dto.setContribuyente(hecho.getContribuyente());
     dto.setIdContenidoMultimedia(hecho.getContenidosMultimedia().stream().map(ContenidoMultimedia::getIdContenidoMultimedia).collect(Collectors.toList()));
     return dto;
@@ -173,7 +173,6 @@ public class HechoService implements IHechoService {
   private void reemplazarArchivoMultimedia(Hecho hecho, List<String> nuevosPaths) {
     if (nuevosPaths == null) return;
 
-   // List<ContenidoMultimedia> nuevoContenidoMultimedia = contenidoMultimediaService.mapeosMultimedia(nuevosPaths);
     List<ContenidoMultimedia> nuevoContenidoMultimedia = mapearMultimedia(nuevosPaths);
 
     if (hecho.getContenidosMultimedia() != null) {
