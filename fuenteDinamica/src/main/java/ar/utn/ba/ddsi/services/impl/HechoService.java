@@ -17,6 +17,7 @@ import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -62,9 +63,8 @@ public class HechoService implements IHechoService {
           hechoInputDTO.getFechaAcontecimiento(),
           Origen.CARGA_MANUAL);
 
-
       if(hechoInputDTO.getPathsMultimedia() != null) {
-        List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO.getPathsMultimedia());
+        List<ContenidoMultimedia> contenidosMultimedia = mapearMultimedia(hechoInputDTO.getPathsMultimedia());
         hecho.setContenidosMultimedia(contenidosMultimedia);}
 
       hecho.agregarEtiqueta(new Etiqueta("prueba")); // Mas adelante cambiar por DTO
@@ -137,23 +137,13 @@ public class HechoService implements IHechoService {
         categoria, hechoInputDTO.getCiudad(),
         hechoInputDTO.getFechaAcontecimiento());
 
-
-    if(hechoInputDTO.getPathsMultimedia() != null) {
-      List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hechoInputDTO.getPathsMultimedia());
-      if (hecho.getContenidosMultimedia() != null) {
-        hecho.getContenidosMultimedia().forEach(
-            c -> contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia()));
-      }
-      if (contenidosMultimedia != null) {
-        hecho.setContenidosMultimedia(contenidosMultimedia);
-      }
-    }
+    reemplazarArchivoMultimedia(hecho, hechoInputDTO.getPathsMultimedia());
 
     hecho.setEstadoPrevio(estadoPrevio);
 
     this.solicitudService.create(hecho, TipoSolicitud.EDICION);
-
     this.hechoRepository.save(hecho);
+
     return this.hechoOutputDTO(hecho);
   }
 
@@ -167,20 +157,38 @@ public class HechoService implements IHechoService {
   public void edicionRechazada(Hecho hecho){
     HechoEstadoPrevio estadoPrevio = hecho.getEstadoPrevio();
     hecho.setEstadoPrevio(null);
-    this.actualizarHecho(hecho, estadoPrevio.getTitulo(), estadoPrevio.getDescripcion(), estadoPrevio.getCategoria(), estadoPrevio.getUbicacion(), estadoPrevio.getFechaAcontecimiento());
 
-    if(hecho.getContenidosMultimedia() != null) {
-      List<ContenidoMultimedia> contenidosMultimedia = contenidoMultimediaService.mapeosMultimedia(hecho.getPathsMultimedia(hecho.getContenidosMultimedia()));
-      if (hecho.getContenidosMultimedia() != null) {
-        hecho.getContenidosMultimedia().forEach(
-            c -> contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia()));
-      }
-      if (contenidosMultimedia != null) {
-        hecho.setContenidosMultimedia(contenidosMultimedia);
-      }
-    }
+    this.actualizarHecho(hecho,
+        estadoPrevio.getTitulo(),
+        estadoPrevio.getDescripcion(),
+        estadoPrevio.getCategoria(),
+        estadoPrevio.getUbicacion(),
+        estadoPrevio.getFechaAcontecimiento());
+
+    reemplazarArchivoMultimedia(hecho, hecho.getPathsMultimedia(hecho.getContenidosMultimedia()));
 
     this.hechoRepository.save(hecho);
+  }
+
+  private void reemplazarArchivoMultimedia(Hecho hecho, List<String> nuevosPaths) {
+    if (nuevosPaths == null) return;
+
+   // List<ContenidoMultimedia> nuevoContenidoMultimedia = contenidoMultimediaService.mapeosMultimedia(nuevosPaths);
+    List<ContenidoMultimedia> nuevoContenidoMultimedia = mapearMultimedia(nuevosPaths);
+
+    if (hecho.getContenidosMultimedia() != null) {
+      hecho.getContenidosMultimedia().forEach(c ->
+          contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia())
+      );
+    }
+    if (nuevoContenidoMultimedia != null) {
+      hecho.setContenidosMultimedia(nuevoContenidoMultimedia);
+    }
+  }
+
+  private List<ContenidoMultimedia> mapearMultimedia(List<String> paths) {
+    if (paths == null) return Collections.emptyList();
+    return contenidoMultimediaService.mapeosMultimedia(paths);
   }
 
   @Override
