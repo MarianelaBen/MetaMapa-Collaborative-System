@@ -7,5 +7,5 @@ import java.util.List;
 public interface IColeccionRepository {
   public Coleccion save(Coleccion coleccion);
   public List<Coleccion> findAll();
-  public void eliminarHechoDeColeccion(Hecho hecho);
+  public void eliminarHecho(Hecho hecho);
 }

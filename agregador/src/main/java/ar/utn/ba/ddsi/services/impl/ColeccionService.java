@@ -28,7 +28,7 @@ public class ColeccionService implements IColeccionService {
 
 
   public Coleccion filtrarHechos(Coleccion coleccion){
-    coleccion.getHechosDeLaColeccion().clear();
+    coleccion.getHechos().clear();
     List<Hecho> hechosFiltrados = coleccion.getFuentes().stream()
         .flatMap(fuente -> fuente.getHechos().stream())
         .map(HechoInputDTO::toHecho)
@@ -51,9 +51,9 @@ public class ColeccionService implements IColeccionService {
   }
 
   @Override
-  public List<Hecho> obtenerHechosDeColeccion() {
+  public List<Hecho> obtenerHechos() {
     return coleccionRepository.findAll().stream()
-        .flatMap(c -> c.getHechosDeLaColeccion().stream())
+        .flatMap(c -> c.getHechos().stream())
         .filter(h -> !h.isFueEliminado())
         .collect(Collectors.toList());
   }

@@ -7,5 +7,5 @@ import java.util.List;
 public interface IColeccionService {
   public void actualizarColecciones();
   public Coleccion crearColeccion(Coleccion coleccion);
-  public List<Hecho> obtenerHechosDeColeccion();
+  public List<Hecho> obtenerHechos();
 }

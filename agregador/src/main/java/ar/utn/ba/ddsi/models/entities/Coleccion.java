@@ -14,7 +14,7 @@ public class Coleccion {
   @Getter private String descripcion;
   @Getter private Set<Fuente> fuentes;
   @Getter private Set<Criterio> criterios;
-  @Getter private List<Hecho> hechosDeLaColeccion;
+  @Getter private List<Hecho> hechos;
   @Getter @Setter private String handle;
 
   public Coleccion(String titulo, String descripcion){
@@ -22,7 +22,7 @@ public class Coleccion {
     this.descripcion = descripcion;
     this.fuentes = new HashSet<>();
     this.criterios = new HashSet<>();
-    this.hechosDeLaColeccion = new ArrayList<>();
+    this.hechos = new ArrayList<>();
   }
 
   public void agregarFuentes(Fuente ... nuevasFuentes){
@@ -30,7 +30,7 @@ public class Coleccion {
   }
 
   public void agregarHechos(List<Hecho> hechos){
-    this.hechosDeLaColeccion.addAll(hechos);
+    this.hechos.addAll(hechos);
   }
 
   public boolean cumpleLosCriterios(Hecho hecho){
