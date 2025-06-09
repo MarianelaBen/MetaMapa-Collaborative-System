@@ -1,5 +1,9 @@
 package ar.utn.ba.ddsi.models.dtos.input;
 
+import ar.utn.ba.ddsi.models.entities.Categoria;
+import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.Ubicacion;
+import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuenteExterna;
 import lombok.Data;
 import lombok.Getter;
@@ -19,6 +23,17 @@ public class HechoInputDTO {
   private LocalDate fechaCarga;
   private TipoFuenteExterna fuenteExterna;
 
+
+  public Hecho toHecho() {
+    return new Hecho(
+        this.titulo,
+        this.descripcion,
+        new Categoria(this.categoria),
+        new Ubicacion(this.latitud, this.longitud),
+        this.fechaAcontecimiento,
+        Origen.PROVENIENTE_DE_DATASET
+    );
+  }
 }
 
 

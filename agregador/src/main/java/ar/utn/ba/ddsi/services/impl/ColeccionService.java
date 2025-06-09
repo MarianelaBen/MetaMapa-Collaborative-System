@@ -31,7 +31,6 @@ public class ColeccionService implements IColeccionService {
     coleccion.getHechos().clear();
     List<Hecho> hechosFiltrados = coleccion.getFuentes().stream()
         .flatMap(fuente -> fuente.getHechos().stream())
-        .map(HechoInputDTO::toHecho)
         .filter(hecho -> coleccion.noFueEliminado(hecho))
         .collect(Collectors.toList());
       if( coleccion.getCriterios().isEmpty() ) { coleccion.agregarHechos(hechosFiltrados); }

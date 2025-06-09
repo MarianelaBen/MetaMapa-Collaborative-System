@@ -7,10 +7,12 @@ import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuenteExterna;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+@Setter
 @Getter
 public class HechoInputDTO {
   private long id;
@@ -25,6 +27,22 @@ public class HechoInputDTO {
   private Set<Long> idEtiquetas;
   private List<Long> idContenidoMultimedia;
   private String fuenteExterna;
+
+  public HechoInputDTO(Hecho hecho) {
+    this.id = 0; // o poné algún valor si tenés ID en Hecho
+    this.titulo = hecho.getTitulo();
+    this.descripcion = hecho.getDescripcion();
+    this.categoria = hecho.getCategoria().getNombre(); // si tenés getNombre()
+    this.latitud = hecho.getUbicacion().getLatitud();
+    this.longitud = hecho.getUbicacion().getLongitud();
+    this.fechaAcontecimiento = hecho.getFechaAcontecimiento();
+    this.fechaCarga = hecho.getFechaCarga();
+    this.fuenteExterna = null; // o lo que corresponda
+
+    // Estos campos los podés dejar como null si no los usás
+    this.idEtiquetas = null;
+    this.idContenidoMultimedia = null;
+  }
 
   public Hecho toHecho() {
     return new Hecho(

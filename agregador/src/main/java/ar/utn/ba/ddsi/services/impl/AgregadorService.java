@@ -28,17 +28,29 @@ public AgregadorService(List<Fuente> fuentes, IFuenteRepository fuenteRepository
 
   @Override
   public List<HechoInputDTO> obtenerHechosDeFuentes() {
-    return fuentes.stream().flatMap(f -> f.getHechos().stream()).collect(Collectors.toList());
+    return fuentes.stream()
+        .flatMap(f -> f.getHechos().stream())
+        .map(hecho -> new HechoInputDTO(hecho)) // conversión a DTO
+        .collect(Collectors.toList());
   }
+
   @Override
   public List<HechoInputDTO> obtenerHechosPorTipoDeFuente(TipoFuente tipo) {
-    return fuentes.stream().filter(f -> f.getTipo() == tipo).flatMap(f -> f.getHechos().stream()).collect(Collectors.toList());
+    return fuentes.stream()
+        .filter(f -> f.getTipo() == tipo)
+        .flatMap(f -> f.getHechos().stream())
+        .map(hecho -> new HechoInputDTO(hecho)) // conversión a DTO
+        .collect(Collectors.toList());
   }
 
   @Override
   public List<HechoInputDTO> obtenerHechosPorFuenteExterna(String tipo) {
     List<Fuente> fuentesProxy = this.obtenerFuentesProxy();
-    return fuentesProxy.stream().flatMap(f->f.getHechos().stream()).filter(h -> tipo.equalsIgnoreCase(h.getFuenteExterna())).collect(Collectors.toList());
+    return fuentesProxy.stream()
+        .flatMap(f -> f.getHechos().stream())           // Stream<Hecho>
+        .map(h -> new HechoInputDTO(h))                 // Stream<HechoInputDTO>
+        .filter(dto -> tipo.equalsIgnoreCase(dto.getFuenteExterna()))
+        .collect(Collectors.toList());
   }
 
   @Override
