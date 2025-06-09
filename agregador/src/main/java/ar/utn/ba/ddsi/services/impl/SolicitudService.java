@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Solicitud;
+import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IColeccionService;
@@ -20,7 +21,7 @@ public abstract class SolicitudService implements IDetectorDeSpam {
 
   //al crear la solicitud se llama a este metodo, que filtra spams
   //metodo del agregador, que suponemos que va antes de que se meta el administrador
-  public Solicitud filtrarSpams(Solicitud solicitud) {
+  public SolicitudDeEliminacion RechazadoPorSpam(SolicitudDeEliminacion solicitud) {
 
     if (solicitud.getHecho() == null || esSpam(solicitud.getHecho().getTitulo())) {
       solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
@@ -32,14 +33,14 @@ public abstract class SolicitudService implements IDetectorDeSpam {
 
 
   // metodos que va a llamar el administrador cuando acepte / rechace una solicitud
-  public void aceptarSolicitud(Solicitud solicitud){
+  public void aceptarSolicitud(SolicitudDeEliminacion solicitud){
     Hecho hecho = solicitud.getHecho();
     solicitud.setFechaAtencion(LocalDateTime.now());
     solicitud.cambiarEstado(EstadoSolicitud.ACEPTADA);
     hecho.setFueEliminado(true);
   }
 
-  public void rechazarSolicitud(Solicitud solicitud){
+  public void rechazarSolicitud(SolicitudDeEliminacion solicitud){
     solicitud.setFechaAtencion(LocalDateTime.now());
     solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
   }

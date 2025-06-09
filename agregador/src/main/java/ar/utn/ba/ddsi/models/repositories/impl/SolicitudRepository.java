@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.models.repositories.impl;
 
 import ar.utn.ba.ddsi.models.entities.Solicitud;
+import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
@@ -8,15 +9,15 @@ import java.util.List;
 
 @Repository
 public class SolicitudRepository implements ISolicitudRepository {
-    private List<Solicitud> solicitudes = new ArrayList<>();
+    private List<SolicitudDeEliminacion> solicitudes = new ArrayList<>();
 
     @Override
-    public void save(Solicitud solicitud){
+    public void save(SolicitudDeEliminacion solicitud){
       solicitudes.add(solicitud);
     }
 
     @Override
-    public List<Solicitud> findAll(){
+    public List<SolicitudDeEliminacion> findAll(){
       return this.solicitudes;
     }
 }
