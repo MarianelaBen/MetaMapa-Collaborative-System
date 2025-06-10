@@ -1,7 +1,10 @@
 package ar.utn.ba.ddsi.services;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.ContribuyenteOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.UbicacionOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Categoria;
+import ar.utn.ba.ddsi.models.entities.Contribuyente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import java.time.LocalDate;
@@ -18,4 +21,6 @@ public interface IHechoService {
   void edicionRechazada(Hecho hecho);
   List<HechoOutputDTO> buscarTodos();
   void actualizarHecho(Hecho hecho, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento);
+  UbicacionOutputDTO ubicacionOutputDTO(Ubicacion ubicacion);
+  ContribuyenteOutputDTO contribuyenteOutputDTO(Contribuyente contribuyente);
 }

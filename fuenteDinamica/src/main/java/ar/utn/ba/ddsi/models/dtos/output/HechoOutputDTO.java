@@ -1,12 +1,8 @@
 package ar.utn.ba.ddsi.models.dtos.output;
 
-import ar.utn.ba.ddsi.models.entities.Contribuyente;
-import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.List;
@@ -18,21 +14,23 @@ public class HechoOutputDTO {
   @NotNull
   private String descripcion;
   @NotNull
-  private Long idCategoria;
+  private String nombreCategoria;
   @NotNull
-  private Ubicacion ubicacion;
+  private UbicacionOutputDTO ubicacion;
   @NotNull
   private LocalDate fechaAcontecimiento;
   @NotNull
   private LocalDate fechaCarga;
   @NotNull
   private Origen origen;
-  // private boolean fueEliminado; no es un dato que se pueda enviar
-  private Set<Long> idEtiquetas;
   @NotNull
-  private Contribuyente contribuyente;
+  private boolean fueEliminado;
+  @NotNull
+  private Set<String> nombreEtiquetas;
+  @NotNull
+  private ContribuyenteOutputDTO contribuyente;
 
-  private List<Long> idContenidoMultimedia;
+  private List<String> pathContenidoMultimedia;
 }
 
 /*

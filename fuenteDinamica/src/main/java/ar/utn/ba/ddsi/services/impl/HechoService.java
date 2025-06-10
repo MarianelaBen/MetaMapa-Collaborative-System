@@ -2,6 +2,8 @@ package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.Exceptions.HechoCreacionException;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.ContribuyenteOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.UbicacionOutputDTO;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoSolicitud;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
@@ -10,18 +12,14 @@ import ar.utn.ba.ddsi.services.ICategoriaService;
 import ar.utn.ba.ddsi.services.IContenidoMultimediaService;
 import ar.utn.ba.ddsi.services.IHechoService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
@@ -85,14 +83,31 @@ public class HechoService implements IHechoService {
     HechoOutputDTO dto = new HechoOutputDTO();
     dto.setTitulo(hecho.getTitulo());
     dto.setDescripcion(hecho.getDescripcion());
-    dto.setIdCategoria(hecho.getCategoria().getId());
-    dto.setUbicacion(hecho.getUbicacion());
+    dto.setNombreCategoria(hecho.getCategoria().getNombre());
+    dto.setUbicacion(ubicacionOutputDTO(hecho.getUbicacion()));
     dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     dto.setFechaCarga(hecho.getFechaCarga());
     dto.setOrigen(hecho.getOrigen());       // extrae el id de cada etiqueta y los junta en un Set<Integer>
     // dto.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
-    dto.setContribuyente(hecho.getContribuyente());
-    dto.setIdContenidoMultimedia(hecho.getContenidosMultimedia().stream().map(ContenidoMultimedia::getIdContenidoMultimedia).collect(Collectors.toList()));
+    dto.setContribuyente(contribuyenteOutputDTO(hecho.getContribuyente()));
+    dto.setPathContenidoMultimedia(hecho.getContenidosMultimedia().stream().map(ContenidoMultimedia::getPath).collect(Collectors.toList()));
+    return dto;
+  }
+
+  @Override
+  public UbicacionOutputDTO ubicacionOutputDTO(Ubicacion ubicacion) {
+    UbicacionOutputDTO dto = new UbicacionOutputDTO();
+    dto.setLatitud(ubicacion.getLatitud());
+    dto.setLongitud(ubicacion.getLongitud());
+    return dto;
+  }
+
+  @Override
+  public ContribuyenteOutputDTO contribuyenteOutputDTO(Contribuyente contribuyente) {
+    ContribuyenteOutputDTO dto = new ContribuyenteOutputDTO();
+    dto.setNombre(contribuyente.getNombre());
+    dto.setApellido(contribuyente.getApellido());
+    dto.setFechaDeNacimiento(contribuyente.getFechaDeNacimiento());
     return dto;
   }
 
