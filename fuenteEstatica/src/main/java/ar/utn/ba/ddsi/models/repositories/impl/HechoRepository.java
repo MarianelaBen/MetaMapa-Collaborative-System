@@ -39,4 +39,9 @@ public class HechoRepository implements IHechoRepository {
   public Hecho findById(Long id) {
     return this.hechos.stream().filter(h -> h.getId().equals(id)).findFirst().orElse(null);
   }
+
+  @Override
+  public List<Hecho> findAll(){
+    return this.hechos;
+  }
 }
