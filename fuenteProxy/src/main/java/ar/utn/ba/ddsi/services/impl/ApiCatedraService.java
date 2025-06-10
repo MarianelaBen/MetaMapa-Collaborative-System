@@ -19,14 +19,36 @@ public class ApiCatedraService implements IApiCatedraService {
     this.webClient = webClient;
   }
 
+  // Clase auxiliar para llevar el número de página junto con los datos
+  record PaginaConDatos(int numeroPagina, HechoResponseDTO datos) {}
+
   @Override
   public Mono<List<HechoInputDTO>> obtenerHechos() {
+    return obtenerPagina(1)
+        .expand(pagina -> {
+          // Si la página tiene datos, seguimos con la siguiente
+          if (!pagina.datos().getData().isEmpty()) {
+            return obtenerPagina(pagina.numeroPagina() + 1);
+          } else {
+            // Si está vacía, terminamos
+            return Mono.empty();
+          }
+        })
+        .flatMapIterable(pagina -> pagina.datos().getData())
+        .collectList();
+  }
+
+  private Mono<PaginaConDatos> obtenerPagina(int numeroPagina) {
     return webClient.get()
-        .uri("/desastres")
+        .uri(uriBuilder -> uriBuilder
+            .path("/desastres")
+            .queryParam("page", numeroPagina)
+            .build())
         .retrieve()
         .bodyToMono(HechoResponseDTO.class)
-        .map(HechoResponseDTO::getData);
+        .map(response -> new PaginaConDatos(numeroPagina, response));
   }
+
 
   @Override
   public Mono<HechoInputDTO> obtenerHechoPorId(long id) {
