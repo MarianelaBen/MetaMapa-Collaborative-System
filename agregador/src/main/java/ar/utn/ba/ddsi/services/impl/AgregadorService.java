@@ -59,3 +59,27 @@ public AgregadorService(List<Fuente> fuentes, IFuenteRepository fuenteRepository
   }
 
 }
+/*
+public class AgregadorService implements IAgregadorService {
+
+    private final AdapterFuenteDinamica adapterFuenteDinamica;
+    private final AdapterFuenteEstatica adapterFuenteEstatica;
+    private final AdapterFuenteProxy adapterFuenteProxy;
+
+    public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica,
+                             AdapterFuenteEstatica adapterFuenteEstatica,
+                             AdapterFuenteProxy adapterFuenteProxy) {
+        this.adapterFuenteDinamica = adapterFuenteDinamica;
+        this.adapterFuenteEstatica = adapterFuenteEstatica;
+        this.adapterFuenteProxy = adapterFuenteProxy;
+    }
+
+    @Override
+    public List<Hecho> obtenerTodosLosHechos() {
+        List<Hecho> hechos = new ArrayList<>();
+        hechos.addAll(adapterFuenteDinamica.obtenerHechos());
+        hechos.addAll(adapterFuenteEstatica.obtenerHechos());
+        hechos.addAll(adapterFuenteProxy.obtenerHechos());
+        return hechos;
+    }
+}*/
