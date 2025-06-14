@@ -1,6 +1,8 @@
 package ar.utn.ba.ddsi.controllers;
 
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.impl.AgregadorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,8 @@ public class AgregadorController {
 
 
   @GetMapping("/hechos")
-  public List<HechoInputDTO> getHechos(){
-    return agregadorService.obtenerHechosDeFuentes();
+  public List<HechoOutputDTO> getHechos(){
+    return agregadorService.obtenerTodosLosHechos();
   }
 
 }

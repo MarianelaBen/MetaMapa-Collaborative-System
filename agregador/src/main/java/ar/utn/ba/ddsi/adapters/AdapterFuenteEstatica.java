@@ -1,4 +1,4 @@
-/*package ar.utn.ba.ddsi.adapters;
+package ar.utn.ba.ddsi.adapters;
 
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ public class AdapterFuenteEstatica {
 
   private final WebClient webClient;
 
-  public AdapterFuenteEstatica() {
+  public AdapterFuenteEstatica( ) {
     this.webClient = WebClient.builder()
         .baseUrl("http://fuente-estatica:8081/api/hechos")
         .build();
@@ -24,4 +24,4 @@ public class AdapterFuenteEstatica {
         .collectList()
         .block();
   }
-}*/
+}

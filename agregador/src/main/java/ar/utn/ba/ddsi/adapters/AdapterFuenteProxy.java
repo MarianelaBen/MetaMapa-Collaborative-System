@@ -1,4 +1,4 @@
-/*package ar.utn.ba.ddsi.adapters;
+package ar.utn.ba.ddsi.adapters;
 
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
@@ -13,7 +13,7 @@ public class AdapterFuenteProxy {
 
   private final WebClient webClient;
 
-  public AdapterFuenteProxy() {
+  public AdapterFuenteProxy( ) {
     this.webClient = WebClient.builder()
         .baseUrl("http://fuente-proxy:8082/api/hechos")
         .build();
@@ -30,4 +30,4 @@ public class AdapterFuenteProxy {
         .map(HechoInputDTO::toHecho)
         .collect(Collectors.toList());
   }
-}*/
+}

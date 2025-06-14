@@ -1,4 +1,4 @@
-/*package ar.utn.ba.ddsi.adapters;
+package ar.utn.ba.ddsi.adapters;
 
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
@@ -12,13 +12,13 @@ public class AdapterFuenteDinamica {
 
     private final WebClient webClient;
 
-    public AdapterFuenteDinamica() {
+    public AdapterFuenteDinamica( ) {
       this.webClient = WebClient.builder()
           .baseUrl("http://fuente-dinamica:8080/api/hechos")
           .build();
     }
 
-    public List<Hecho> obtenerHechos() {
+    public List<Hecho> obtenerHechos( ) {
       List<HechoOutputDTO> hechosDTO = webClient.get()
           .retrieve()
           .bodyToFlux(HechoOutputDTO.class)
@@ -30,4 +30,4 @@ public class AdapterFuenteDinamica {
           .collect(Collectors.toList());
     }
 
-}*/
+}
