@@ -19,6 +19,7 @@ public class Hecho {
   @Setter @Getter private boolean fueEliminado;
   @Setter @Getter private Set<Etiqueta> etiquetas;
 
+
   //  @Setter @Getter private String nombreAportante;
   //  @Setter @Getter private String apellidoAportante;
   //  @Setter @Getter private Integer edadAportante;

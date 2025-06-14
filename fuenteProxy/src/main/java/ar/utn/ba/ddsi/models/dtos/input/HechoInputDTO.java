@@ -4,7 +4,6 @@ import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
-import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuenteExterna;
 import lombok.Data;
 import lombok.Getter;
 import java.time.LocalDate;
@@ -21,7 +20,7 @@ public class HechoInputDTO {
   private Double longitud;
   private LocalDate fechaAcontecimiento;
   private LocalDate fechaCarga;
-  private TipoFuenteExterna fuenteExterna;
+  private String fuenteExterna;
 
 
   public Hecho toHecho() {

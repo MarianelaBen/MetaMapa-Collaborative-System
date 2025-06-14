@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class Hecho {
+  @Getter private Long id;
   @Getter private String titulo;
   @Getter private String descripcion;
   @Getter private Categoria categoria;
@@ -17,12 +18,13 @@ public class Hecho {
   @Getter private Origen origen;
   @Setter @Getter private boolean fueEliminado;
   @Setter @Getter private Set<Etiqueta> etiquetas;
+  @Getter @Setter String fuenteExterna;
 
   //  @Setter @Getter private String nombreAportante;
   //  @Setter @Getter private String apellidoAportante;
   //  @Setter @Getter private Integer edadAportante;
 
-  public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen){
+  public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen, String fuenteExterna){
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
@@ -32,6 +34,7 @@ public class Hecho {
     this.origen = origen;
     this.fueEliminado = false;
     this.etiquetas = new HashSet<>();
+    this.fuenteExterna = fuenteExterna;
   }
 
   public void agregarEtiqueta(Etiqueta etiqueta) {

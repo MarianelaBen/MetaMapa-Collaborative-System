@@ -1,7 +1,6 @@
 package ar.utn.ba.ddsi.adapters;
 
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
-import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuenteExterna;
 import ar.utn.ba.ddsi.services.impl.ApiCatedraService;
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class AdapterCatedra implements IFuenteProxyAdapter {
     List<HechoInputDTO> hechosDTO = apiCatedraService.obtenerHechos().block();
 
     if (hechosDTO != null) {
-      hechosDTO.forEach(hDTO -> hDTO.setFuenteExterna(TipoFuenteExterna.API_CATEDRA));
+      hechosDTO.forEach(hDTO -> hDTO.setFuenteExterna("API_CATEDRA"));
       return hechosDTO;
     }
     else {
