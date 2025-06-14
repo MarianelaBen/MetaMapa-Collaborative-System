@@ -24,15 +24,15 @@ public class HechoOutputDTO {
   private String fuenteExterna;
 
   public HechoOutputDTO(Hecho hecho) {
-    this.id = 0; // o poné algún valor si tenés ID en Hecho
+    this.id = hecho.getId();
     this.titulo = hecho.getTitulo();
     this.descripcion = hecho.getDescripcion();
-    this.categoria = hecho.getCategoria().getNombre(); // si tenés getNombre()
+    this.categoria = hecho.getCategoria().getNombre();
     this.latitud = hecho.getUbicacion().getLatitud();
     this.longitud = hecho.getUbicacion().getLongitud();
     this.fechaAcontecimiento = hecho.getFechaAcontecimiento();
     this.fechaCarga = hecho.getFechaCarga();
-    this.fuenteExterna = null; // o lo que corresponda
+    this.fuenteExterna = null;
     this.idEtiquetas = null;
     this.idContenidoMultimedia = null;
   }
@@ -44,7 +44,7 @@ public class HechoOutputDTO {
         new Categoria(this.categoria),
         new Ubicacion(this.latitud, this.longitud),
         this.fechaAcontecimiento,
-        Origen.PROVISTO_POR_CONTRIBUYENTE
+        Origen.PROVISTO_POR_CONTRIBUYENTE //porque viene de dinamica
         );
   }
 }
