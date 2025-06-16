@@ -85,7 +85,7 @@ public class FuenteDinamicaController {
   @PostMapping("/{idHecho}/rechazar-creacion")
   public ResponseEntity<?> rechazarCreacion(@PathVariable Long idSolicitud, String comentario, Long idAdministrador) {
     try {
-      solicitudService.atencionDeSolicitud(idSolicitud, EstadoSolicitud.RECHAZADA,comentario, idAdministrador);
+      solicitudService.atencionDeSolicitud(idSolicitud, EstadoSolicitud.RECHAZADA, comentario, idAdministrador);
       return ResponseEntity.ok(Map.of("mensaje", "Creación rechazada correctamente"));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -96,7 +96,7 @@ public class FuenteDinamicaController {
   @PostMapping("/{idHecho}/rechazar-edicion")
   public ResponseEntity<?> rechazarEdicion(@PathVariable Long idSolicitud, String comentario, Long idAdministrador) {
     try {
-      solicitudService.atencionDeSolicitud(idSolicitud, EstadoSolicitud.RECHAZADA,comentario, idAdministrador);
+      solicitudService.atencionDeSolicitud(idSolicitud, EstadoSolicitud.RECHAZADA, comentario, idAdministrador);
       return ResponseEntity.ok(Map.of("mensaje", "Edición rechazada correctamente"));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -105,7 +105,13 @@ public class FuenteDinamicaController {
   }
 
   @GetMapping
-  public List<HechoOutputDTO> buscarTodas() {
-    return this.hechoService.buscarTodos();
+  public ResponseEntity<?> getHechos() {
+    try {
+      return ResponseEntity.ok(this.hechoService.buscarTodos());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "Error al buscar los hechos", "detalle", e.getMessage()));
+    }
   }
+
 }
