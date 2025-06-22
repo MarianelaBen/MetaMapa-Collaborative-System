@@ -11,7 +11,7 @@ public class AdapterFuenteEstatica {
 
   private final WebClient webClient;
 
-  public AdapterFuenteEstatica( ) {
+  public AdapterFuenteEstatica() {
     this.webClient = WebClient.builder()
         .baseUrl("http://fuente-estatica:8081/api/hechos")
         .build();

@@ -23,9 +23,7 @@ public class ColeccionService implements IColeccionService {
     this.filtrarHechos(coleccion);
 
     return coleccionRepository.save(coleccion);
-
   }
-
 
   public Coleccion filtrarHechos(Coleccion coleccion){
     coleccion.getHechos().clear();

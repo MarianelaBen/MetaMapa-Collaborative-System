@@ -13,7 +13,7 @@ public class AdapterFuenteProxy {
 
   private final WebClient webClient;
 
-  public AdapterFuenteProxy( ) {
+  public AdapterFuenteProxy() {
     this.webClient = WebClient.builder()
         .baseUrl("http://fuente-proxy:8082/api/hechos")
         .build();

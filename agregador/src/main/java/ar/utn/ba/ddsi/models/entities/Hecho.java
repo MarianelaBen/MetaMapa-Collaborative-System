@@ -19,6 +19,7 @@ public class Hecho {
   @Setter @Getter private boolean fueEliminado;
   @Setter @Getter private Set<Etiqueta> etiquetas;
   @Getter @Setter String fuenteExterna;
+  @Getter @Setter boolean consensuado;
 
   //  @Setter @Getter private String nombreAportante;
   //  @Setter @Getter private String apellidoAportante;
@@ -35,6 +36,7 @@ public class Hecho {
     this.fueEliminado = false;
     this.etiquetas = new HashSet<>();
     this.fuenteExterna = fuenteExterna;
+    this.consensuado = true;
   }
 
   public void agregarEtiqueta(Etiqueta etiqueta) {

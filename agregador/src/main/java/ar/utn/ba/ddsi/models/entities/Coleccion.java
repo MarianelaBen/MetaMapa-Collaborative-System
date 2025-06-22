@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.models.entities;
 
 import ar.utn.ba.ddsi.algoritmos.IAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.entities.criterios.Criterio;
+import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,14 +18,15 @@ public class Coleccion {
   @Getter private Set<Criterio> criterios;
   @Getter private List<Hecho> hechos;
   @Getter @Setter private String handle;
-  @Getter @Setter private IAlgoritmoDeConsenso algoritmoDeConsenso;
+  @Getter @Setter private TipoAlgoritmoDeConsenso algoritmoDeConsenso;
 
-  public Coleccion(String titulo, String descripcion){
+  public Coleccion(String titulo, String descripcion, Set<Fuente> fuentes) {
     this.titulo = titulo;
     this.descripcion = descripcion;
-    this.fuentes = new HashSet<>();
+    this.fuentes = fuentes;
     this.criterios = new HashSet<>();
     this.hechos = new ArrayList<>();
+    this.algoritmoDeConsenso = null;
   }
 
   public void agregarFuentes(Fuente ... nuevasFuentes){
