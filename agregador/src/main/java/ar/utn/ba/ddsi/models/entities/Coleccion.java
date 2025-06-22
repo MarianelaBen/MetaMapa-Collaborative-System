@@ -17,10 +17,10 @@ public class Coleccion {
   @Getter private List<Hecho> hechos;
   @Getter @Setter private String handle;
 
-  public Coleccion(String titulo, String descripcion){
+  public Coleccion(String titulo, String descripcion, Set<Fuente> fuentes) {
     this.titulo = titulo;
     this.descripcion = descripcion;
-    this.fuentes = new HashSet<>();
+    this.fuentes = fuentes;
     this.criterios = new HashSet<>();
     this.hechos = new ArrayList<>();
   }
