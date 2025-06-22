@@ -9,6 +9,5 @@ import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuente;
 import java.util.List;
 
 public interface IAgregadorService {
-  public List<HechoOutputDTO> obtenerTodosLosHechos();
-  public HechoOutputDTO hechoOutputDTO(Hecho hecho);
+  public List<Hecho> obtenerTodosLosHechos();
 }

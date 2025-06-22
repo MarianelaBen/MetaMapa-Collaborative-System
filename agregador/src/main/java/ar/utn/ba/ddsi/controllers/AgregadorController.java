@@ -24,7 +24,14 @@ public class AgregadorController {
 
   @GetMapping("/hechos")
   public List<HechoOutputDTO> getHechos(){
-    return agregadorService.obtenerTodosLosHechos();
+    return agregadorService.obtenerTodosLosHechos()
+        .stream()
+        .map(this::hechoOutputDTO).toList();
+  }
+
+
+  public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
+    return new HechoOutputDTO(hecho);
   }
 
 }

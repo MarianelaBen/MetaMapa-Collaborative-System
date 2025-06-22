@@ -23,17 +23,12 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
 }
 
   @Override
-  public List<HechoOutputDTO> obtenerTodosLosHechos() {
+  public List<Hecho> obtenerTodosLosHechos() {
     List<Hecho> hechos = new ArrayList<>();
     hechos.addAll(adapterFuenteDinamica.obtenerHechos());
     hechos.addAll(adapterFuenteEstatica.obtenerHechos());
     hechos.addAll(adapterFuenteProxy.obtenerHechos());
-    return hechos.stream().map(this::hechoOutputDTO).toList();
+    return hechos;
 }
-
-  @Override
-  public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
-    return new HechoOutputDTO(hecho);
-  }
 
 }
