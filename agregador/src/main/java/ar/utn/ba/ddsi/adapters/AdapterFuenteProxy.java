@@ -13,14 +13,13 @@ public class AdapterFuenteProxy {
 
   private final WebClient webClient;
 
-  public AdapterFuenteProxy( ) {
-    this.webClient = WebClient.builder()
-        .baseUrl("http://fuente-proxy:8082/api/hechos")
-        .build();
+  public AdapterFuenteProxy(String url) {
+    this.webClient = WebClient.builder().build();
   }
 
-  public List<Hecho> obtenerHechos() {
+  public List<Hecho> obtenerHechos(String fuenteUrl) {
     List<HechoInputDTO> hechosDTO = webClient.get()
+        .uri(fuenteUrl)
         .retrieve()
         .bodyToFlux(HechoInputDTO.class)
         .collectList()

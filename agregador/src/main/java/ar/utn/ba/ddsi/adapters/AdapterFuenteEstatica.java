@@ -11,14 +11,13 @@ public class AdapterFuenteEstatica {
 
   private final WebClient webClient;
 
-  public AdapterFuenteEstatica( ) {
-    this.webClient = WebClient.builder()
-        .baseUrl("http://fuente-estatica:8081/api/hechos")
-        .build();
+  public AdapterFuenteEstatica(String url) {
+    this.webClient = WebClient.builder().build();
   }
 
-  public List<Hecho> obtenerHechos() {
+  public List<Hecho> obtenerHechos(String fuenteUrl) {
     return webClient.get()
+        .uri(fuenteUrl)
         .retrieve()
         .bodyToFlux(Hecho.class)
         .collectList()

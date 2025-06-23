@@ -7,7 +7,9 @@ import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuente;
 
 import java.util.List;
+import java.util.Set;
 
 public interface IAgregadorService {
-  public List<Hecho> obtenerTodosLosHechos();
+  public List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente);
+  public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes);
 }

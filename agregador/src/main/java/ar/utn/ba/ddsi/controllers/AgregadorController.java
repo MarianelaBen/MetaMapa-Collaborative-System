@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.controllers;
 
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.impl.AgregadorService;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping
@@ -23,12 +25,11 @@ public class AgregadorController {
 
 
   @GetMapping("/hechos")
-  public List<HechoOutputDTO> getHechos(){
-    return agregadorService.obtenerTodosLosHechos()
+  public List<HechoOutputDTO> getHechos(Set<Fuente> fuentes){
+    return agregadorService.obtenerTodosLosHechos(fuentes)
         .stream()
         .map(this::hechoOutputDTO).toList();
   }
-
 
   public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     return new HechoOutputDTO(hecho);
