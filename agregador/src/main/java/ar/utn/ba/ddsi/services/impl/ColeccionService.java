@@ -33,6 +33,9 @@ public class ColeccionService implements IColeccionService {
 
   }
 
+  public Coleccion findById(String id){
+    return coleccionRepository.findById(id);
+  }
 
   public Coleccion filtrarHechos(Coleccion coleccion){
     coleccion.getHechos().clear();

@@ -4,22 +4,29 @@ import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
+import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
+import ar.utn.ba.ddsi.services.IDetectorDeSpam;
+import ar.utn.ba.ddsi.services.ISolicitudService;
 import ar.utn.ba.ddsi.services.impl.AgregadorService;
+import ar.utn.ba.ddsi.services.impl.SolicitudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/public")
 public class AgregadorController {
 
   private final IAgregadorService agregadorService;
+  private final SolicitudService solicitudService;
 
-  public AgregadorController(IAgregadorService agregadorService){
+  public AgregadorController(IAgregadorService agregadorService, SolicitudService solicitudService){
     this.agregadorService = agregadorService;
+    this.solicitudService = solicitudService;
   }
 
 
@@ -41,4 +48,18 @@ public class AgregadorController {
     TipoDeModoNavegacion modo = TipoDeModoNavegacion.valueOf(modoStr);
     return agregadorService.obtenerHechosPorColeccion(coleccionId, modo);
   }
+/*
+  //navegacion filtrada sobre una coleccion
+  @GetMapping("/colecciones/{coleccionId}/filtrados")
+  public List<HechoOutputDTO> getHechosFiltrados(@PathVariable String coleccionId) {
+    return agregadorService.obtenerHechosFiltrados(coleccionId);
+  }*/
+
+  @PostMapping("/solicitudes")
+  public void crearSolicitudDeEliminacion(SolicitudDeEliminacion solicitud) {
+    solicitudService.crearSolicitud(solicitud);
+  }
+
+
+
 }

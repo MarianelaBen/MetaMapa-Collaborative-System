@@ -10,4 +10,5 @@ public interface IColeccionService {
   public Coleccion crearColeccion(Coleccion coleccion);
   public List<Hecho> obtenerHechos();
   public List<Hecho> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modoNavegacion);
+  public Coleccion findById(String id);
 }
