@@ -1,6 +1,6 @@
 package ar.utn.ba.ddsi.services.impl;
 
-import ar.utn.ba.ddsi.algoritmos.AlgoritmoDeConsensoFactory;
+import ar.utn.ba.ddsi.algoritmos.impl.AlgoritmoDeConsensoFactory;
 import ar.utn.ba.ddsi.algoritmos.IAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Fuente;
@@ -37,7 +37,7 @@ public class ConsensoService implements IConsensoService {
             hechosPorFuente.putIfAbsent(fuente, hechos);
           });
         });
-
+    //TODO poner la lista de las colecciones que tengan algoritmo para no repetir esto coleccion.getAlgoritmoDeConsenso() != null
     colecciones.stream()
                 .filter(coleccion -> coleccion.getAlgoritmoDeConsenso() != null)
                 .forEach(coleccion -> this.usoDeAlgoritmo(coleccion, hechosPorFuente));

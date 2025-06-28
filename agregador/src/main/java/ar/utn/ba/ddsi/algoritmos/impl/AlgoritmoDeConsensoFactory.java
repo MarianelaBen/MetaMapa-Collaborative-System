@@ -1,5 +1,6 @@
-package ar.utn.ba.ddsi.algoritmos;
+package ar.utn.ba.ddsi.algoritmos.impl;
 
+import ar.utn.ba.ddsi.algoritmos.IAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
