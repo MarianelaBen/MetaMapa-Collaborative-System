@@ -1,6 +1,5 @@
 package ar.utn.ba.ddsi.services.impl;
 
-import ar.utn.ba.ddsi.algoritmos.impl.AlgoritmoDeConsensoFactory;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Hecho;
@@ -8,6 +7,7 @@ import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
 import ar.utn.ba.ddsi.modosDeNavegacion.IModoDeNavegacion;
 import ar.utn.ba.ddsi.modosDeNavegacion.impl.ModoDeNavegacionFactory;
+import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,28 +20,30 @@ public class ColeccionService implements IColeccionService {
   private List<Coleccion> colecciones;
 
   @Autowired
-  private IColeccionRepository coleccionRepository;
-
-  @Autowired
   private ModoDeNavegacionFactory modoDeNavegacionFactory;
+  private IColeccionRepository coleccionRepository;
+  private IAgregadorService agregadorService;
+
 
   @Override
   public Coleccion crearColeccion(Coleccion coleccion){
     this.filtrarHechos(coleccion);
 
     return coleccionRepository.save(coleccion);
+
   }
+
 
   public Coleccion filtrarHechos(Coleccion coleccion){
     coleccion.getHechos().clear();
-    List<Hecho> hechosFiltrados = coleccion.getFuentes().stream()
-        .flatMap(fuente -> fuente.getHechos().stream())
+    List<Hecho> hechosFiltrados = agregadorService.obtenerTodosLosHechos(coleccion.getFuentes())
+        .stream()
         .filter(hecho -> coleccion.noFueEliminado(hecho))
         .collect(Collectors.toList());
-      if( coleccion.getCriterios().isEmpty() ) { coleccion.agregarHechos(hechosFiltrados); }
-      else { coleccion.agregarHechos(hechosFiltrados.stream()
-          .filter(coleccion::cumpleLosCriterios)
-          .collect(Collectors.toList())); }
+    if( coleccion.getCriterios().isEmpty() ) { coleccion.agregarHechos(hechosFiltrados); }
+    else { coleccion.agregarHechos(hechosFiltrados.stream()
+        .filter(coleccion::cumpleLosCriterios)
+        .collect(Collectors.toList())); }
     return coleccion;
   }
 
@@ -63,9 +65,9 @@ public class ColeccionService implements IColeccionService {
   }
 
   @Override
-  public List<Hecho> obtenerHechosPorColeccion(Long coleccionId, TipoDeModoNavegacion modoNavegacion) {
-    Coleccion coleccion = coleccionRepository.findById(coleccionId)
-        .orElseThrow(() -> new RuntimeException("No se encontro la coleccion"));
+  public List<Hecho> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modoNavegacion) {
+    Coleccion coleccion = coleccionRepository.findById(coleccionId);
+        //.orElseThrow(() -> new RuntimeException("No se encontro la coleccion"));
 
     List<Hecho> hechos = coleccion.getHechos().stream()
         .filter(h -> !h.isFueEliminado())
@@ -76,5 +78,5 @@ public class ColeccionService implements IColeccionService {
     return modo.aplicarModo(hechos);
   }
 
-}
+  }
 

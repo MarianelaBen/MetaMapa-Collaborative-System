@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class ColeccionRepository implements IColeccionRepository {
@@ -37,4 +38,10 @@ public class ColeccionRepository implements IColeccionRepository {
     }
   }
 
-}
+  @Override
+  public Coleccion findById(String coleccionId) {
+    return colecciones.stream()
+        .filter(c -> c.getHandle().equals(coleccionId))
+        .findFirst()
+        .orElse(null);
+}}

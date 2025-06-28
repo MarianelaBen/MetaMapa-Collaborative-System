@@ -9,5 +9,5 @@ public interface IColeccionService {
   public void actualizarColecciones();
   public Coleccion crearColeccion(Coleccion coleccion);
   public List<Hecho> obtenerHechos();
-  public List<Hecho> obtenerHechosPorColeccion(Long coleccionId, TipoDeModoNavegacion modoNavegacion);
+  public List<Hecho> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modoNavegacion);
 }

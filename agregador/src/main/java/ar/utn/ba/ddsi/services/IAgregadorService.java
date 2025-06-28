@@ -8,9 +8,11 @@ import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuente;
 
 import java.util.List;
+import java.util.Set;
 
 public interface IAgregadorService {
-  public List<HechoOutputDTO> obtenerTodosLosHechos();
+  List<HechoOutputDTO> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modo);
+  public List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente);
+  public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes);
   public HechoOutputDTO hechoOutputDTO(Hecho hecho);
-  List<HechoOutputDTO> obtenerHechosPorColeccion(Long coleccionId, TipoDeModoNavegacion modo);
 }
