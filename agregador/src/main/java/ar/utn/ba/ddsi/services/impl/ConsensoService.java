@@ -33,7 +33,7 @@ public class ConsensoService implements IConsensoService {
         .filter(coleccion -> coleccion.getAlgoritmoDeConsenso() != null)
         .forEach(coleccion -> {
           coleccion.getFuentes().forEach(fuente -> {
-            List<Hecho> hechos = this.obtenerHechosPorFuente(fuente);
+            List<Hecho> hechos = agregadorService.obtenerTodosLosHechosDeFuente(fuente);
             hechosPorFuente.putIfAbsent(fuente, hechos);
           });
         });

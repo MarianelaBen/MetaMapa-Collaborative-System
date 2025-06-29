@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
     }
 
     private Executor taskExecutor() {
-      return Executors.newScheduledThreadPool(1);
+      return Executors.newScheduledThreadPool(2);
     }
 
 }

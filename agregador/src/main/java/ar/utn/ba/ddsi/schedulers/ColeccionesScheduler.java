@@ -16,7 +16,7 @@ public class ColeccionesScheduler {
 
   //el fixedRate cada ese tiempo toma un hilo
 
-  @Scheduled( fixedRate = unaHoraEnMs )
+  @Scheduled( fixedDelay = unaHoraEnMs )
   public void actualizarHechosColecciones() {
     coleccionService.actualizarColecciones();
   }
