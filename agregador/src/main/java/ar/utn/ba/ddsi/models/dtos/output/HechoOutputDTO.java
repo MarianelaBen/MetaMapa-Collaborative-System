@@ -5,11 +5,13 @@ import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 @Getter
+@Setter
 public class HechoOutputDTO {
   private long id;
   private String titulo;
@@ -44,7 +46,8 @@ public class HechoOutputDTO {
         new Categoria(this.categoria),
         new Ubicacion(this.latitud, this.longitud),
         this.fechaAcontecimiento,
-        Origen.PROVISTO_POR_CONTRIBUYENTE //porque viene de dinamica
+        Origen.PROVISTO_POR_CONTRIBUYENTE, //porque viene de dinamica
+        this.fuenteExterna
         );
   }
 }

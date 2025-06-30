@@ -10,15 +10,16 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 import java.util.ArrayList;
-
+@Getter
+@Setter
 public class Coleccion {
-  private String titulo;
-  @Getter private String descripcion;
-  @Getter private Set<Fuente> fuentes;
-  @Getter private Set<Criterio> criterios;
-  @Getter private List<Hecho> hechos;
-  @Getter @Setter private String handle;
-  @Getter @Setter private TipoAlgoritmoDeConsenso algoritmoDeConsenso;
+    private String titulo;
+     private String descripcion;
+     private Set<Fuente> fuentes;
+     private Set<Criterio> criterios;
+     private List<Hecho> hechos;
+     private String handle;
+     private TipoAlgoritmoDeConsenso algoritmoDeConsenso;
 
   public Coleccion(String titulo, String descripcion, Set<Fuente> fuentes) {
     this.titulo = titulo;
