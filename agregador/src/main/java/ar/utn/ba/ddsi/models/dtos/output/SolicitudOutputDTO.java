@@ -1,0 +1,27 @@
+package ar.utn.ba.ddsi.models.dtos.output;
+
+import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
+import lombok.Getter;
+import lombok.Setter;
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+public class SolicitudOutputDTO {
+  private Long id;
+  private String estado;
+  private String justificacion;
+  private LocalDateTime fechaEntrada;
+  private LocalDateTime fechaAtencion;
+
+
+  public static SolicitudOutputDTO fromEntity(SolicitudDeEliminacion s) {
+    SolicitudOutputDTO dto = new SolicitudOutputDTO();
+    dto.setId(s.getId());
+    dto.setEstado(s.getEstado().name());
+    dto.setJustificacion(s.getJustificacion());
+    dto.setFechaEntrada(s.getFechaEntrada());
+    dto.setFechaAtencion(s.getFechaAtencion());
+    return dto;
+  }
+}
