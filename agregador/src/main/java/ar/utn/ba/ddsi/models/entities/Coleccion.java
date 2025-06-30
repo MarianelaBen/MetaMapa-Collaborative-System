@@ -48,8 +48,6 @@ public class Coleccion {
   public void agregarCriterios(Criterio ... nuevosCriterios){
     Collections.addAll(criterios, nuevosCriterios);
   }
-
-
 }
 
 

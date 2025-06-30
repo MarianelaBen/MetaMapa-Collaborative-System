@@ -59,7 +59,4 @@ public class AgregadorController {
   public void crearSolicitudDeEliminacion(SolicitudDeEliminacion solicitud) {
     solicitudService.crearSolicitud(solicitud);
   }
-
-
-
 }

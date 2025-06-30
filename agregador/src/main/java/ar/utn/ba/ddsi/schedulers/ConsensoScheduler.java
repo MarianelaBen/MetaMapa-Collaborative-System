@@ -18,5 +18,4 @@ public class ConsensoScheduler {
       System.err.println("Error al ejecutar el algoritmo de consenso: " + e.getMessage());
     }
   }
-
 }
