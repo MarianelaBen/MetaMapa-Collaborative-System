@@ -3,13 +3,16 @@ package ar.utn.ba.ddsi.services.impl;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteDinamica;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteEstatica;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteProxy;
+import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -60,16 +63,54 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
   }
 
   @Override
-  public List<HechoOutputDTO> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modo){
-    List<Hecho> hechos = coleccionService.obtenerHechosPorColeccion(coleccionId, modo);
-    return hechos.stream()
-        .map(this::hechoOutputDTO).
-        toList();
-  }
-
-  @Override
   public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     return new HechoOutputDTO(hecho);
   }
 
+
+  //API PUBLICA
+
+  //Consulta de hechos dentro de una colección.
+  @Override
+  public List<Hecho> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modo){
+    return coleccionService.obtenerHechosPorColeccion(coleccionId, modo);
+  }
+
+
+  //Navegación filtrada sobre una colección.
+  @Override
+  public List<Hecho> obtenerHechosFiltrados(String coleccionId,String categoria, String fechaDesde, String fechaHasta){
+    List<Hecho> hechos = obtenerHechosPorColeccion(coleccionId, TipoDeModoNavegacion.IRRESTRICTA);
+    if (categoria != null ) {
+      hechos = hechos.stream()
+          .filter(h -> h.getCategoria() != null && categoria.trim().equalsIgnoreCase(h.getCategoria().getNombre().trim()))
+          .collect(Collectors.toList());
+    }
+
+    // Filtro por fecha acontecimiento
+    if (fechaDesde != null || fechaHasta != null) {
+      hechos = hechos.stream()
+          .filter(h -> {
+            if (h.getFechaAcontecimiento() == null) return false;
+
+            boolean afterDesde = true;
+            boolean beforeHasta = true;
+
+            if (fechaDesde != null) {
+              LocalDate desde = LocalDate.parse(fechaDesde);
+              afterDesde = !h.getFechaAcontecimiento().isBefore(desde);
+            }
+            if (fechaHasta != null) {
+              LocalDate hasta = LocalDate.parse(fechaHasta);
+              beforeHasta = !h.getFechaAcontecimiento().isAfter(hasta);
+            }
+
+            return afterDesde && beforeHasta;
+          })
+          .collect(Collectors.toList());
+    }
+    return hechos;
+  }
+
+  //Navegación curada o irrestricta sobre una colección.
 }

@@ -39,6 +39,7 @@ public class HechoOutputDTO {
     this.idContenidoMultimedia = null;
   }
 
+  //Pasar de DTO a entidad
   public Hecho toHecho() {
     return new Hecho(
         this.titulo,
@@ -49,5 +50,10 @@ public class HechoOutputDTO {
         Origen.PROVISTO_POR_CONTRIBUYENTE, //porque viene de dinamica
         this.fuenteExterna
         );
+  }
+
+  //Pasar de entidad a DTO
+  public static HechoOutputDTO fromEntity(Hecho hecho) {
+    return new HechoOutputDTO(hecho);
   }
 }

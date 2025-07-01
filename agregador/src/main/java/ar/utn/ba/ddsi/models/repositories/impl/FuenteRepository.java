@@ -11,8 +11,9 @@ public class FuenteRepository implements IFuenteRepository {
   private List<Fuente> fuentes = new ArrayList<>();
 
   @Override
-  public void save(Fuente fuente){
+  public Fuente save(Fuente fuente){
     fuentes.add(fuente);
+    return fuente;
   }
 
   @Override

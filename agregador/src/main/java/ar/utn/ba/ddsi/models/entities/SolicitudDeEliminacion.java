@@ -5,16 +5,17 @@ import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Getter
+@Setter
 public class SolicitudDeEliminacion {
-   private Long id;
-   private Hecho hecho;
-   private String justificacion;
-   private EstadoSolicitud estado;
-    //@Getter @Setter private Administrador administradorQueAtendio;
-    //El agregador atiende las solicitudes de forma automática, por lo tanto, no debería tener un Administrador.
-   private LocalDateTime fechaEntrada;
-   private LocalDateTime fechaAtencion;
+     public Long id;
+     private Hecho hecho;
+     private String justificacion;
+     private EstadoSolicitud estado;
+      //@Getter @Setter private Administrador administradorQueAtendio;
+      //El agregador atiende las solicitudes de forma automática, por lo tanto, no debería tener un Administrador.
+     private LocalDateTime fechaEntrada;
+     private LocalDateTime fechaAtencion;
 
   public SolicitudDeEliminacion(Hecho hecho, String justificacion) {
     this.hecho = hecho;

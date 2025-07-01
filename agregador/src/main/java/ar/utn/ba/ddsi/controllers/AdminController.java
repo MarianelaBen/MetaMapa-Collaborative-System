@@ -23,45 +23,54 @@ public class AdminController {
     this.servicio = servicio;
   }
 
+  //Obtener la lista completa de colecciones
   @GetMapping("/colecciones")
   public List<ColeccionOutputDTO> getColecciones() {
     return servicio.getColecciones();
   }
 
-  @PostMapping("/colecciones")
+  //Crear una nueva colección.
+  @PostMapping("/colecciones") //Recibe un DTO con los datos de la coleccion
   public ColeccionOutputDTO crearColeccion(@RequestBody ColeccionInputDTO dto) {
     return servicio.crearColeccion(dto);
   }
 
+
+  //Actualiza coleccion por id
   @PutMapping("/colecciones/{id}")
-  public ResponseEntity<ColeccionOutputDTO> actualizarColeccion(
-      @PathVariable Long id,
+  public ColeccionOutputDTO actualizarColeccion(
+      @PathVariable String id,
       @RequestBody ColeccionInputDTO dto) {
-    return servicio.actualizarColeccion(id, dto)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+    return servicio.actualizarColeccion(id, dto);
   }
 
+
+  //Borra coleccion por su id
   @DeleteMapping("/colecciones/{id}")
-  public ResponseEntity<Void> eliminarColeccion(@PathVariable Long id) {
+  public ResponseEntity<Void> eliminarColeccion(@PathVariable String id) {
     servicio.eliminarColeccion(id);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.noContent().build();//Si se elimina bien responde 204 no content
   }
 
+
+  //Obtener todos los hechos de una coleccion especifica
   @GetMapping("/colecciones/{colId}/hechos")
-  public List<HechoOutputDTO> getHechos(@PathVariable Long colId) {
+  public List<HechoOutputDTO> getHechos(@PathVariable String colId) {
     return servicio.getHechos(colId);
   }
 
-  @PostMapping("/colecciones/{colId}/fuentes")
+  //Agregar una fuente de hechos a una coleccion
+  @PostMapping("/colecciones/{colId}/fuentes") //Recibe el DTO de la fuente
   public FuenteInputDTO agregarFuente(
-      @PathVariable Long colId,
+      @PathVariable String colId,
       @RequestBody FuenteInputDTO dto) {
     return servicio.agregarFuente(colId, dto);
   }
 
+
+  //Borrar una fuente de una coleccion especifica
   @DeleteMapping("/colecciones/{colId}/fuentes/{fuenteId}")
-  public ResponseEntity<Void> eliminarFuente(@PathVariable Long colId, @PathVariable Long fuenteId) {
+  public ResponseEntity<Void> eliminarFuente(@PathVariable String colId, @PathVariable Long fuenteId) {
     boolean eliminada = servicio.eliminarFuenteDeColeccion(colId,fuenteId);
     if (eliminada) {
       return ResponseEntity.noContent().build();
@@ -70,21 +79,15 @@ public class AdminController {
     }
   }
 
-  @GetMapping("/solicitudes-eliminacion")
-  public List<SolicitudOutputDTO> getSolicitudes(
-      @RequestParam(required = false) String estado) {
-    return servicio.getSolicitudes(estado);
-  }
-
+  //Aprobar una solicitud de eliminación por id
   @PostMapping("/solicitudes-eliminacion/{id}/aprobar")
   public SolicitudOutputDTO aprobarSolicitud(@PathVariable Long id) {
     return servicio.aprobarSolicitud(id);
   }
 
+  //Rechazar solicitud de eliminacion por id
   @PostMapping("/solicitudes-eliminacion/{id}/denegar")
-  public SolicitudOutputDTO denegarSolicitud(
-      @PathVariable Long id,
-      @RequestBody SolicitudInputDTO dto) {
+  public SolicitudOutputDTO denegarSolicitud(@PathVariable Long id, @RequestBody SolicitudInputDTO dto){
     return servicio.denegarSolicitud(id);
   }
 

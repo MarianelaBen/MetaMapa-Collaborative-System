@@ -1,4 +1,4 @@
-/*
+
 package ar.utn.ba.ddsi.services.impl;
 
 
@@ -12,30 +12,34 @@ import ar.utn.ba.ddsi.models.repositories.impl.FuenteRepository;
 import ar.utn.ba.ddsi.models.repositories.impl.SolicitudRepository;
 import ar.utn.ba.ddsi.services.IAdminService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class AdminService implements IAdminService {
   private final ColeccionRepository coleccionRepo;
   private final FuenteRepository fuenteRepo;
-  private final ConsensoRepository consensoRepo;
+  //private final ConsensoRepository consensoRepo;
   private final SolicitudRepository solicitudRepo;
 
   public AdminService(ColeccionRepository coleccionRepo,
                       FuenteRepository fuenteRepo,
-                      ConsensoRepository consensoRepo,
+                      //ConsensoRepository consensoRepo,
                       SolicitudRepository solicitudRepo) {
     this.coleccionRepo = coleccionRepo;
     this.fuenteRepo = fuenteRepo;
-    this.consensoRepo = consensoRepo;
+   // this.consensoRepo = consensoRepo;
     this.solicitudRepo = solicitudRepo;
   }
 
+  //API ADMINISTRATIVA
 
- //Devuelve las colecciones
+  //OPERACIONES CRUD
+  //Devuelve las colecciones
   @Override
   public List<ColeccionOutputDTO> getColecciones() {
     return coleccionRepo.findAll().stream()
@@ -43,7 +47,9 @@ public class AdminService implements IAdminService {
         .collect(Collectors.toList());
   }
 
- //Crea coleccion a partir del DTO recibido
+  //Crea coleccion a partir del DTO recibido
+
+
   @Override
   public ColeccionOutputDTO crearColeccion(ColeccionInputDTO dto) {
     Coleccion c = dto.toEntity(); //Convertimos DTO a entidad
@@ -51,68 +57,75 @@ public class AdminService implements IAdminService {
   }
 
 
- //Actualiza una coleccion si la encuentra por ID
+
+  //Actualiza una coleccion si la encuentra por ID
   @Override
-  public Optional<ColeccionOutputDTO> actualizarColeccion(Long id, ColeccionInputDTO dto) {
-    return coleccionRepo.findById(id).map(existing -> {
-      existing.setNombre(dto.getNombre());
+  public ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO dto) {
+    Coleccion existing = coleccionRepo.findById(id);
+      existing.setTitulo(dto.getTitulo());
       existing.setDescripcion(dto.getDescripcion());
       return ColeccionOutputDTO.fromEntity(coleccionRepo.save(existing));
-    });
   }
 
 
- //Elimina coleccion por ID
+  //Elimina coleccion por ID
   @Override
-  public void eliminarColeccion(Long id) {
+  public void eliminarColeccion(String id) {
     coleccionRepo.deleteById(id);
     //TODO verificar que exista
   }
 
 
- //Obtención de todos los hechos de una colección
+  //Obtención de todos los hechos de una colección
   @Override
-  public List<HechoOutputDTO> getHechos(Long coleccionId) {
-    return coleccionRepo.findById(coleccionId)
-      .map(Coleccion::getHechos) // hechos de la coleccion
-     .orElse(List.of()) // si no existe , lista vacia
-     .stream()
-     .map(HechoOutputDTO::fromEntity) //Convertimos a DTO
-     .collect(Collectors.toList());
-  }
-
-
- //Agregar fuentes de hechos de una colección
-  @Override
-  public FuenteInputDTO agregarFuente(Long coleccionId, FuenteInputDTO dto) {
-    Fuente fuente = dto.toEntity();
-    coleccionRepo.findById(coleccionId).ifPresent(fuente::setColeccion);
-    return FuenteInputDTO.fromEntity(fuenteRepo.save(fuente));
-  }
-
- //Quitar fuentes de hechos de una colección
-  @Override
-  public void eliminarFuenteDeColeccion(Long coleccionId, Long fuenteId) {
-    // Quitamos la fuente con el id que corresponda de la coleccion
-    coleccionRepo.findById(coleccionId).ifPresent(coleccion -> {
-      coleccion.getFuentes().removeIf(f -> f.getId().equals(fuenteId));
-      coleccionRepo.save(coleccion);
-    });
-  }
-
- //Devuelve lista de solicitudes y pueden ser filtradas por estado
-  @Override
-  public List<SolicitudOutputDTO> getSolicitudes(String estado) {
-    return solicitudRepo.findByEstado(estado).stream()
-        .map(SolicitudOutputDTO::fromEntity)
+  public List<HechoOutputDTO> getHechos(String coleccionId) {
+    return coleccionRepo.findById(coleccionId).getHechos()
+        .stream()
+        .map(HechoOutputDTO::fromEntity)
         .collect(Collectors.toList());
   }
 
 
- //Aprobar una solicitud de eliminación de un hecho.
+  //Agregar fuentes de hechos de una colección
+  @Override
+  public FuenteInputDTO agregarFuente(String coleccionId, FuenteInputDTO dto) {
+    Coleccion coleccion = coleccionRepo.findById(coleccionId);
+    if (coleccion == null) {
+      throw new RuntimeException("No se encontró la colección " + coleccionId);
+    }
+    Fuente fuente = dto.toEntity();              // Convertimos el DTO a entidad
+    coleccion.agregarFuentes(fuente);            // Asociamos la fuente desde la colección
+    coleccionRepo.save(coleccion);               // Guardamos la colección con la nueva fuente
+
+    return FuenteInputDTO.fromEntity(fuente);    // Devolvemos la fuente recién agregada
+  }
+
+  //Quitar fuentes de hechos de una colección
+  @Override
+  public boolean eliminarFuenteDeColeccion(String coleccionId, Long fuenteId) {
+    Coleccion coleccion = coleccionRepo.findById(coleccionId);
+
+    if (coleccion == null) {
+      return false; // No existe la colección
+    }
+
+    //Intentamos eliminar la fuente con ese id
+    boolean removed = coleccion.getFuentes().removeIf(f -> {
+      Long id = f.getId();
+      return id != null && id.equals(fuenteId);
+    });
+
+    if (removed) {
+      coleccionRepo.save(coleccion);
+    }
+    return removed;
+  }
+
+
+  //Aprobar una solicitud de eliminación de un hecho.
   @Override
   public SolicitudOutputDTO aprobarSolicitud(Long id) {
-    Solicitud s = solicitudRepo.findById(id).orElseThrow();
+    SolicitudDeEliminacion s = solicitudRepo.findById(id);
     s.setEstado(EstadoSolicitud.ACEPTADA);
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
@@ -120,10 +133,11 @@ public class AdminService implements IAdminService {
   //Denegar una solicitud de eliminación de un hecho.
   @Override
   public SolicitudOutputDTO denegarSolicitud(Long id) {
-    Solicitud s = solicitudRepo.findById(id).orElseThrow(); //si no existe, excepcion
+    SolicitudDeEliminacion s = solicitudRepo.findById(id); //si no existe, excepcion
     s.setEstado(EstadoSolicitud.RECHAZADA);
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
+}
 
   /*
   @Override
@@ -134,7 +148,6 @@ public class AdminService implements IAdminService {
     c.setAlgoritmo(dto.getAlgoritmo());
     return ConsensoResponseDTO.fromEntity(consensoRepo.save(c));
   }
-
 
   @Override
   public Optional<ConsensoResponseDTO> getConsenso(Long coleccionId) {

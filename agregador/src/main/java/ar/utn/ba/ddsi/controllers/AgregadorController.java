@@ -1,21 +1,16 @@
 package ar.utn.ba.ddsi.controllers;
 
-import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
-import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
-import ar.utn.ba.ddsi.services.IDetectorDeSpam;
-import ar.utn.ba.ddsi.services.ISolicitudService;
-import ar.utn.ba.ddsi.services.impl.AgregadorService;
 import ar.utn.ba.ddsi.services.impl.SolicitudService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/public")
@@ -46,17 +41,26 @@ public class AgregadorController {
       @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr) { //valor predeterminado IRRESTRICTA por si no se especifica nada de cuial se quiere usar
 
     TipoDeModoNavegacion modo = TipoDeModoNavegacion.valueOf(modoStr);
-    return agregadorService.obtenerHechosPorColeccion(coleccionId, modo);
+    List<Hecho> hechos = agregadorService.obtenerHechosPorColeccion(coleccionId, modo);
+
+    return hechos.stream().map(HechoOutputDTO::fromEntity).toList();
   }
-/*
+
   //navegacion filtrada sobre una coleccion
   @GetMapping("/colecciones/{coleccionId}/filtrados")
-  public List<HechoOutputDTO> getHechosFiltrados(@PathVariable String coleccionId) {
-    return agregadorService.obtenerHechosFiltrados(coleccionId);
-  }*/
+  public List<HechoOutputDTO> getHechosFiltrados(@PathVariable String coleccionId,
+                                                 @RequestParam(required = false) String categoria,
+                                                 @RequestParam(required = false) String fechaDesde,
+                                                 @RequestParam(required = false) String fechaHasta) {
+    return agregadorService.obtenerHechosFiltrados(coleccionId, categoria, fechaDesde, fechaHasta)
+        .stream()
+        .map(HechoOutputDTO::fromEntity)
+        .collect(Collectors.toList());
+  }
 
   @PostMapping("/solicitudes")
-  public void crearSolicitudDeEliminacion(SolicitudDeEliminacion solicitud) {
+  public void crearSolicitudDeEliminacion(@RequestBody SolicitudDeEliminacion solicitud) {
     solicitudService.crearSolicitud(solicitud);
   }
+
 }

@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.Set;
 
 public interface IAgregadorService {
-  List<HechoOutputDTO> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modo);
+  List<Hecho> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modo);
   public List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente);
   public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes);
   public HechoOutputDTO hechoOutputDTO(Hecho hecho);
+  List<Hecho> obtenerHechosFiltrados(String coleccionId, String categoria, String fechaDesde, String fechaHasta);
+
 }

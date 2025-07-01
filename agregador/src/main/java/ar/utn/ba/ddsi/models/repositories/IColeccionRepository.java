@@ -10,5 +10,6 @@ public interface IColeccionRepository {
   public List<Coleccion> findAll();
   public void eliminarHecho(Hecho hecho);
  public Coleccion findById(String coleccionId);
+ public void deleteById(String id);
 
 }

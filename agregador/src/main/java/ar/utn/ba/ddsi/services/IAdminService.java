@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
+import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 
 /* TODO DTOs Consenso
 import ar.utn.ba.ddsi.models.dtos.output.ConsensoOutputDTO;
@@ -18,18 +19,18 @@ import java.util.Optional;
 public interface IAdminService {
   List<ColeccionOutputDTO> getColecciones();
   ColeccionOutputDTO crearColeccion(ColeccionInputDTO dto);
-  Optional<ColeccionOutputDTO> actualizarColeccion(Long id, ColeccionInputDTO dto);
-  void eliminarColeccion(Long id);
+  ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO dto);
+  void eliminarColeccion(String id);
 
-  List<HechoOutputDTO> getHechos(Long coleccionId);
+  List<HechoOutputDTO> getHechos(String coleccionId);
 
-  FuenteInputDTO agregarFuente(Long coleccionId, FuenteInputDTO dto);
-  boolean eliminarFuenteDeColeccion(Long colId, Long fuenteId);
+  FuenteInputDTO agregarFuente(String coleccionId, FuenteInputDTO dto);
+  boolean eliminarFuenteDeColeccion(String colId, Long fuenteId);
 /*
   ConsensoResponseDTO configurarConsenso(Long coleccionId, ConsensoDTO dto);
   Optional<ConsensoResponseDTO> obtenerConsenso(Long coleccionId);
 */
-  List<SolicitudOutputDTO> getSolicitudes(String estado);
+
   SolicitudOutputDTO aprobarSolicitud(Long id);
   SolicitudOutputDTO denegarSolicitud(Long id);
 }

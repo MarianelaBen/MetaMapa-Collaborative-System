@@ -44,4 +44,12 @@ public class ColeccionRepository implements IColeccionRepository {
         .filter(c -> c.getHandle().equals(coleccionId))
         .findFirst()
         .orElse(null);
-}}
+}
+
+@Override
+  public void deleteById(String id){
+    Coleccion coleccionAEliminar = this.findById(id);
+    colecciones.remove(coleccionAEliminar);
+}
+
+}
