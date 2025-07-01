@@ -24,7 +24,7 @@ public interface IAdminService {
   List<HechoOutputDTO> getHechos(Long coleccionId);
 
   FuenteInputDTO agregarFuente(Long coleccionId, FuenteInputDTO dto);
-  void eliminarFuente(Long fuenteId);
+  boolean eliminarFuenteDeColeccion(Long colId, Long fuenteId);
 /*
   ConsensoResponseDTO configurarConsenso(Long coleccionId, ConsensoDTO dto);
   Optional<ConsensoResponseDTO> obtenerConsenso(Long coleccionId);

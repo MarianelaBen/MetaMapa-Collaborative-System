@@ -20,36 +20,38 @@ import java.util.stream.Collectors;
 @Service
 public class AdminService implements IAdminService {
   private final ColeccionRepository coleccionRepo;
-  private final HechoRepository hechoRepo;
   private final FuenteRepository fuenteRepo;
   private final ConsensoRepository consensoRepo;
   private final SolicitudRepository solicitudRepo;
 
   public AdminService(ColeccionRepository coleccionRepo,
-                      HechoRepository hechoRepo,
                       FuenteRepository fuenteRepo,
                       ConsensoRepository consensoRepo,
                       SolicitudRepository solicitudRepo) {
     this.coleccionRepo = coleccionRepo;
-    this.hechoRepo = hechoRepo;
     this.fuenteRepo = fuenteRepo;
     this.consensoRepo = consensoRepo;
     this.solicitudRepo = solicitudRepo;
   }
 
+
+ //Devuelve las colecciones
   @Override
   public List<ColeccionOutputDTO> getColecciones() {
     return coleccionRepo.findAll().stream()
-        .map(ColeccionOutputDTO::fromEntity)
+        .map(ColeccionOutputDTO::fromEntity) //Convertimos cada entidad a DTO
         .collect(Collectors.toList());
   }
 
+ //Crea coleccion a partir del DTO recibido
   @Override
   public ColeccionOutputDTO crearColeccion(ColeccionInputDTO dto) {
-    Coleccion c = dto.toEntity();
-    return ColeccionOutputDTO.fromEntity(coleccionRepo.save(c));
+    Coleccion c = dto.toEntity(); //Convertimos DTO a entidad
+    return ColeccionOutputDTO.fromEntity(coleccionRepo.save(c));  // Guardamos y devolvemos el DTO de salida
   }
 
+
+ //Actualiza una coleccion si la encuentra por ID
   @Override
   public Optional<ColeccionOutputDTO> actualizarColeccion(Long id, ColeccionInputDTO dto) {
     return coleccionRepo.findById(id).map(existing -> {
@@ -59,18 +61,28 @@ public class AdminService implements IAdminService {
     });
   }
 
+
+ //Elimina coleccion por ID
   @Override
   public void eliminarColeccion(Long id) {
     coleccionRepo.deleteById(id);
+    //TODO verificar que exista
   }
 
+
+ //Obtención de todos los hechos de una colección
   @Override
   public List<HechoOutputDTO> getHechos(Long coleccionId) {
-    return hechoRepo.findByColeccionId(coleccionId).stream()
-        .map(HechoOutputDTO::fromEntity)
-        .collect(Collectors.toList());
+    return coleccionRepo.findById(coleccionId)
+      .map(Coleccion::getHechos) // hechos de la coleccion
+     .orElse(List.of()) // si no existe , lista vacia
+     .stream()
+     .map(HechoOutputDTO::fromEntity) //Convertimos a DTO
+     .collect(Collectors.toList());
   }
 
+
+ //Agregar fuentes de hechos de una colección
   @Override
   public FuenteInputDTO agregarFuente(Long coleccionId, FuenteInputDTO dto) {
     Fuente fuente = dto.toEntity();
@@ -78,11 +90,17 @@ public class AdminService implements IAdminService {
     return FuenteInputDTO.fromEntity(fuenteRepo.save(fuente));
   }
 
+ //Quitar fuentes de hechos de una colección
   @Override
-  public void eliminarFuente(Long fuenteId) {
-    fuenteRepo.deleteById(fuenteId);
+  public void eliminarFuenteDeColeccion(Long coleccionId, Long fuenteId) {
+    // Quitamos la fuente con el id que corresponda de la coleccion
+    coleccionRepo.findById(coleccionId).ifPresent(coleccion -> {
+      coleccion.getFuentes().removeIf(f -> f.getId().equals(fuenteId));
+      coleccionRepo.save(coleccion);
+    });
   }
 
+ //Devuelve lista de solicitudes y pueden ser filtradas por estado
   @Override
   public List<SolicitudOutputDTO> getSolicitudes(String estado) {
     return solicitudRepo.findByEstado(estado).stream()
@@ -90,6 +108,8 @@ public class AdminService implements IAdminService {
         .collect(Collectors.toList());
   }
 
+
+ //Aprobar una solicitud de eliminación de un hecho.
   @Override
   public SolicitudOutputDTO aprobarSolicitud(Long id) {
     Solicitud s = solicitudRepo.findById(id).orElseThrow();
@@ -97,9 +117,10 @@ public class AdminService implements IAdminService {
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
 
+  //Denegar una solicitud de eliminación de un hecho.
   @Override
   public SolicitudOutputDTO denegarSolicitud(Long id) {
-    Solicitud s = solicitudRepo.findById(id).orElseThrow();
+    Solicitud s = solicitudRepo.findById(id).orElseThrow(); //si no existe, excepcion
     s.setEstado(EstadoSolicitud.RECHAZADA);
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
@@ -113,6 +134,7 @@ public class AdminService implements IAdminService {
     c.setAlgoritmo(dto.getAlgoritmo());
     return ConsensoResponseDTO.fromEntity(consensoRepo.save(c));
   }
+
 
   @Override
   public Optional<ConsensoResponseDTO> getConsenso(Long coleccionId) {
