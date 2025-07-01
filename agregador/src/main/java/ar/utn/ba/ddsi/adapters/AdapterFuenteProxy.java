@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.adapters;
 
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -13,8 +14,9 @@ public class AdapterFuenteProxy {
 
   private final WebClient webClient;
 
-  public AdapterFuenteProxy(String url) {
-    this.webClient = WebClient.builder().build();
+  @Autowired
+  public AdapterFuenteProxy(WebClient.Builder webClientBuilder) {
+    this.webClient = webClientBuilder.build();
   }
 
   public List<Hecho> obtenerHechos(String fuenteUrl) {
