@@ -61,9 +61,13 @@ public class AdminController {
   }
 
   @DeleteMapping("/colecciones/{colId}/fuentes/{fuenteId}")
-  public ResponseEntity<Void> eliminarFuente(@PathVariable Long fuenteId) {
-    servicio.eliminarFuente(fuenteId);
-    return ResponseEntity.noContent().build();
+  public ResponseEntity<Void> eliminarFuente(@PathVariable Long colId, @PathVariable Long fuenteId) {
+    boolean eliminada = servicio.eliminarFuenteDeColeccion(colId,fuenteId);
+    if (eliminada) {
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
 
   @GetMapping("/solicitudes-eliminacion")
@@ -80,7 +84,7 @@ public class AdminController {
   @PostMapping("/solicitudes-eliminacion/{id}/denegar")
   public SolicitudOutputDTO denegarSolicitud(
       @PathVariable Long id,
-        @RequestBody SolicitudInputDTO dto) {
+      @RequestBody SolicitudInputDTO dto) {
     return servicio.denegarSolicitud(id);
   }
 
