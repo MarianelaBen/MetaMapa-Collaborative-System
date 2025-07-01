@@ -96,7 +96,7 @@ public class AdminService implements IAdminService {
     if (coleccion == null) {
       throw new RuntimeException("No se encontró la colección " + coleccionId);
     }
-    Fuente fuente = dto.toEntity();              // Convertimos el DTO a entidad
+    Fuente fuente = new Fuente(dto.getUrl(), dto.getTipo());              // Convertimos el DTO a entidad
     coleccion.agregarFuentes(fuente);            // Asociamos la fuente desde la colección
     coleccionRepo.save(coleccion);               // Guardamos la colección con la nueva fuente
 
