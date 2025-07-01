@@ -13,7 +13,6 @@ public class FuenteInputDTO {
 
   public Fuente toEntity() {
     Fuente f = new Fuente(this.url, this.tipo);
-
     return f;
   }
 

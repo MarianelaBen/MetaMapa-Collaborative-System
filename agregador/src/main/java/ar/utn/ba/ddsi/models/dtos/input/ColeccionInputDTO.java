@@ -17,14 +17,4 @@ public class ColeccionInputDTO {
   private Set<Long> criterioIds;
   private Set<Long> hechoIds;
 
-
-  public Coleccion toEntity() {
-    Coleccion c = new Coleccion();
-    c.setTitulo(this.titulo);
-    c.setDescripcion(this.descripcion);
-    c.setHandle(this.handle);
-    c.setAlgoritmoDeConsenso(this.algoritmoDeConsenso);
-    // Las asociaciones a entidades compuestas se resuelven en el Service
-    return c;
-  }
 }

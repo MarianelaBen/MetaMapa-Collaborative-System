@@ -20,4 +20,8 @@ public class FuenteRepository implements IFuenteRepository {
   public List<Fuente> findAll(){
     return this.fuentes;
   }
+
+  public Fuente findById(Long id){
+    return this.fuentes.stream().filter(f->f.getId().equals(id)).findFirst().orElse(null);
+  }
 }

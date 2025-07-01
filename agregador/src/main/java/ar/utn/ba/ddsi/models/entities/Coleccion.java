@@ -22,18 +22,9 @@ public class Coleccion {
      private TipoAlgoritmoDeConsenso algoritmoDeConsenso;
 
   public Coleccion(String titulo, String descripcion, Set<Fuente> fuentes) {
-    this();
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.fuentes = fuentes;
-    this.criterios = new HashSet<>();
-    this.hechos = new ArrayList<>();
-    this.algoritmoDeConsenso = null;
-  }
-
-  //constructor vacio para que no rompa coleccionImputDTO
-  public Coleccion() {
-    this.fuentes = new HashSet<>();
     this.criterios = new HashSet<>();
     this.hechos = new ArrayList<>();
     this.algoritmoDeConsenso = null;

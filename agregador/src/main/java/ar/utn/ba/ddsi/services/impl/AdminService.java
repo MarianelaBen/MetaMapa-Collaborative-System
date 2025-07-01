@@ -52,7 +52,10 @@ public class AdminService implements IAdminService {
 
   @Override
   public ColeccionOutputDTO crearColeccion(ColeccionInputDTO dto) {
-    Coleccion c = dto.toEntity(); //Convertimos DTO a entidad
+    Set<Fuente> fuentes = dto.getFuenteIds().stream().map(fuenteRepo::findById).collect(Collectors.toSet());
+    Coleccion c = new Coleccion(dto.getTitulo(), dto.getDescripcion(), fuentes);  //Convertimos DTO a entidad
+    c.setHandle(dto.getHandle());
+    c.setAlgoritmoDeConsenso(dto.getAlgoritmoDeConsenso());
     return ColeccionOutputDTO.fromEntity(coleccionRepo.save(c));  // Guardamos y devolvemos el DTO de salida
   }
 
