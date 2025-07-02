@@ -7,6 +7,7 @@ import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
+import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 
 /* TODO DTOs Consenso
 import ar.utn.ba.ddsi.models.dtos.output.ConsensoOutputDTO;
@@ -30,7 +31,7 @@ public interface IAdminService {
   ConsensoResponseDTO configurarConsenso(Long coleccionId, ConsensoDTO dto);
   Optional<ConsensoResponseDTO> obtenerConsenso(Long coleccionId);
 */
-
+ void modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id);
   SolicitudOutputDTO aprobarSolicitud(Long id);
   SolicitudOutputDTO denegarSolicitud(Long id);
 }

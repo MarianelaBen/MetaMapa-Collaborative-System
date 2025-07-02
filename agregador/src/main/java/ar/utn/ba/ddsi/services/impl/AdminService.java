@@ -1,11 +1,9 @@
-
 package ar.utn.ba.ddsi.services.impl;
-
-
 import ar.utn.ba.ddsi.models.dtos.input.*;
 import ar.utn.ba.ddsi.models.dtos.output.*;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
+import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.repositories.*;
 import ar.utn.ba.ddsi.models.repositories.impl.ColeccionRepository;
 import ar.utn.ba.ddsi.models.repositories.impl.FuenteRepository;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,6 +46,10 @@ public class AdminService implements IAdminService {
 
   //Crea coleccion a partir del DTO recibido
 
+  public void modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id){
+    Coleccion coleccion = coleccionRepo.findById(id);
+    coleccion.setAlgoritmoDeConsenso(tipoAlgoritmo);
+  }
 
   @Override
   public ColeccionOutputDTO crearColeccion(ColeccionInputDTO dto) {
@@ -152,9 +153,4 @@ public class AdminService implements IAdminService {
     return ConsensoResponseDTO.fromEntity(consensoRepo.save(c));
   }
 
-  @Override
-  public Optional<ConsensoResponseDTO> getConsenso(Long coleccionId) {
-    return consensoRepo.findByColeccionId(coleccionId)
-        .map(ConsensoResponseDTO::fromEntity);
-  }
 */

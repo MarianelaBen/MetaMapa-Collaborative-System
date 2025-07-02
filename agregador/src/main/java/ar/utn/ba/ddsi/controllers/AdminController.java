@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
+import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.services.IAdminService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +53,6 @@ public class AdminController {
     return ResponseEntity.noContent().build();//Si se elimina bien responde 204 no content
   }
 
-
   //Obtener todos los hechos de una coleccion especifica
   @GetMapping("/colecciones/{colId}/hechos")
   public List<HechoOutputDTO> getHechos(@PathVariable String colId) {
@@ -91,18 +91,8 @@ public class AdminController {
     return servicio.denegarSolicitud(id);
   }
 
-  /* TODO operaciones sobre consenso
   @PutMapping("/colecciones/{colId}/consenso")
-  public ConsensoResponseDTO configurarConsenso(
-      @PathVariable Long colId,
-      @RequestBody ConsensoDTO dto) {
-    return servicio.configurarConsenso(colId, dto);
+  public void modificarTipoAlgoritmoConsenso(@PathVariable String id, @RequestBody TipoAlgoritmoDeConsenso tipoAlgoritmo){
+    servicio.modificarTipoAlgoritmoConsenso(tipoAlgoritmo, id);
   }
-
-  @GetMapping("/colecciones/{colId}/consenso")
-  public ResponseEntity<ConsensoResponseDTO> getConsenso(@PathVariable Long colId) {
-    return servicio.getConsenso(colId)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
-  }*/
 }
