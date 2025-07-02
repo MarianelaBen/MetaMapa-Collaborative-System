@@ -1,0 +1,29 @@
+package ar.utn.ba.ddsi.models.dtos.output;
+
+import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import java.time.LocalDate;
+import java.util.Set;
+
+@Data
+public class HechoOutputEstaticaDTO {
+  @NotNull
+  private String titulo;
+  @NotNull
+  private String descripcion;
+  @NotNull
+  private String nombreCategoria;
+  @NotNull
+  private UbicacionOutputDTO ubicacion;
+  @NotNull
+  private LocalDate fechaAcontecimiento;
+  @NotNull
+  private LocalDate fechaCarga;
+  @NotNull
+  private Origen origen;
+  @NotNull
+  private boolean fueEliminado;
+  @NotNull
+  private Set<String> nombreEtiquetas;
+}

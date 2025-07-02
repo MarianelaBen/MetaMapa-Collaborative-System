@@ -36,4 +36,9 @@ public class RutasRepository implements IRutasRepository {
         .max()
         .orElse(0L) + 1; // si la lista está vacía (O de valor Long), empezamos desde ID 1
   }
+
+  @Override
+  public List<Ruta> findAll(){
+    return this.rutas;
+  }
 }
