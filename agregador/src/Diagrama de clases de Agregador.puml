@@ -136,23 +136,54 @@ class Ubicacion{
 }
 
 interface IAlgoritmoDeConsenso{
-    +calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente): void
+    +calcularConsenso(coleccion: Coleccion, hechosPorFuente: Map<Fuente, List<Hecho>>): void
     +getTipo(): TipoAlgoritmoDeConsenso
 }
 
-class ConsensoAbsoluta{
-    +calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente): void
+class ConsensoAbsoluta implements IAlgoritmoDeConsenso{
+    +calcularConsenso(coleccion: Coleccion, hechosPorFuente: Map<Fuente, List<Hecho>>): void
+    +verificarConsensoAbsoluto(titulo: String, fuentesColeccion: Set<Fuente>, hechosPorFuente: Map<Fuente, List<Hecho>>): boolean
+    +sonHechosEquivalentes(hecho1: Hecho,  hecho2: Hecho): boolean
+    +marcarTodosLosHechosComoNoConsensuados(coleccion: Coleccion): void
 }
 
-class ConsensoMayoriaSimple{
-    +calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente): void
+class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso{
+    +calcularConsenso(coleccion: Coleccion, hechosPorFuente: Map<Fuente, List<Hecho>>): void
+    +contarHechosPorContenido(titulo: String, fuentesColeccion: Set<Fuente>, Map<Fuente, hechosPorFuente: List<Hecho>>): Map<String, Integer>
+    +generarClaveContenido(hecho: Hecho): String
+    +marcarHechosConMayoria(hechos: List<Hecho>, conteoHechosPorContenido: Map<String, Integer>, mayoriaRequerida: Integer): void
+    +marcarTodosLosHechosComoNoConsensuados(coleccion: Coleccion): void
 }
 
-class ConsensoMultiplesMenciones{
-    +calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente): void
+class ConsensoMultiplesMenciones implements IAlgoritmoDeConsenso{
+    +calcularConsenso(coleccion: Coleccion, hechosPorFuente: Map<Fuente, List<Hecho>>): void
+    +verificarConsensoMultiplesMenciones(titulo: String, fuentesColeccion: Set<Fuente>, hechosPorFuente: Map<Fuente, List<Hecho>>): void
+    +generarClaveContenido(hecho: Hecho): String
+    +marcarTodosLosHechosComoNoConsensuados(coleccion: Coleccion): void
 }
 
 class AlgoritmoDeConsensoFactory{
+    +resolver(tipo: TipoAlgoritmoDeConsenso): IAlgoritmoDeConsenso
+}
+
+interface IModoDeNavegacion{
+    +aplicarModo(hechos: List<Hecho>): List<Hecho>
+    +getTipo(): TipoDeModoNavegacion
+}
+
+class ModoCurado implements IModoDeNavegacion{
+    +aplicarModo(hechos: List<Hecho>): List<Hecho>
+    +getTipo(): TipoDeModoNavegacion
+}
+
+class ModoIrrestricto implements IModoDeNavegacion{
+    +aplicarModo(hechos: List<Hecho>): List<Hecho>
+    +getTipo(): TipoDeModoNavegacion
+}
+
+class ModoDeNavegacionFactory{
+    -modos: Map<TipoDeModoNavegacion, IModoDeNavegacion>;
+    +resolver(tipo: TipoDeModoNavegacion): IModoDeNavegacion
 }
 
 Coleccion --> "*" Criterio
@@ -166,6 +197,7 @@ Hecho --> Ubicacion
 Hecho --> Categoria
 Fuente --> TipoFuente
 Coleccion --> TipoAlgoritmoDeConsenso
-
+AlgoritmoDeConsensoFactory --> IAlgoritmoDeConsenso
+ModoDeNavegacionFactory --> IModoDeNavegacion
 
 @enduml
