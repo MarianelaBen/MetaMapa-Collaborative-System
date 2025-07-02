@@ -27,23 +27,23 @@ public class ConsensoService implements IConsensoService {
   public void aplicarAlgoritmoDeConsenso() {
     List<Coleccion> colecciones = coleccionRepository.findAll();
 
+    List<Coleccion> coleccionesConAlgoritmo = colecciones.stream()
+        .filter(coleccion -> coleccion.getAlgoritmoDeConsenso() != null)
+        .toList();
+
     Map<Fuente, List<Hecho>> hechosPorFuente = new HashMap<>();
 
-    colecciones.stream() //Decision de diseño las fuentes de colecciones que se repiten me quedo con el llamdo de la primera vez.
-        .filter(coleccion -> coleccion.getAlgoritmoDeConsenso() != null)
-        .forEach(coleccion -> {
-          coleccion.getFuentes().forEach(fuente -> {
-            List<Hecho> hechos = agregadorService.obtenerTodosLosHechosDeFuente(fuente);
-            hechosPorFuente.putIfAbsent(fuente, hechos);
-          });
-        });
-    //TODO poner la lista de las colecciones que tengan algoritmo para no repetir esto coleccion.getAlgoritmoDeConsenso() != null
-    colecciones.stream()
-                .filter(coleccion -> coleccion.getAlgoritmoDeConsenso() != null)
-                .forEach(coleccion -> this.usoDeAlgoritmo(coleccion, hechosPorFuente));
+    coleccionesConAlgoritmo.forEach(coleccion -> {
+      coleccion.getFuentes().forEach(fuente -> {
+        hechosPorFuente.putIfAbsent(fuente, agregadorService.obtenerTodosLosHechosDeFuente(fuente));
+      });
+    });
+
+    coleccionesConAlgoritmo.forEach(coleccion -> this.usoDeAlgoritmo(coleccion, hechosPorFuente));
 
     colecciones.forEach(coleccion -> coleccionRepository.save(coleccion));
   }
+
 
   @Override
   public void usoDeAlgoritmo(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente) {
