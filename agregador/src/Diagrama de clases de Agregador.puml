@@ -86,6 +86,8 @@ class Hecho {
     -origen: Origen
     -fueEliminado: boolean
     -etiquetas: Set<Etiqueta>
+    -fuenteExterna: String
+    -consensuado: boolean
 
     +agregarEtiqueta(etiqueta: Etiqueta): void
 }
@@ -186,6 +188,14 @@ class ModoDeNavegacionFactory{
     +resolver(tipo: TipoDeModoNavegacion): IModoDeNavegacion
 }
 
+enum TipoDeModoNavegacion{
+  CURADO
+  IRRESTRICTA
+}
+
+IAlgoritmoDeConsenso --> TipoAlgoritmoDeConsenso
+IModoDeNavegacion --> Hecho
+IModoDeNavegacion --> TipoDeModoNavegacion
 Coleccion --> "*" Criterio
 Coleccion --> "*" Hecho
 Coleccion --> "*" Fuente
