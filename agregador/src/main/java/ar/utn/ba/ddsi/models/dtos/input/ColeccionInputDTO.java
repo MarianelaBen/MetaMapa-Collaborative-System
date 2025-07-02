@@ -16,5 +16,4 @@ public class ColeccionInputDTO {
   private Set<Long> fuenteIds;
   private Set<Long> criterioIds;
   private Set<Long> hechoIds;
-
 }

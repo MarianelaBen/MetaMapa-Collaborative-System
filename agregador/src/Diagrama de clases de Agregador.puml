@@ -62,11 +62,18 @@ class Coleccion {
     -criterios: Set<Criterio>
     -hechosDeLaColeccion: List<Hecho>
     -handle: String
+    -algoritmoDeConsenso: TipoAlgoritmoDeConsenso
     +agregarHechos(hechos: List<Hecho>): void
     +cumpleLosCriterios(hecho: Hecho): boolean
     +noFueEliminado(hecho: Hecho): boolean
     +agregarCriterios(criterio: Criterio...): void
     +agregarFuentes(fuente: Fuente...): void
+}
+
+enum TipoAlgoritmoDeConsenso{
+      MAYORIA_SIMPLE
+      MULTIPLES_MENCIONES
+      CONSENSO_ABSOLUTO
 }
 
 class Hecho {
@@ -128,7 +135,25 @@ class Ubicacion{
     -longitud: double
 }
 
+interface IAlgoritmoDeConsenso{
+    +calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente): void
+    +getTipo(): TipoAlgoritmoDeConsenso
+}
 
+class ConsensoAbsoluta{
+    +calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente): void
+}
+
+class ConsensoMayoriaSimple{
+    +calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente): void
+}
+
+class ConsensoMultiplesMenciones{
+    +calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente): void
+}
+
+class AlgoritmoDeConsensoFactory{
+}
 
 Coleccion --> "*" Criterio
 Coleccion --> "*" Hecho
@@ -140,6 +165,7 @@ Solicitud --> EstadoSolicitud
 Hecho --> Ubicacion
 Hecho --> Categoria
 Fuente --> TipoFuente
+Coleccion --> TipoAlgoritmoDeConsenso
 
 
 @enduml
