@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.models.entities;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import lombok.Getter;
@@ -42,6 +43,17 @@ public class Hecho {
 
   public void agregarEtiqueta(Etiqueta etiqueta) {
     this.etiquetas.add(etiqueta);
+  }
+
+  public boolean esIgualContenido(Hecho otroHecho) {
+    if (otroHecho == null) return false;
+
+    return Objects.equals(this.titulo, otroHecho.titulo) &&
+        Objects.equals(this.descripcion, otroHecho.descripcion) &&
+        Objects.equals(this.categoria.getNombre(), otroHecho.categoria.getNombre()) &&
+        Objects.equals(this.ubicacion.getLatitud(), otroHecho.ubicacion.getLatitud()) &&
+        Objects.equals(this.ubicacion.getLongitud(), otroHecho.ubicacion.getLongitud()) &&
+        Objects.equals(this.fechaAcontecimiento, otroHecho.fechaAcontecimiento);
   }
 
 }
