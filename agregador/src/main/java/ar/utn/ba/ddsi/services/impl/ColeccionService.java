@@ -78,7 +78,7 @@ public class ColeccionService implements IColeccionService {
 
     IModoDeNavegacion modo = modoDeNavegacionFactory.resolver(modoNavegacion);
 
-    return modo.aplicarModo(hechos);
+    return modo.aplicarModo(hechos, coleccion.getAlgoritmoDeConsenso());
   }
 
   }

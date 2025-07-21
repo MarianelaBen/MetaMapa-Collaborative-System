@@ -45,7 +45,9 @@ public class Hecho {
   }
 
   public boolean esIgualContenido(Hecho otroHecho) {
-    if (otroHecho == null) return false;
+    if (otroHecho == null){
+      return false;
+    }
 
     return Objects.equals(this.titulo, otroHecho.titulo) &&
         Objects.equals(this.descripcion, otroHecho.descripcion) &&
@@ -56,7 +58,7 @@ public class Hecho {
   }
 
   public boolean esConsensuado(TipoAlgoritmoDeConsenso algoritmo) { //esta basico dsp hay que agregar q si no hay algoritmo sea true o algo asi
-    return this.consensoPorAlgoritmo.getOrDefault(algoritmo, false);
+    return this.consensoPorAlgoritmo.getOrDefault(algoritmo, true);
   }
 
   public void setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso algoritmo, boolean consensuado) {
