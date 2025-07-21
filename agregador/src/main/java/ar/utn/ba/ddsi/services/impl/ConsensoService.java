@@ -31,6 +31,8 @@ public class ConsensoService implements IConsensoService {
         .filter(coleccion -> coleccion.getAlgoritmoDeConsenso() != null)
         .toList();
 
+    this.reiniciarConsenso(coleccionesConAlgoritmo);
+
     Map<Fuente, List<Hecho>> hechosPorFuente = new HashMap<>();
 
     coleccionesConAlgoritmo.forEach(coleccion -> {
@@ -53,6 +55,12 @@ public class ConsensoService implements IConsensoService {
     }else {
       System.out.println("Algoritmo desconocido");
     }
+  }
+
+  private void reiniciarConsenso(List<Coleccion> coleccionesConAlgoritmo) {
+    coleccionesConAlgoritmo.forEach(coleccion -> {
+      coleccion.getHechos().forEach(Hecho::limpiarConsensos);
+    });
   }
 
 }

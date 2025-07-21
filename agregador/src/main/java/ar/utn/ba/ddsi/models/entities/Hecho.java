@@ -1,10 +1,9 @@
 package ar.utn.ba.ddsi.models.entities;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
+import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import lombok.Getter;
 import lombok.Setter;
 @Getter
@@ -21,7 +20,7 @@ public class Hecho {
    private boolean fueEliminado;
    private Set<Etiqueta> etiquetas;
    String fuenteExterna;
-   boolean consensuado;
+   private Map<TipoAlgoritmoDeConsenso, Boolean> consensoPorAlgoritmo;
 
   // private String nombreAportante;
   // private String apellidoAportante;
@@ -38,7 +37,7 @@ public class Hecho {
     this.fueEliminado = false;
     this.etiquetas = new HashSet<>();
     this.fuenteExterna = fuenteExterna;
-    this.consensuado = true;
+    this.consensoPorAlgoritmo = new HashMap<>();
   }
 
   public void agregarEtiqueta(Etiqueta etiqueta) {
@@ -56,4 +55,15 @@ public class Hecho {
         Objects.equals(this.fechaAcontecimiento, otroHecho.fechaAcontecimiento);
   }
 
+  public boolean esConsensuado(TipoAlgoritmoDeConsenso algoritmo) { //esta basico dsp hay que agregar q si no hay algoritmo sea true o algo asi
+    return this.consensoPorAlgoritmo.getOrDefault(algoritmo, false);
+  }
+
+  public void setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso algoritmo, boolean consensuado) {
+    this.consensoPorAlgoritmo.put(algoritmo, consensuado);
+  }
+
+  public void limpiarConsensos() {
+    this.consensoPorAlgoritmo.clear();
+  }
 }
