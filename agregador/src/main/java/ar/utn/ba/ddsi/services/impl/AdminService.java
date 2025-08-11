@@ -9,6 +9,7 @@ import ar.utn.ba.ddsi.models.repositories.impl.ColeccionRepository;
 import ar.utn.ba.ddsi.models.repositories.impl.FuenteRepository;
 import ar.utn.ba.ddsi.models.repositories.impl.SolicitudRepository;
 import ar.utn.ba.ddsi.services.IAdminService;
+import ar.utn.ba.ddsi.services.IColeccionService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class AdminService implements IAdminService {
   private final ColeccionRepository coleccionRepo;
+  private final IColeccionService coleccionService;
   private final FuenteRepository fuenteRepo;
   //private final ConsensoRepository consensoRepo;
   private final SolicitudRepository solicitudRepo;
@@ -26,11 +28,13 @@ public class AdminService implements IAdminService {
   public AdminService(ColeccionRepository coleccionRepo,
                       FuenteRepository fuenteRepo,
                       //ConsensoRepository consensoRepo,
-                      SolicitudRepository solicitudRepo) {
+                      SolicitudRepository solicitudRepo,
+                      IColeccionService coleccionService) {
     this.coleccionRepo = coleccionRepo;
     this.fuenteRepo = fuenteRepo;
    // this.consensoRepo = consensoRepo;
     this.solicitudRepo = solicitudRepo;
+    this.coleccionService = coleccionService;
   }
 
   //API ADMINISTRATIVA
@@ -57,7 +61,8 @@ public class AdminService implements IAdminService {
     Coleccion c = new Coleccion(dto.getTitulo(), dto.getDescripcion(), fuentes);  //Convertimos DTO a entidad
     c.setHandle(dto.getHandle());
     c.setAlgoritmoDeConsenso(dto.getAlgoritmoDeConsenso());
-    return ColeccionOutputDTO.fromEntity(coleccionRepo.save(c));  // Guardamos y devolvemos el DTO de salida
+    //return ColeccionOutputDTO.fromEntity(coleccionRepo.save(c));  // Guardamos y devolvemos el DTO de salida
+    return ColeccionOutputDTO.fromEntity(coleccionService.crearColeccion(c));
   }
 
 

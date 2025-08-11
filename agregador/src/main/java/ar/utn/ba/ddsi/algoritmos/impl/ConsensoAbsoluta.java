@@ -42,7 +42,7 @@ public class ConsensoAbsoluta implements IAlgoritmoDeConsenso {
 
       // Marco todos los hechos de ese título según el consenso
       for (Hecho hecho : hechosConMismoTitulo) {
-        hecho.setConsensuado(hayConsensoAbsoluto);
+        hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.CONSENSO_ABSOLUTO, hayConsensoAbsoluto);
       }
     }
   }
@@ -150,7 +150,7 @@ public class ConsensoAbsoluta implements IAlgoritmoDeConsenso {
   }*/
 
   private void marcarTodosLosHechosComoNoConsensuados(Coleccion coleccion) {
-    coleccion.getHechos().forEach(hecho -> hecho.setConsensuado(false));
+    coleccion.getHechos().forEach(hecho -> hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.CONSENSO_ABSOLUTO,false));
   }
 
   /*private void marcarHechosNoPresentes(Coleccion coleccion, Map<String, List<Hecho>> hechosPorTitulo, Set<Fuente> fuentesColeccion) {

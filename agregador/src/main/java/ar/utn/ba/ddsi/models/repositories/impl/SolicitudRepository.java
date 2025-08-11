@@ -1,6 +1,5 @@
 package ar.utn.ba.ddsi.models.repositories.impl;
 
-import ar.utn.ba.ddsi.models.entities.Solicitud;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;

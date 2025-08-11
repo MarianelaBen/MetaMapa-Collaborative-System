@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.services.IAgregadorService;
+import ar.utn.ba.ddsi.services.ISolicitudService;
 import ar.utn.ba.ddsi.services.impl.SolicitudService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -17,9 +18,9 @@ import java.util.stream.Collectors;
 public class AgregadorController {
 
   private final IAgregadorService agregadorService;
-  private final SolicitudService solicitudService;
+  private final ISolicitudService solicitudService;
 
-  public AgregadorController(IAgregadorService agregadorService, SolicitudService solicitudService){
+  public AgregadorController(IAgregadorService agregadorService, ISolicitudService solicitudService){
     this.agregadorService = agregadorService;
     this.solicitudService = solicitudService;
   }

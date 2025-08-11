@@ -58,7 +58,7 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
       if (hayMayoria) {
         marcarHechosConMayoria(hechosConMismoTitulo, conteoHechosPorContenido, mayoriaRequerida);
       } else {
-        hechosConMismoTitulo.forEach(hecho -> hecho.setConsensuado(false));
+        hechosConMismoTitulo.forEach(hecho -> hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MAYORIA_SIMPLE,false));
       }
     }
   }
@@ -118,12 +118,12 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
       boolean tieneConsenso = conteoHechosPorContenido.entrySet().stream()
           .anyMatch(entry -> entry.getKey().esIgualContenido(hecho) && entry.getValue() >= mayoriaRequerida);
 
-      hecho.setConsensuado(tieneConsenso);
+      hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MAYORIA_SIMPLE, tieneConsenso);
     }
   }
 
   private void marcarTodosLosHechosComoNoConsensuados(Coleccion coleccion) {
-    coleccion.getHechos().forEach(hecho -> hecho.setConsensuado(false));
+    coleccion.getHechos().forEach(hecho -> hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MAYORIA_SIMPLE,false));
   }
 
   @Override

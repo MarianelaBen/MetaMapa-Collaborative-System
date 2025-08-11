@@ -43,7 +43,7 @@ public class ConsensoMultiplesMenciones implements IAlgoritmoDeConsenso {
 
       boolean hayConsenso = verificarConsensoMultiplesMenciones(hechosConMismoTitulo);
 
-      hechosConMismoTitulo.forEach(hecho -> hecho.setConsensuado(hayConsenso));
+      hechosConMismoTitulo.forEach(hecho -> hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MULTIPLES_MENCIONES, hayConsenso));
     }
   }
 
@@ -149,7 +149,7 @@ public class ConsensoMultiplesMenciones implements IAlgoritmoDeConsenso {
   }*/
 
   private void marcarTodosLosHechosComoNoConsensuados(Coleccion coleccion) {
-    coleccion.getHechos().forEach(hecho -> hecho.setConsensuado(false));
+    coleccion.getHechos().forEach(hecho -> hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MULTIPLES_MENCIONES,false));
   }
 
   @Override
