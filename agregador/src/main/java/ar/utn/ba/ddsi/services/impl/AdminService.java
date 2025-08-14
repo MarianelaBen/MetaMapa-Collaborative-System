@@ -105,6 +105,7 @@ public class AdminService implements IAdminService {
     Fuente fuente = new Fuente(dto.getUrl(), dto.getTipo());              // Convertimos el DTO a entidad
     coleccion.agregarFuentes(fuente);            // Asociamos la fuente desde la colección
     coleccionRepo.save(coleccion);               // Guardamos la colección con la nueva fuente
+    coleccionService.actualizarColecciones();    //TODO borrar esta linea
 
     return FuenteInputDTO.fromEntity(fuente);    // Devolvemos la fuente recién agregada
   }

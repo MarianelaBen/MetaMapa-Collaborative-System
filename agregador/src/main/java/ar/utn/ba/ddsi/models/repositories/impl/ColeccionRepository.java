@@ -19,7 +19,16 @@ public class ColeccionRepository implements IColeccionRepository {
       // generamos un UUID aleatorio y lo usamos directamente como handle
       String uuid = UUID.randomUUID().toString();
       coleccion.setHandle(uuid);
+      colecciones.add(coleccion);
+      return coleccion;
     }
+    for (int i = 0; i < colecciones.size(); i++) {
+      if (colecciones.get(i).getHandle().equals(coleccion.getHandle())) {
+        colecciones.set(i, coleccion); //la reemplazo
+        return coleccion;
+      }
+    }
+    //caso por si el handle se habia puesto manual u otras posibilidades
     colecciones.add(coleccion);
     return coleccion;
   }
@@ -29,7 +38,8 @@ public class ColeccionRepository implements IColeccionRepository {
 
   @Override
   public List<Coleccion> findAll(){
-    return colecciones;
+    //return colecciones; //TODO comprobar si puedo borrar
+    return new ArrayList<>(colecciones);
   }
 
   public void eliminarHecho(Hecho hechoEliminado){

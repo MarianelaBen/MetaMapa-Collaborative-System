@@ -19,20 +19,22 @@ public class Hecho {
    private Origen origen;
    private boolean fueEliminado;
    private Set<Etiqueta> etiquetas;
-   String fuenteExterna;
+   private String fuenteExterna;
    private Map<TipoAlgoritmoDeConsenso, Boolean> consensoPorAlgoritmo;
+   private Contribuyente contribuyente;
+   private List<String> pathMultimedia;
 
   // private String nombreAportante;
   // private String apellidoAportante;
   // private Integer edadAportante;
 
-  public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen, String fuenteExterna){
+  public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, LocalDate fechaCarga , Origen origen, String fuenteExterna){
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
     this.ubicacion = ubicacion;
     this.fechaAcontecimiento = fechaAcontecimiento;
-    this.fechaCarga = LocalDate.now();
+    this.fechaCarga = fechaCarga;
     this.origen = origen;
     this.fueEliminado = false;
     this.etiquetas = new HashSet<>();

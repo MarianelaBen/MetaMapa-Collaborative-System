@@ -16,7 +16,9 @@ public class SolicitudService implements ISolicitudService {
 
   @Autowired
   private ISolicitudRepository solicitudRepository;
-  private IColeccionService coleccionService;
+  @Autowired
+  private IColeccionService coleccionService; //TODO chequear si hace falta
+  //@Autowired TODO APLICAR IMPLEMENTACION O VER OTRA MANERA
   private IDetectorDeSpam detectorDeSpam;
 
 

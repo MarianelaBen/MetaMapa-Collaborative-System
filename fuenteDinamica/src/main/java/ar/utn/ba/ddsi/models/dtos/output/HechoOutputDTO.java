@@ -1,13 +1,19 @@
 package ar.utn.ba.ddsi.models.dtos.output;
 
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HechoOutputDTO {
   @NotNull
   private String titulo;
