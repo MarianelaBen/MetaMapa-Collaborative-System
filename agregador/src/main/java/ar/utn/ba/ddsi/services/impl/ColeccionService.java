@@ -60,14 +60,6 @@ public class ColeccionService implements IColeccionService {
   }
 
   @Override
-  public List<Hecho> obtenerHechos() {
-    return coleccionRepository.findAll().stream()
-        .flatMap(c -> c.getHechos().stream())
-        .filter(h -> !h.isFueEliminado())
-        .collect(Collectors.toList());
-  }
-
-  @Override
   public List<Hecho> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modoNavegacion) {
     Coleccion coleccion = coleccionRepository.findById(coleccionId);
         //.orElseThrow(() -> new RuntimeException("No se encontro la coleccion"));

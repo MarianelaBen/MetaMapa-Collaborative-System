@@ -33,7 +33,6 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
 
   @Override
   public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes) {
-    //TODO pensar si aca deberia llamar a findAll de un repositorio de fuentes en vez de que se pasen por parametro
     List<Hecho> hechos = fuentes.stream()
         .flatMap( f-> obtenerTodosLosHechosDeFuente(f)
             .stream())

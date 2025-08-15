@@ -46,9 +46,10 @@ public class AdminService implements IAdminService {
 
   //Crea coleccion a partir del DTO recibido
 
-  public void modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id){
+  public Coleccion modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id){
     Coleccion coleccion = coleccionRepo.findById(id);
     coleccion.setAlgoritmoDeConsenso(tipoAlgoritmo);
+    return coleccion;
   }
 
   @Override
