@@ -11,10 +11,6 @@ import ar.utn.ba.ddsi.services.IAdminService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-/* TODO DTOs de consenso
-import ar.utn.ba.ddsi.models.dtos.output.ConsensoResponseDTO;
-import ar.utn.ba.ddsi.models.dtos.input.ConsensoDTO;*/
-
 
 @RestController
 @RequestMapping("/api/admin")
@@ -39,9 +35,7 @@ public class AdminController {
 
   //Actualiza coleccion por id
   @PutMapping("/colecciones/{id}")
-  public ColeccionOutputDTO actualizarColeccion(
-      @PathVariable String id,
-      @RequestBody ColeccionInputDTO dto) {
+  public ColeccionOutputDTO actualizarColeccion(@PathVariable String id, @RequestBody ColeccionInputDTO dto) {
     return servicio.actualizarColeccion(id, dto);
   }
 
@@ -61,9 +55,7 @@ public class AdminController {
 
   //Agregar una fuente de hechos a una coleccion
   @PostMapping("/colecciones/{colId}/fuentes") //Recibe el DTO de la fuente
-  public FuenteInputDTO agregarFuente(
-      @PathVariable String colId,
-      @RequestBody FuenteInputDTO dto) {
+  public FuenteInputDTO agregarFuente(@PathVariable String colId, @RequestBody FuenteInputDTO dto) {
     return servicio.agregarFuente(colId, dto);
   }
 

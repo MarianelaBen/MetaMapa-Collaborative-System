@@ -37,8 +37,7 @@ public class AgregadorController {
   }
 
   @GetMapping("/colecciones/{coleccionId}/hechos")
-  public List<HechoOutputDTO> getHechosPorColeccion(@PathVariable String coleccionId,
-      @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr) { //valor predeterminado IRRESTRICTA por si no se especifica nada de cuial se quiere usar
+  public List<HechoOutputDTO> getHechosPorColeccion(@PathVariable String coleccionId, @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr) { //valor predeterminado IRRESTRICTA por si no se especifica nada de cuial se quiere usar
 
     TipoDeModoNavegacion modo = TipoDeModoNavegacion.valueOf(modoStr);
     List<Hecho> hechos = agregadorService.obtenerHechosPorColeccion(coleccionId, modo);
