@@ -5,6 +5,7 @@ import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class HechoOutputDTO {
   private long id;
   private String titulo;
@@ -26,7 +28,7 @@ public class HechoOutputDTO {
   private String fuenteExterna;
 
   public HechoOutputDTO(Hecho hecho) {
-    this.id = hecho.getId();
+    //this.id = hecho.getId();
     this.titulo = hecho.getTitulo();
     this.descripcion = hecho.getDescripcion();
     this.categoria = hecho.getCategoria().getNombre();

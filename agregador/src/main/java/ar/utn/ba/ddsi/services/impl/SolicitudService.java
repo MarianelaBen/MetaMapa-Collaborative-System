@@ -1,7 +1,6 @@
 package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.models.entities.Hecho;
-import ar.utn.ba.ddsi.models.entities.Solicitud;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
@@ -13,11 +12,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-public abstract class SolicitudService implements ISolicitudService {
+public class SolicitudService implements ISolicitudService {
 
   @Autowired
   private ISolicitudRepository solicitudRepository;
-  private IColeccionService coleccionService;
+  @Autowired
+  private IColeccionService coleccionService; //TODO chequear si hace falta
+  //@Autowired TODO APLICAR IMPLEMENTACION O VER OTRA MANERA
   private IDetectorDeSpam detectorDeSpam;
 
 

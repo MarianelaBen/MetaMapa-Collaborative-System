@@ -10,6 +10,7 @@ import ar.utn.ba.ddsi.modosDeNavegacion.impl.ModoDeNavegacionFactory;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +22,15 @@ public class ColeccionService implements IColeccionService {
 
   @Autowired
   private ModoDeNavegacionFactory modoDeNavegacionFactory;
+  @Autowired
   private IColeccionRepository coleccionRepository;
-  private IAgregadorService agregadorService;
+  @Autowired
+  private @Lazy IAgregadorService agregadorService;
 
 
   @Override
   public Coleccion crearColeccion(Coleccion coleccion){
-    this.filtrarHechos(coleccion);
+    if (!coleccion.getFuentes().isEmpty()){ this.filtrarHechos(coleccion); }
 
     return coleccionRepository.save(coleccion);
 
@@ -52,9 +55,14 @@ public class ColeccionService implements IColeccionService {
 
   @Override
   public void actualizarColecciones(){
-    colecciones = coleccionRepository.findAll();
+    /*colecciones = coleccionRepository.findAll();
     for (Coleccion coleccion : colecciones){
       this.filtrarHechos(coleccion);
+      coleccionRepository.save(coleccion);
+    }*/ //TODO COMPROBAR SI SE PUEDE BORRAR
+    List<Coleccion> coleccionesExistentes = new ArrayList<>(coleccionRepository.findAll());
+    for (Coleccion coleccion : coleccionesExistentes) {
+      filtrarHechos(coleccion);
       coleccionRepository.save(coleccion);
     }
   }
@@ -70,7 +78,7 @@ public class ColeccionService implements IColeccionService {
 
     IModoDeNavegacion modo = modoDeNavegacionFactory.resolver(modoNavegacion);
 
-    return modo.aplicarModo(hechos);
+    return modo.aplicarModo(hechos, coleccion.getAlgoritmoDeConsenso());
   }
 
   }
