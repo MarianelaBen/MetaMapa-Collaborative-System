@@ -4,6 +4,7 @@ import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
 
 import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.FuenteOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
@@ -26,13 +27,13 @@ public interface IAdminService {
 
   List<HechoOutputDTO> getHechos(String coleccionId);
 
-  FuenteInputDTO agregarFuente(String coleccionId, FuenteInputDTO dto);
+  FuenteOutputDTO agregarFuente(String coleccionId, FuenteInputDTO dto);
   boolean eliminarFuenteDeColeccion(String colId, Long fuenteId);
 /*
   ConsensoResponseDTO configurarConsenso(Long coleccionId, ConsensoDTO dto);
   Optional<ConsensoResponseDTO> obtenerConsenso(Long coleccionId);
 */
- Coleccion modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id);
+  ColeccionOutputDTO  modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id);
   SolicitudOutputDTO aprobarSolicitud(Long id);
   SolicitudOutputDTO denegarSolicitud(Long id);
 }

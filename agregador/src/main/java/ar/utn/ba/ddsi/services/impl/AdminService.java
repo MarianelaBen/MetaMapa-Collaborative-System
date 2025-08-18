@@ -1,4 +1,5 @@
 package ar.utn.ba.ddsi.services.impl;
+import ar.utn.ba.ddsi.Exceptions.ColeccionCreacionException;
 import ar.utn.ba.ddsi.models.dtos.input.*;
 import ar.utn.ba.ddsi.models.dtos.output.*;
 import ar.utn.ba.ddsi.models.entities.*;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,21 +52,28 @@ public class AdminService implements IAdminService {
 
   //Crea coleccion a partir del DTO recibido
 
-  public Coleccion modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id){
-    Coleccion coleccion = coleccionRepo.findById(id);
+  public ColeccionOutputDTO modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id){
+    var coleccion = coleccionRepo.findById(id);
+    if(coleccion == null){
+      throw new NoSuchElementException("No se puede modificar el Algoritmo de Consenso. Coleccion no encontrada con ID: " + id);
+    }
     coleccion.setAlgoritmoDeConsenso(tipoAlgoritmo);
-    return coleccion;
+    return ColeccionOutputDTO.fromEntity(coleccionRepo.save(coleccion));
   }
 
   @Override
   public ColeccionOutputDTO crearColeccion(ColeccionInputDTO dto) {
-    Set<Fuente> fuentes = dto.getFuenteIds().stream().map(fuenteRepo::findById).collect(Collectors.toSet());
-    Coleccion c = new Coleccion(dto.getTitulo(), dto.getDescripcion(), fuentes);  //Convertimos DTO a entidad
-    c.setHandle(dto.getHandle());
-    c.setAlgoritmoDeConsenso(dto.getAlgoritmoDeConsenso());
-    //return ColeccionOutputDTO.fromEntity(coleccionRepo.save(c));  // Guardamos y devolvemos el DTO de salida
-    return ColeccionOutputDTO.fromEntity(coleccionService.crearColeccion(c));
-  }
+    try {
+      Set<Fuente> fuentes = dto.getFuenteIds().stream().map(fuenteRepo::findById).collect(Collectors.toSet());
+      Coleccion c = new Coleccion(dto.getTitulo(), dto.getDescripcion(), fuentes);  //Convertimos DTO a entidad
+      c.setHandle(dto.getHandle());
+      c.setAlgoritmoDeConsenso(dto.getAlgoritmoDeConsenso());
+      //return ColeccionOutputDTO.fromEntity(coleccionRepo.save(c));  // Guardamos y devolvemos el DTO de salida
+      return ColeccionOutputDTO.fromEntity(coleccionService.crearColeccion(c));
+    } catch (Exception e) {
+      throw new ColeccionCreacionException("Error al crear la coleccion: " + e.getMessage());
+    }
+    }
 
 
 
@@ -72,7 +81,10 @@ public class AdminService implements IAdminService {
   @Override
   public ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO dto) {
     Coleccion existing = coleccionRepo.findById(id);
-      existing.setTitulo(dto.getTitulo());
+    if (existing == null) {
+      throw new NoSuchElementException("Coleccion no encontrada: " + id);
+    }
+    existing.setTitulo(dto.getTitulo());
       existing.setDescripcion(dto.getDescripcion());
       return ColeccionOutputDTO.fromEntity(coleccionRepo.save(existing));
   }
@@ -81,15 +93,22 @@ public class AdminService implements IAdminService {
   //Elimina coleccion por ID
   @Override
   public void eliminarColeccion(String id) {
-    coleccionRepo.deleteById(id);
-    //TODO verificar que exista
+    var coleccion = this.coleccionRepo.findById(id);
+    if(coleccion == null) {
+      throw new NoSuchElementException("No se puede eliminar. Coleccion no encontrada con ID: " + id);
+    }
+    this.coleccionRepo.deleteById(id);
   }
 
 
   //Obtención de todos los hechos de una colección
   @Override
   public List<HechoOutputDTO> getHechos(String coleccionId) {
-    return coleccionRepo.findById(coleccionId).getHechos()
+    var coleccion = coleccionRepo.findById(coleccionId);
+    if(coleccion == null) {
+      throw new NoSuchElementException("Coleccion no encontrada con ID: " + coleccionId);
+    }
+    return coleccion.getHechos()
         .stream()
         .map(HechoOutputDTO::fromEntity)
         .collect(Collectors.toList());
@@ -98,33 +117,33 @@ public class AdminService implements IAdminService {
 
   //Agregar fuentes de hechos de una colección
   @Override
-  public FuenteInputDTO agregarFuente(String coleccionId, FuenteInputDTO dto) {
-    Coleccion coleccion = coleccionRepo.findById(coleccionId);
+  public FuenteOutputDTO agregarFuente(String coleccionId, FuenteInputDTO dto) {
+    var coleccion = coleccionRepo.findById(coleccionId);
     if (coleccion == null) {
-      throw new RuntimeException("No se encontró la colección " + coleccionId);
+      throw new NoSuchElementException("No se encontró la coleccion " + coleccionId);
     }
     Fuente fuente = new Fuente(dto.getUrl(), dto.getTipo());              // Convertimos el DTO a entidad
+    //fuenteRepo.save(fuente);  TODO agregar linea ahora que tenemos repositorio?
     coleccion.agregarFuentes(fuente);            // Asociamos la fuente desde la colección
     coleccionRepo.save(coleccion);               // Guardamos la colección con la nueva fuente
     coleccionService.actualizarColecciones();    //TODO borrar esta linea
 
-    return FuenteInputDTO.fromEntity(fuente);    // Devolvemos la fuente recién agregada
+    return FuenteOutputDTO.fromEntity(fuente);    // Devolvemos la fuente recién agregada
   }
 
   //Quitar fuentes de hechos de una colección
   @Override
   public boolean eliminarFuenteDeColeccion(String coleccionId, Long fuenteId) {
-    Coleccion coleccion = coleccionRepo.findById(coleccionId);
+    var coleccion = coleccionRepo.findById(coleccionId);
 
     if (coleccion == null) {
-      return false; // No existe la colección
+      throw new NoSuchElementException("No se encontró la coleccion " + coleccionId); // No existe la colección
     }
-
     //Intentamos eliminar la fuente con ese id
     boolean removed = coleccion.getFuentes().removeIf(f -> {
       Long id = f.getId();
       return id != null && id.equals(fuenteId);
-    });
+    }); //TODO creo que ahora podriamos usar el repositorio de fuentes
 
     if (removed) {
       coleccionRepo.save(coleccion);
@@ -136,7 +155,10 @@ public class AdminService implements IAdminService {
   //Aprobar una solicitud de eliminación de un hecho.
   @Override
   public SolicitudOutputDTO aprobarSolicitud(Long id) {
-    SolicitudDeEliminacion s = solicitudRepo.findById(id);
+    var s = solicitudRepo.findById(id);
+    if(s == null) {
+      throw new NoSuchElementException("No se encontró la solicitud " + id);
+    }
     s.setEstado(EstadoSolicitud.ACEPTADA);
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
@@ -144,7 +166,10 @@ public class AdminService implements IAdminService {
   //Denegar una solicitud de eliminación de un hecho.
   @Override
   public SolicitudOutputDTO denegarSolicitud(Long id) {
-    SolicitudDeEliminacion s = solicitudRepo.findById(id); //si no existe, excepcion
+    var s = solicitudRepo.findById(id);
+    if(s == null) {
+      throw new NoSuchElementException("No se encontró la solicitud " + id);
+    }
     s.setEstado(EstadoSolicitud.RECHAZADA);
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
