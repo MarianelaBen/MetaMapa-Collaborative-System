@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.models.dtos.input;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,5 +29,6 @@ public class HechoInputComunDTO {
   private List<String> pathMultimedia;
 
   // Campos especificos de cada fuente
-  private Map<String, Object> extras;
+  private JsonNode particulares;
+
 }
