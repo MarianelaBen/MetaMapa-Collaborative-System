@@ -9,6 +9,7 @@ import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.services.IAdminService;
+import ar.utn.ba.ddsi.services.impl.ColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,11 @@ import java.util.NoSuchElementException;
 public class AdminController {
 
   private final IAdminService servicio;
+  private final ColeccionService coleccionService;
 
-  public AdminController(IAdminService servicio) {
+  public AdminController(IAdminService servicio, ColeccionService coleccionService) {
     this.servicio = servicio;
+    this.coleccionService = coleccionService;
   }
 
   //Obtener la lista completa de colecciones
@@ -42,7 +45,7 @@ public class AdminController {
   @PostMapping("/colecciones") //Recibe un DTO con los datos de la coleccion
   public ResponseEntity<?> crearColeccion(@RequestBody ColeccionInputDTO dto) {
     try{
-      ColeccionOutputDTO coleccionCreada = servicio.crearColeccion(dto);
+      ColeccionOutputDTO coleccionCreada = coleccionService.crearColeccion(dto);
       return ResponseEntity.status(HttpStatus.CREATED).body(coleccionCreada);
     }catch(Exception e){
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)

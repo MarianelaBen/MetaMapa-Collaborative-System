@@ -10,6 +10,7 @@ import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.services.IAgregadorService;
+import ar.utn.ba.ddsi.services.IColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -20,7 +21,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class AgregadorService implements IAgregadorService {
-  @Autowired ColeccionService coleccionService;
+  @Autowired
+  IColeccionService coleccionService;
 private final AdapterFuenteDinamica adapterFuenteDinamica;
 private final AdapterFuenteEstatica adapterFuenteEstatica;
 private final AdapterFuenteProxy adapterFuenteProxy;

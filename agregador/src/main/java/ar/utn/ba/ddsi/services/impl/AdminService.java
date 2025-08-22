@@ -21,19 +21,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class AdminService implements IAdminService {
-  private final ColeccionRepository coleccionRepo;
+  private final IColeccionRepository coleccionRepo;
   private final IColeccionService coleccionService;
-  private final FuenteRepository fuenteRepo;
   //private final ConsensoRepository consensoRepo;
-  private final SolicitudRepository solicitudRepo;
+  private final ISolicitudRepository solicitudRepo;
 
   public AdminService(ColeccionRepository coleccionRepo,
-                      FuenteRepository fuenteRepo,
+                      IFuenteRepository fuenteRepo,
                       //ConsensoRepository consensoRepo,
-                      SolicitudRepository solicitudRepo,
+                      ISolicitudRepository solicitudRepo,
                       IColeccionService coleccionService) {
     this.coleccionRepo = coleccionRepo;
-    this.fuenteRepo = fuenteRepo;
    // this.consensoRepo = consensoRepo;
     this.solicitudRepo = solicitudRepo;
     this.coleccionService = coleccionService;
@@ -60,22 +58,6 @@ public class AdminService implements IAdminService {
     coleccion.setAlgoritmoDeConsenso(tipoAlgoritmo);
     return ColeccionOutputDTO.fromEntity(coleccionRepo.save(coleccion));
   }
-
-  @Override
-  public ColeccionOutputDTO crearColeccion(ColeccionInputDTO dto) {
-    try {
-      Set<Fuente> fuentes = dto.getFuenteIds().stream().map(fuenteRepo::findById).collect(Collectors.toSet());
-      Coleccion c = new Coleccion(dto.getTitulo(), dto.getDescripcion(), fuentes);  //Convertimos DTO a entidad
-      c.setHandle(dto.getHandle());
-      c.setAlgoritmoDeConsenso(dto.getAlgoritmoDeConsenso());
-      //return ColeccionOutputDTO.fromEntity(coleccionRepo.save(c));  // Guardamos y devolvemos el DTO de salida
-      return ColeccionOutputDTO.fromEntity(coleccionService.crearColeccion(c));
-    } catch (Exception e) {
-      throw new ColeccionCreacionException("Error al crear la coleccion: " + e.getMessage());
-    }
-    }
-
-
 
   //Actualiza una coleccion si la encuentra por ID
   @Override
