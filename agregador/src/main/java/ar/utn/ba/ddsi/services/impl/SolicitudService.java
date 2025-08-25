@@ -51,6 +51,9 @@ public class SolicitudService implements ISolicitudService {
   }
   @Override
   public void crearSolicitud(SolicitudDeEliminacion solicitud){
+    if (solicitud == null) {
+      throw new IllegalArgumentException("La solicitud no puede ser nula");
+    }
     solicitudRepository.save(solicitud);
   }
 

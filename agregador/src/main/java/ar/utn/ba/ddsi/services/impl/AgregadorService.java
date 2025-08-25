@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,13 +35,21 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
 }
 
   @Override
-  public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes) {
-    List<Hecho> hechos = fuentes.stream()
+  public List<HechoOutputDTO> obtenerTodosLosHechos(Set<Fuente> fuentes) {
+    if (fuentes == null || fuentes.isEmpty()) {
+      throw new NoSuchElementException("No se especificaron fuentes.");
+    }
+    List<HechoOutputDTO> hechos = fuentes.stream()
         .flatMap( f-> obtenerTodosLosHechosDeFuente(f)
             .stream())
-        .collect(Collectors.toList());
+            .map(this::hechoOutputDTO)
+            .collect(Collectors.toList());
+
+    if (hechos.isEmpty()) {
+      throw new NoSuchElementException("No se encontraron hechos para las fuentes indicadas.");
+    }
     return hechos;
-  }
+}
 
   @Override
   public List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente) {
@@ -73,18 +82,25 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
 
   //Consulta de hechos dentro de una colección.
   @Override
-  public List<Hecho> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modo){
-    return coleccionService.obtenerHechosPorColeccion(coleccionId, modo);
+  public List<HechoOutputDTO> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modo){
+    List<Hecho> hechos = coleccionService.obtenerHechosPorColeccion(coleccionId, modo);
+    if (hechos == null) {
+      throw new NoSuchElementException("Coleccion no encontrada: " + coleccionId);
+    }
+    return hechos
+        .stream()
+        .map(this::hechoOutputDTO)
+        .toList();
   }
 
 
   //Navegación filtrada sobre una colección.
   @Override
-  public List<Hecho> obtenerHechosFiltrados(String coleccionId,String categoria, String fechaDesde, String fechaHasta){
-    List<Hecho> hechos = obtenerHechosPorColeccion(coleccionId, TipoDeModoNavegacion.IRRESTRICTA);
+  public List<HechoOutputDTO> obtenerHechosFiltrados(String coleccionId,String categoria, String fechaDesde, String fechaHasta){
+    List<HechoOutputDTO> hechos = obtenerHechosPorColeccion(coleccionId, TipoDeModoNavegacion.IRRESTRICTA);
     if (categoria != null ) {
       hechos = hechos.stream()
-          .filter(h -> h.getCategoria() != null && categoria.trim().equalsIgnoreCase(h.getCategoria().getNombre().trim()))
+          .filter(h -> h.getCategoria() != null && categoria.trim().equalsIgnoreCase(h.getCategoria().trim()))
           .collect(Collectors.toList());
     }
 
@@ -111,7 +127,10 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
           .collect(Collectors.toList());
     }
     return hechos;
+
   }
+
+
 
   //Navegación curada o irrestricta sobre una colección.
 }
