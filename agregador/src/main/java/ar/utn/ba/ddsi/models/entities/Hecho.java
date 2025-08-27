@@ -4,10 +4,14 @@ import java.time.LocalDate;
 import java.util.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 @Getter
 @Setter
+@Entity
+@Table(name = "hecho")
 public class Hecho {
   private Long id;
    private String titulo;
