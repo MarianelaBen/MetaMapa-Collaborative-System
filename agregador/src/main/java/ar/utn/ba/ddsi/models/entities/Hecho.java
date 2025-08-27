@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Hecho {
-    private Long id;
+  private Long id;
    private String titulo;
    private String descripcion;
    private Categoria categoria;
