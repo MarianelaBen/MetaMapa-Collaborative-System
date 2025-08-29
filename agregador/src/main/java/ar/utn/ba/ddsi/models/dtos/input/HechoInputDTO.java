@@ -50,6 +50,7 @@ public class HechoInputDTO {
         new Categoria(this.categoria),
         new Ubicacion(this.latitud, this.longitud),
         this.fechaAcontecimiento,
+        this.fechaCarga,
         Origen.PROVENIENTE_DE_DATASET,
         this.fuenteExterna
         //TODO manejar todos los origenes y mover TipoFuenteExterna aca porque es solo de proxy
