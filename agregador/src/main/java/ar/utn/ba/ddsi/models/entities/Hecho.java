@@ -7,6 +7,7 @@ import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,7 +16,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.MapKeyEnumerated;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -36,13 +41,14 @@ public class Hecho {
   @Column(name = "descripcion", nullable = false)
    private String descripcion;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "categoria_id", nullable = false)
    private Categoria categoria;
 
-  @OneToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "ubicacion_id", nullable = false)
-   private Ubicacion ubicacion;
+  //@OneToOne(fetch = FetchType.LAZY)
+  //@JoinColumn(name = "ubicacion_id", nullable = false)
+  @Embedded
+  private Ubicacion ubicacion;
 
   @Column(name = "fecha_acontecimiento", nullable = false)
    private LocalDate fechaAcontecimiento;
@@ -54,19 +60,28 @@ public class Hecho {
   @Column(name = "origen")
    private Origen origen;
 
-  @Column(name = "fue_eliminado")
+  @Column(name = "fue_eliminado", nullable = false)
    private boolean fueEliminado;
 
-  @OneToMany
-  @JoinColumn(name = "hecho_id")
+  @ManyToMany
+  @JoinTable(name = "hecho_etiqueta",
+  joinColumns = @JoinColumn(name = "hecho_id", referencedColumnName = "id"),
+  inverseJoinColumns = @JoinColumn(name = "etiqueta_id",
+  referencedColumnName = "id")
+  )
    private Set<Etiqueta> etiquetas;
 
    @Column(name = "fuente_externa", nullable = true)
    private String fuenteExterna;
 
+   @ElementCollection
+   @CollectionTable(name = "hecho_consenso", joinColumns = @JoinColumn(name = "hecho_id" ))
+   @MapKeyEnumerated(EnumType.STRING)
+   @MapKeyColumn(name = "algoritmo")
+   @Column(name = "aprobado", nullable = false)
    private Map<TipoAlgoritmoDeConsenso, Boolean> consensoPorAlgoritmo;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "contribuyente_id")
    private Contribuyente contribuyente;
 

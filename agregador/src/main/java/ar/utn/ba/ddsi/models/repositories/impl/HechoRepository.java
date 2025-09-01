@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.models.repositories.impl;
+/*package ar.utn.ba.ddsi.models.repositories.impl;
 
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
@@ -31,3 +31,4 @@ public class HechoRepository implements IHechoRepository {
   }
 
 }
+*/
