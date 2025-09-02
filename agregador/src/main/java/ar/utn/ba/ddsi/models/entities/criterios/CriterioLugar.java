@@ -3,9 +3,18 @@ package ar.utn.ba.ddsi.models.entities.criterios;
 
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
-public class CriterioLugar implements Criterio {
+@Entity
+@DiscriminatorValue("lugar")
+public class CriterioLugar extends Criterio {
+
+  @Column(name = "ubicacion", nullable = false)
   private Ubicacion ubicacion;
+
+  @Column(name = "rango_maximo", nullable = false)
   private int rangoMaximo; // num de tolerancia maxima
 
   public CriterioLugar(Ubicacion ubicacion, int rangoMaximo) {

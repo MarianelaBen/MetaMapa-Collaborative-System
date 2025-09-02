@@ -2,8 +2,15 @@ package ar.utn.ba.ddsi.models.entities.criterios;
 
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
-public class CriterioOrigen implements Criterio{
+@Entity
+@DiscriminatorValue("origen")
+public class CriterioOrigen extends Criterio{
+
+  @Column(name = "origen", nullable = false)
   private Origen origen;
 
   public CriterioOrigen(Origen origen) {
