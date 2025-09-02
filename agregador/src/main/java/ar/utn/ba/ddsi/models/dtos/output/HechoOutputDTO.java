@@ -49,6 +49,7 @@ public class HechoOutputDTO {
         new Categoria(this.categoria),
         new Ubicacion(this.latitud, this.longitud),
         this.fechaAcontecimiento,
+        this.fechaCarga,
         Origen.PROVISTO_POR_CONTRIBUYENTE, //porque viene de dinamica
         this.fuenteExterna
         );

@@ -6,19 +6,48 @@ import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 import java.util.ArrayList;
 @Getter
 @Setter
+@Entity
+@Table(name = "coleccion")
 public class Coleccion {
+
+    @Column(nullable = false)
     private String titulo;
+
+    @Column(nullable = false)
      private String descripcion;
-     private Set<Fuente> fuentes;
-     private Set<Criterio> criterios;
+
+    private Set<Fuente> fuentes;
+    private Set<Criterio> criterios;
+
+     @ManyToMany
+     @JoinTable(
+         name = "coleccion_hecho",
+         joinColumns = @JoinColumn(name = "coleccion_handle", referencedColumnName = "handle"),
+         inverseJoinColumns = @JoinColumn(name = "hecho_id")
+     )
      private List<Hecho> hechos;
+
+     @Id
+     @Column(name = "handle")
      private String handle;
+
+     @Enumerated(EnumType.STRING)
+     @Column(name = "algoritmo_de_consenso")
      private TipoAlgoritmoDeConsenso algoritmoDeConsenso;
 
   public Coleccion(String titulo, String descripcion, Set<Fuente> fuentes) {

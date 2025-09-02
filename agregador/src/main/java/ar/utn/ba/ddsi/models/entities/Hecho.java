@@ -60,7 +60,7 @@ public class Hecho {
   @Column(name = "origen")
    private Origen origen;
 
-  @Column(name = "fue_eliminado", nullable = false)
+  @Column(name = "fue_eliminado")
    private boolean fueEliminado;
 
   @ManyToMany

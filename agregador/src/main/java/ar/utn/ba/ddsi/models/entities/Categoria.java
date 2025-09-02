@@ -16,7 +16,8 @@ public class Categoria {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false)
+  //TODO como se normaliza las mayusculas, y eso
+  @Column(nullable = false, unique = true)
   private String nombre;
 
   public Categoria(String nombre) {
