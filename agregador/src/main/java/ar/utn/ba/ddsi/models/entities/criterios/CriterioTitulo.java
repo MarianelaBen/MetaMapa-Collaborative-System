@@ -2,7 +2,7 @@ package ar.utn.ba.ddsi.models.entities.criterios;
 
 import ar.utn.ba.ddsi.models.entities.Hecho;
 
-public class CriterioTitulo implements Criterio{
+public class tituCriterioTitulo implements Criterio{
   private String titulo;
 
   public CriterioTitulo(String titulo) {

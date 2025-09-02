@@ -1,5 +1,11 @@
 package ar.utn.ba.ddsi.models.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
@@ -7,9 +13,17 @@ import java.time.Period;
 
 @Getter
 @Setter
+@Entity
+@Table(name = "contribuyente")
 public class Contribuyente {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  @Column(name = "nombre")
   private String nombre;
+  @Column(name = "apellido")
   private String apellido;
+  @Column(name = "fecha_nacimiento")
   private LocalDate fechaDeNacimiento;
 
   public Contribuyente(String nombre, LocalDate fechaDeNacimiento, String apellido) {
