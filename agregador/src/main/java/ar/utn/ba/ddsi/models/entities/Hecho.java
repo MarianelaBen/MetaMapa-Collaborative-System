@@ -25,9 +25,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "hecho")
 public class Hecho {
@@ -45,8 +47,6 @@ public class Hecho {
   @JoinColumn(name = "categoria_id", nullable = false)
    private Categoria categoria;
 
-  //@OneToOne(fetch = FetchType.LAZY)
-  //@JoinColumn(name = "ubicacion_id", nullable = false)
   @Embedded
   private Ubicacion ubicacion;
 
@@ -54,7 +54,11 @@ public class Hecho {
    private LocalDate fechaAcontecimiento;
 
   @Column(name = "fecha_carga", nullable = false)
-   private LocalDate fechaCarga;
+  private java.time.LocalDate fechaCarga;
+
+  //nuevo
+  @Column(name = "hora_acontecimiento", nullable = false)
+   private LocalDate horaAcontecimiento;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "origen")
@@ -69,7 +73,7 @@ public class Hecho {
   inverseJoinColumns = @JoinColumn(name = "etiqueta_id",
   referencedColumnName = "id")
   )
-   private Set<Etiqueta> etiquetas;
+   private Set<Etiqueta> etiquetas = new HashSet<>(); //revisar si funciona bien si lo inicializo aca
 
    @Column(name = "fuente_externa", nullable = true)
    private String fuenteExterna;
@@ -79,7 +83,7 @@ public class Hecho {
    @MapKeyEnumerated(EnumType.STRING)
    @MapKeyColumn(name = "algoritmo")
    @Column(name = "aprobado", nullable = false)
-   private Map<TipoAlgoritmoDeConsenso, Boolean> consensoPorAlgoritmo;
+   private Map<TipoAlgoritmoDeConsenso, Boolean> consensoPorAlgoritmo = new EnumMap<>(TipoAlgoritmoDeConsenso.class); //mismo chequeo que arriba
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "contribuyente_id")
@@ -88,7 +92,7 @@ public class Hecho {
   @ElementCollection
   @CollectionTable(name = "path_multimedia", joinColumns = @JoinColumn(name = "hecho_id"))
   @Column(name = "path_multimedia")
-   private List<String> pathMultimedia;
+   private List<String> pathMultimedia = new ArrayList<>(); //mismo
 
   // private String nombreAportante;
   // private String apellidoAportante;
