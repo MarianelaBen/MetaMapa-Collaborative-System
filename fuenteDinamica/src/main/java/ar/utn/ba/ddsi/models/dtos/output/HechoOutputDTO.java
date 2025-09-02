@@ -21,7 +21,7 @@ public class HechoOutputDTO {
   @NotNull
   private String descripcion;
   @NotNull
-  private String nombreCategoria;
+  private String categoria;
   @NotNull
   private UbicacionOutputDTO ubicacion;
   @NotNull

@@ -5,6 +5,7 @@ import ar.utn.ba.ddsi.adapters.AdapterFuenteEstatica;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteProxy;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.entities.Etiqueta;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
@@ -71,9 +72,37 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     return hechos;
   }
 
-  @Override
+  /*@Override
   public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     return new HechoOutputDTO(hecho);
+  }*/ // No sirve lo hago con modo tipico, se pierden datos sino
+
+  @Override
+  public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
+    HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
+    hechoOutputDTO.setTitulo(hecho.getTitulo());
+    hechoOutputDTO.setDescripcion(hecho.getDescripcion());
+    hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
+    hechoOutputDTO.setLatitud(hecho.getUbicacion().getLatitud());
+    hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
+    hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
+    hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
+    System.out.println(hecho.getCategoria().getNombre());
+    hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+    if(hecho.getEtiquetas() != null){
+      hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
+    }
+    if(hecho.getPathMultimedia() != null){
+      hechoOutputDTO.setIdContenidoMultimedia(new ArrayList<>(hecho.getPathMultimedia()));
+    }
+    if(hecho.getContribuyente() != null){
+      hechoOutputDTO.setContribuyente(hecho.getContribuyente());
+    }
+    if(hecho.getFuenteExterna() != null){
+      hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+    }
+
+    return hechoOutputDTO;
   }
 
 

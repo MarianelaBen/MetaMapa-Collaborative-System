@@ -51,6 +51,9 @@ public class AdapterFuenteDinamica {
         Origen.PROVISTO_POR_CONTRIBUYENTE,
          null
     );
+      System.out.println("hola2");
+      System.out.println(dto.getCategoria());
+      System.out.println(hecho.getCategoria().getNombre());
 
     hecho.setFueEliminado(dto.getFueEliminado());
     if (dto.getPathMultimedia() != null) {hecho.setPathMultimedia(dto.getPathMultimedia());}

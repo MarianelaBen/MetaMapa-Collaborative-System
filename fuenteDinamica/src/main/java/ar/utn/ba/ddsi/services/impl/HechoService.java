@@ -85,7 +85,7 @@ public class HechoService implements IHechoService {
     HechoOutputDTO dto = new HechoOutputDTO();
     dto.setTitulo(hecho.getTitulo());
     dto.setDescripcion(hecho.getDescripcion());
-    dto.setNombreCategoria(hecho.getCategoria().getNombre());
+    dto.setCategoria(hecho.getCategoria().getNombre());
     dto.setUbicacion(ubicacionOutputDTO(hecho.getUbicacion()));
     dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     dto.setFechaCarga(hecho.getFechaCarga());
@@ -226,6 +226,7 @@ public class HechoService implements IHechoService {
         .stream()
         .map(this::hechoOutputDTO)
         .toList();
+
   }
 
   @Override

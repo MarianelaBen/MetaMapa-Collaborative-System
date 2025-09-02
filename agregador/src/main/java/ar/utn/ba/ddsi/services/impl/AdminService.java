@@ -14,6 +14,7 @@ import ar.utn.ba.ddsi.services.IColeccionService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -85,17 +86,44 @@ public class AdminService implements IAdminService {
 
   //Obtención de todos los hechos de una colección
   @Override
-  public List<HechoOutputDTO> getHechos(String coleccionId) {
+  public List<HechoOutputDTO> getHechos(String coleccionId) { //TODO BORRAR Y HACERLA USANDO LA FUNCION CORRECTA POR AHORA PROBE AGREGAR ALGO ACA PARA USAR NOMAS
     var coleccion = coleccionRepo.findById(coleccionId);
     if(coleccion == null) {
       throw new NoSuchElementException("Coleccion no encontrada con ID: " + coleccionId);
     }
     return coleccion.getHechos()
         .stream()
-        .map(HechoOutputDTO::fromEntity)
+        .map(h -> this.hechoOutputDTO(h))
         .collect(Collectors.toList());
-  }
+  } //Se saltea la parte de usar la funcion de obtener los hechos que usa el algoritmo no tiene sentido
 
+  public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
+    HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
+    hechoOutputDTO.setTitulo(hecho.getTitulo());
+    hechoOutputDTO.setDescripcion(hecho.getDescripcion());
+    hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
+    hechoOutputDTO.setLatitud(hecho.getUbicacion().getLatitud());
+    hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
+    hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
+    hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
+    System.out.println("hola1");
+    System.out.println(hecho.getCategoria().getNombre());
+    hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+    if(hecho.getEtiquetas() != null){
+      hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
+    }
+    if(hecho.getPathMultimedia() != null){
+      hechoOutputDTO.setIdContenidoMultimedia(new ArrayList<>(hecho.getPathMultimedia()));
+    }
+    if(hecho.getContribuyente() != null){
+      hechoOutputDTO.setContribuyente(hecho.getContribuyente());
+    }
+    if(hecho.getFuenteExterna() != null){
+      hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+    }
+
+    return hechoOutputDTO;
+  }
 
   //Agregar fuentes de hechos de una colección
   @Override

@@ -107,6 +107,5 @@ public class ColeccionService implements IColeccionService {
 
     return modo.aplicarModo(hechos, coleccion.getAlgoritmoDeConsenso());
   }
-
   }
 

@@ -43,9 +43,9 @@ public class AgregadorController {
     }
   }
 
-  public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
+  /*public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     return new HechoOutputDTO(hecho);
-  }
+  }*/ //Porque esta aca?? //TODO BORRAR
 
   @GetMapping("/colecciones/{coleccionId}/hechos")
   public ResponseEntity<?> getHechosPorColeccion(@PathVariable String coleccionId, @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr) { //valor predeterminado IRRESTRICTA por si no se especifica nada de cuial se quiere usar
