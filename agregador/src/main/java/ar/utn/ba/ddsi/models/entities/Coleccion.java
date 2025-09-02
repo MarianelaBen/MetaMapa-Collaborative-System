@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,13 +15,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.List;
 import java.util.ArrayList;
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "coleccion")
 public class Coleccion {
@@ -31,8 +35,18 @@ public class Coleccion {
     @Column(nullable = false)
      private String descripcion;
 
+
+  @ManyToMany
+  @JoinTable(name = "coleccion_fuente",
+      joinColumns = @JoinColumn(name = "coleccion_handle", referencedColumnName = "handle"),
+      inverseJoinColumns = @JoinColumn(name = "fuente_id",
+          referencedColumnName = "id")
+  )
     private Set<Fuente> fuentes;
-    private Set<Criterio> criterios;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "coleccion_handle", referencedColumnName = "handle", nullable = false)
+    private Set<Criterio> criterios = new HashSet<>();
 
      @ManyToMany
      @JoinTable(
