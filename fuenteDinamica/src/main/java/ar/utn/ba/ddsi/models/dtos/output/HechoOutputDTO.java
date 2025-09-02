@@ -33,7 +33,7 @@ public class HechoOutputDTO {
   @NotNull
   private boolean fueEliminado;
   @NotNull
-  private Set<String> nombreEtiquetas;
+  private Set<String> etiquetas;
   //@NotNull
   private JsonNode particulares;
   //private ContribuyenteOutputDTO contribuyente;

@@ -23,7 +23,7 @@ public class HechoInputDTO {
   private String fuenteExterna;
 
 
-  public Hecho toHecho() {
+  /*public Hecho toHecho() {
     return new Hecho(
         this.titulo,
         this.descripcion,
@@ -32,8 +32,9 @@ public class HechoInputDTO {
         this.fechaAcontecimiento,
         Origen.PROVENIENTE_DE_DATASET
     );
-  }
+  }*/ //TODO REEMPLAZARLO DONDE SE USE, DTOS SIN METODOS
 }
+
 
 
 

@@ -13,7 +13,7 @@ public class HechoOutputEstaticaDTO {
   @NotNull
   private String descripcion;
   @NotNull
-  private String nombreCategoria;
+  private String categoria;
   @NotNull
   private UbicacionOutputDTO ubicacion;
   @NotNull
@@ -25,5 +25,5 @@ public class HechoOutputEstaticaDTO {
   @NotNull
   private boolean fueEliminado;
   @NotNull
-  private Set<String> nombreEtiquetas;
+  private Set<String> etiquetas;
 }

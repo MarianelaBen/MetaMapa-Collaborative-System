@@ -1,10 +1,8 @@
-package ar.utn.ba.ddsi.models.dtos.input;
+package ar.utn.ba.ddsi.models.dtos.output;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -14,11 +12,13 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class HechoInputComunDTO {
+@Getter
+@Setter
+public class HechoOutputDTO {
   private String titulo;
   private String descripcion;
   private String categoria;
-  private UbicacionInputDTO ubicacion;
+  private UbicacionOutputDTO ubicacion;
   private LocalDate fechaAcontecimiento;
   private LocalDate fechaCarga;
   private String fuente;
