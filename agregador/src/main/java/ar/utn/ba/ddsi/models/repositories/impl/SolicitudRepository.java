@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.models.repositories.impl;
+/*package ar.utn.ba.ddsi.models.repositories.impl;
 
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
@@ -35,3 +35,4 @@ public class SolicitudRepository implements ISolicitudRepository {
         .orElse(null);
   }
 }
+*/
