@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,8 +20,8 @@ public class HechoOutputDTO {
   private String descripcion;
   private String categoria;
   private UbicacionOutputDTO ubicacion;
-  private LocalDate fechaAcontecimiento;
-  private LocalDate fechaCarga;
+  private OffsetDateTime fechaAcontecimiento;
+  private OffsetDateTime fechaCarga;
   private String fuente;
   private Boolean fueEliminado;
 

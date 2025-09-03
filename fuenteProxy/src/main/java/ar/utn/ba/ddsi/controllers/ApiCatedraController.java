@@ -7,6 +7,7 @@ import ar.utn.ba.ddsi.services.impl.ApiCatedraService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import java.util.List;
@@ -25,13 +26,17 @@ public class ApiCatedraController {
   }
 
   @GetMapping
-  public List<HechoOutputDTO> obtenerHechos() {
-    return apiCatedraService.obtenerHechos().
-            map(list -> list.stream()
-            .map(h -> proxyService.hechoOutputDTO(h , "Catedra"))
+  public List<HechoOutputDTO> obtenerHechos(
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "10") int size) {
+
+    return apiCatedraService.obtenerHechos(page, size)
+        .map(list -> list.stream()
+            .map(h -> proxyService.hechoOutputDTO(h, "Catedra"))
             .collect(Collectors.toList()))
         .block();
   }
+
 
   @GetMapping("/{id}")
   public Mono<HechoInputDTO> obtenerHechoPorId(@PathVariable long id) {

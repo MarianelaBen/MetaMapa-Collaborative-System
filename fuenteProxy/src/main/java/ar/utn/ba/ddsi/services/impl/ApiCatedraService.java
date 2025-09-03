@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.services.IApiCatedraService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -23,19 +24,16 @@ public class ApiCatedraService implements IApiCatedraService {
   record PaginaConDatos(int numeroPagina, HechoResponseDTO datos) {}
 
   @Override
-  public Mono<List<HechoInputDTO>> obtenerHechos() {
-    return obtenerPagina(1)
-        .expand(pagina -> {
-          // Si la página tiene datos, seguimos con la siguiente
-          if (!pagina.datos().getData().isEmpty()) {
-            return obtenerPagina(pagina.numeroPagina() + 1);
-          } else {
-            // Si está vacía, terminamos
-            return Mono.empty();
-          }
-        })
-        .flatMapIterable(pagina -> pagina.datos().getData())
-        .collectList();
+  public Mono<List<HechoInputDTO>> obtenerHechos(int page, int size) {
+    return webClient.get()
+        .uri(uriBuilder -> uriBuilder
+            .path("/desastres")
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .build())
+        .retrieve()
+        .bodyToMono(HechoResponseDTO.class)
+        .map(HechoResponseDTO::getData);
   }
 
   private Mono<PaginaConDatos> obtenerPagina(int numeroPagina) {
