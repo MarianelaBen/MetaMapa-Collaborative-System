@@ -51,7 +51,7 @@ public class Hecho {
   private Ubicacion ubicacion;
 
   @Column(name = "fecha_acontecimiento", nullable = false)
-   private LocalDate fechaAcontecimiento;
+  private LocalDate fechaAcontecimiento;
 
   @Column(name = "fecha_carga", nullable = false)
   private java.time.LocalDate fechaCarga;
@@ -65,7 +65,7 @@ public class Hecho {
    private Origen origen;
 
   @Column(name = "fue_eliminado")
-   private boolean fueEliminado;
+  private Boolean fueEliminado;
 
   @ManyToMany
   @JoinTable(name = "hecho_etiqueta",

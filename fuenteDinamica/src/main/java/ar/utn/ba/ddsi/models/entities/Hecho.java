@@ -7,25 +7,83 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Entity
+@Table(name = "hecho")
+@NoArgsConstructor
 @Getter
 @Setter
 public class Hecho {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(name = "titulo", nullable = false)
   private String titulo;
+
+  @Column(name = "descripcion", nullable = false)
   private String descripcion;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "categoria_id", nullable = false)
   private Categoria categoria;
+
+  @Embedded
   private Ubicacion ubicacion;
+
+  @Column(name = "fecha_acontecimiento", nullable = false)
   private LocalDate fechaAcontecimiento;
+
+  @Column(name = "fecha_carga", nullable = false)
   private LocalDate fechaCarga;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "origen")
   private Origen origen;
-  private boolean fueEliminado;
-  private Set<Etiqueta> etiquetas;
+
+  @Column(name = "fue_eliminado")
+  private Boolean fueEliminado;
+
+  @ManyToMany
+  @JoinTable(name = "hecho_etiqueta",
+      joinColumns = @JoinColumn(name = "hecho_id", referencedColumnName = "id"),
+      inverseJoinColumns = @JoinColumn(name = "etiqueta_id", referencedColumnName = "id")
+  )
+  private Set<Etiqueta> etiquetas = new HashSet<>();;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "contribuyente_id")
   private Contribuyente contribuyente;
+
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @JoinColumn(name = "hecho_id")
   private List<ContenidoMultimedia> contenidosMultimedia;
+
+  @Embedded
   private HechoEstadoPrevio estadoPrevio;
+
+  @Column(name = "fecha_actualizacion", nullable = false)
   private LocalDate fechaActualizacion;
 
   public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen){

@@ -1,6 +1,9 @@
 package ar.utn.ba.ddsi.models.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,7 +13,10 @@ import java.util.Set;
 
 @Setter
 @Getter
+@NoArgsConstructor
+@Embeddable
 public class HechoEstadoPrevio {
+
   private String titulo;
   private String descripcion;
   private Categoria categoria;

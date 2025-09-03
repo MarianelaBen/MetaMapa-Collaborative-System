@@ -1,12 +1,10 @@
 package ar.utn.ba.ddsi.services.impl;
 
-import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
-import ar.utn.ba.ddsi.models.entities.Administrador;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Solicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoSolicitud;
-import ar.utn.ba.ddsi.models.repositories.impl.SolicitudRepository;
+import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IHechoService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,7 @@ import java.time.LocalDate;
 public class SolicitudService implements ISolicitudService {
 
   @Autowired
-  private SolicitudRepository solicitudRepository;
+  private ISolicitudRepository solicitudRepository;
   @Autowired
   private IHechoService hechoService;
   //public void solicitarEdicion(Long idHecho, HechoInputDTO nuevoHecho) {
