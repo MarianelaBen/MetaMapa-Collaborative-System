@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.models.entities;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
@@ -58,7 +59,7 @@ public class Hecho {
 
   //nuevo
   @Column(name = "hora_acontecimiento", nullable = false)
-   private LocalDate horaAcontecimiento;
+   private LocalTime horaAcontecimiento;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "origen")
@@ -73,7 +74,7 @@ public class Hecho {
   inverseJoinColumns = @JoinColumn(name = "etiqueta_id",
   referencedColumnName = "id")
   )
-   private Set<Etiqueta> etiquetas = new HashSet<>(); //revisar si funciona bien si lo inicializo aca
+   private Set<Etiqueta> etiquetas = new HashSet<>(); //TODO revisar si funciona bien si lo inicializo aca
 
    @Column(name = "fuente_externa", nullable = true)
    private String fuenteExterna;
