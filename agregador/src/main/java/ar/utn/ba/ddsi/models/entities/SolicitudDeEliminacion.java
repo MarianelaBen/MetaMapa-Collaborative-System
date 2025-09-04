@@ -8,6 +8,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +25,9 @@ public class SolicitudDeEliminacion {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Long id;
+
+  //@ManyToOne TODO no seria asi?
+  //@JoinColumn(name = "hecho_id")
   @Column(name = "hecho_id")
   private Hecho hecho;
   @Column(name = "justificacion")

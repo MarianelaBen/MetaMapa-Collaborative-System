@@ -13,3 +13,4 @@ public interface IColeccionRepository {
  public void deleteById(String id);
 
 }
+//TODO persistencia
