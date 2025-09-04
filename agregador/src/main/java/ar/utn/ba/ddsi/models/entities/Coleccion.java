@@ -86,7 +86,7 @@ public class Coleccion {
   }
 
   public boolean noFueEliminado(Hecho hecho){
-    return !hecho.isFueEliminado();
+    return !hecho.getFueEliminado();
   }
 
   public void agregarCriterios(Criterio ... nuevosCriterios){
