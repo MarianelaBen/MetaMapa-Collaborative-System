@@ -20,9 +20,9 @@ public class HechoOutputDTO {
   private String descripcion;
   private String categoria;
   private UbicacionOutputDTO ubicacion;
-  private OffsetDateTime fechaAcontecimiento;
-  private OffsetDateTime fechaCarga;
-  private String fuente;
+  private LocalDate fechaAcontecimiento;
+  private LocalDate fechaCarga;
+  //private String fuente;
   private Boolean fueEliminado;
 
   // opcionales comunes

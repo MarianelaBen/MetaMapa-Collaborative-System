@@ -24,8 +24,8 @@ public class ProxyService implements IProxyService {
     dto.setDescripcion(hechoInputDTO.getDescripcion());
     dto.setCategoria(hechoInputDTO.getCategoria());
     dto.setUbicacion(new UbicacionOutputDTO(hechoInputDTO.getLatitud(), hechoInputDTO.getLongitud()));
-    dto.setFechaAcontecimiento(hechoInputDTO.getFechaAcontecimiento());
-    dto.setFechaCarga(hechoInputDTO.getFechaCarga());
+    dto.setFechaAcontecimiento(hechoInputDTO.getFechaAcontecimiento().toLocalDate());
+    dto.setFechaCarga(hechoInputDTO.getFechaCarga().toLocalDate());
     dto.setFueEliminado(false);
 
     ObjectMapper mapper = new ObjectMapper();
