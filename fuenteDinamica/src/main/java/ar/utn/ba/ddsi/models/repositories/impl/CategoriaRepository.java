@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.models.repositories.impl;
+/* package ar.utn.ba.ddsi.models.repositories.impl;
 
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Hecho;
@@ -41,3 +41,4 @@ public class CategoriaRepository implements ICategoriaRepository {
         .orElse(0L) + 1; // si la lista está vacía (O de valor Long), empezamos desde ID 1
   }
 }
+*/

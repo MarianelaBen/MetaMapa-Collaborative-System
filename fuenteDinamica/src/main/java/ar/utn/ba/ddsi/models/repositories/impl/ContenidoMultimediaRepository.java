@@ -6,7 +6,7 @@ import ar.utn.ba.ddsi.models.repositories.IContenidoMultimediaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
-
+/*
 @Repository
 public class ContenidoMultimediaRepository implements IContenidoMultimediaRepository {
 
@@ -40,3 +40,4 @@ public class ContenidoMultimediaRepository implements IContenidoMultimediaReposi
     contenidosMultimedia.removeIf(contenido -> contenido.getIdContenidoMultimedia().equals(idContenidoMultimedia));
   }
 }
+*/

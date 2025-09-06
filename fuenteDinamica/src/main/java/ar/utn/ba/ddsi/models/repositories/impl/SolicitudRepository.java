@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
+/*
 @Repository
 public class SolicitudRepository implements ISolicitudRepository {
 
@@ -31,3 +31,4 @@ public class SolicitudRepository implements ISolicitudRepository {
   }
 
 }
+*/

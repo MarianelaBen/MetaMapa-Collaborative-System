@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/*
 @Repository
 public class HechoRepository implements IHechoRepository {
   private List<Hecho> hechos;
@@ -29,6 +29,8 @@ public class HechoRepository implements IHechoRepository {
     }
     this.hechos.add(hecho);
   }
+
+
   @Override
   public Long generarNuevoId() {
     return hechos.stream()
@@ -51,3 +53,4 @@ public class HechoRepository implements IHechoRepository {
     return this.hechos;
   }
 }
+*/

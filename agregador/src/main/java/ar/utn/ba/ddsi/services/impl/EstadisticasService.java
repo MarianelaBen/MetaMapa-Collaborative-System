@@ -81,7 +81,6 @@ public class EstadisticasService implements IEstadisticasService {
         .max(Map.Entry.comparingByValue())
         .map(e -> new CategoriaOutputDTO(e.getKey(), e.getValue()))
         .orElse(null);
-
   }
 
   @Override

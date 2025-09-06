@@ -2,10 +2,13 @@ package ar.utn.ba.ddsi.models.repositories;
 
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Hecho;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ICategoriaRepository {
-
+public interface ICategoriaRepository extends JpaRepository<Categoria,Long> {
+ /*
  Categoria findById(Long id);
  Long save(Categoria categoria);
  Long generarNuevoId();
+
+  */
 }
