@@ -34,10 +34,14 @@ public class AgregadorController {
   public ResponseEntity<?> getHechos(Set<Fuente> fuentes){
     try{
       return ResponseEntity.ok(this.agregadorService.obtenerTodosLosHechos(fuentes));
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error","Solicitud no valida","mensaje", e.getMessage()));
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
           .body(Map.of("error","Hechos no encontrados","mensaje", e.getMessage()));
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
     }
