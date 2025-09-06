@@ -37,7 +37,7 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
   @Override
   public List<HechoOutputDTO> obtenerTodosLosHechos(Set<Fuente> fuentes) {
     if (fuentes == null || fuentes.isEmpty()) {
-      throw new NoSuchElementException("No se especificaron fuentes.");
+      throw new IllegalArgumentException("No se especificaron fuentes.");
     }
     List<HechoOutputDTO> hechos = fuentes.stream()
         .flatMap( f-> obtenerTodosLosHechosDeFuente(f)
