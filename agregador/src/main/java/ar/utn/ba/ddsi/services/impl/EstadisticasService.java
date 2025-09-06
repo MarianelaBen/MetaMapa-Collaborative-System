@@ -6,9 +6,11 @@ import ar.utn.ba.ddsi.models.dtos.output.HoraOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.ProvinciaOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
+import ar.utn.ba.ddsi.models.entities.Estadistica;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
+import ar.utn.ba.ddsi.models.repositories.EstadisticaRepository;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
@@ -18,6 +20,8 @@ import ar.utn.ba.ddsi.services.IDetectorDeSpam;
 import ar.utn.ba.ddsi.services.IEstadisticasService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -33,6 +37,7 @@ public class EstadisticasService implements IEstadisticasService {
   private final ISolicitudRepository solicitudRepo;
   private final ICategoriaRepository categoriaRepo;
   private final IDetectorDeSpam detectorDeSpam;
+  // private final EstadisticaRepository estadisticaRepository;
 
   @Autowired
   public EstadisticasService(IAgregadorService agregadorService, IColeccionRepository coleccionRepository, ISolicitudRepository solicitudRepo, ICategoriaRepository categoriaRepo, IDetectorDeSpam detectorDeSpam) {
@@ -47,6 +52,7 @@ public class EstadisticasService implements IEstadisticasService {
   public void recalcularEstadisticas() {
 
   }
+
 
   @Override
   public ProvinciaOutputDTO provinciaConMasHechosEnColeccion(String coleccionHandle) {
