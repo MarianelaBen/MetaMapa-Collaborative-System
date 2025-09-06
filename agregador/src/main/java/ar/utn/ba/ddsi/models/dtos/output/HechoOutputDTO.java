@@ -26,6 +26,7 @@ public class HechoOutputDTO {
   private Set<Long> idEtiquetas;
   private List<Long> idContenidoMultimedia;
   private String fuenteExterna;
+  private Boolean fueEliminado;
 
   public HechoOutputDTO(Hecho hecho) {
     //this.id = hecho.getId();
@@ -39,6 +40,7 @@ public class HechoOutputDTO {
     this.fuenteExterna = null;
     this.idEtiquetas = null;
     this.idContenidoMultimedia = null;
+
   }
 
   //Pasar de DTO a entidad

@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.models.repositories.impl;
+/*package ar.utn.ba.ddsi.models.repositories.impl;
 
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Hecho;
@@ -62,4 +62,4 @@ public class ColeccionRepository implements IColeccionRepository {
     colecciones.remove(coleccionAEliminar);
 }
 
-}
+}*/
