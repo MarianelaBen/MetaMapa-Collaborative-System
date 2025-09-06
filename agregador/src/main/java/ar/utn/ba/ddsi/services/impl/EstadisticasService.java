@@ -4,7 +4,10 @@ import ar.utn.ba.ddsi.models.dtos.output.CategoriaOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HoraOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.ProvinciaOutputDTO;
 import ar.utn.ba.ddsi.services.IEstadisticasService;
+import org.springframework.stereotype.Service;
 
+//TODO completar los métodos, posible estructura enviada al discord (chat: codigo-muerto)
+@Service
 public class EstadisticasService implements IEstadisticasService {
 
   @Override
