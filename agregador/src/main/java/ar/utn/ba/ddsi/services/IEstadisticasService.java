@@ -5,12 +5,14 @@ import ar.utn.ba.ddsi.models.dtos.output.CategoriaOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HoraOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.ProvinciaOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Categoria;
+import ar.utn.ba.ddsi.models.entities.Fuente;
+import java.util.Set;
 
 public interface IEstadisticasService {
   public void recalcularEstadisticas();
   ProvinciaOutputDTO provinciaConMasHechosEnColeccion(String coleccionHandle);
-  CategoriaOutputDTO categoriaConMasHechos();
-  ProvinciaOutputDTO provinciaConMasHechosParaCategoria(Long categoriaId);
-  HoraOutputDTO horaConMasHechosParaCategoria(Long categoriaId);
+  CategoriaOutputDTO categoriaConMasHechos(Set<Fuente> fuentes);
+  ProvinciaOutputDTO provinciaConMasHechosParaCategoria(Long categoriaId, Set<Fuente> fuentes);
+  HoraOutputDTO horaConMasHechosParaCategoria(Long categoriaId, Set<Fuente> fuentes);
   long contarSolicitudesEliminacionSpam();
 }

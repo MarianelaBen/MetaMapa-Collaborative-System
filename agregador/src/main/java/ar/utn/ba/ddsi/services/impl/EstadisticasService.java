@@ -1,36 +1,46 @@
 package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.models.dtos.output.CategoriaOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HoraOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.ProvinciaOutputDTO;
+import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
+import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
+import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IColeccionService;
+import ar.utn.ba.ddsi.services.IDetectorDeSpam;
 import ar.utn.ba.ddsi.services.IEstadisticasService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-//TODO completar los métodos, posible estructura enviada al discord (chat: codigo-muerto)
 @Service
 public class EstadisticasService implements IEstadisticasService {
 
   private final IAgregadorService agregadorService;
   private final IColeccionRepository coleccionRepo;
   private final ISolicitudRepository solicitudRepo;
+  private final ICategoriaRepository categoriaRepo;
+  private final IDetectorDeSpam detectorDeSpam;
 
   @Autowired
-  public EstadisticasService(IAgregadorService agregadorService, IColeccionRepository coleccionRepository, ISolicitudRepository solicitudRepo) {
+  public EstadisticasService(IAgregadorService agregadorService, IColeccionRepository coleccionRepository, ISolicitudRepository solicitudRepo, ICategoriaRepository categoriaRepo, IDetectorDeSpam detectorDeSpam) {
     this.agregadorService = agregadorService;
     this.coleccionRepo = coleccionRepository;
     this.solicitudRepo = solicitudRepo;
+    this.categoriaRepo = categoriaRepo;
+    this.detectorDeSpam = detectorDeSpam;
   }
 
   @Override
@@ -59,33 +69,82 @@ public class EstadisticasService implements IEstadisticasService {
   }
 
   @Override
-  public CategoriaOutputDTO categoriaConMasHechos() {
-  return null;
-    /*  List<Hecho> hechos = agregadorService.obtenerTodosLosHechos(Set.of());
-    //TODO problema porque este metodo devuelve HechoOutputDTO no Hecho
+  public CategoriaOutputDTO categoriaConMasHechos(Set<Fuente> fuentes) {
+
+    List<HechoOutputDTO> hechos = agregadorService.obtenerTodosLosHechos(fuentes);
 
     return hechos.stream()
-        .filter(h -> h.getCategoria() != null && h.getCategoria().getNombre() != null)
-        .collect(Collectors.groupingBy(h -> h.getCategoria().getNombre(), Collectors.counting()))
+        .filter(h -> h.getCategoria() != null )
+        .filter(h-> Boolean.FALSE.equals(h.getFueEliminado()))
+        .collect(Collectors.groupingBy(h -> h.getCategoria(), Collectors.counting()))
         .entrySet().stream()
         .max(Map.Entry.comparingByValue())
         .map(e -> new CategoriaOutputDTO(e.getKey(), e.getValue()))
-        .orElse(null);*/
+        .orElse(null);
 
   }
 
   @Override
-  public ProvinciaOutputDTO provinciaConMasHechosParaCategoria(Long categoriaId) {
-    return null;
+  public ProvinciaOutputDTO provinciaConMasHechosParaCategoria(Long categoriaId, Set<Fuente> fuentes) {
+    if (categoriaId == null) {
+      throw new IllegalArgumentException("Se debe especificar el id de la categoria. ");
+    }
+    if(fuentes == null || fuentes.isEmpty()){
+      throw new IllegalArgumentException("Se deben especificar la/las fuente/fuentes");
+    }
+
+    String nombreCategoria = categoriaRepo.findById(categoriaId)
+        .map(Categoria::getNombre)
+        .orElseThrow(() -> new IllegalArgumentException("No existe la categoria con id: " + categoriaId));
+
+    List<HechoOutputDTO> hechos = agregadorService.obtenerTodosLosHechos(fuentes);
+
+    return hechos.stream()
+        .filter(h -> Boolean.FALSE.equals(h.getFueEliminado()))
+        .filter(h -> h.getCategoria() != null && h.getCategoria().equalsIgnoreCase(nombreCategoria))
+        .filter(h -> h.getProvincia() != null )
+        .collect(Collectors.groupingBy(h -> h.getProvincia(), Collectors.counting()))
+        .entrySet().stream()
+        .max(Map.Entry.comparingByValue())
+        .map(e -> new ProvinciaOutputDTO(e.getKey(), e.getValue())) // nombre + cantidad
+        .orElse(null);
   }
 
   @Override
-  public HoraOutputDTO horaConMasHechosParaCategoria(Long categoriaId) {
-    return null;
+  public HoraOutputDTO horaConMasHechosParaCategoria(Long categoriaId, Set<Fuente> fuentes) {
+    if(categoriaId == null){
+      throw new IllegalArgumentException("Se debe especificar el id de la categoria. ");
+    }
+    if(fuentes == null || fuentes.isEmpty()){
+      throw new IllegalArgumentException("Se deben especificar la/las fuente/fuentes");
+    }
+
+    String nombreCategoria = categoriaRepo.findById(categoriaId)
+        .map(Categoria::getNombre)
+        .orElseThrow(() -> new IllegalArgumentException("No la categoria con id: " + categoriaId));
+
+    List<HechoOutputDTO> hechos = agregadorService.obtenerTodosLosHechos(fuentes);
+
+    return hechos.stream()
+        .filter(h -> Boolean.FALSE.equals(h.getFueEliminado()))
+        .filter(h -> h.getCategoria() != null && h.getCategoria().equalsIgnoreCase(nombreCategoria))
+        .filter(h -> h.getHoraAcontecimiento() != null)
+        .collect(Collectors.groupingBy(h -> h.getHoraAcontecimiento().withMinute(0).withSecond(0).withNano(0), Collectors.counting()))
+        .entrySet().stream()
+        .max(Map.Entry.comparingByValue())
+        .map(e -> new HoraOutputDTO(e.getKey(),e.getValue()))
+        .orElse(null);
   }
 
   @Override
-  public long contarSolicitudesEliminacionSpam() {
-    return 0;
+  public long contarSolicitudesEliminacionSpam() { //long en vez de Long por lo que devuelve el count()
+    return solicitudRepo.findAll()
+        .stream()
+        .map(SolicitudDeEliminacion::getJustificacion)
+        .filter(Objects::nonNull)
+        .map(String::trim)
+        .filter(s -> !s.isEmpty()) //para no pasar espacios
+        .filter(detectorDeSpam::esSpam)
+        .count();
   }
 }
