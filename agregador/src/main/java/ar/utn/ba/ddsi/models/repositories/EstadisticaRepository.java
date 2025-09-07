@@ -10,10 +10,12 @@ import java.util.Optional;
 @Repository
 public interface EstadisticaRepository extends JpaRepository<Estadistica, Long> {
 
-  // Última estadística calculada de un tipo
-  Optional<Estadistica> findTopByTipoOrderByFechaAcontecimiento(String tipo);
+  // obtener la última fila de un tipo por fecha (descendente)
+  Optional<Estadistica> findTopByTipoOrderByFechaAcontecimientoDesc(String tipo);
 
-  // Todas las estadísticas de un tipo, ordenadas
-  List<Estadistica> findByTipoOrderByFechaAcontecimiento(String tipo);
+  // obtener el registro de un tipo con mayor valor (útil para "top")
+  Optional<Estadistica> findTopByTipoOrderByValorDesc(String tipo);
 
+  // historial por tipo (más reciente primero)
+  List<Estadistica> findByTipoOrderByFechaAcontecimientoDesc(String tipo);
 }

@@ -74,6 +74,7 @@ public class EstadisticasService implements IEstadisticasService {
         .orElse(null);
   }
 
+
   @Override
   public CategoriaOutputDTO categoriaConMasHechos(Set<Fuente> fuentes) {
 
