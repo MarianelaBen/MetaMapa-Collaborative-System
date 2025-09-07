@@ -10,12 +10,12 @@ import ar.utn.ba.ddsi.models.entities.Estadistica;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
-import ar.utn.ba.ddsi.models.repositories.EstadisticaRepository;
+import ar.utn.ba.ddsi.models.repositories.IEstadisticaRepository;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
+import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
-import ar.utn.ba.ddsi.services.IColeccionService;
 import ar.utn.ba.ddsi.services.IDetectorDeSpam;
 import ar.utn.ba.ddsi.services.IEstadisticasService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,22 +37,85 @@ public class EstadisticasService implements IEstadisticasService {
   private final ISolicitudRepository solicitudRepo;
   private final ICategoriaRepository categoriaRepo;
   private final IDetectorDeSpam detectorDeSpam;
-  // private final EstadisticaRepository estadisticaRepository;
+  private final IEstadisticaRepository estadisticaRepository;
+  private final IFuenteRepository fuenteRepository;
 
   @Autowired
-  public EstadisticasService(IAgregadorService agregadorService, IColeccionRepository coleccionRepository, ISolicitudRepository solicitudRepo, ICategoriaRepository categoriaRepo, IDetectorDeSpam detectorDeSpam) {
+  public EstadisticasService(IAgregadorService agregadorService, IColeccionRepository coleccionRepository, ISolicitudRepository solicitudRepo, ICategoriaRepository categoriaRepo, IDetectorDeSpam detectorDeSpam, IEstadisticaRepository estadisticaRepository, IFuenteRepository fuenteRepository) {
     this.agregadorService = agregadorService;
     this.coleccionRepo = coleccionRepository;
     this.solicitudRepo = solicitudRepo;
     this.categoriaRepo = categoriaRepo;
     this.detectorDeSpam = detectorDeSpam;
+    this.estadisticaRepository = estadisticaRepository;
+    this.fuenteRepository = fuenteRepository;
   }
 
   @Override
   public void recalcularEstadisticas() {
 
-  }
+    /*
+    List<Fuente> fuentes = fuenteRepository.findAll();
 
+    ProvinciaOutputDTO provinciaMasHechos = provinciaConMasHechosEnColeccion("coleccion-principal");
+    if (provinciaMasHechos != null) {
+      Estadistica est = new Estadistica(
+          "provincia_mas_hechos",
+          provinciaMasHechos.getProvincia(),
+          provinciaMasHechos.getCantidad(),
+          LocalDateTime.now()
+      );
+      estadisticaRepository.save(est);
+    }
+
+    CategoriaOutputDTO categoriaMasHechos = categoriaConMasHechos(fuentes);
+    if (categoriaMasHechos != null) {
+      Estadistica est = new Estadistica(
+          "categoria_mas_hechos",
+          categoriaMasHechos.getNombre(),
+          categoriaMasHechos.getCantidad(),
+          LocalDateTime.now()
+      );
+      estadisticaRepository.save(est);
+    }
+
+    categoriaRepo.findAll().forEach(cat -> {
+      ProvinciaOutputDTO provincia = provinciaConMasHechosParaCategoria(cat.getId(), fuentes);
+      if (provincia != null) {
+        Estadistica est = new Estadistica(
+            "provincia_mas_hechos_por_categoria",
+            cat.getNombre() + " -> " + provincia.getProvincia(),
+            provincia.getCantidad(),
+            LocalDateTime.now()
+        );
+        estadisticaRepository.save(est);
+      }
+    });
+
+    categoriaRepo.findAll().forEach(cat -> {
+      HoraOutputDTO hora = horaConMasHechosParaCategoria(cat.getId(), fuentes);
+      if (hora != null) {
+        Estadistica est = new Estadistica(
+            "hora_mas_hechos_por_categoria",
+            cat.getNombre() + " -> " + hora.getHora().toString(),
+            hora.getCantidad(),
+            LocalDateTime.now()
+        );
+        estadisticaRepository.save(est);
+      }
+    });
+
+    long cantidadSpam = contarSolicitudesEliminacionSpam();
+    Estadistica spamEst = new Estadistica(
+        "solicitudes_eliminacion_spam",
+        "total",
+        cantidadSpam,
+        LocalDateTime.now()
+    );
+    estadisticaRepository.save(spamEst);
+
+     */
+  }
 
   @Override
   public ProvinciaOutputDTO provinciaConMasHechosEnColeccion(String coleccionHandle) {
@@ -73,7 +136,6 @@ public class EstadisticasService implements IEstadisticasService {
         .map(e -> new ProvinciaOutputDTO(e.getKey(), e.getValue()) )
         .orElse(null);
   }
-
 
   @Override
   public CategoriaOutputDTO categoriaConMasHechos(Set<Fuente> fuentes) {

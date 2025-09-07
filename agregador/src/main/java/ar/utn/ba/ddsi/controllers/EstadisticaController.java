@@ -1,7 +1,7 @@
-package ar.utn.ba.ddsi.controllers;
+/* package ar.utn.ba.ddsi.controllers;
 
 import ar.utn.ba.ddsi.models.entities.Estadistica;
-import ar.utn.ba.ddsi.models.repositories.EstadisticaRepository;
+import ar.utn.ba.ddsi.models.repositories.IEstadisticaRepository;
 import ar.utn.ba.ddsi.services.IEstadisticasService;
 import ar.utn.ba.ddsi.services.impl.EstadisticasService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,35 +19,29 @@ import java.util.List;
 public class EstadisticaController {
 
   private final IEstadisticasService estadisticasService;
-  private final EstadisticaRepository estadisticaRepository;
+  private final IEstadisticasService estadisticaRepository;
 
   @Autowired
   public EstadisticaController(IEstadisticasService estadisticasService,
-                               EstadisticaRepository estadisticaRepository) {
+                               IEstadisticaRepository estadisticaRepository) {
     this.estadisticasService = estadisticasService;
     this.estadisticaRepository = estadisticaRepository;
   }
 
-  // Forzar recálculo manual
-  @PostMapping("/recalcular")
-  public ResponseEntity<Void> recalcular() {
-    estadisticasService.recalcularEstadisticas();
-    return ResponseEntity.ok().build();
+  @GetMapping
+  public ResponseEntity<List<Estadistica>> todasLasEstadisticas() {
+    return ResponseEntity.ok(
+        estadisticaRepository.findAll()
+    );
   }
 
-  // Consultar última estadística de un tipo
-  @GetMapping("/{tipo}/ultima")
-  public ResponseEntity<Estadistica> ultima(@PathVariable String tipo) {
-    return estadisticaRepository.findTopByTipoOrderByFechaAcontecimiento(tipo)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
-  }
-
-  // Consultar historial de un tipo
-  @GetMapping("/{tipo}/historial")
-  public List<Estadistica> historial(@PathVariable String tipo) {
-    return estadisticaRepository.findByTipoOrderByFechaAcontecimiento(tipo);
+  @GetMapping("/{tipo}")
+  public ResponseEntity<List<Estadistica>> estadisticasPorTipo(
+      @PathVariable String tipo) {
+    return ResponseEntity.ok(
+        estadisticaRepository.findByTipo(tipo)
+    );
   }
 }
 
-
+/*
