@@ -1,20 +1,20 @@
 package ar.utn.ba.ddsi.controllers;
 
+import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
+import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
+import ar.utn.ba.ddsi.services.IConsensoService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
 import ar.utn.ba.ddsi.services.impl.SolicitudService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,10 +23,14 @@ public class AgregadorController {
 
   private final IAgregadorService agregadorService;
   private final ISolicitudService solicitudService;
+  private final IFuenteRepository fuenteRepository;
+  private final IConsensoService consensoService;
 
-  public AgregadorController(IAgregadorService agregadorService, ISolicitudService solicitudService){
+  public AgregadorController(IAgregadorService agregadorService, ISolicitudService solicitudService, IFuenteRepository fuenteRepository, IConsensoService consensoService){
     this.agregadorService = agregadorService;
     this.solicitudService = solicitudService;
+    this.fuenteRepository = fuenteRepository;
+    this.consensoService = consensoService;
   }
 
 
@@ -51,7 +55,14 @@ public class AgregadorController {
   public ResponseEntity<?> getHechosPorColeccion(@PathVariable String coleccionId, @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr) { //valor predeterminado IRRESTRICTA por si no se especifica nada de cuial se quiere usar
     try{
       //TODO chequear si es valido el metodo de navegacion
-    TipoDeModoNavegacion modo = TipoDeModoNavegacion.valueOf(modoStr);
+      System.out.println("Valores enum: " + Arrays.toString(TipoDeModoNavegacion.values()));
+      String modoLimpio = modoStr.trim();
+
+      TipoDeModoNavegacion modo = Arrays.stream(TipoDeModoNavegacion.values())
+          .filter(m -> m.name().equalsIgnoreCase(modoLimpio))
+          .findFirst()
+          .orElseThrow(() -> new IllegalArgumentException("Modo inválido: " + modoLimpio));
+
       return ResponseEntity.ok(agregadorService.obtenerHechosPorColeccion(coleccionId, modo));
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -95,6 +106,43 @@ public class AgregadorController {
     }
   }
 
+  @PostMapping("/fuentes")
+  public ResponseEntity<?> guardarFuente(@RequestBody FuenteInputDTO dto) {
+    try {
+      if (dto.getUrl() == null || dto.getUrl().isBlank() || dto.getTipo() == null) {
+        return ResponseEntity.badRequest()
+            .body(Map.of("error", "Datos inválidos", "mensaje", "url y tipo son obligatorios"));
+      }
 
+      Fuente fuente = new Fuente(dto.getUrl(), dto.getTipo());
+      Fuente guardada = fuenteRepository.save(fuente);
 
+      return ResponseEntity.status(HttpStatus.CREATED).body(guardada);
+
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "Error al guardar la fuente", "mensaje", e.getMessage()));
+    }
+  }
+
+  @GetMapping("/fuentes")
+  public ResponseEntity<?> obtenerFuentes() {
+    try {
+      return ResponseEntity.ok(fuenteRepository.findAll());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "Error al obtener las fuentes", "mensaje", e.getMessage()));
+    }
+  }
+
+  @PostMapping("/algoritmo")
+  public ResponseEntity<?> aplicarAlgoritmo() {
+    try {
+      consensoService.aplicarAlgoritmoDeConsenso();
+      return ResponseEntity.ok("Algoritmo aplicado");
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "Error al aplicar el algoritmo", "mensaje", e.getMessage()));
+    }
+  }
 }

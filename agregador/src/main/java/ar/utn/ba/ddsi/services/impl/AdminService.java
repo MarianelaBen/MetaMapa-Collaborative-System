@@ -26,6 +26,7 @@ public class AdminService implements IAdminService {
   private final IColeccionService coleccionService;
   //private final ConsensoRepository consensoRepo;
   private final ISolicitudRepository solicitudRepo;
+  private final IFuenteRepository fuenteRepo;
 
   public AdminService(ColeccionRepository coleccionRepo,
                       IFuenteRepository fuenteRepo,
@@ -36,6 +37,7 @@ public class AdminService implements IAdminService {
    // this.consensoRepo = consensoRepo;
     this.solicitudRepo = solicitudRepo;
     this.coleccionService = coleccionService;
+    this.fuenteRepo = fuenteRepo;
   }
 
   //API ADMINISTRATIVA
@@ -133,7 +135,7 @@ public class AdminService implements IAdminService {
       throw new NoSuchElementException("No se encontró la coleccion " + coleccionId);
     }
     Fuente fuente = new Fuente(dto.getUrl(), dto.getTipo());              // Convertimos el DTO a entidad
-    //fuenteRepo.save(fuente);  TODO agregar linea ahora que tenemos repositorio?
+    fuenteRepo.save(fuente);
     coleccion.agregarFuentes(fuente);            // Asociamos la fuente desde la colección
     coleccionRepo.save(coleccion);               // Guardamos la colección con la nueva fuente
     coleccionService.actualizarColecciones();    //TODO borrar esta linea
