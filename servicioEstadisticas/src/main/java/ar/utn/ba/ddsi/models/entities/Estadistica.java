@@ -33,13 +33,13 @@ public class Estadistica {
   private Long valor;   // cantidad
 
   @Column(name = "fecha_calculo", nullable = false)
-  private LocalDateTime fecha_calculo;
+  private LocalDateTime fechaCalculo;
 
-  public Estadistica (String tipo, String clave, Long valor, LocalDateTime fecha_calculo) {
+  public Estadistica (String tipo, String clave, Long valor, LocalDateTime fechaCalculo) {
     this.tipo = tipo;
     this.clave = clave;
     this.valor = valor;
-    this.fecha_calculo = fecha_calculo;
+    this.fechaCalculo = fechaCalculo;
   }
 }
 

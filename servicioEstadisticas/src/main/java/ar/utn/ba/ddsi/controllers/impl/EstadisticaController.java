@@ -1,33 +1,31 @@
-/*package ar.utn.ba.ddsi.controllers;
+package ar.utn.ba.ddsi.controllers.impl;
 
+import ar.utn.ba.ddsi.controllers.IEstadisticaController;
 import ar.utn.ba.ddsi.models.entities.Estadistica;
 import ar.utn.ba.ddsi.models.repositories.IEstadisticaRepository;
-import ar.utn.ba.ddsi.services.IEstadisticasService;
-import ar.utn.ba.ddsi.services.impl.EstadisticasService;
+import ar.utn.ba.ddsi.services.IEstadisticaService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.time.LocalDateTime;
-
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/estadisticas")
-public class EstadisticaController {
+public class EstadisticaController implements IEstadisticaController {
 
-  private final IEstadisticasService estadisticasService;
+  private final IEstadisticaService estadisticasService;
   private final IEstadisticaRepository estadisticaRepository;
 
   @Autowired
-  public EstadisticaController(IEstadisticasService estadisticasService,
+  public EstadisticaController(IEstadisticaService estadisticasService,
                                IEstadisticaRepository estadisticaRepository) {
     this.estadisticasService = estadisticasService;
     this.estadisticaRepository = estadisticaRepository;
@@ -61,9 +59,9 @@ public class EstadisticaController {
   // Estadísticas de una versión concreta
   @GetMapping("/version/{fecha}")
   public ResponseEntity<List<Estadistica>> porVersion(@PathVariable String fecha) {
-    LocalDateTime fechaCalculo = LocalDateTime.parse(fecha);
+    LocalDateTime fecha_calculo = LocalDateTime.parse(fecha);
     return ResponseEntity.ok(
-        estadisticaRepository.findByFechaCalculo(fechaCalculo)
+        estadisticaRepository.findByFechaCalculo(fecha_calculo)
     );
   }
 
@@ -78,10 +76,10 @@ public class EstadisticaController {
 
       for (Estadistica e : stats) {
         writer.printf("%d,%s,%s,%d,%s%n",
-            e.getId(), e.getTipo(), e.getClave(), e.getValor(), e.getFecha_calculo());
+            e.getId(), e.getTipo(), e.getClave(), e.getValor(), e.getFechaCalculo());
       }
     }
   }
 
-}*/
+}
 

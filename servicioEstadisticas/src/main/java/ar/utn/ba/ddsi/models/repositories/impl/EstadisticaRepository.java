@@ -1,4 +1,4 @@
-/*package ar.utn.ba.ddsi.models.repositories.impl;
+package ar.utn.ba.ddsi.models.repositories.impl;
 
 import ar.utn.ba.ddsi.models.entities.Estadistica;
 import ar.utn.ba.ddsi.models.repositories.IEstadisticaRepository;
@@ -17,7 +17,7 @@ abstract class EstadisticaRepository implements IEstadisticaRepository {
   }
 
   @Override
-  public List<Estadistica> findByFechaCalculo(LocalDateTime fechaCalculo) {
+  public List<Estadistica> findByFechaCalculo(LocalDateTime fecha_calculo) {
     return List.of();
   }
-}*/
+}
