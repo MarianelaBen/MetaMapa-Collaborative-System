@@ -5,6 +5,7 @@ import ar.utn.ba.ddsi.adapters.AdapterFuenteEstatica;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteProxy;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.entities.Etiqueta;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
@@ -34,11 +35,11 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
 }
 
   @Override
-  public List<HechoOutputDTO> obtenerTodosLosHechos(Set<Fuente> fuentes) {
+  public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes) {
     if (fuentes == null || fuentes.isEmpty()) {
       throw new IllegalArgumentException("No se especificaron fuentes.");
     }
-    List<HechoOutputDTO> hechos = fuentes.stream()
+    List<Hecho> hechos = fuentes.stream()
         .flatMap( f-> obtenerTodosLosHechosDeFuente(f)
             .stream())
             .map(h -> {
@@ -82,7 +83,30 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
 
   @Override
   public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
-    return new HechoOutputDTO(hecho);
+    HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
+    hechoOutputDTO.setTitulo(hecho.getTitulo());
+    hechoOutputDTO.setDescripcion(hecho.getDescripcion());
+    hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
+    hechoOutputDTO.setLatitud(hecho.getUbicacion().getLatitud());
+    hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
+    hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
+    hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
+    System.out.println(hecho.getCategoria().getNombre());
+    hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+    if(hecho.getEtiquetas() != null){
+      hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
+    }
+    if(hecho.getPathMultimedia() != null){
+      hechoOutputDTO.setIdContenidoMultimedia(new ArrayList<>(hecho.getPathMultimedia()));
+    }
+    if(hecho.getContribuyente() != null){
+      hechoOutputDTO.setContribuyente(hecho.getContribuyente());
+    }
+    if(hecho.getFuenteExterna() != null){
+      hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+    }
+
+    return hechoOutputDTO;
   }
 
 
@@ -137,8 +161,4 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     return hechos;
 
   }
-
-
-
-  //Navegación curada o irrestricta sobre una colección.
 }

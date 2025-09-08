@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.models.dtos.input;
+/*package ar.utn.ba.ddsi.models.dtos.input;
 
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Hecho;
@@ -53,7 +53,6 @@ public class HechoInputDTO {
         this.fechaCarga,
         Origen.PROVENIENTE_DE_DATASET,
         this.fuenteExterna
-        //TODO manejar todos los origenes y mover TipoFuenteExterna aca porque es solo de proxy
     );
   }
-}
+}*/

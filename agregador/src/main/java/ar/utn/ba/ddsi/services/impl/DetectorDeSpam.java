@@ -5,8 +5,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DetectorDeSpam implements IDetectorDeSpam {
+
   @Override
   public boolean esSpam(String texto) {
-    return false;
+    if (texto.length() < 5) {
+      return false;
+    }
+    return true;
   }
 }

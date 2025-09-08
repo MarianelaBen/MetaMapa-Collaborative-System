@@ -148,8 +148,8 @@ public class AdminController {
 
   //Rechazar solicitud de eliminacion por id
   @PostMapping("/solicitudes-eliminacion/{id}/denegar")
-  public ResponseEntity<?> denegarSolicitud(@PathVariable Long id, @RequestBody SolicitudInputDTO dto){
-    //TODO no se usa ese SolicitudInputDTO, para que esta?
+  public ResponseEntity<?> denegarSolicitud(@PathVariable Long id){
+
     try {
       return ResponseEntity.ok(this.servicio.denegarSolicitud(id));
     }  catch (NoSuchElementException e) {

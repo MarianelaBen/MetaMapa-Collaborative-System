@@ -20,10 +20,6 @@ public class Hecho {
   @Setter @Getter private Set<Etiqueta> etiquetas;
 
 
-  //  @Setter @Getter private String nombreAportante;
-  //  @Setter @Getter private String apellidoAportante;
-  //  @Setter @Getter private Integer edadAportante;
-
   public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen){
     this.titulo = titulo;
     this.descripcion = descripcion;

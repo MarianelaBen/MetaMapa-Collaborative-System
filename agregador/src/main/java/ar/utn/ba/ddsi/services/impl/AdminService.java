@@ -1,15 +1,9 @@
 package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.Exceptions.ColeccionCreacionException;
-import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
-import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.FuenteOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
-import ar.utn.ba.ddsi.models.entities.Coleccion;
-import ar.utn.ba.ddsi.models.entities.Fuente;
-import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
+import ar.utn.ba.ddsi.models.dtos.input.*;
+import ar.utn.ba.ddsi.models.dtos.output.*;
+import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
@@ -18,9 +12,12 @@ import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAdminService;
 import ar.utn.ba.ddsi.services.IColeccionService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,18 +30,24 @@ public class AdminService implements IAdminService {
 
   public AdminService(IColeccionRepository coleccionRepo,
                       IFuenteRepository fuenteRepo,
+                      //ConsensoRepository consensoRepo,
                       ISolicitudRepository solicitudRepo,
                       IColeccionService coleccionService) {
     this.coleccionRepo = coleccionRepo;
-    this.fuenteRepo = fuenteRepo;
+   // this.consensoRepo = consensoRepo;
     this.solicitudRepo = solicitudRepo;
     this.coleccionService = coleccionService;
+    this.fuenteRepo = fuenteRepo;
   }
 
+  //API ADMINISTRATIVA
+
+  //OPERACIONES CRUD
+  //Devuelve las colecciones
   @Override
   public List<ColeccionOutputDTO> getColecciones() {
     return coleccionRepo.findAll().stream()
-        .map(ColeccionOutputDTO::fromEntity)
+        .map(ColeccionOutputDTO::fromEntity) //Convertimos cada entidad a DTO
         .collect(Collectors.toList());
   }
 
@@ -56,6 +59,7 @@ public class AdminService implements IAdminService {
     return ColeccionOutputDTO.fromEntity(coleccionRepo.save(coleccion));
   }
 
+  //Actualiza una coleccion si la encuentra por ID
   @Override
   public ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO dto) {
     Coleccion existing = coleccionRepo.findById(id)
@@ -65,6 +69,8 @@ public class AdminService implements IAdminService {
     return ColeccionOutputDTO.fromEntity(coleccionRepo.save(existing));
   }
 
+
+  //Elimina coleccion por ID
   @Override
   public void eliminarColeccion(String id) {
     Coleccion coleccion = coleccionRepo.findById(id)
@@ -72,15 +78,48 @@ public class AdminService implements IAdminService {
     coleccionRepo.deleteById(id);
   }
 
+
+  //Obtención de todos los hechos de una colección
+  //Sirve para pruebas sin meterse en modos
   @Override
   public List<HechoOutputDTO> getHechos(String coleccionId) {
-    Coleccion coleccion = coleccionRepo.findById(coleccionId)
-        .orElseThrow(() -> new NoSuchElementException("Coleccion no encontrada con ID: " + coleccionId));
-    return coleccion.getHechos().stream()
-        .map(HechoOutputDTO::fromEntity)
+    var coleccion = coleccionRepo.findById(coleccionId);
+    if(coleccion == null) {
+      throw new NoSuchElementException("Coleccion no encontrada con ID: " + coleccionId);
+    }
+    return coleccion.getHechos()
+        .stream()
+        .map(h -> this.hechoOutputDTO(h))
         .collect(Collectors.toList());
+  } //Se saltea la parte de usar la funcion de obtener los hechos que usa el algoritmo no tiene sentido
+
+  public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
+    HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
+    hechoOutputDTO.setTitulo(hecho.getTitulo());
+    hechoOutputDTO.setDescripcion(hecho.getDescripcion());
+    hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
+    hechoOutputDTO.setLatitud(hecho.getUbicacion().getLatitud());
+    hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
+    hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
+    hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
+    hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+    if(hecho.getEtiquetas() != null){
+      hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
+    }
+    if(hecho.getPathMultimedia() != null){
+      hechoOutputDTO.setIdContenidoMultimedia(new ArrayList<>(hecho.getPathMultimedia()));
+    }
+    if(hecho.getContribuyente() != null){
+      hechoOutputDTO.setContribuyente(hecho.getContribuyente());
+    }
+    if(hecho.getFuenteExterna() != null){
+      hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+    }
+
+    return hechoOutputDTO;
   }
 
+  //Agregar fuentes de hechos de una colección
   @Override
   public FuenteOutputDTO agregarFuente(String coleccionId, FuenteInputDTO dto) {
     Coleccion coleccion = coleccionRepo.findById(coleccionId)
@@ -91,18 +130,24 @@ public class AdminService implements IAdminService {
     if (fuenteRepo != null) {
       fuente = fuenteRepo.save(fuente);
     }
-    coleccion.agregarFuentes(fuente);
-    coleccionRepo.save(coleccion);
+    Fuente fuente = new Fuente(dto.getUrl(), dto.getTipo());              // Convertimos el DTO a entidad
+    fuenteRepo.save(fuente);
+    coleccion.agregarFuentes(fuente);            // Asociamos la fuente desde la colección
+    coleccionRepo.save(coleccion);               // Guardamos la colección con la nueva fuente
 
-    // Si coleccionService.actualizarColecciones() es necesario, re-habilitalo.
-    return FuenteOutputDTO.fromEntity(fuente);
+    return FuenteOutputDTO.fromEntity(fuente);    // Devolvemos la fuente recién agregada
   }
 
+  //Quitar fuentes de hechos de una colección
   @Override
   public boolean eliminarFuenteDeColeccion(String coleccionId, Long fuenteId) {
     Coleccion coleccion = coleccionRepo.findById(coleccionId)
         .orElseThrow(() -> new NoSuchElementException("No se encontró la coleccion " + coleccionId));
 
+    if (coleccion == null) {
+      throw new NoSuchElementException("No se encontró la coleccion " + coleccionId); // No existe la colección
+    }
+    //Intentamos eliminar la fuente con ese id
     boolean removed = coleccion.getFuentes().removeIf(f -> {
       Long id = f.getId();
       return id != null && id.equals(fuenteId);
@@ -115,6 +160,8 @@ public class AdminService implements IAdminService {
     return removed;
   }
 
+
+  //Aprobar una solicitud de eliminación de un hecho.
   @Override
   public SolicitudOutputDTO aprobarSolicitud(Long id) {
     SolicitudDeEliminacion s = solicitudRepo.findById(id)
@@ -123,6 +170,7 @@ public class AdminService implements IAdminService {
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
 
+  //Denegar una solicitud de eliminación de un hecho.
   @Override
   public SolicitudOutputDTO denegarSolicitud(Long id) {
     SolicitudDeEliminacion s = solicitudRepo.findById(id)
@@ -131,3 +179,15 @@ public class AdminService implements IAdminService {
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
 }
+
+  /*
+  @Override
+  public ConsensoResponseDTO configurarConsenso(Long coleccionId, ConsensoDTO dto) {
+    AlgoritmoConsenso c = consensoRepo.findByColeccionId(coleccionId)
+        .orElse(new AlgoritmoConsenso());
+    coleccionRepo.findById(coleccionId).ifPresent(c::setColeccion);
+    c.setAlgoritmo(dto.getAlgoritmo());
+    return ConsensoResponseDTO.fromEntity(consensoRepo.save(c));
+  }
+
+*/

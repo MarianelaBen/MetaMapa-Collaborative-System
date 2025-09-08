@@ -134,7 +134,7 @@ public class Hecho {
     return this.consensoPorAlgoritmo.getOrDefault(algoritmo, true);
   }
 
-  public void setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso algoritmo, boolean consensuado) {
+  public void setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso algoritmo, boolean consensuado){
     this.consensoPorAlgoritmo.put(algoritmo, consensuado);
   }
 

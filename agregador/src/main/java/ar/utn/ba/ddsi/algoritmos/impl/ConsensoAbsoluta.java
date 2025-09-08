@@ -12,153 +12,90 @@ import java.util.stream.Collectors;
 
 @Component
 public class ConsensoAbsoluta implements IAlgoritmoDeConsenso {
+
   @Override
   public void calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente) {
-    Set<Fuente> fuentesColeccion = coleccion.getFuentes();
 
-    if (fuentesColeccion.isEmpty()) {
+    Set<Fuente> fuentesAgregador = hechosPorFuente.keySet();
+    int totalFuentes = fuentesAgregador.size();
+    if (totalFuentes == 0) {
       marcarTodosLosHechosComoNoConsensuados(coleccion);
       return;
     }
 
-    Map<String, List<Hecho>> hechosPorTitulo = new HashMap<>();
+    System.out.println("Coleccion=" + coleccion.getHandle() + " | fuentes agregador=" + totalFuentes);
 
-    // Recolectar todos los hechos no eliminados agrupados por título
-    for (Fuente fuente : fuentesColeccion) {
-      List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, new ArrayList<>());
-      for (Hecho hecho : hechosDeFuente) {
-        if (!hecho.getFueEliminado()) {
-          hechosPorTitulo.computeIfAbsent(hecho.getTitulo(), k -> new ArrayList<>()).add(hecho);
+
+    Map<String, List<Hecho>> candidatosPorTitulo = new HashMap<>();
+    if (coleccion.getHechos() != null) {
+      for (Hecho h : coleccion.getHechos()) {
+        if (!h.isFueEliminado()) {
+          candidatosPorTitulo.computeIfAbsent(h.getTitulo(), k -> new ArrayList<>()).add(h);
         }
       }
     }
+    System.out.println("Titulos candidatos: " + candidatosPorTitulo.keySet());
 
-    // Para cada título, verifico si hay consenso absoluto
-    for (Map.Entry<String, List<Hecho>> entry : hechosPorTitulo.entrySet()) {
+
+    for (Map.Entry<String, List<Hecho>> entry : candidatosPorTitulo.entrySet()) {
       String titulo = entry.getKey();
-      List<Hecho> hechosConMismoTitulo = entry.getValue();
+      List<Hecho> candidatos = entry.getValue();
 
-      boolean hayConsensoAbsoluto = verificarConsensoAbsoluto(titulo, fuentesColeccion, hechosPorFuente);
+      List<Hecho> todasLasVariantes = new ArrayList<>();
+      int fuentesConTitulo = 0;
 
-      // Marco todos los hechos de ese título según el consenso
-      for (Hecho hecho : hechosConMismoTitulo) {
-        hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.CONSENSO_ABSOLUTO, hayConsensoAbsoluto);
-      }
-    }
-  }
-
-  private boolean verificarConsensoAbsoluto(String titulo, Set<Fuente> fuentesColeccion, Map<Fuente, List<Hecho>> hechosPorFuente) {
-    Hecho hechoReferencia = null;
-
-    for (Fuente fuente : fuentesColeccion) {
-      List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, new ArrayList<>());
-
-      Hecho hechoEnFuente = hechosDeFuente.stream()
-          .filter(h -> titulo.equals(h.getTitulo()) && !h.getFueEliminado())
-          .findFirst()
-          .orElse(null);
-
-      if (hechoEnFuente == null) {
-        // Alguna fuente no tiene el hecho => no hay consenso absoluto
-        return false;
-      }
-
-      if (hechoReferencia == null) {
-        hechoReferencia = hechoEnFuente;
-      } else {
-        if (!hechoReferencia.esIgualContenido(hechoEnFuente)) {
-          // Contenido distinto => no hay consenso absoluto
-          return false;
+      for (Fuente f : fuentesAgregador) {
+        List<Hecho> lista = hechosPorFuente.getOrDefault(f, Collections.emptyList());
+        List<Hecho> variantesEnFuente = lista.stream()
+            .filter(h -> !h.isFueEliminado() && titulo.equals(h.getTitulo()))
+            .collect(Collectors.toList());
+        if (!variantesEnFuente.isEmpty()) {
+          fuentesConTitulo++;
+          todasLasVariantes.addAll(variantesEnFuente);
         }
       }
-    }
 
-    // Todas las fuentes tienen el mismo hecho con igual contenido
-    return true;
-  }
-  /*@Override
-  public void calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente) {
-    Set<Fuente> fuentesColeccion = coleccion.getFuentes();
 
-    if (fuentesColeccion.isEmpty()) {
-      marcarTodosLosHechosComoNoConsensuados(coleccion);
-      return;
-    }
-
-    Map<String, List<Hecho>> hechosPorTitulo = new HashMap<>();
-
-    // Recopilar todos los hechos de las fuentes de esta colección
-    for (Fuente fuente : fuentesColeccion) {
-      List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, new ArrayList<>());
-      for (Hecho hecho : hechosDeFuente) {
-        if (!hecho.isFueEliminado()) {
-          hechosPorTitulo.computeIfAbsent(hecho.getTitulo(), k -> new ArrayList<>()).add(hecho);
+      List<List<Hecho>> gruposPorContenido = new ArrayList<>();
+      for (Hecho v : todasLasVariantes) {
+        boolean agregado = false;
+        for (List<Hecho> grupo : gruposPorContenido) {
+          if (!grupo.isEmpty() && grupo.get(0).esIgualContenido(v)) {
+            grupo.add(v);
+            agregado = true;
+            break;
+          }
+        }
+        if (!agregado) {
+          List<Hecho> nuevo = new ArrayList<>();
+          nuevo.add(v);
+          gruposPorContenido.add(nuevo);
         }
       }
-    }
 
-    // Verificar consenso absoluto para cada grupo de hechos con el mismo título
-    for (Map.Entry<String, List<Hecho>> entry : hechosPorTitulo.entrySet()) {
-      String titulo = entry.getKey();
-      List<Hecho> hechosConMismoTitulo = entry.getValue();
+      List<Integer> counts = gruposPorContenido.stream().map(List::size).collect(Collectors.toList());
+      System.out.println(titulo + " fuentesConTitulo=" + fuentesConTitulo
+          + " | variantes=" + gruposPorContenido.size() + " | counts=" + counts);
 
-      boolean hayConsensoAbsoluto = verificarConsensoAbsoluto(titulo, fuentesColeccion, hechosPorFuente);
 
-      // Marcar todos los hechos con este título según el resultado del consenso
-      for (Hecho hecho : hechosConMismoTitulo) {
-        hecho.setConsensuado(hayConsensoAbsoluto);
+      boolean hayConsenso = (fuentesConTitulo == totalFuentes)
+          && (gruposPorContenido.size() == 1)
+          && (!gruposPorContenido.isEmpty() && gruposPorContenido.get(0).size() == totalFuentes);
+
+      for (Hecho h : candidatos) {
+        h.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.CONSENSO_ABSOLUTO, hayConsenso);
       }
     }
-
-    //Marcar como no consensuados los hechos que no aparecen en todas las fuentes
-    //marcarHechosNoPresentes(coleccion, hechosPorTitulo, fuentesColeccion);
   }
-
-  private boolean verificarConsensoAbsoluto(String titulo, Set<Fuente> fuentesColeccion, Map<Fuente, List<Hecho>> hechosPorFuente) {
-    Hecho hechoReferencia = null;
-
-    // Verificar que todas las fuentes tengan un hecho con este título
-    for (Fuente fuente : fuentesColeccion) {
-      List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, new ArrayList<>());
-      Hecho hechoEnFuente = hechosDeFuente.stream()
-          .filter(h -> titulo.equals(h.getTitulo()) && !h.isFueEliminado())
-          .findFirst()
-          .orElse(null);
-
-      if (hechoEnFuente == null) {
-        return false; // Si alguna fuente no tiene el hecho, no hay consenso absoluto
-      }
-
-      if (hechoReferencia == null) {
-        hechoReferencia = hechoEnFuente;
-      } else {
-        // Verificar que los hechos sean equivalentes (mismo contenido)
-        if (!sonHechosEquivalentes(hechoReferencia, hechoEnFuente)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  private boolean sonHechosEquivalentes(Hecho hecho1, Hecho hecho2) {
-    return Objects.equals(hecho1.getTitulo(), hecho2.getTitulo()) &&
-        Objects.equals(hecho1.getDescripcion(), hecho2.getDescripcion()) &&
-        Objects.equals(hecho1.getCategoria(), hecho2.getCategoria()) &&
-        Objects.equals(hecho1.getUbicacion(), hecho2.getUbicacion()) &&
-        Objects.equals(hecho1.getFechaAcontecimiento(), hecho2.getFechaAcontecimiento());
-  }*/
 
   private void marcarTodosLosHechosComoNoConsensuados(Coleccion coleccion) {
-    coleccion.getHechos().forEach(hecho -> hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.CONSENSO_ABSOLUTO,false));
+    coleccion.getHechos()
+        .forEach(h -> h.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.CONSENSO_ABSOLUTO, false));
   }
-
-  /*private void marcarHechosNoPresentes(Coleccion coleccion, Map<String, List<Hecho>> hechosPorTitulo, Set<Fuente> fuentesColeccion) {
-
-  } */
 
   @Override
   public TipoAlgoritmoDeConsenso getTipo() {
     return TipoAlgoritmoDeConsenso.CONSENSO_ABSOLUTO;
   }
 }
+

@@ -12,6 +12,8 @@ import ar.utn.ba.ddsi.services.ICategoriaService;
 import ar.utn.ba.ddsi.services.IContenidoMultimediaService;
 import ar.utn.ba.ddsi.services.IHechoService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
@@ -83,13 +85,26 @@ public class HechoService implements IHechoService {
     HechoOutputDTO dto = new HechoOutputDTO();
     dto.setTitulo(hecho.getTitulo());
     dto.setDescripcion(hecho.getDescripcion());
-    dto.setNombreCategoria(hecho.getCategoria().getNombre());
+    dto.setCategoria(hecho.getCategoria().getNombre());
     dto.setUbicacion(ubicacionOutputDTO(hecho.getUbicacion()));
     dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     dto.setFechaCarga(hecho.getFechaCarga());
-    dto.setOrigen(hecho.getOrigen());       // extrae el id de cada etiqueta y los junta en un Set<Integer>
+    //dto.setOrigen(hecho.getOrigen());       // extrae el id de cada etiqueta y los junta en un Set<Integer>
     // dto.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
-    dto.setContribuyente(contribuyenteOutputDTO(hecho.getContribuyente()));
+    //dto.setContribuyente(contribuyenteOutputDTO(hecho.getContribuyente()));
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode extras = mapper.createObjectNode();
+
+    ObjectNode c = mapper.createObjectNode();
+    c.put("nombre", hecho.getContribuyente().getNombre());
+    c.put("apellido", hecho.getContribuyente().getApellido());
+    if (hecho.getContribuyente().getFechaDeNacimiento() != null) {
+      c.put("fechaDeNacimiento", hecho.getContribuyente().getFechaDeNacimiento().toString());
+    }
+    extras.set("contribuyente", c);
+
+    dto.setParticulares(extras);
+    dto.setEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
     dto.setPathContenidoMultimedia(hecho.getContenidosMultimedia().stream().map(ContenidoMultimedia::getPath).collect(Collectors.toList()));
     return dto;
   }
@@ -212,6 +227,7 @@ public class HechoService implements IHechoService {
         .stream()
         .map(this::hechoOutputDTO)
         .toList();
+
   }
 
   @Override

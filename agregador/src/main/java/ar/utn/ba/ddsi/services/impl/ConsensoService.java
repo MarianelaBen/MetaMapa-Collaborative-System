@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
+import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IConsensoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class ConsensoService implements IConsensoService {
   @Autowired
   private IColeccionRepository coleccionRepository;
   @Autowired
+  private IFuenteRepository fuenteRepository;
+  @Autowired
   private AlgoritmoDeConsensoFactory algoritmoFactory;
 
   @Override
@@ -35,11 +38,11 @@ public class ConsensoService implements IConsensoService {
 
     Map<Fuente, List<Hecho>> hechosPorFuente = new HashMap<>();
 
-    coleccionesConAlgoritmo.forEach(coleccion -> {
-      coleccion.getFuentes().forEach(fuente -> {
-        hechosPorFuente.putIfAbsent(fuente, agregadorService.obtenerTodosLosHechosDeFuente(fuente));
-      });
-    });
+    List<Fuente> todasLasFuentes = fuenteRepository.findAll();
+
+    for (Fuente fuente : todasLasFuentes) {
+      hechosPorFuente.put(fuente, agregadorService.obtenerTodosLosHechosDeFuente(fuente));
+    }
 
     coleccionesConAlgoritmo.forEach(coleccion -> this.usoDeAlgoritmo(coleccion, hechosPorFuente));
 

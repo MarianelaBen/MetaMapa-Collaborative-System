@@ -17,7 +17,7 @@ public class AdapterCatedra implements IFuenteProxyAdapter {
 
   @Override
   public List<HechoInputDTO> getHechos() {
-    List<HechoInputDTO> hechosDTO = apiCatedraService.obtenerHechos().block();
+    List<HechoInputDTO> hechosDTO = apiCatedraService.obtenerHechos(1, 10).block(); //por defecto 10 por página
 
     if (hechosDTO != null) {
       hechosDTO.forEach(hDTO -> hDTO.setFuenteExterna("API_CATEDRA"));
