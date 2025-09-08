@@ -72,11 +72,6 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     return hechos;
   }
 
-  /*@Override
-  public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
-    return new HechoOutputDTO(hecho);
-  }*/ // No sirve lo hago con modo tipico, se pierden datos sino
-
   @Override
   public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
@@ -157,8 +152,4 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     return hechos;
 
   }
-
-
-
-  //Navegación curada o irrestricta sobre una colección.
 }

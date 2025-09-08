@@ -47,14 +47,9 @@ public class AgregadorController {
     }
   }
 
-  /*public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
-    return new HechoOutputDTO(hecho);
-  }*/ //Porque esta aca?? //TODO BORRAR
-
   @GetMapping("/colecciones/{coleccionId}/hechos")
   public ResponseEntity<?> getHechosPorColeccion(@PathVariable String coleccionId, @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr) { //valor predeterminado IRRESTRICTA por si no se especifica nada de cuial se quiere usar
     try{
-      //TODO chequear si es valido el metodo de navegacion
       System.out.println("Valores enum: " + Arrays.toString(TipoDeModoNavegacion.values()));
       String modoLimpio = modoStr.trim();
 

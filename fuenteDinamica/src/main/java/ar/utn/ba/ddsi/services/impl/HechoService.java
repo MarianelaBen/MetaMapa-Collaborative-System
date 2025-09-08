@@ -104,6 +104,7 @@ public class HechoService implements IHechoService {
     extras.set("contribuyente", c);
 
     dto.setParticulares(extras);
+    dto.setEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
     dto.setPathContenidoMultimedia(hecho.getContenidosMultimedia().stream().map(ContenidoMultimedia::getPath).collect(Collectors.toList()));
     return dto;
   }

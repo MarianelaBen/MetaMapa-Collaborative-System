@@ -38,7 +38,6 @@ public class ColeccionRepository implements IColeccionRepository {
 
   @Override
   public List<Coleccion> findAll(){
-    //return colecciones; //TODO comprobar si puedo borrar
     return new ArrayList<>(colecciones);
   }
 

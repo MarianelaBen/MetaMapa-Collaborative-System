@@ -20,7 +20,6 @@ public class SolicitudService implements ISolicitudService {
   private SolicitudRepository solicitudRepository;
   @Autowired
   private IHechoService hechoService;
-  //public void solicitarEdicion(Long idHecho, HechoInputDTO nuevoHecho) {
 
     @Override
     public void create(Hecho hecho, TipoSolicitud tipo){

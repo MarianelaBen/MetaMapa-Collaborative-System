@@ -87,8 +87,9 @@ public class AdminService implements IAdminService {
 
 
   //Obtención de todos los hechos de una colección
+  //Sirve para pruebas sin meterse en modos
   @Override
-  public List<HechoOutputDTO> getHechos(String coleccionId) { //TODO BORRAR Y HACERLA USANDO LA FUNCION CORRECTA POR AHORA PROBE AGREGAR ALGO ACA PARA USAR NOMAS
+  public List<HechoOutputDTO> getHechos(String coleccionId) {
     var coleccion = coleccionRepo.findById(coleccionId);
     if(coleccion == null) {
       throw new NoSuchElementException("Coleccion no encontrada con ID: " + coleccionId);
@@ -108,8 +109,6 @@ public class AdminService implements IAdminService {
     hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
     hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
-    System.out.println("hola1");
-    System.out.println(hecho.getCategoria().getNombre());
     hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
     if(hecho.getEtiquetas() != null){
       hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
@@ -138,7 +137,6 @@ public class AdminService implements IAdminService {
     fuenteRepo.save(fuente);
     coleccion.agregarFuentes(fuente);            // Asociamos la fuente desde la colección
     coleccionRepo.save(coleccion);               // Guardamos la colección con la nueva fuente
-    coleccionService.actualizarColecciones();    //TODO borrar esta linea
 
     return FuenteOutputDTO.fromEntity(fuente);    // Devolvemos la fuente recién agregada
   }
@@ -155,7 +153,7 @@ public class AdminService implements IAdminService {
     boolean removed = coleccion.getFuentes().removeIf(f -> {
       Long id = f.getId();
       return id != null && id.equals(fuenteId);
-    }); //TODO creo que ahora podriamos usar el repositorio de fuentes
+    });
 
     if (removed) {
       coleccionRepo.save(coleccion);
@@ -186,15 +184,3 @@ public class AdminService implements IAdminService {
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
 }
-
-  /*
-  @Override
-  public ConsensoResponseDTO configurarConsenso(Long coleccionId, ConsensoDTO dto) {
-    AlgoritmoConsenso c = consensoRepo.findByColeccionId(coleccionId)
-        .orElse(new AlgoritmoConsenso());
-    coleccionRepo.findById(coleccionId).ifPresent(c::setColeccion);
-    c.setAlgoritmo(dto.getAlgoritmo());
-    return ConsensoResponseDTO.fromEntity(consensoRepo.save(c));
-  }
-
-*/

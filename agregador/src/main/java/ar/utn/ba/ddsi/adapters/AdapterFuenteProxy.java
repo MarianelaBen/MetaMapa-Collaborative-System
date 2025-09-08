@@ -1,7 +1,6 @@
 package ar.utn.ba.ddsi.adapters;
 
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputComunDTO;
-import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Etiqueta;
 import ar.utn.ba.ddsi.models.entities.Hecho;

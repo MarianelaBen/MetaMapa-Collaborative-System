@@ -2,7 +2,6 @@ package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.Exceptions.ColeccionCreacionException;
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
-import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Fuente;
@@ -82,11 +81,6 @@ public class ColeccionService implements IColeccionService {
 
   @Override
   public void actualizarColecciones(){
-    /*colecciones = coleccionRepository.findAll();
-    for (Coleccion coleccion : colecciones){
-      this.filtrarHechos(coleccion);
-      coleccionRepository.save(coleccion);
-    }*/ //TODO COMPROBAR SI SE PUEDE BORRAR
     List<Coleccion> coleccionesExistentes = new ArrayList<>(coleccionRepository.findAll());
     for (Coleccion coleccion : coleccionesExistentes) {
       filtrarHechos(coleccion);

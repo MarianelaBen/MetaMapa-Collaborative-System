@@ -28,24 +28,12 @@ public class HechoOutputDTO {
   private LocalDate fechaAcontecimiento;
   @NotNull
   private LocalDate fechaCarga;
-  //@NotNull
-  //private Origen origen;
   @NotNull
   private boolean fueEliminado;
   @NotNull
   private Set<String> etiquetas;
-  //@NotNull
+
   private JsonNode particulares;
-  //private ContribuyenteOutputDTO contribuyente;
 
   private List<String> pathContenidoMultimedia;
 }
-
-/*
-Dependencia para validacion de datos obligatorios
-- Se usa agregando @NotBlank a los campos obligatorios
-<dependency>
-    <groupId>jakarta.validation</groupId>
-    <artifactId>jakarta.validation-api</artifactId>
-</dependency>
- */

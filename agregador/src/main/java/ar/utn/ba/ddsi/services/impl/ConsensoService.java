@@ -44,13 +44,6 @@ public class ConsensoService implements IConsensoService {
       hechosPorFuente.put(fuente, agregadorService.obtenerTodosLosHechosDeFuente(fuente));
     }
 
-    /*coleccionesConAlgoritmo.forEach(coleccion -> {
-      coleccion.getFuentes().forEach(fuente -> {
-        hechosPorFuente.putIfAbsent(fuente, agregadorService.obtenerTodosLosHechosDeFuente(fuente));
-      });
-    });*/ //TODO IMPORTANTE PREGUNTAR SI LOS CONSENSOS SE TIENE QUE APLCIAR CONTRA TODAS LAS FUENTERS DE AGREGADOR O DER LAS COLECCIONES QUE EXISTEN
-          // OTRA COSA ES CUANDO UNA COLECCION SE LE AGREGA UNA FUENTE O SE CREA Y TIENE UNA FUENTE ESA FUENTE SE DEBE GUARDAR EN EL REPO DE FUENTES?
-
     coleccionesConAlgoritmo.forEach(coleccion -> this.usoDeAlgoritmo(coleccion, hechosPorFuente));
 
     colecciones.forEach(coleccion -> coleccionRepository.save(coleccion));
