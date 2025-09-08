@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.models.repositories.impl;
+/*package ar.utn.ba.ddsi.models.repositories.impl;
 
 import ar.utn.ba.ddsi.models.entities.Ruta;
 import ar.utn.ba.ddsi.models.repositories.IRutasRepository;
@@ -41,4 +41,4 @@ public class RutasRepository implements IRutasRepository {
   public List<Ruta> findAll(){
     return this.rutas;
   }
-}
+}*/

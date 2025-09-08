@@ -1,14 +1,7 @@
 package ar.utn.ba.ddsi.models.entities;
 
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,9 +17,8 @@ public class SolicitudDeEliminacion {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Long id;
 
-  //@ManyToOne TODO no seria asi?
-  //@JoinColumn(name = "hecho_id")
-  @Column(name = "hecho_id")
+  @ManyToOne
+  @JoinColumn(name = "hecho_id")
   private Hecho hecho;
   @Column(name = "justificacion")
   private String justificacion;

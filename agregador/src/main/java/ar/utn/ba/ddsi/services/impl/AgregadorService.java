@@ -14,10 +14,7 @@ import ar.utn.ba.ddsi.services.IColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,11 +24,13 @@ public class AgregadorService implements IAgregadorService {
 private final AdapterFuenteDinamica adapterFuenteDinamica;
 private final AdapterFuenteEstatica adapterFuenteEstatica;
 private final AdapterFuenteProxy adapterFuenteProxy;
+private  final NormalizadorService normalizadorService;
 
-public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuenteEstatica adapterFuenteEstatica, AdapterFuenteProxy adapterFuenteProxy){
+public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuenteEstatica adapterFuenteEstatica, AdapterFuenteProxy adapterFuenteProxy, NormalizadorService normalizadorService){
   this.adapterFuenteDinamica = adapterFuenteDinamica;
   this.adapterFuenteEstatica = adapterFuenteEstatica;
   this.adapterFuenteProxy = adapterFuenteProxy;
+  this.normalizadorService = normalizadorService;
 }
 
   @Override
@@ -42,8 +41,17 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     List<HechoOutputDTO> hechos = fuentes.stream()
         .flatMap( f-> obtenerTodosLosHechosDeFuente(f)
             .stream())
-            .map(this::hechoOutputDTO)
-            .collect(Collectors.toList());
+            .map(h -> {
+              try { //para que si falla la normalizacion de un hecho no falle toda la normalizacion
+                normalizadorService.normalizar(h);
+                return h;
+              } catch (IllegalArgumentException e) {
+                return null;
+              }
+            })
+        .filter(Objects::nonNull)
+        .map(this::hechoOutputDTO)
+        .collect(Collectors.toList());
 
     if (hechos.isEmpty()) {
       throw new NoSuchElementException("No se encontraron hechos para las fuentes indicadas.");

@@ -1,6 +1,6 @@
 package ar.utn.ba.ddsi.normalizadores;
 
-//import lombok.Value;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.time.Duration;
@@ -11,18 +11,15 @@ import org.springframework.beans.factory.annotation.Value;
 @Component
 public class RaeClient {
 
-  @Value("${rae.base-url:https://rae-api.com}")
-  private String baseUrl;
-
-  @Value("${rae.timeout-ms:2000}")
-  private long timeoutMs;
-
   private final WebClient web;
+  private final long timeoutMs;
 
-  public RaeClient(WebClient.Builder builder) {
+  public RaeClient(WebClient.Builder builder,
+                   @Value("${rae.base-url:https://rae-api.com}") String baseUrl,
+                   @Value("${rae.timeout-ms:2000}") long timeoutMs) {
     this.web = builder.baseUrl(baseUrl).build();
+    this.timeoutMs = timeoutMs;
   }
-
 
   public Optional<RaeWord> getWord(String word) {
     try {
@@ -38,18 +35,18 @@ public class RaeClient {
     }
   }
 
-  // POJO mínimo
+  // DTOS
   public static class RaeWord {
     public Data data;
     public static class Data {
-      public String word;              // lema con acento: "inundación"
+      public String word;   // con tilde
       public List<Meaning> meanings;
     }
     public static class Meaning {
       public List<Sense> senses;
     }
     public static class Sense {
-      public List<String> synonyms;    // ["incendio","fuego",...]
+      public List<String> synonyms;
     }
   }
 }

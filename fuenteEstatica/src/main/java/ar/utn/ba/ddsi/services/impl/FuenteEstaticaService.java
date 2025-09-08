@@ -31,7 +31,7 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
 
   @Override
   public void leerHechos(Long idRuta) {
-    Ruta ruta = rutasRepository.findById(idRuta);
+    Ruta ruta = rutasRepository.findById(idRuta).orElseGet(null);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
     try (CSVReader reader = new CSVReader(new FileReader(ruta.getPath()))) {

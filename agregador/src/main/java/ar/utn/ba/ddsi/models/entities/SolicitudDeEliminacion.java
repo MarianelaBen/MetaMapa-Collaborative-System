@@ -26,10 +26,10 @@ public class SolicitudDeEliminacion {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Long id;
 
-  //@ManyToOne TODO no seria asi?
-  //@JoinColumn(name = "hecho_id")
-  @Column(name = "hecho_id")
+  @ManyToOne
+  @JoinColumn(name = "hecho_id")
   private Hecho hecho;
+
   @Column(name = "justificacion")
   private String justificacion;
   @Enumerated(EnumType.STRING)

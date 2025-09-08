@@ -3,11 +3,13 @@ package ar.utn.ba.ddsi.services.impl;
 import ar.utn.ba.ddsi.normalizadores.Normalizador;
 import ar.utn.ba.ddsi.normalizadores.RaeClient;
 import ar.utn.ba.ddsi.services.IRaeService;
+import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Service
 public class RaeService implements IRaeService {
   private final RaeClient client;
   private final Normalizador normalizador;

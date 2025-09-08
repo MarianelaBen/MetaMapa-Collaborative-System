@@ -20,9 +20,6 @@ public class Ubicacion {
   @Column(name = "provincia")
   private String provincia;
 
-  @Column(name = "provincia_id")
-  private String provinciaId;
-
   public Ubicacion(Double latitud, Double longitud) {
     this.latitud = latitud;
     this.longitud = longitud;

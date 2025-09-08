@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.normalizadores;
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.services.IRaeService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import java.util.Map;
 
@@ -45,14 +46,21 @@ public class NormalizadorCategoria {
       candidato = diccionario.lemaConAcento(candidato).orElse(candidato);
     }*/
 
-    for (String s : diccionario.sinonimos(normalizada)) {               // ya vienen normalizados por tu servicio
+    for (String s : diccionario.sinonimos(normalizada)) {               // lista de sinonimos
       String alt = categoriaPorSinonimo.getOrDefault(s, s);      // se fija si alguno de los sinonimos esta en nuestro diccionario
       var porSinonimo = categoriaRepository.findByNombreIgnoreCase(alt); //se fija si alguno de los sinonimos esta en el repositorio
       if (porSinonimo.isPresent()) return porSinonimo.get();
     }
 
-    //TODO save
-    throw new IllegalArgumentException("Categoria invalida: " + categoria.getNombre());
+
+    // Si no logra encontrar sinonimo es porque es una nueva categoria, entonces la creamos
+  try {
+    return categoriaRepository.save(new Categoria(candidato));
+  } catch (DataIntegrityViolationException e) {
+    // carrera: otro hilo la pudo crear entre el find y el save → reintento leyendo
+    return categoriaRepository.findByNombreIgnoreCase(candidato)
+        .orElseThrow(() -> new IllegalStateException("No se pudo crear categoria: " + candidato, e));
+  }
 
   }
 
