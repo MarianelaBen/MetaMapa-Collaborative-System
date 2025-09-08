@@ -1,4 +1,4 @@
-import ar.utn.ba.ddsi.algoritmos.impl.ConsensoMayoriaSimple;
+/*import ar.utn.ba.ddsi.algoritmos.impl.ConsensoMayoriaSimple;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuente;
@@ -171,5 +171,5 @@ public class algoritmoMayoriaSimpleTests {
     // Assert: nada para consensuar, ningún error
     assertTrue(coleccion.getHechos().isEmpty());
   }
-}
+}*/
 

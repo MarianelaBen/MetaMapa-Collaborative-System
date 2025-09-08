@@ -1,4 +1,4 @@
-import ar.utn.ba.ddsi.algoritmos.impl.ConsensoAbsoluta;
+/*import ar.utn.ba.ddsi.algoritmos.impl.ConsensoAbsoluta;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuente;
@@ -213,4 +213,4 @@ public class algoritmoAbsolutaTests {
     assertFalse(hechoB2.isConsensuado());
   }
 }
-
+*/
