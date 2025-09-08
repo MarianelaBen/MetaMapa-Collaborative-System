@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -54,54 +55,53 @@ public class EstadisticasService implements IEstadisticasService {
   @Override
   public void recalcularEstadisticas() {
 
-    /*
-    List<Fuente> fuentes = fuenteRepository.findAll();
+    Set<Fuente> fuentes = new HashSet<>(fuenteRepository.findAll()); // hago new HashSet<> porque JPA sino define List en repo
 
     ProvinciaOutputDTO provinciaMasHechos = provinciaConMasHechosEnColeccion("coleccion-principal");
     if (provinciaMasHechos != null) {
-      Estadistica est = new Estadistica(
+      Estadistica e = new Estadistica(
           "provincia_mas_hechos",
           provinciaMasHechos.getProvincia(),
           provinciaMasHechos.getCantidad(),
           LocalDateTime.now()
       );
-      estadisticaRepository.save(est);
+      estadisticaRepository.save(e);
     }
 
     CategoriaOutputDTO categoriaMasHechos = categoriaConMasHechos(fuentes);
     if (categoriaMasHechos != null) {
-      Estadistica est = new Estadistica(
+      Estadistica e = new Estadistica(
           "categoria_mas_hechos",
           categoriaMasHechos.getNombre(),
           categoriaMasHechos.getCantidad(),
           LocalDateTime.now()
       );
-      estadisticaRepository.save(est);
+      estadisticaRepository.save(e);
     }
 
     categoriaRepo.findAll().forEach(cat -> {
       ProvinciaOutputDTO provincia = provinciaConMasHechosParaCategoria(cat.getId(), fuentes);
       if (provincia != null) {
-        Estadistica est = new Estadistica(
+        Estadistica e = new Estadistica(
             "provincia_mas_hechos_por_categoria",
             cat.getNombre() + " -> " + provincia.getProvincia(),
             provincia.getCantidad(),
             LocalDateTime.now()
         );
-        estadisticaRepository.save(est);
+        estadisticaRepository.save(e);
       }
     });
 
-    categoriaRepo.findAll().forEach(cat -> {
-      HoraOutputDTO hora = horaConMasHechosParaCategoria(cat.getId(), fuentes);
+    categoriaRepo.findAll().forEach(c -> {
+      HoraOutputDTO hora = horaConMasHechosParaCategoria(c.getId(), fuentes);
       if (hora != null) {
-        Estadistica est = new Estadistica(
+        Estadistica e = new Estadistica(
             "hora_mas_hechos_por_categoria",
-            cat.getNombre() + " -> " + hora.getHora().toString(),
+            c.getNombre() + " -> " + hora.getHoraAcontecimiento().toString(),
             hora.getCantidad(),
             LocalDateTime.now()
         );
-        estadisticaRepository.save(est);
+        estadisticaRepository.save(e);
       }
     });
 
@@ -113,8 +113,6 @@ public class EstadisticasService implements IEstadisticasService {
         LocalDateTime.now()
     );
     estadisticaRepository.save(spamEst);
-
-     */
   }
 
   @Override
