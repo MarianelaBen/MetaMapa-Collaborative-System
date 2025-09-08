@@ -15,7 +15,7 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
 
   @Override
   public void calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente) {
-    // 1) FUENTES DEL AGREGADOR (para calcular mayoría y contar)
+
     Set<Fuente> fuentesAgregador = hechosPorFuente.keySet();
     if (fuentesAgregador.isEmpty()) {
       marcarTodosLosHechosComoNoConsensuados(coleccion);
@@ -25,10 +25,10 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
     int totalFuentes = fuentesAgregador.size();
     int mayoriaRequerida = (totalFuentes + 1) / 2; // ceil(N/2)
 
-    System.out.println("[MAYORIA] Coleccion=" + coleccion.getHandle());
-    System.out.println("[MAYORIA] Total fuentes agregador: " + totalFuentes + ", mayoria requerida: " + mayoriaRequerida);
+    System.out.println("Colecion=" + coleccion.getHandle());
+    System.out.println("Total fuentes agregador: " + totalFuentes + ", mayoria requerida: " + mayoriaRequerida);
 
-    // 2) CANDIDATOS: tomar los HECHOS que ya están en la COLECCIÓN
+
     Map<String, List<Hecho>> candidatosPorTitulo = new HashMap<>();
     if (coleccion.getHechos() != null) {
       for (Hecho h : coleccion.getHechos()) {
@@ -37,9 +37,9 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
         }
       }
     }
-    System.out.println("[MAYORIA] Titulos candidatos: " + candidatosPorTitulo.keySet());
+    System.out.println("titulos candidatos: " + candidatosPorTitulo.keySet());
 
-    // 3) Contar coincidencias en TODAS las fuentes del agregador
+
     for (Map.Entry<String, List<Hecho>> entry : candidatosPorTitulo.entrySet()) {
       String titulo = entry.getKey();
       List<Hecho> candidatos = entry.getValue();
@@ -47,7 +47,7 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
       Map<Hecho, Integer> conteo = contarHechosPorContenido(titulo, fuentesAgregador, hechosPorFuente);
 
       List<Integer> counts = new ArrayList<>(conteo.values());
-      System.out.println("[MAYORIA] Conteo por variante para '" + titulo + "': " + counts);
+      System.out.println("Conteo por variante par '" + titulo + "': " + counts);
 
       boolean hayMayoria = conteo.values().stream().anyMatch(cnt -> cnt >= mayoriaRequerida);
 
@@ -59,7 +59,7 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
     }
   }
 
-  // Cuenta en TODAS las fuentes del agregador y NO usa findFirst: itera TODAS las variantes con ese título
+
   private Map<Hecho, Integer> contarHechosPorContenido(
       String titulo,
       Set<Fuente> fuentesAgregador,
