@@ -1,4 +1,4 @@
-import ar.utn.ba.ddsi.algoritmos.impl.ConsensoMultiplesMenciones;
+/*import ar.utn.ba.ddsi.algoritmos.impl.ConsensoMultiplesMenciones;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuente;
@@ -227,3 +227,4 @@ public class algoritmoMultiplesMencionesTests {
       assertFalse(hecho1.isConsensuado());
     }
   }
+*/

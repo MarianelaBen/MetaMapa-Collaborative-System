@@ -35,7 +35,7 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
     for (Fuente fuente : fuentesColeccion) {
       List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, new ArrayList<>());
       for (Hecho hecho : hechosDeFuente) {
-        if (!hecho.isFueEliminado()) {
+        if (!hecho.getFueEliminado()) {
           hechosPorTitulo.computeIfAbsent(hecho.getTitulo(), k -> new ArrayList<>()).add(hecho);
         }
       }
@@ -73,7 +73,7 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
 
       // Buscar el hecho con este título en esta fuente
       Hecho hechoEnFuente = hechosDeFuente.stream()
-          .filter(h -> titulo.equals(h.getTitulo()) && !h.isFueEliminado())
+          .filter(h -> titulo.equals(h.getTitulo()) && !h.getFueEliminado())
           .findFirst()
           .orElse(null);
 

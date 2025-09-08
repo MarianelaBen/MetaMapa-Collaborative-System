@@ -31,7 +31,7 @@ public class ConsensoMultiplesMenciones implements IAlgoritmoDeConsenso {
     for (Fuente fuente : fuentesColeccion) {
       List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, new ArrayList<>());
       for (Hecho hecho : hechosDeFuente) {
-        if (!hecho.isFueEliminado()) {
+        if (!hecho.getFueEliminado()) {
           hechosPorTitulo.computeIfAbsent(hecho.getTitulo(), h -> new ArrayList<>()).add(hecho);
         }
       }
