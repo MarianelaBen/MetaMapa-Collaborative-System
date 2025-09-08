@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.time.LocalDateTime;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/estadisticas")
@@ -31,6 +33,7 @@ public class EstadisticaController {
     this.estadisticaRepository = estadisticaRepository;
   }
 
+  // Todas las estadisticas
   @GetMapping
   public ResponseEntity<List<Estadistica>> todasLasEstadisticas() {
     return ResponseEntity.ok(
@@ -38,6 +41,7 @@ public class EstadisticaController {
     );
   }
 
+  // Todas las estadisticas de un tipo
   @GetMapping("/{tipo}")
   public ResponseEntity<List<Estadistica>> estadisticasPorTipo(
       @PathVariable String tipo) {
@@ -46,16 +50,35 @@ public class EstadisticaController {
     );
   }
 
+  // Última versión de un tipo
+  @GetMapping("/{tipo}/ultima")
+  public ResponseEntity<Estadistica> ultimaPorTipo(@PathVariable String tipo) {
+    return ResponseEntity.of(
+        Optional.ofNullable(estadisticaRepository.findFirstByTipoOrderByFechaCalculoDesc(tipo))
+    );
+  }
+
+  // Estadísticas de una versión concreta
+  @GetMapping("/version/{fecha}")
+  public ResponseEntity<List<Estadistica>> porVersion(@PathVariable String fecha) {
+    LocalDateTime fechaCalculo = LocalDateTime.parse(fecha);
+    return ResponseEntity.ok(
+        estadisticaRepository.findByFechaCalculo(fechaCalculo)
+    );
+  }
+
   @GetMapping(value = "/export", produces = "text/csv")
   public void exportarCSV(HttpServletResponse response) throws IOException {
+
     response.setHeader("Content-Disposition", "attachment; filename=estadisticas.csv");
     List<Estadistica> stats = estadisticaRepository.findAll();
 
     try (PrintWriter writer = response.getWriter()) {
       writer.println("id,tipo,clave,valor,fecha");
+
       for (Estadistica e : stats) {
         writer.printf("%d,%s,%s,%d,%s%n",
-            e.getId(), e.getTipo(), e.getClave(), e.getValor(), e.getFecha_acontecimiento());
+            e.getId(), e.getTipo(), e.getClave(), e.getValor(), e.getFecha_calculo());
       }
     }
   }

@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,6 +58,7 @@ public class EstadisticasService implements IEstadisticasService {
 
     Set<Fuente> fuentes = new HashSet<>(fuenteRepository.findAll()); // hago new HashSet<> porque JPA sino define List en repo
 
+    // Provincia con mas hechos
     ProvinciaOutputDTO provinciaMasHechos = provinciaConMasHechosEnColeccion("coleccion-principal");
     if (provinciaMasHechos != null) {
       Estadistica e = new Estadistica(
@@ -68,6 +70,7 @@ public class EstadisticasService implements IEstadisticasService {
       estadisticaRepository.save(e);
     }
 
+    // Categoria con mas hechos
     CategoriaOutputDTO categoriaMasHechos = categoriaConMasHechos(fuentes);
     if (categoriaMasHechos != null) {
       Estadistica e = new Estadistica(
@@ -79,8 +82,11 @@ public class EstadisticasService implements IEstadisticasService {
       estadisticaRepository.save(e);
     }
 
+    // Para cada categoria, provincia y hora con mas hechos
     categoriaRepo.findAll().forEach(cat -> {
       ProvinciaOutputDTO provincia = provinciaConMasHechosParaCategoria(cat.getId(), fuentes);
+      HoraOutputDTO hora = horaConMasHechosParaCategoria(cat.getId(), fuentes);
+
       if (provincia != null) {
         Estadistica e = new Estadistica(
             "provincia_mas_hechos_por_categoria",
@@ -90,14 +96,11 @@ public class EstadisticasService implements IEstadisticasService {
         );
         estadisticaRepository.save(e);
       }
-    });
 
-    categoriaRepo.findAll().forEach(c -> {
-      HoraOutputDTO hora = horaConMasHechosParaCategoria(c.getId(), fuentes);
       if (hora != null) {
         Estadistica e = new Estadistica(
             "hora_mas_hechos_por_categoria",
-            c.getNombre() + " -> " + hora.getHoraAcontecimiento().toString(),
+            cat.getNombre() + " -> " + hora.getHoraAcontecimiento().toString(),
             hora.getCantidad(),
             LocalDateTime.now()
         );
@@ -105,6 +108,7 @@ public class EstadisticasService implements IEstadisticasService {
       }
     });
 
+    // Solicitudes de eliminación spam
     long cantidadSpam = contarSolicitudesEliminacionSpam();
     Estadistica spamEst = new Estadistica(
         "solicitudes_eliminacion_spam",
@@ -213,4 +217,5 @@ public class EstadisticasService implements IEstadisticasService {
         .filter(detectorDeSpam::esSpam)
         .count();
   }
+
 }
