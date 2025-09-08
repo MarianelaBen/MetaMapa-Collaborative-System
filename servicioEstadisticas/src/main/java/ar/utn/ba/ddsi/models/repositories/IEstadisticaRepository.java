@@ -9,12 +9,12 @@ import java.util.List;
 
 @Repository
 public interface IEstadisticaRepository extends JpaRepository<Estadistica, Long> {
-
+/*
   List<Estadistica> findByTipo(String tipo);
 
   // la última estadistica de un tipo
   Estadistica findFirstByTipoOrderByFechaCalculoDesc(String tipo);
 
   // todas las estadisticas de una ejecucion concreta
-  List<Estadistica> findByFechaCalculo(LocalDateTime fechaCalculo);
+  List<Estadistica> findByFechaCalculo(LocalDateTime fecha_calculo);*/
 }
