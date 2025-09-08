@@ -1,0 +1,24 @@
+@startuml
+
+class Estadistica {
+    - fechaCreacion: LocalDate
+    - preguntas: List<Pregunta>
+    - respuestas: List<Respuesta>
+}
+
+class Respuesta {
+    - pregunta: Pregunta
+    - provincia: Provincia
+    - categoria: Categoria
+    - hora: LocalTime
+    - cantSolicitudesSpam: Int
+}
+
+class Pregunta {
+    - pregunta: String
+}
+
+Estadistica --> Respuesta
+Estadistica --> Pregunta
+Respuesta --> Pregunta
+@enduml

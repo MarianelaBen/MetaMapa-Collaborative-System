@@ -26,7 +26,8 @@
 		<module>fuenteEstatica</module>
 		<module>fuenteDinamica</module>
 		<module>fuenteProxy</module>
-	</modules>
+        <module>servicioEstadisticas</module>
+    </modules>
     <scm>
 		<connection/>
 		<developerConnection/>
