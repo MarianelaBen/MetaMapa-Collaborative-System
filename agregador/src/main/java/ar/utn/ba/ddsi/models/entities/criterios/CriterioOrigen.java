@@ -5,9 +5,11 @@ import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import lombok.NoArgsConstructor;
 
 @Entity
 @DiscriminatorValue("origen")
+@NoArgsConstructor
 public class CriterioOrigen extends Criterio{
 
   @Column(name = "origen", nullable = false)

@@ -7,9 +7,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.NoArgsConstructor;
 
 @Entity
 @DiscriminatorValue("categoria")
+@NoArgsConstructor
 public class CriterioCategoria extends Criterio{
 
   @ManyToOne(fetch = FetchType.LAZY)

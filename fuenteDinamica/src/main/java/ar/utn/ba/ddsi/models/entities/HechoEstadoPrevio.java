@@ -19,11 +19,11 @@ import java.util.Set;
 public class HechoEstadoPrevio {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @OneToOne(fetch = FetchType.LAZY)
-  @MapsId //uso el id de hecho
-  @JoinColumn(name = "id") //columna es pk y fk
+  @JoinColumn(name = "id")
   private Hecho hecho;
 
   @Column(name = "titulo", nullable = false)

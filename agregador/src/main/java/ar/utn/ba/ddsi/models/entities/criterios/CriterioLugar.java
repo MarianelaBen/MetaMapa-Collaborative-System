@@ -6,9 +6,11 @@ import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import lombok.NoArgsConstructor;
 
 @Entity
 @DiscriminatorValue("lugar")
+@NoArgsConstructor
 public class CriterioLugar extends Criterio {
 
   @Column(name = "ubicacion", nullable = false)
