@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class HechoOutputDTO {
   @NotNull
   private UbicacionOutputDTO ubicacion;
   @NotNull
-  private LocalDate fechaAcontecimiento;
+  private LocalDateTime fechaAcontecimiento;
   @NotNull
   private LocalDate fechaCarga;
   @NotNull

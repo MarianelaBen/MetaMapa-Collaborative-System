@@ -2,17 +2,16 @@ package ar.utn.ba.ddsi.models.dtos.output;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class HoraOutputDTO {
-  private LocalTime horaAcontecimiento;
+  private LocalDateTime fechaYHoraAcontecimiento;
   private Long cantidad;
 
-  public HoraOutputDTO(LocalTime horaAcontecimiento, Long cantidad){
-    this.horaAcontecimiento = horaAcontecimiento;
+  public HoraOutputDTO(LocalDateTime fechaYHoraAcontecimiento, Long cantidad){
+    this.fechaYHoraAcontecimiento = fechaYHoraAcontecimiento;
     this.cantidad = cantidad;
   }
 }

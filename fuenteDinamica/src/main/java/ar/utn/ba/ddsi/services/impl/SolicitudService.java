@@ -27,7 +27,7 @@ public class SolicitudService implements ISolicitudService {
 
     @Override
     public void atencionDeSolicitud(Long idSolicitud, EstadoSolicitud estado, String comentario, Long idAdministrador){
-      Solicitud solicitud = solicitudRepository.findById(idSolicitud);
+      Solicitud solicitud = solicitudRepository.findById(idSolicitud).orElse(null);
       solicitud.cambiarEstado(estado);
       solicitud.setComentario(comentario);
 

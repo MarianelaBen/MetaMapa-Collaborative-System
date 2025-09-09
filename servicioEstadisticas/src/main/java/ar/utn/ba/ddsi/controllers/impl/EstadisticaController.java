@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.controllers.impl;
 
+
 import ar.utn.ba.ddsi.controllers.IEstadisticaController;
 import ar.utn.ba.ddsi.models.entities.Estadistica;
 import ar.utn.ba.ddsi.models.repositories.IEstadisticaRepository;
@@ -20,7 +21,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/estadisticas")
 public class EstadisticaController implements IEstadisticaController {
-
   private final IEstadisticaService estadisticasService;
   private final IEstadisticaRepository estadisticaRepository;
 
@@ -31,55 +31,66 @@ public class EstadisticaController implements IEstadisticaController {
     this.estadisticaRepository = estadisticaRepository;
   }
 
-  // Todas las estadisticas
   @GetMapping
-  public ResponseEntity<List<Estadistica>> todasLasEstadisticas() {
+  public ResponseEntity<List<Estadistica>> obtenerEstadisticas() {
+    return ResponseEntity.ok(estadisticaRepository.findAll());
+  }
+
+
+  @GetMapping("/pregunta-id/{id}")
+  public ResponseEntity<List<Estadistica>> obtenerEstadisticasPorPregunta(@PathVariable Long id) {
     return ResponseEntity.ok(
-        estadisticaRepository.findAll()
+        estadisticaRepository.findAllByPreguntaIdOrderByFechaDeCalculoDesc(id) //te devuelve las mas recientes primero
     );
   }
 
-  // Todas las estadisticas de un tipo
-  @GetMapping("/{tipo}")
-  public ResponseEntity<List<Estadistica>> estadisticasPorTipo(
-      @PathVariable String tipo) {
+  @GetMapping("/pregunta-id/{id}/ultima")
+  public ResponseEntity<Estadistica> obtenerUltimaEstadisticaPorPregunta(@PathVariable Long id) {
+    return estadisticaRepository.findTopByPreguntaIdOrderByFechaDeCalculoDesc(id)
+        .map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.notFound().build());
+  }
+
+  @GetMapping("/preguntaid/{id}/coleccion/{handle}")
+  public ResponseEntity<List<Estadistica>> obtenerEstadisticasPorPreguntaYColeccion(@PathVariable Long id,
+                                                                 @PathVariable String handle) {
     return ResponseEntity.ok(
-        estadisticaRepository.findByTipo(tipo)
+        estadisticaRepository.findAllByPreguntaIdAndColeccionHandleOrderByFechaDeCalculoDesc(id, handle)
     );
   }
 
-  // Última versión de un tipo
-  @GetMapping("/{tipo}/ultima")
-  public ResponseEntity<Estadistica> ultimaPorTipo(@PathVariable String tipo) {
-    return ResponseEntity.of(
-        Optional.ofNullable(estadisticaRepository.findFirstByTipoOrderByFechaCalculoDesc(tipo))
-    );
-  }
+  @GetMapping(value = "/export", produces = "text/csv") //produce le dice a Spring que la respuesta es CSV
+  public void exportarCSV(HttpServletResponse respuesta) throws IOException { //escribe en directo en la respuesta HTTP
+    respuesta.setHeader("Content-Disposition", "attachment; filename=estadisticas.csv"); //lo pone en un header para que el navegador descargue un archivo
 
-  // Estadísticas de una versión concreta
-  @GetMapping("/version/{fecha}")
-  public ResponseEntity<List<Estadistica>> porVersion(@PathVariable String fecha) {
-    LocalDateTime fecha_calculo = LocalDateTime.parse(fecha);
-    return ResponseEntity.ok(
-        estadisticaRepository.findByFechaCalculo(fecha_calculo)
-    );
-  }
+    //Traemos los datos
+    List<Estadistica> estadisticas = estadisticaRepository.findAll();
 
-  @GetMapping(value = "/export", produces = "text/csv")
-  public void exportarCSV(HttpServletResponse response) throws IOException {
-
-    response.setHeader("Content-Disposition", "attachment; filename=estadisticas.csv");
-    List<Estadistica> stats = estadisticaRepository.findAll();
-
-    try (PrintWriter writer = response.getWriter()) {
-      writer.println("id,tipo,clave,valor,fecha");
-
-      for (Estadistica e : stats) {
-        writer.printf("%d,%s,%s,%d,%s%n",
-            e.getId(), e.getTipo(), e.getClave(), e.getValor(), e.getFechaCalculo());
+    try (PrintWriter w = respuesta.getWriter()) { //pide un writer para escribir texto en la respuesta
+      w.println("id,pregunta,coleccion_handle,categoria_id,provincia,hora_del_dia,valor,fecha_de_calculo"); //encabezado del csv
+      for (Estadistica e : estadisticas) {
+        String pregunta = e.getPregunta() != null ? e.getPregunta().getPregunta() : ""; //si la pregunta existe usa su texto, si no cadena vacia
+        w.printf("%d,%s,%s,%s,%s,%s,%d,%s%n", //una fila + 8 columnas. Al final con %n agrega salto de línea
+            e.getId(),
+            revisar(pregunta),
+            revisar(e.getColeccionHandle()),
+            e.getCategoriaId() == null ? "" : e.getCategoriaId().toString(),// si es null que quede vacio
+            revisar(e.getProvincia()),
+            e.getHoraDelDia() == null ? "" : e.getHoraDelDia().toString(),//si es null que quede vacio
+            e.getValor(),
+            e.getFechaDeCalculo()
+        );
       }
     }
   }
+
+  //este metodo sirve para que no piense que si hay una coma
+  private String revisar(String s) { //por si tiene comas o comillas
+    if (s == null) return "";
+    boolean necesitaComillas = s.contains(",") || s.contains("\"") || s.contains("\n"); //si tiene coma, comillas o salto de linea
+    return necesitaComillas ? "\"" + s.replace("\"", "\"\"") + "\"" : s; // ahi envuelve entre comillas para que no piense que son columnas separadas
+  }
+
 
 }
 

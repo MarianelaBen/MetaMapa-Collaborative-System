@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,7 +33,7 @@ public class HechoInputDTO {
     private Ubicacion ciudad;
     @Schema(description = "Fecha en que sucedio", example = "AAAA-MM-DD")
     @NotNull
-    private LocalDate fechaAcontecimiento;
+    private LocalDateTime fechaAcontecimiento;
     @NotNull
     private Contribuyente contribuyente;
     @Schema(description = "Fotos o videos sobre el hecho", example = "Inserte o arrastre una foto/video")

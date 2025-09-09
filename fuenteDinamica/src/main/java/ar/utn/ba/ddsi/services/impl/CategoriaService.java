@@ -30,12 +30,12 @@ public class CategoriaService implements ICategoriaService {
       if (categoriaInputDTO.getNombre() == null) {
         throw new NoSuchElementException("Categoria no encontrada");
       }
-    return categoriaRepository.findById(categoriaInputDTO.getId());
+    return categoriaRepository.findById(categoriaInputDTO.getId()).orElse(null);
     }
   }
 
   public Categoria crear (Categoria categoria){
-     categoria.setId(this.categoriaRepository.save(categoria));
+     categoria.setId(this.categoriaRepository.save(categoria).getId());
      return categoria;
   }
 }

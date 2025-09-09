@@ -5,6 +5,7 @@ import ar.utn.ba.ddsi.models.dtos.output.RutaOutputDTO;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.dtos.output.UbicacionOutputDTO;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
+import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.models.repositories.IRutasRepository;
 import ar.utn.ba.ddsi.services.IFuenteEstaticaService;
@@ -26,6 +27,8 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
   public IHechoRepository hechoRepository;
   @Autowired
   public IRutasRepository rutasRepository;
+  @Autowired
+  public ICategoriaRepository categoriaRepository;
 
   @Override
   public void leerHechos(Long idRuta) {
@@ -43,6 +46,8 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
         Categoria categoria = new Categoria(fila[2]);
         Ubicacion ubicacion = new Ubicacion(Double.parseDouble(fila[3]), Double.parseDouble(fila[4]));
         LocalDate fechaAcontecimiento = LocalDate.parse(fila[5], formatter);
+
+        categoriaRepository.save(categoria);
 
         Hecho hechoACargar = new Hecho(
             titulo, descripcion, categoria, ubicacion, fechaAcontecimiento,

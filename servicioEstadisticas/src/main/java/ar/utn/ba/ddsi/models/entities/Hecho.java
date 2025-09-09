@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -57,14 +58,10 @@ public class Hecho {
   private Ubicacion ubicacion;
 
   @Column(name = "fecha_acontecimiento", nullable = false)
-  private LocalDate fechaAcontecimiento;
+  private LocalDateTime fechaYHoraAcontecimiento;
 
   @Column(name = "fecha_carga", nullable = false)
   private LocalDate fechaCarga;
-
-  //nuevo
-  @Column(name = "hora_acontecimiento", nullable = false)
-   private LocalTime horaAcontecimiento;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "origen")
@@ -104,12 +101,12 @@ public class Hecho {
   // private String apellidoAportante;
   // private Integer edadAportante;
 
-  public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, LocalDate fechaCarga , Origen origen, String fuenteExterna){
+  public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaYHoraAcontecimiento, LocalDate fechaCarga , Origen origen, String fuenteExterna){
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
     this.ubicacion = ubicacion;
-    this.fechaAcontecimiento = fechaAcontecimiento;
+    this.fechaYHoraAcontecimiento = fechaYHoraAcontecimiento;
     this.fechaCarga = fechaCarga;
     this.origen = origen;
     this.fueEliminado = false;
@@ -132,7 +129,7 @@ public class Hecho {
         Objects.equals(this.categoria.getNombre(), otroHecho.categoria.getNombre()) &&
         Objects.equals(this.ubicacion.getLatitud(), otroHecho.ubicacion.getLatitud()) &&
         Objects.equals(this.ubicacion.getLongitud(), otroHecho.ubicacion.getLongitud()) &&
-        Objects.equals(this.fechaAcontecimiento, otroHecho.fechaAcontecimiento);
+        Objects.equals(this.fechaYHoraAcontecimiento, otroHecho.fechaYHoraAcontecimiento);
   }
 
   public boolean esConsensuado(TipoAlgoritmoDeConsenso algoritmo) { //esta basico dsp hay que agregar q si no hay algoritmo sea true o algo asi

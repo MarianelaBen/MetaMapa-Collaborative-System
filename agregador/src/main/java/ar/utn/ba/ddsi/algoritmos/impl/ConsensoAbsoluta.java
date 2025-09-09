@@ -29,7 +29,7 @@ public class ConsensoAbsoluta implements IAlgoritmoDeConsenso {
     Map<String, List<Hecho>> candidatosPorTitulo = new HashMap<>();
     if (coleccion.getHechos() != null) {
       for (Hecho h : coleccion.getHechos()) {
-        if (!h.isFueEliminado()) {
+        if (!h.getFueEliminado()) {
           candidatosPorTitulo.computeIfAbsent(h.getTitulo(), k -> new ArrayList<>()).add(h);
         }
       }
@@ -47,7 +47,7 @@ public class ConsensoAbsoluta implements IAlgoritmoDeConsenso {
       for (Fuente f : fuentesAgregador) {
         List<Hecho> lista = hechosPorFuente.getOrDefault(f, Collections.emptyList());
         List<Hecho> variantesEnFuente = lista.stream()
-            .filter(h -> !h.isFueEliminado() && titulo.equals(h.getTitulo()))
+            .filter(h -> !h.getFueEliminado() && titulo.equals(h.getTitulo()))
             .collect(Collectors.toList());
         if (!variantesEnFuente.isEmpty()) {
           fuentesConTitulo++;

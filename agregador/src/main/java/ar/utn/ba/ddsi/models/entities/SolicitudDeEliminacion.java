@@ -39,6 +39,8 @@ public class SolicitudDeEliminacion {
   private LocalDateTime fechaEntrada;
   @Column(name = "fecha_atencion")
   private LocalDateTime fechaAtencion;
+  @Column(name = "esSpam")
+  private boolean esSpam;
 
   public SolicitudDeEliminacion(Hecho hecho, String justificacion) {
     this.hecho = hecho;
@@ -47,6 +49,7 @@ public class SolicitudDeEliminacion {
     //this.administradorQueAtendio = null;
     this.fechaEntrada = null;
     this.fechaAtencion = null;
+    this.esSpam = false;
   }
 
   public void cambiarEstado(EstadoSolicitud nuevoEstado){

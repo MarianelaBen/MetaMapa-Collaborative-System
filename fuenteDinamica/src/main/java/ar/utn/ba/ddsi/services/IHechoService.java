@@ -8,6 +8,7 @@ import ar.utn.ba.ddsi.models.entities.Contribuyente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IHechoService {
@@ -20,7 +21,7 @@ public interface IHechoService {
   void creacionRechazada(Hecho hecho);
   void edicionRechazada(Hecho hecho);
   List<HechoOutputDTO> buscarTodos();
-  void actualizarHecho(Hecho hecho, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento);
+  void actualizarHecho(Hecho hecho, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento);
   UbicacionOutputDTO ubicacionOutputDTO(Ubicacion ubicacion);
   ContribuyenteOutputDTO contribuyenteOutputDTO(Contribuyente contribuyente);
 }

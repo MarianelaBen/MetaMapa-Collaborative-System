@@ -2,11 +2,14 @@ package ar.utn.ba.ddsi.controllers;
 
 import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
+import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
+import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IConsensoService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
@@ -14,6 +17,7 @@ import ar.utn.ba.ddsi.services.impl.SolicitudService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,19 +29,23 @@ public class AgregadorController {
   private final ISolicitudService solicitudService;
   private final IFuenteRepository fuenteRepository;
   private final IConsensoService consensoService;
+  private final ICategoriaRepository categoriaRepository;
+  private final ISolicitudRepository solicitudRepository;
 
-  public AgregadorController(IAgregadorService agregadorService, ISolicitudService solicitudService, IFuenteRepository fuenteRepository, IConsensoService consensoService){
+  public AgregadorController(IAgregadorService agregadorService, ISolicitudService solicitudService, IFuenteRepository fuenteRepository, IConsensoService consensoService, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudRepository){
     this.agregadorService = agregadorService;
     this.solicitudService = solicitudService;
     this.fuenteRepository = fuenteRepository;
     this.consensoService = consensoService;
+    this.categoriaRepository = categoriaRepository;
+    this.solicitudRepository = solicitudRepository;
   }
 
-
+  //pruebas
   @GetMapping("/hechos")
   public ResponseEntity<?> getHechos(Set<Fuente> fuentes){
     try{
-      return ResponseEntity.ok(this.agregadorService.obtenerTodosLosHechos(fuentes));
+      return ResponseEntity.ok(this.agregadorService.obtenerTodosLosHechos(fuentes).stream().map(agregadorService::hechoOutputDTO));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(Map.of("error","Solicitud no valida","mensaje", e.getMessage()));
@@ -144,4 +152,43 @@ public class AgregadorController {
           .body(Map.of("error", "Error al aplicar el algoritmo", "mensaje", e.getMessage()));
     }
   }
+
+  //NUEVO
+  @GetMapping("/categorias/{categoriaId}")
+  public ResponseEntity<?> getCategoria(@PathVariable Long categoriaId) {
+    Categoria categoria = categoriaRepository.findById(categoriaId)
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND, "Categoria no encontrada"));
+    return ResponseEntity.ok(categoria);
+  }
+
+  @GetMapping("/categorias")
+  public ResponseEntity<?> getCategorias() {
+    return ResponseEntity.ok(categoriaRepository.findAll());
+  }
+
+  @GetMapping("/solicitudes")
+  public ResponseEntity<?> getSolicitudes() {
+    return ResponseEntity.ok(solicitudRepository.findAll());
+  }
+
+
+  @GetMapping("/hechos/fuentes")
+  public ResponseEntity<?> getHechosTodasLasFuentes(){
+    try{
+      Set<Fuente> fuentes = fuenteRepository.findAll().stream().collect(Collectors.toSet());
+      return ResponseEntity.ok(this.agregadorService.obtenerTodosLosHechos(fuentes).stream().map(agregadorService::hechoOutputDTO));
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error","Solicitud no valida","mensaje", e.getMessage()));
+    } catch (NoSuchElementException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(Map.of("error","Hechos no encontrados","mensaje", e.getMessage()));
+    }
+    catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
+    }
+  }
+
 }

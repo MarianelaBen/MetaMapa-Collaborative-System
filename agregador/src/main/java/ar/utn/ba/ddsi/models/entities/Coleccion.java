@@ -39,8 +39,7 @@ public class Coleccion {
   @ManyToMany
   @JoinTable(name = "coleccion_fuente",
       joinColumns = @JoinColumn(name = "coleccion_handle", referencedColumnName = "handle"),
-      inverseJoinColumns = @JoinColumn(name = "fuente_id",
-          referencedColumnName = "id")
+      inverseJoinColumns = @JoinColumn(name = "fuente_id", referencedColumnName = "id")
   )
     private Set<Fuente> fuentes;
 

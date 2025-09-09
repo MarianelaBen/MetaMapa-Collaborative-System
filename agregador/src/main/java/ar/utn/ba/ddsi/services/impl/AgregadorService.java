@@ -51,7 +51,6 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
               }
             })
         .filter(Objects::nonNull)
-        .map(this::hechoOutputDTO)
         .collect(Collectors.toList());
 
     if (hechos.isEmpty()) {

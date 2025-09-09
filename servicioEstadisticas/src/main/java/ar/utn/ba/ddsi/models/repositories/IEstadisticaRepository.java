@@ -6,16 +6,21 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IEstadisticaRepository extends JpaRepository<Estadistica, Long> {
 
-  List<Estadistica> findByTipo(String tipo);
+  List<Estadistica> findAllByPregunta_PreguntaOrderByFechaDeCalculoDesc(String pregunta);
 
-  // la última estadistica de un tipo
-  Estadistica findFirstByTipoOrderByFechaCalculoDesc(String tipo);
+  Optional<Estadistica> findTopByPregunta_PreguntaOrderByFechaDeCalculoDesc(String pregunta);
 
-  // todas las estadisticas de una ejecucion concreta
-  List<Estadistica> findByFechaCalculo(LocalDateTime fecha);
+  List<Estadistica> findAllByPreguntaIdOrderByFechaDeCalculoDesc(Long preguntaId);
+
+  Optional<Estadistica> findTopByPreguntaIdOrderByFechaDeCalculoDesc(Long preguntaId);
+
+  List<Estadistica> findByFechaDeCalculo(LocalDateTime fechaDeCalculo);
+
+  List<Estadistica> findAllByPreguntaIdAndColeccionHandleOrderByFechaDeCalculoDesc(Long preguntaId, String coleccionHandle);
 
 }

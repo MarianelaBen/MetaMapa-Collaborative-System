@@ -8,6 +8,7 @@ import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
+import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.services.IAdminService;
 import ar.utn.ba.ddsi.services.impl.ColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,8 @@ public class AdminController {
   private final IAdminService servicio;
   private final ColeccionService coleccionService;
 
-  public AdminController(IAdminService servicio, ColeccionService coleccionService) {
+
+  public AdminController(IAdminService servicio, ColeccionService coleccionService, ICategoriaRepository categoriaRepository) {
     this.servicio = servicio;
     this.coleccionService = coleccionService;
   }
@@ -175,6 +177,7 @@ public class AdminController {
     }
 
   }
+
 }
 
 

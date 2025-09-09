@@ -32,7 +32,7 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
     Map<String, List<Hecho>> candidatosPorTitulo = new HashMap<>();
     if (coleccion.getHechos() != null) {
       for (Hecho h : coleccion.getHechos()) {
-        if (!h.isFueEliminado()) {
+        if (!h.getFueEliminado()) {
           candidatosPorTitulo.computeIfAbsent(h.getTitulo(), k -> new ArrayList<>()).add(h);
         }
       }
@@ -71,7 +71,7 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
       List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, Collections.emptyList());
 
       List<Hecho> variantes = hechosDeFuente.stream()
-          .filter(h -> !h.isFueEliminado() && titulo.equals(h.getTitulo()))
+          .filter(h -> !h.getFueEliminado() && titulo.equals(h.getTitulo()))
           .collect(Collectors.toList());
 
       for (Hecho variante : variantes) {

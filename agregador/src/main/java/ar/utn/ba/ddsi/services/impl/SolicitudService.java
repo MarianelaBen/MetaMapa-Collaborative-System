@@ -26,7 +26,7 @@ public SolicitudService(ISolicitudRepository solicitudRepository, IDetectorDeSpa
   @Override
   public SolicitudDeEliminacion RechazadoPorSpam(SolicitudDeEliminacion solicitud) {
 
-    if (solicitud.getHecho() == null || detectorDeSpam.esSpam(solicitud.getHecho().getTitulo())) {
+    if (solicitud.getHecho() == null || detectorDeSpam.esSpam(solicitud)) {
       solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
       solicitud.setFechaAtencion(LocalDateTime.now());
     }

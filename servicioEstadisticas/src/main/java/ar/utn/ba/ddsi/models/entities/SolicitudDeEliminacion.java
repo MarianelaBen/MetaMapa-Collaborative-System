@@ -29,6 +29,8 @@ public class SolicitudDeEliminacion {
   private LocalDateTime fechaEntrada;
   @Column(name = "fecha_atencion")
   private LocalDateTime fechaAtencion;
+  @Column(name = "esSpam")
+  private Boolean esSpam;
 
   public SolicitudDeEliminacion(Hecho hecho, String justificacion) {
     this.hecho = hecho;

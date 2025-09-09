@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
@@ -23,8 +24,7 @@ public class HechoOutputDTO {
   private Double latitud;
   private Double longitud;
   private String provincia;
-  private LocalDate fechaAcontecimiento;
-  private LocalTime horaAcontecimiento;
+  private LocalDateTime fechaYHoraAcontecimiento;
   private LocalDate fechaCarga;
   private Set<Long> idEtiquetas;
   private List<Long> idContenidoMultimedia;
@@ -39,8 +39,7 @@ public class HechoOutputDTO {
     this.latitud = hecho.getUbicacion().getLatitud();
     this.longitud = hecho.getUbicacion().getLongitud();
     this.provincia = hecho.getUbicacion().getProvincia();
-    this.fechaAcontecimiento = hecho.getFechaAcontecimiento();
-    this.horaAcontecimiento = hecho.getHoraAcontecimiento();
+    this.fechaYHoraAcontecimiento = hecho.getFechaYHoraAcontecimiento();
     this.fechaCarga = hecho.getFechaCarga();
     this.fuenteExterna = null;
     this.idEtiquetas = null;
@@ -55,7 +54,7 @@ public class HechoOutputDTO {
         this.descripcion,
         new Categoria(this.categoria),
         new Ubicacion(this.latitud, this.longitud),
-        this.fechaAcontecimiento,
+        this.fechaYHoraAcontecimiento,
         this.fechaCarga,
         Origen.PROVISTO_POR_CONTRIBUYENTE, //porque viene de dinamica
         this.fuenteExterna

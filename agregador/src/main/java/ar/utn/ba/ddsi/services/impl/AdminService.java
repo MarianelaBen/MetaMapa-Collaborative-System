@@ -83,15 +83,14 @@ public class AdminService implements IAdminService {
   //Sirve para pruebas sin meterse en modos
   @Override
   public List<HechoOutputDTO> getHechos(String coleccionId) {
-    var coleccion = coleccionRepo.findById(coleccionId);
-    if(coleccion == null) {
-      throw new NoSuchElementException("Coleccion no encontrada con ID: " + coleccionId);
-    }
+    var coleccion = coleccionRepo.findById(coleccionId)
+        .orElseThrow(() -> new RuntimeException("Coleccion no encontrada con id: " + coleccionId));
+
     return coleccion.getHechos()
         .stream()
-        .map(h -> this.hechoOutputDTO(h))
+        .map(this::hechoOutputDTO)
         .collect(Collectors.toList());
-  } //Se saltea la parte de usar la funcion de obtener los hechos que usa el algoritmo no tiene sentido
+  }
 
   public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
@@ -130,7 +129,7 @@ public class AdminService implements IAdminService {
     if (fuenteRepo != null) {
       fuente = fuenteRepo.save(fuente);
     }
-    Fuente fuente = new Fuente(dto.getUrl(), dto.getTipo());              // Convertimos el DTO a entidad
+
     fuenteRepo.save(fuente);
     coleccion.agregarFuentes(fuente);            // Asociamos la fuente desde la colección
     coleccionRepo.save(coleccion);               // Guardamos la colección con la nueva fuente
@@ -179,15 +178,3 @@ public class AdminService implements IAdminService {
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
 }
-
-  /*
-  @Override
-  public ConsensoResponseDTO configurarConsenso(Long coleccionId, ConsensoDTO dto) {
-    AlgoritmoConsenso c = consensoRepo.findByColeccionId(coleccionId)
-        .orElse(new AlgoritmoConsenso());
-    coleccionRepo.findById(coleccionId).ifPresent(c::setColeccion);
-    c.setAlgoritmo(dto.getAlgoritmo());
-    return ConsensoResponseDTO.fromEntity(consensoRepo.save(c));
-  }
-
-*/

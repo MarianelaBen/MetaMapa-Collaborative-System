@@ -75,21 +75,8 @@ public class ColeccionService implements IColeccionService {
     List<Hecho> hechosFiltrados = agregadorService.obtenerTodosLosHechos(coleccion.getFuentes())
         .stream()
         .filter(hecho -> !hecho.getFueEliminado())
-        .map(dto -> {
-              Hecho h = new Hecho();
-              h.setId(dto.getId());
-              h.setTitulo(dto.getTitulo());
-              h.setDescripcion(dto.getDescripcion());
-              h.setFueEliminado(dto.getFueEliminado());
-              h.setFuenteExterna(dto.getFuenteExterna());
-              h.setCategoria(new Categoria(dto.getCategoria()));
-              h.setUbicacion(new Ubicacion(dto.getLatitud(), dto.getLongitud()));
-              h.setFechaAcontecimiento(dto.getFechaAcontecimiento());
-              h.setFechaCarga(dto.getFechaCarga());
-              return h;
-            }
-        )
         .collect(Collectors.toList());
+
     if( coleccion.getCriterios().isEmpty() ) { coleccion.agregarHechos(hechosFiltrados); }
     else { coleccion.agregarHechos(hechosFiltrados.stream()
         .filter(coleccion::cumpleLosCriterios)
