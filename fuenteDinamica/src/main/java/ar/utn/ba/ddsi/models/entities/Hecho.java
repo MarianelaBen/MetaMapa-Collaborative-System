@@ -77,7 +77,7 @@ public class Hecho {
   private Contribuyente contribuyente;
 
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-  @JoinColumn(name = "hecho_id")
+  @JoinColumn(name = "contenido_multimedia_id")
   private List<ContenidoMultimedia> contenidosMultimedia;
 
   @Embedded
