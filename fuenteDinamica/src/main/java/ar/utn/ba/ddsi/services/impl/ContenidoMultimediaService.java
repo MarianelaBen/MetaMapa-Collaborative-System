@@ -21,7 +21,7 @@ public class ContenidoMultimediaService implements IContenidoMultimediaService {
         .map(path -> {
           ContenidoMultimedia nuevoContenido = new ContenidoMultimedia();
           nuevoContenido.setPath(path);
-          nuevoContenido.setIdContenidoMultimedia(contenidoMultimediaRepository.save(nuevoContenido));
+          nuevoContenido.setIdContenidoMultimedia(contenidoMultimediaRepository.save(nuevoContenido).getIdContenidoMultimedia());
           return nuevoContenido;
         })
         .collect(Collectors.toList());

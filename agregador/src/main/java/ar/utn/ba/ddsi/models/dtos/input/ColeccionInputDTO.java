@@ -15,5 +15,4 @@ public class ColeccionInputDTO {
   private TipoAlgoritmoDeConsenso algoritmoDeConsenso;
   private Set<Long> fuenteIds;
   private Set<Long> criterioIds;
-  private Set<Long> hechoIds; //TODO ANALIZAR SI BORRAR NO TIENE SENTIDO
 }

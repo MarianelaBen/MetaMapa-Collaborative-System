@@ -14,20 +14,19 @@ import java.time.LocalDateTime;
 @Service
 public class SolicitudService implements ISolicitudService {
 
-  @Autowired
   private ISolicitudRepository solicitudRepository;
-  @Autowired
-  private IColeccionService coleccionService; //TODO chequear si hace falta
-  //@Autowired TODO APLICAR IMPLEMENTACION O VER OTRA MANERA
   private IDetectorDeSpam detectorDeSpam;
 
-
+public SolicitudService(ISolicitudRepository solicitudRepository, IDetectorDeSpam detectorDeSpam){
+  this.solicitudRepository = solicitudRepository;
+  this.detectorDeSpam = detectorDeSpam;
+}
   //al crear la solicitud se llama a este metodo, que filtra spams
   //metodo del agregador, que suponemos que va antes de que se meta el administrador
   @Override
   public SolicitudDeEliminacion RechazadoPorSpam(SolicitudDeEliminacion solicitud) {
 
-    if (solicitud.getHecho() == null || detectorDeSpam.esSpam(solicitud.getHecho().getTitulo())) {
+    if (solicitud.getHecho() == null || detectorDeSpam.esSpam(solicitud)) {
       solicitud.cambiarEstado(EstadoSolicitud.RECHAZADA);
       solicitud.setFechaAtencion(LocalDateTime.now());
     }

@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.models.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +54,7 @@ public class Hecho {
   private Ubicacion ubicacion;
 
   @Column(name = "fecha_acontecimiento", nullable = false)
-  private LocalDate fechaAcontecimiento;
+  private LocalDateTime fechaAcontecimiento;
 
   @Column(name = "fecha_carga", nullable = false)
   private LocalDate fechaCarga;
@@ -80,13 +81,13 @@ public class Hecho {
   @JoinColumn(name = "contenido_multimedia_id")
   private List<ContenidoMultimedia> contenidosMultimedia;
 
-  @Embedded
+  @OneToOne(mappedBy = "hecho", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
   private HechoEstadoPrevio estadoPrevio;
 
   @Column(name = "fecha_actualizacion", nullable = false)
   private LocalDate fechaActualizacion;
 
-  public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen){
+  public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento, Origen origen){
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;

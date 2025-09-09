@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class ColeccionOutputDTO {
-  private Long id; //TODO BORRAR NO TIENE SENTIDO
   private String titulo;
   private String descripcion;
   private String handle;

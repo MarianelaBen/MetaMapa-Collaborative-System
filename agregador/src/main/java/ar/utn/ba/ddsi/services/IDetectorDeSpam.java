@@ -1,8 +1,9 @@
 package ar.utn.ba.ddsi.services;
 
-import org.springframework.stereotype.Service;
+import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public interface IDetectorDeSpam {
-  boolean esSpam(String texto);
+  boolean esSpam(SolicitudDeEliminacion solicitudDeEliminacion);
 }

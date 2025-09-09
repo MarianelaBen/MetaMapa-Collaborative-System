@@ -9,7 +9,6 @@ public class Solicitud {
   @Getter private Hecho hecho;
   @Getter private String justificacion;
   @Getter private EstadoSolicitud estado;
-  @Getter @Setter private Administrador administradorQueAtendio;
   @Getter @Setter private LocalDateTime fechaEntrada;
   @Getter @Setter private LocalDateTime fechaAtencion;
 
@@ -17,7 +16,6 @@ public class Solicitud {
     this.hecho = hecho;
     this.justificacion = justificacion;
     this.estado = EstadoSolicitud.PENDIENTE;
-    this.administradorQueAtendio = null;
     this.fechaEntrada = null;
     this.fechaAtencion = null;
   }

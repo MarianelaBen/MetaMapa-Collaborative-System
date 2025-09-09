@@ -1,11 +1,6 @@
 package ar.utn.ba.ddsi.models.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,30 +11,43 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "estadisticas")
+@Table(name = "estadistica")
 public class Estadistica {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "tipo", nullable = false)
-  private String tipo;  // ej: "provincia_mas_hechos", "categoria_mas_hechos", etc.
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "pregunta_id", nullable=false)
+  private Pregunta pregunta;
 
-  @Column(name = "clave", nullable = false)
-  private String clave; // ej: nombre provincia o categoría
+  @Column(name = "coleccion_handle")
+  private String coleccionHandle;
 
-  @Column(name = "valor", nullable = false)
-  private Long valor;   // cantidad
+  @Column (name = "categoria_id")
+  private Long categoriaId;
 
-  @Column(name = "fecha_calculo", nullable = false)
-  private LocalDateTime fecha_calculo;
+  @Column(name="provincia")
+  private String provincia;
 
-  public Estadistica (String tipo, String clave, Long valor, LocalDateTime fecha_calculo) {
-    this.tipo = tipo;
-    this.clave = clave;
+  @Column(name="hora_del_dia")
+  private Integer horaDelDia;
+
+  @Column(name="valor", nullable=false)
+  private Long valor;
+
+  @Column(name="fecha_de_calculo", nullable=false)
+  private LocalDateTime fechaDeCalculo;
+
+  public Estadistica(Pregunta pregunta, String coleccionHandle, Long categoriaId,
+                     String provincia, Integer horaDelDia, Long valor, LocalDateTime fechaDeCalculo) {
+    this.pregunta = pregunta;
+    this.coleccionHandle = coleccionHandle;
+    this.categoriaId = categoriaId;
+    this.provincia = provincia;
+    this.horaDelDia = horaDelDia;
     this.valor = valor;
-    this.fecha_calculo = fecha_calculo;
+    this.fechaDeCalculo = fechaDeCalculo;
   }
 }
 

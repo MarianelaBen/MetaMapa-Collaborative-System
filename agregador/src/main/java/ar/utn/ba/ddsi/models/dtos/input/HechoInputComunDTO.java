@@ -26,9 +26,8 @@ public class HechoInputComunDTO {
 
   // opcionales comunes
   private Set<String> etiquetas;
-  private List<String> pathMultimedia;
+  private List<String> pathContenidoMultimedia;
 
   // Campos especificos de cada fuente
   private JsonNode particulares;
-
 }

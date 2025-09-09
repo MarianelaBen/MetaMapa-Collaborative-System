@@ -4,9 +4,11 @@ import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 
 @Getter
@@ -18,21 +20,14 @@ public class HechoInputDTO {
   private String categoria;
   private Double latitud;
   private Double longitud;
-  private LocalDate fechaAcontecimiento;
-  private LocalDate fechaCarga;
+
+  @JsonProperty("fecha_hecho")
+  private OffsetDateTime fechaAcontecimiento;
+
+  @JsonProperty("created_at")
+  private OffsetDateTime fechaCarga;
+
   private String fuenteExterna;
-
-
-  public Hecho toHecho() {
-    return new Hecho(
-        this.titulo,
-        this.descripcion,
-        new Categoria(this.categoria),
-        new Ubicacion(this.latitud, this.longitud),
-        this.fechaAcontecimiento,
-        Origen.PROVENIENTE_DE_DATASET
-    );
-  }
 }
 
 

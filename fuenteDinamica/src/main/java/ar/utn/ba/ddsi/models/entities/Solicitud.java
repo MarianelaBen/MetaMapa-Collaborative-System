@@ -33,7 +33,6 @@ public class Solicitud {
   @Column(name = "tipo_solicitud")
   private TipoSolicitud tipoSolicitud;
 
-  // TODO cascade ??
   @OneToOne
   @JoinColumn(name = "hecho_id", nullable = false)
   private Hecho hecho;

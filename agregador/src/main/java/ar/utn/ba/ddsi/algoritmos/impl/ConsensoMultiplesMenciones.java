@@ -7,149 +7,89 @@ import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class ConsensoMultiplesMenciones implements IAlgoritmoDeConsenso {
+
   @Override
   public void calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente) {
-    Set<Fuente> fuentesColeccion = coleccion.getFuentes();
 
-    if (fuentesColeccion.size() < 2) {
-      System.out.println("Menos de dos fuentes, marcando todo como no consensuado");
+    Set<Fuente> fuentesAgregador = hechosPorFuente.keySet();
+    if (fuentesAgregador.size() < 2) {
+      System.out.println("Menos de dos fuentes en agregador, marcando todo como no consensuado");
       marcarTodosLosHechosComoNoConsensuados(coleccion);
       return;
     }
+    System.out.println("Coleccion=" + coleccion.getHandle()
+        + " | fuentes agregador=" + fuentesAgregador.size());
 
-    Map<String, List<Hecho>> hechosPorTitulo = new HashMap<>();
 
-    for (Fuente fuente : fuentesColeccion) {
-      List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, new ArrayList<>());
-      for (Hecho hecho : hechosDeFuente) {
-        if (!hecho.getFueEliminado()) {
-          hechosPorTitulo.computeIfAbsent(hecho.getTitulo(), h -> new ArrayList<>()).add(hecho);
+    Map<String, List<Hecho>> candidatosPorTitulo = new HashMap<>();
+    if (coleccion.getHechos() != null) {
+      for (Hecho h : coleccion.getHechos()) {
+        if (!h.getFueEliminado()) {
+          candidatosPorTitulo.computeIfAbsent(h.getTitulo(), k -> new ArrayList<>()).add(h);
         }
       }
     }
+    System.out.println("Titulos candidatos: " + candidatosPorTitulo.keySet());
 
-    for (Map.Entry<String, List<Hecho>> entry : hechosPorTitulo.entrySet()) {
+
+    for (Map.Entry<String, List<Hecho>> entry : candidatosPorTitulo.entrySet()) {
       String titulo = entry.getKey();
-      List<Hecho> hechosConMismoTitulo = entry.getValue();
+      List<Hecho> candidatos = entry.getValue();
 
-      boolean hayConsenso = verificarConsensoMultiplesMenciones(hechosConMismoTitulo);
+      // Mapa variante-> set de fuentes que tienen esa variante (variante = un contenido igual según esIgualContenido)
+      List<Hecho> todasLasVariantes = new ArrayList<>();
+      for (Fuente f : fuentesAgregador) {
+        List<Hecho> lista = hechosPorFuente.getOrDefault(f, Collections.emptyList());
+        // todas las variantes con ese título en esa fuente
+        List<Hecho> variantesEnFuente = lista.stream()
+            .filter(h -> !h.getFueEliminado() && titulo.equals(h.getTitulo()))
+            .collect(Collectors.toList());
+        todasLasVariantes.addAll(variantesEnFuente);
+      }
 
-      hechosConMismoTitulo.forEach(hecho -> hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MULTIPLES_MENCIONES, hayConsenso));
-    }
-  }
 
-  private boolean verificarConsensoMultiplesMenciones(List<Hecho> hechos) {
-    List<List<Hecho>> grupos = new ArrayList<>();
-
-    for (Hecho hecho : hechos) {
-      boolean agregado = false;
-      for (List<Hecho> grupo : grupos) {
-        if (!grupo.isEmpty() && grupo.get(0).esIgualContenido(hecho)) {
-          grupo.add(hecho);
-          agregado = true;
-          break;
+      List<List<Hecho>> gruposPorContenido = new ArrayList<>();
+      for (Hecho v : todasLasVariantes) {
+        boolean puesto = false;
+        for (List<Hecho> grupo : gruposPorContenido) {
+          if (!grupo.isEmpty() && grupo.get(0).esIgualContenido(v)) {
+            grupo.add(v);
+            puesto = true;
+            break;
+          }
+        }
+        if (!puesto) {
+          List<Hecho> nuevo = new ArrayList<>();
+          nuevo.add(v);
+          gruposPorContenido.add(nuevo);
         }
       }
-      if (!agregado) {
-        List<Hecho> nuevoGrupo = new ArrayList<>();
-        nuevoGrupo.add(hecho);
-        grupos.add(nuevoGrupo);
+
+      // Conteos por variante
+      List<Integer> counts = gruposPorContenido.stream()
+          .map(List::size).collect(Collectors.toList());
+      System.out.println(titulo + "' variantes=" + gruposPorContenido.size()
+          + " | counts=" + counts);
+
+
+      boolean hayConsenso = (gruposPorContenido.size() == 1) && (!gruposPorContenido.isEmpty())
+          && (gruposPorContenido.get(0).size() >= 2);
+
+
+      for (Hecho h : candidatos) {
+        h.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MULTIPLES_MENCIONES, hayConsenso);
       }
     }
-
-    // Hay consenso si solo hay un grupo y tiene al menos 2 hechos
-    if (grupos.size() == 1) {
-      return grupos.get(0).size() >= 2;
-    }
-
-    // Si hay múltiples variantes, no hay consenso
-    return false;
   }
-  /*@Override
-  public void calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente) {
-    Set<Fuente> fuentesColeccion = coleccion.getFuentes();
-
-    if (fuentesColeccion.size() < 2) {
-      marcarTodosLosHechosComoNoConsensuados(coleccion);
-      return;
-    }
-
-    Map<String, List<Hecho>> hechosPorTitulo = new HashMap<>();
-
-    for (Fuente fuente : fuentesColeccion) {
-      List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, new ArrayList<>());
-      for (Hecho hecho : hechosDeFuente) {
-        if (!hecho.isFueEliminado()) {
-          hechosPorTitulo.computeIfAbsent(hecho.getTitulo(), h -> new ArrayList<>()).add(hecho);
-        }
-      }
-    }
-
-    // Verificar consenso por múltiples menciones para cada grupo de hechos
-    for (Map.Entry<String, List<Hecho>> entry : hechosPorTitulo.entrySet()) {
-      String titulo = entry.getKey();
-      List<Hecho> hechosConMismoTitulo = entry.getValue();
-
-      boolean hayConsenso = verificarConsensoMultiplesMenciones(titulo, fuentesColeccion, hechosPorFuente);
-
-      // Marcar todos los hechos con este título según el resultado del consenso
-      hechosConMismoTitulo.forEach(hecho -> hecho.setConsensuado(hayConsenso));
-    }
-  }
-
-  private boolean verificarConsensoMultiplesMenciones(String titulo, Set<Fuente> fuentesColeccion, Map<Fuente, List<Hecho>> hechosPorFuente) {
-    Map<String, Set<Fuente>> fuentesPorContenido = new HashMap<>();
-
-    // Recopilar las fuentes que tienen cada variante del hecho
-    for (Fuente fuente : fuentesColeccion) {
-      List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, new ArrayList<>());
-
-      Hecho hechoEnFuente = hechosDeFuente.stream()
-          .filter(h -> titulo.equals(h.getTitulo()) && !h.isFueEliminado())
-          .findFirst()
-          .orElse(null);
-
-      if (hechoEnFuente != null) {
-        String claveContenido = generarClaveContenido(hechoEnFuente);
-        fuentesPorContenido.computeIfAbsent(claveContenido, h -> new HashSet<>()).add(fuente);
-      }
-    }
-
-    // Verificar la condición: al menos una variante debe tener 2+ fuentes y ninguna otra variante debe existir
-    if (fuentesPorContenido.size() == 1) {
-      // Solo hay una variante del hecho
-      Set<Fuente> fuentesConHecho = fuentesPorContenido.values().iterator().next();
-      return fuentesConHecho.size() >= 2;
-    } else if (fuentesPorContenido.size() > 1) {
-      // Hay múltiples variantes con diferente contenido, no hay consenso
-      return false;
-    }
-
-    return false; // No hay hechos con este título
-  }
-
-  /*private String generarClaveContenido(Hecho hecho) {
-    // Generar una clave única basada en el contenido del hecho
-    return String.format("%s|%s|%s|%s|%s",
-        hecho.getTitulo(),
-        hecho.getDescripcion(),
-        hecho.getCategoria() != null ? hecho.getCategoria().toString() : "null",
-        hecho.getUbicacion() != null ? hecho.getUbicacion().toString() : "null",
-        hecho.getFechaAcontecimiento() != null ? hecho.getFechaAcontecimiento().toString() : "null"
-    );
-  }*/
 
   private void marcarTodosLosHechosComoNoConsensuados(Coleccion coleccion) {
-    coleccion.getHechos().forEach(hecho -> hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MULTIPLES_MENCIONES,false));
+    coleccion.getHechos()
+        .forEach(h -> h.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MULTIPLES_MENCIONES, false));
   }
 
   @Override
@@ -157,3 +97,4 @@ public class ConsensoMultiplesMenciones implements IAlgoritmoDeConsenso {
     return TipoAlgoritmoDeConsenso.MULTIPLES_MENCIONES;
   }
 }
+

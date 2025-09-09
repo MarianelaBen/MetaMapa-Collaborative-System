@@ -12,10 +12,13 @@ import ar.utn.ba.ddsi.services.ICategoriaService;
 import ar.utn.ba.ddsi.services.IContenidoMultimediaService;
 import ar.utn.ba.ddsi.services.IHechoService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -83,13 +86,26 @@ public class HechoService implements IHechoService {
     HechoOutputDTO dto = new HechoOutputDTO();
     dto.setTitulo(hecho.getTitulo());
     dto.setDescripcion(hecho.getDescripcion());
-    dto.setNombreCategoria(hecho.getCategoria().getNombre());
+    dto.setCategoria(hecho.getCategoria().getNombre());
     dto.setUbicacion(ubicacionOutputDTO(hecho.getUbicacion()));
     dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     dto.setFechaCarga(hecho.getFechaCarga());
-    dto.setOrigen(hecho.getOrigen());       // extrae el id de cada etiqueta y los junta en un Set<Integer>
+    //dto.setOrigen(hecho.getOrigen());       // extrae el id de cada etiqueta y los junta en un Set<Integer>
     // dto.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
-    dto.setContribuyente(contribuyenteOutputDTO(hecho.getContribuyente()));
+    //dto.setContribuyente(contribuyenteOutputDTO(hecho.getContribuyente()));
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode extras = mapper.createObjectNode();
+
+    ObjectNode c = mapper.createObjectNode();
+    c.put("nombre", hecho.getContribuyente().getNombre());
+    c.put("apellido", hecho.getContribuyente().getApellido());
+    if (hecho.getContribuyente().getFechaDeNacimiento() != null) {
+      c.put("fechaDeNacimiento", hecho.getContribuyente().getFechaDeNacimiento().toString());
+    }
+    extras.set("contribuyente", c);
+
+    dto.setParticulares(extras);
+    dto.setEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
     dto.setPathContenidoMultimedia(hecho.getContenidosMultimedia().stream().map(ContenidoMultimedia::getPath).collect(Collectors.toList()));
     return dto;
   }
@@ -113,7 +129,7 @@ public class HechoService implements IHechoService {
 
   @Override
   public void eliminar(Long id) {
-    var hecho = this.hechoRepository.findById(id);
+    var hecho = this.hechoRepository.findById(id).orElse(null);
     if (hecho == null) {
       throw new NoSuchElementException("No se puede eliminar. Hecho no encontrado con ID: " + id);
     }
@@ -131,7 +147,7 @@ public class HechoService implements IHechoService {
 
   @Override
   public HechoOutputDTO permisoDeEdicion(Long idEditor, Long idHecho) {
-    Hecho hecho = this.hechoRepository.findById(idHecho);
+    Hecho hecho = this.hechoRepository.findById(idHecho).orElse(null);
     if (puedeEditar(idEditor, hecho.getContribuyente().getIdContribuyente(), hecho.getFechaCarga())) {
       return this.hechoOutputDTO(hecho);
     } else {
@@ -141,7 +157,7 @@ public class HechoService implements IHechoService {
 
   @Override
   public HechoOutputDTO edicion(Long idEditor, HechoInputDTO hechoInputDTO, Long idHecho) {
-    Hecho hecho = this.hechoRepository.findById(idHecho);
+    Hecho hecho = this.hechoRepository.findById(idHecho).orElse(null);
     HechoEstadoPrevio estadoPrevio = new HechoEstadoPrevio(hecho);
 
     Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
@@ -192,7 +208,7 @@ public class HechoService implements IHechoService {
 
     if (hecho.getContenidosMultimedia() != null) {
       hecho.getContenidosMultimedia().forEach(c ->
-          contenidoMultimediaRepository.delete(c.getIdContenidoMultimedia())
+          contenidoMultimediaRepository.delete(c)
       );
     }
     if (nuevoContenidoMultimedia != null) {
@@ -212,10 +228,11 @@ public class HechoService implements IHechoService {
         .stream()
         .map(this::hechoOutputDTO)
         .toList();
+
   }
 
   @Override
-  public void actualizarHecho(Hecho hecho, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento) {
+  public void actualizarHecho(Hecho hecho, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento) {
     hecho.setTitulo(titulo);
     hecho.setDescripcion(descripcion);
     hecho.setCategoria(categoria);

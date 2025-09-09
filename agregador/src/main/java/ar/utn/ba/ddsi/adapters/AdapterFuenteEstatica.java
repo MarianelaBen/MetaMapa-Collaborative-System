@@ -1,6 +1,11 @@
 package ar.utn.ba.ddsi.adapters;
 
+import ar.utn.ba.ddsi.models.dtos.input.HechoInputComunDTO;
+import ar.utn.ba.ddsi.models.entities.Categoria;
+import ar.utn.ba.ddsi.models.entities.Etiqueta;
 import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.Ubicacion;
+import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -18,11 +23,36 @@ public class AdapterFuenteEstatica {
   }
 
   public List<Hecho> obtenerHechos(String fuenteUrl) {
-    return webClient.get()
+    List<HechoInputComunDTO> hechosDTO = webClient.get()
         .uri(fuenteUrl)
         .retrieve()
-        .bodyToFlux(Hecho.class)
+        .bodyToFlux(HechoInputComunDTO.class)
         .collectList()
         .block();
+
+    if (hechosDTO == null) return List.of();
+    return hechosDTO.stream()
+        .map(this::mapToHecho)
+        .toList();
+  }
+
+  private Hecho mapToHecho(HechoInputComunDTO dto) {
+    Hecho hecho = new Hecho(
+        dto.getTitulo(),
+        dto.getDescripcion(),
+        new Categoria(dto.getCategoria()),
+        new Ubicacion(
+            dto.getUbicacion() != null ? dto.getUbicacion().getLatitud() : null,
+            dto.getUbicacion() != null ? dto.getUbicacion().getLongitud() : null
+        ),
+        dto.getFechaAcontecimiento(),
+        dto.getFechaCarga(),
+        Origen.PROVENIENTE_DE_DATASET,
+        null
+    );
+    hecho.setFueEliminado(Boolean.TRUE.equals(dto.getFueEliminado()));
+    if (dto.getEtiquetas() != null) dto.getEtiquetas().forEach(n -> hecho.agregarEtiqueta(new Etiqueta(n)));
+
+    return hecho;
   }
 }

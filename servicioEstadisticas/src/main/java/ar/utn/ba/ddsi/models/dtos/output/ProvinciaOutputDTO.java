@@ -7,9 +7,9 @@ import lombok.Setter;
 @Setter
 public class ProvinciaOutputDTO {
   private String provincia;
-  private Long cantidad;
+  private int cantidad;
 
-  public ProvinciaOutputDTO(String provincia, Long cantidad){
+  public ProvinciaOutputDTO(String provincia , int cantidad) {
     this.provincia = provincia;
     this.cantidad = cantidad;
   }

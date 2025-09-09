@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.algoritmos;
+/*package ar.utn.ba.ddsi.algoritmos;
 
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Fuente;
@@ -18,4 +18,4 @@ public abstract class AbstractaAlgoritmoDeConsenso {
    TipoAlgoritmoDeConsenso getTipo(){
      return null;
    }
-}
+}*/

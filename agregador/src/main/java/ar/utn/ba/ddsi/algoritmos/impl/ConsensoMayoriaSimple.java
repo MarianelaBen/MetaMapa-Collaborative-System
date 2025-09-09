@@ -7,123 +7,99 @@ import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
 
   @Override
   public void calcularConsenso(Coleccion coleccion, Map<Fuente, List<Hecho>> hechosPorFuente) {
-    Set<Fuente> fuentesColeccion = coleccion.getFuentes();
 
-    if (fuentesColeccion.isEmpty()) {
+    Set<Fuente> fuentesAgregador = hechosPorFuente.keySet();
+    if (fuentesAgregador.isEmpty()) {
       marcarTodosLosHechosComoNoConsensuados(coleccion);
       return;
     }
 
-    // Calcular la mayoría simple
-    int totalFuentes = fuentesColeccion.size();
-    int mayoriaRequerida = (totalFuentes / 2) + (totalFuentes % 2); // Redondeo para arriba
+    int totalFuentes = fuentesAgregador.size();
+    int mayoriaRequerida = (totalFuentes + 1) / 2; // ceil(N/2)
 
-    // Agrupar hechos por título
-    Map<String, List<Hecho>> hechosPorTitulo = new HashMap<>();
+    System.out.println("Colecion=" + coleccion.getHandle());
+    System.out.println("Total fuentes agregador: " + totalFuentes + ", mayoria requerida: " + mayoriaRequerida);
 
-    for (Fuente fuente : fuentesColeccion) {
-      List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, new ArrayList<>());
-      for (Hecho hecho : hechosDeFuente) {
-        if (!hecho.getFueEliminado()) {
-          hechosPorTitulo.computeIfAbsent(hecho.getTitulo(), k -> new ArrayList<>()).add(hecho);
+
+    Map<String, List<Hecho>> candidatosPorTitulo = new HashMap<>();
+    if (coleccion.getHechos() != null) {
+      for (Hecho h : coleccion.getHechos()) {
+        if (!h.getFueEliminado()) {
+          candidatosPorTitulo.computeIfAbsent(h.getTitulo(), k -> new ArrayList<>()).add(h);
         }
       }
     }
+    System.out.println("titulos candidatos: " + candidatosPorTitulo.keySet());
 
-    // Verificar consenso por mayoría simple para cada grupo de hechos
-    for (Map.Entry<String, List<Hecho>> entry : hechosPorTitulo.entrySet()) {
+
+    for (Map.Entry<String, List<Hecho>> entry : candidatosPorTitulo.entrySet()) {
       String titulo = entry.getKey();
-      List<Hecho> hechosConMismoTitulo = entry.getValue();
+      List<Hecho> candidatos = entry.getValue();
 
-      // Contar cuántas fuentes diferentes tienen este hecho
-      //Map<String, Integer> conteoHechosPorContenido = contarHechosPorContenido(titulo, fuentesColeccion, hechosPorFuente);
-      Map<Hecho, Integer> conteoHechosPorContenido = contarHechosPorContenido(titulo, fuentesColeccion, hechosPorFuente);
+      Map<Hecho, Integer> conteo = contarHechosPorContenido(titulo, fuentesAgregador, hechosPorFuente);
 
-      // Verificar si alguna variante del hecho alcanza la mayoría
-      boolean hayMayoria = conteoHechosPorContenido.values().stream()
-          .anyMatch(count -> count >= mayoriaRequerida);
+      List<Integer> counts = new ArrayList<>(conteo.values());
+      System.out.println("Conteo por variante par '" + titulo + "': " + counts);
 
-      // Marcar consenso solo para los hechos que alcancen la mayoría
+      boolean hayMayoria = conteo.values().stream().anyMatch(cnt -> cnt >= mayoriaRequerida);
+
       if (hayMayoria) {
-        marcarHechosConMayoria(hechosConMismoTitulo, conteoHechosPorContenido, mayoriaRequerida);
+        marcarHechosConMayoria(candidatos, conteo, mayoriaRequerida);
       } else {
-        hechosConMismoTitulo.forEach(hecho -> hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MAYORIA_SIMPLE,false));
+        candidatos.forEach(h -> h.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MAYORIA_SIMPLE, false));
       }
     }
   }
 
-  private Map<Hecho, Integer> contarHechosPorContenido(String titulo, Set<Fuente> fuentesColeccion, Map<Fuente, List<Hecho>> hechosPorFuente) {
-    //cambie string por hecho
-    //Map<String, Integer> conteo = new HashMap<>();
+
+  private Map<Hecho, Integer> contarHechosPorContenido(
+      String titulo,
+      Set<Fuente> fuentesAgregador,
+      Map<Fuente, List<Hecho>> hechosPorFuente
+  ) {
     Map<Hecho, Integer> conteo = new HashMap<>();
 
-    for (Fuente fuente : fuentesColeccion) {
-      List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, new ArrayList<>());
+    for (Fuente fuente : fuentesAgregador) {
+      List<Hecho> hechosDeFuente = hechosPorFuente.getOrDefault(fuente, Collections.emptyList());
 
-      // Buscar el hecho con este título en esta fuente
-      Hecho hechoEnFuente = hechosDeFuente.stream()
-          .filter(h -> titulo.equals(h.getTitulo()) && !h.getFueEliminado())
-          .findFirst()
-          .orElse(null);
+      List<Hecho> variantes = hechosDeFuente.stream()
+          .filter(h -> !h.getFueEliminado() && titulo.equals(h.getTitulo()))
+          .collect(Collectors.toList());
 
-      if (hechoEnFuente != null) {
-        Hecho hechoExistente = conteo.keySet().stream()
-            .filter(h -> h.esIgualContenido(hechoEnFuente))
+      for (Hecho variante : variantes) {
+        Hecho existente = conteo.keySet().stream()
+            .filter(h -> h.esIgualContenido(variante))
             .findFirst()
             .orElse(null);
-       /* String claveContenido = generarClaveContenido(hechoEnFuente);
-        conteo.put(claveContenido, conteo.getOrDefault(claveContenido, 0) + 1);*/
 
-        if (hechoExistente != null) {
-          // Ya existe un hecho con el mismo contenido, incrementar el contador
-          conteo.put(hechoExistente, conteo.get(hechoExistente) + 1);
+        if (existente != null) {
+          conteo.put(existente, conteo.get(existente) + 1);
         } else {
-          // Es un nuevo tipo de contenido, agregar con contador 1
-          conteo.put(hechoEnFuente, 1);
+          conteo.put(variante, 1);
         }
       }
     }
-
     return conteo;
   }
 
-  /*private String generarClaveContenido(Hecho hecho) {
-    // Generar una clave única basada en el contenido del hecho
-    return String.format("%s|%s|%s|%s|%s",
-        hecho.getTitulo(),
-        hecho.getDescripcion(),
-        hecho.getCategoria() != null ? hecho.getCategoria().toString() : "null",
-        hecho.getUbicacion() != null ? hecho.getUbicacion().toString() : "null",
-        hecho.getFechaAcontecimiento() != null ? hecho.getFechaAcontecimiento().toString() : "null"
-    );
-  }*/
-
-  private void marcarHechosConMayoria(List<Hecho> hechos, Map<Hecho, Integer> conteoHechosPorContenido, int mayoriaRequerida) {
-                                                            //cambie string por hecho
-    for (Hecho hecho : hechos) {
-      /*String claveContenido = generarClaveContenido(hecho);
-      int conteo = conteoHechosPorContenido.getOrDefault(claveContenido, 0);
-      hecho.setConsensuado(conteo >= mayoriaRequerida);*/
-      boolean tieneConsenso = conteoHechosPorContenido.entrySet().stream()
-          .anyMatch(entry -> entry.getKey().esIgualContenido(hecho) && entry.getValue() >= mayoriaRequerida);
-
-      hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MAYORIA_SIMPLE, tieneConsenso);
+  private void marcarHechosConMayoria(List<Hecho> hechos, Map<Hecho, Integer> conteo, int mayoriaRequerida) {
+    for (Hecho h : hechos) {
+      boolean tieneConsenso = conteo.entrySet().stream()
+          .anyMatch(e -> e.getKey().esIgualContenido(h) && e.getValue() >= mayoriaRequerida);
+      h.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MAYORIA_SIMPLE, tieneConsenso);
     }
   }
 
   private void marcarTodosLosHechosComoNoConsensuados(Coleccion coleccion) {
-    coleccion.getHechos().forEach(hecho -> hecho.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MAYORIA_SIMPLE,false));
+    coleccion.getHechos().forEach(h -> h.setConsensoParaAlgoritmo(TipoAlgoritmoDeConsenso.MAYORIA_SIMPLE, false));
   }
 
   @Override
@@ -131,4 +107,5 @@ public class ConsensoMayoriaSimple implements IAlgoritmoDeConsenso {
     return TipoAlgoritmoDeConsenso.MAYORIA_SIMPLE;
   }
 }
+
 

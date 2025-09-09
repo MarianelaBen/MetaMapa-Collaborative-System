@@ -4,7 +4,6 @@ import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
-import ar.utn.ba.ddsi.models.repositories.impl.HechoRepository;
 import ar.utn.ba.ddsi.services.IHechoService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
 import org.springframework.beans.factory.annotation.Autowired;
