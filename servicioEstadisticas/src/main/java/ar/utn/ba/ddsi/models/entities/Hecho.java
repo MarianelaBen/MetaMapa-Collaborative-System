@@ -45,14 +45,14 @@ public class Hecho {
   private Long id;
 
   @Column(name = "titulo", nullable = false)
-   private String titulo;
+  private String titulo;
 
   @Column(name = "descripcion", nullable = false)
-   private String descripcion;
+  private String descripcion;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "categoria_id", nullable = false)
-   private Categoria categoria;
+  private Categoria categoria;
 
   @Embedded
   private Ubicacion ubicacion;

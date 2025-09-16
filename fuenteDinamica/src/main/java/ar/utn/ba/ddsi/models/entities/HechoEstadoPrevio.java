@@ -42,6 +42,9 @@ public class HechoEstadoPrevio {
   @Column(name = "fecha_acontecimiento", nullable = false)
   private LocalDateTime fechaAcontecimiento;
 
+  @Column(name = "fecha_edicion", nullable = false )
+  private LocalDateTime fechaEdicion;
+
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "hecho_id")
   private List<ContenidoMultimedia> contenidosMultimedia;

@@ -52,6 +52,10 @@ public class Hecho {
       inverseJoinColumns = @JoinColumn(name = "etiqueta_id", referencedColumnName = "id"))
   private Set<Etiqueta> etiquetas;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn
+  private Ruta ruta;
+
   public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, Origen origen){
     this.titulo = titulo;
     this.descripcion = descripcion;

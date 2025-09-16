@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.models.entities.criterios;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
@@ -13,17 +14,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class CriterioFechaAcontecimiento extends Criterio{
 
-  @Column(name = "desde", nullable = false)
+  @Column(name = "fecha_acontecimiento_desde", nullable = false)
   private LocalDate desde;
 
-  @Column(name = "hasta", nullable = false)
+  @Column(name = "fecha_acontecimiento_hasta", nullable = false)
   private LocalDate hasta;
 
   public CriterioFechaAcontecimiento(LocalDate desde, LocalDate hasta){
     this.desde = desde;
     this.hasta = hasta;
   }
-
 
   @Override
   public boolean cumpleCriterio(Hecho hecho) {
