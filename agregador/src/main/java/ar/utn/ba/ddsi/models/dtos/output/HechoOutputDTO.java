@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
@@ -23,8 +24,7 @@ public class HechoOutputDTO {
   private Double latitud;
   private Double longitud;
   private String provincia;
-  private LocalDate fechaAcontecimiento;
-  private LocalTime horaAcontecimiento;
+  private LocalDateTime fechaAcontecimiento;
   private LocalDate fechaCarga;
   private Set<String> idEtiquetas;
   private List<String> idContenidoMultimedia;

@@ -178,6 +178,12 @@ public class AdminController {
 
   }
 
+
+  @PostMapping("/actualizar") //TODO PARA PRUEBAS BORRAR
+  public ResponseEntity<?> actualizarColecciones() {
+    coleccionService.actualizarColecciones();
+    return ResponseEntity.ok("ok");
+  }
 }
 
 

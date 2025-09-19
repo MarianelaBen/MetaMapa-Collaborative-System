@@ -69,7 +69,9 @@ public class HechoService implements IHechoService {
         hecho.setContenidosMultimedia(contenidosMultimedia);}
 
       // hecho.agregarEtiqueta(new Etiqueta("prueba"));  Mas adelante cambiar por DTO
-      hecho.setContribuyente(hechoInputDTO.getContribuyente());
+      if(hechoInputDTO.getContribuyente() != null) {
+        hecho.setContribuyente(hechoInputDTO.getContribuyente());
+      }
 
       this.hechoRepository.save(hecho);
       this.solicitudService.create(hecho, TipoSolicitud.CREACION);
@@ -100,13 +102,15 @@ public class HechoService implements IHechoService {
       extras.put("fechaActualizacion", hecho.getFechaActualizacion().toString());
     }
 
-    ObjectNode c = mapper.createObjectNode();
-    c.put("nombre", hecho.getContribuyente().getNombre());
-    c.put("apellido", hecho.getContribuyente().getApellido());
-    if (hecho.getContribuyente().getFechaDeNacimiento() != null) {
-      c.put("fechaDeNacimiento", hecho.getContribuyente().getFechaDeNacimiento().toString());
+    if (hecho.getContribuyente() != null) {
+      ObjectNode c = mapper.createObjectNode();
+      c.put("nombre", hecho.getContribuyente().getNombre());
+      c.put("apellido", hecho.getContribuyente().getApellido());
+      if (hecho.getContribuyente().getFechaDeNacimiento() != null) {
+        c.put("fechaDeNacimiento", hecho.getContribuyente().getFechaDeNacimiento().toString());
+      }
+      extras.set("contribuyente", c);
     }
-    extras.set("contribuyente", c);
 
     dto.setParticulares(extras);
     dto.setEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
@@ -137,7 +141,8 @@ public class HechoService implements IHechoService {
     if (hecho == null) {
       throw new NoSuchElementException("No se puede eliminar. Hecho no encontrado con ID: " + id);
     }
-      this.hechoRepository.delete(hecho);
+      hecho.setFueEliminado(true);
+      this.hechoRepository.save(hecho);
   }
 
   @Override

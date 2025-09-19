@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.models.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
@@ -52,14 +53,10 @@ public class Hecho {
   private Ubicacion ubicacion;
 
   @Column(name = "fecha_acontecimiento", nullable = false)
-  private LocalDate fechaAcontecimiento;
+  private LocalDateTime fechaAcontecimiento;
 
   @Column(name = "fecha_carga", nullable = false)
   private java.time.LocalDate fechaCarga;
-
-  //nuevo
-  @Column(name = "hora_acontecimiento", nullable = false)
-   private LocalTime horaAcontecimiento;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "origen")
@@ -105,7 +102,7 @@ public class Hecho {
   // private String apellidoAportante;
   // private Integer edadAportante;
 
-  public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDate fechaAcontecimiento, LocalDate fechaCarga , Origen origen, String fuenteExterna){
+  public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento, LocalDate fechaCarga , Origen origen, String fuenteExterna){
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;

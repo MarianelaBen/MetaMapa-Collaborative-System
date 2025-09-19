@@ -84,7 +84,7 @@ public class Hecho {
   @OneToOne(mappedBy = "hecho", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
   private HechoEstadoPrevio estadoPrevio;
 
-  @Column(name = "fecha_actualizacion", nullable = false)
+  @Column(name = "fecha_actualizacion")
   private LocalDate fechaActualizacion;
 
   public Hecho(String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento, Origen origen){

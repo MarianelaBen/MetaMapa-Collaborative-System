@@ -34,7 +34,6 @@ public class HechoInputDTO {
     @Schema(description = "Fecha en que sucedio", example = "AAAA-MM-DD")
     @NotNull
     private LocalDateTime fechaAcontecimiento;
-    @NotNull
     private Contribuyente contribuyente;
     @Schema(description = "Fotos o videos sobre el hecho", example = "Inserte o arrastre una foto/video")
     private List<String> pathsMultimedia;

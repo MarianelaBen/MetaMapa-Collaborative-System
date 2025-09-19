@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.controllers;
 
+import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Categoria;
@@ -190,5 +191,4 @@ public class AgregadorController {
           .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
     }
   }
-
 }

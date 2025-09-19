@@ -7,6 +7,7 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -15,12 +16,12 @@ import java.time.LocalDate;
 public class CriterioFechaAcontecimiento extends Criterio{
 
   @Column(name = "fecha_acontecimiento_desde", nullable = false)
-  private LocalDate desde;
+  private LocalDateTime desde;
 
   @Column(name = "fecha_acontecimiento_hasta", nullable = false)
-  private LocalDate hasta;
+  private LocalDateTime hasta;
 
-  public CriterioFechaAcontecimiento(LocalDate desde, LocalDate hasta){
+  public CriterioFechaAcontecimiento(LocalDateTime desde, LocalDateTime hasta){
     this.desde = desde;
     this.hasta = hasta;
   }

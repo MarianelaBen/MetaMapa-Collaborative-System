@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class HechoInputComunDTO {
   private String descripcion;
   private String categoria;
   private UbicacionInputDTO ubicacion;
-  private LocalDate fechaAcontecimiento;
+  private LocalDateTime fechaAcontecimiento;
   private LocalDate fechaCarga;
   private String fuente;
   private Boolean fueEliminado;
