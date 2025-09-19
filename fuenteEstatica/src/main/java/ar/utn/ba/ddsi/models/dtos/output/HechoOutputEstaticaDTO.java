@@ -1,6 +1,8 @@
 package ar.utn.ba.ddsi.models.dtos.output;
 
+import ar.utn.ba.ddsi.models.entities.Ruta;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.time.LocalDate;
@@ -21,9 +23,9 @@ public class HechoOutputEstaticaDTO {
   @NotNull
   private LocalDate fechaCarga;
   @NotNull
-  private Origen origen;
-  @NotNull
   private boolean fueEliminado;
   @NotNull
   private Set<String> etiquetas;
+
+  private JsonNode particulares;
 }

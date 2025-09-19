@@ -9,6 +9,8 @@ import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.models.repositories.IRutasRepository;
 import ar.utn.ba.ddsi.services.IFuenteEstaticaService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,7 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
             Origen.PROVENIENTE_DE_DATASET
         );
 
+        hechoACargar.setRuta(ruta);
         this.hechoRepository.save(hechoACargar);
       }
     } catch (IOException | CsvValidationException e) {
@@ -92,7 +95,14 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
     dto.setUbicacion(ubicacionOutputDTO(hecho.getUbicacion()));
     dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     dto.setFechaCarga(hecho.getFechaCarga());
-    dto.setOrigen(hecho.getOrigen());
+
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode extras = mapper.createObjectNode();
+    if (hecho.getRuta() != null && hecho.getRuta().getNombre() != null) {
+      extras.put("rutaNombre", hecho.getRuta().getNombre());
+    }
+    dto.setParticulares(extras);
+
     dto.setEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
     return dto;
   }

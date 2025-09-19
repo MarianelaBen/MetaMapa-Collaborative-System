@@ -95,6 +95,12 @@ public class Hecho {
   @Column(name = "path_multimedia")
    private List<String> pathMultimedia = new ArrayList<>(); //mismo
 
+  @Column(name = "rutaNombre", nullable = true)
+   private String rutaNombre;
+
+  @Column(name = "fechaActualizacion", nullable = true)
+   private LocalDate fechaActualizacion;
+
   // private String nombreAportante;
   // private String apellidoAportante;
   // private Integer edadAportante;

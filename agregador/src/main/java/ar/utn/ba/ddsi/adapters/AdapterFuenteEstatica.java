@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.models.entities.Etiqueta;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -53,6 +54,20 @@ public class AdapterFuenteEstatica {
     hecho.setFueEliminado(Boolean.TRUE.equals(dto.getFueEliminado()));
     if (dto.getEtiquetas() != null) dto.getEtiquetas().forEach(n -> hecho.agregarEtiqueta(new Etiqueta(n)));
 
+    JsonNode p = dto.getParticulares();
+    if (p != null) {
+      String rutaNombre = textOrNull(p, "rutaNombre");
+      if (rutaNombre != null && !rutaNombre.isBlank()) {
+        hecho.setRutaNombre(rutaNombre);  // suponiendo que agregaste campo String rutaNombre en Hecho
+      }
+    }
+
     return hecho;
+  }
+
+  private static String textOrNull(JsonNode node, String field) {
+    if (node == null) return null;
+    JsonNode v = node.path(field);
+    return (v.isMissingNode() || v.isNull()) ? null : v.asText();
   }
 }

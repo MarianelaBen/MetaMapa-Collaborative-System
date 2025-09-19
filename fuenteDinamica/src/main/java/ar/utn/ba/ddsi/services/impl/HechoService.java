@@ -96,6 +96,10 @@ public class HechoService implements IHechoService {
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode extras = mapper.createObjectNode();
 
+    if (hecho.getFechaActualizacion() != null) {
+      extras.put("fechaActualizacion", hecho.getFechaActualizacion().toString());
+    }
+
     ObjectNode c = mapper.createObjectNode();
     c.put("nombre", hecho.getContribuyente().getNombre());
     c.put("apellido", hecho.getContribuyente().getApellido());

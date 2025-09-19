@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,6 +74,11 @@ public class AdapterFuenteDinamica {
           hecho.setContribuyente(contribuyente);
         }
 
+        LocalDate fechaActualizacion = dateOrNull(particulares, "fechaActualizacion");
+        if (fechaActualizacion != null) {
+          hecho.setFechaActualizacion(fechaActualizacion);
+        }
+
         JsonNode paths = particulares.path("pathContenidoMultimedia");
         if (paths.isArray()) {
           List<String> list = new ArrayList<>();
@@ -100,3 +106,5 @@ public class AdapterFuenteDinamica {
     }
   }
 }
+
+
