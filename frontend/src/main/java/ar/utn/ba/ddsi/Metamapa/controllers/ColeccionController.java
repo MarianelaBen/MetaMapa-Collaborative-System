@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-@RequestMapping("colecciones")
+@RequestMapping("/colecciones")
 @RequiredArgsConstructor
 public class ColeccionController {
   private final ColeccionService coleccionService;
