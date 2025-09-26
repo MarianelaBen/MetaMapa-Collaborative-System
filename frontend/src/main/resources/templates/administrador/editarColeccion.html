@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nueva Colección - MetaMapa</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="crearColeccion.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-p8f1X+zvN0..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+</head>
+<body>
+<!-- Header Principal -->
+<header class="main-header main-header--admin">
+    <a class="logo" href="/landing/landing.html" aria-label="Ir al inicio">🌍 MetaMapa</a>
+    <div class="header-admin-info">
+        <div class="header-actions">
+            <button class="btn-notification">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count">3</span>
+            </button>
+            <div class="user-menu">
+                <i class="fas fa-user-circle"></i>
+                <span>Administrador</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="admin-main">
+    <div class="page-header">
+        <div class="breadcrumb">
+            <a href="panelControl.html">Panel Principal</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Editar Colección</span>
+        </div>
+        <h1>Editar Colección</h1>
+    </div>
+
+    <!-- Form Container -->
+    <div class="form-container">
+        <form id="crearColeccionForm" class="collection-form">
+            <!-- Información General -->
+            <section class="form-section">
+                <h2 class="section-title">Información General</h2>
+
+                <div class="form-group">
+                    <label for="titulo" class="form-label">Título de la Colección</label>
+                    <input type="text" id="titulo" name="titulo" class="form-input"
+                           value="Puntos Críticos de Biodiversidad Global"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" class="form-textarea"
+                              rows="4"
+                              placeholder="Descripción detallada de la colección...">
+Los Puntos Críticos de Biodiversidad Global se caracterizan por su alto valor ecológico, su vulnerabilidad frente a la actividad humana y su importancia para la conservación de ecosistemas clave. Aquí se centralizan datos de organismos internacionales, ONGs y fuentes científicas que permiten identificar, monitorear y proteger estos territorios prioritarios.
+                    </textarea>
+                </div>
+
+            </section>
+
+            <!-- Fuentes y Criterios -->
+            <section class="form-section">
+                <h2 class="section-title">Fuentes y Criterios</h2>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">Fuentes</h3>
+                    <div id="fuentes-container">
+                        <!-- fila de fuente -->
+                        <div class="dynamic-field">
+                            <div class="form-row fuentes-row">
+                                <div class="form-group">
+                                    <select class="form-select fact-category" type="button" name="tipoFuente[]">
+                                        <option selected>ESTÁTICA</option>
+                                        <option value="DINAMICA">DINÁMICA</option>
+                                        <option value="PROXY">PROXY</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">Criterios</h3>
+                    <div id="criterios-container">
+                        <div class="dynamic-field">
+                            <div class="field-group">
+                                <input type="text" name="criterios[]" class="form-input"
+                                       value="Biodiversidad"
+                                       placeholder="Criterios de pertenencia">
+                                <button type="button" class="btn-remove-field">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="btnAddCriterio" class="btn-add-field">
+                        <i class="fas fa-plus"></i>
+                        Añadir Criterios
+                    </button>
+                </div>
+
+            </section>
+
+            <!-- Configuración Adicional -->
+            <section class="form-section">
+                <h2 class="section-title">Configuración Adicional</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="privacidad" class="form-label">Nivel de Privacidad</label>
+                        <select id="privacidad" name="privacidad" class="form-select">
+                            <option value="publico">Público</option>
+                            <option value="privado">Privado</option>
+                            <option value="restringido">Restringido</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="consenso" class="form-label">Algoritmo de Consenso</label>
+                        <select id="consenso" name="consenso" class="form-select">
+                            <option value="basico">Absoluta</option>
+                            <option value="avanzado">Mayoria Simple</option>
+                            <option value="manual">Multiples Menciones</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="checkbox-section">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="activa" name="activa" class="form-checkbox">
+                        <label for="activa" class="checkbox-label">Activar colección inmediatamente</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="notificaciones" name="notificaciones" class="form-checkbox">
+                        <label for="notificaciones" class="checkbox-label">Habilitar notificaciones para nuevos hechos</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="panelControl.html" class="btn-cancel">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </a>
+                <a href="panelControl.html" class="btn-draft">
+                    <i class="fas fa-save"></i>
+                    Guardar como Borrador
+                </a>
+                <a href="panelControl.html" class="btn-create">
+                    <i class="fas fa-check"></i>
+                    Guardar Cambios
+                </a>
+            </div>
+
+        </form>
+    </div>
+</main>
+</div>
+
+
+<footer class="site-footer">
+    <div class="footer-container">
+        <!-- Columna 1 -->
+        <div class="footer-col">
+            <h4>Información</h4>
+            <ul>
+                <li><a href="../landing/privacidad.html">Información Legal & Privacidad</a></li>
+                <li><a href="#">Preguntas Frecuentes</a></li>
+            </ul>
+        </div>
+
+        <!-- Columna 2 -->
+        <div class="footer-col">
+            <h4>Contacto</h4>
+            <ul class="contact-list">
+                <li><i class="fa-regular fa-envelope"></i>
+                    <a href="mailto:info@metamapa.com">info@metamapa.com</a>
+                </li>
+                <li><i class="fa-solid fa-phone"></i>
+                    <a href="tel:+1234567890">+11 3456 7890</a>
+                </li>
+                <li class="muted">Horario: Lunes - Viernes, 9:00 - 17:00</li>
+            </ul>
+        </div>
+
+        <!-- Columna 3 -->
+        <div class="footer-col">
+            <h4>Seguinos</h4>
+            <div class="socials">
+                <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            </div>
+        </div>
+
+        <!-- Columna 4 -->
+        <div class="footer-col">
+            <h4>MetaMapa</h4>
+            <p class="about">Ofreciendo soluciones innovadoras para un futuro conectado.</p>
+            <p class="muted">© 2025 MetaMapa. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
