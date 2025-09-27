@@ -1,5 +1,7 @@
 <html th:replace="~{layout/base :: html}" xmlns:th="http://www.thymeleaf.org">
-
+    <div th:fragment="css">
+        <link rel="stylesheet" th:href="@{/css/exploradorColecciones.css}" />
+    </div>
     <div th:fragment="contenido">
         <div class="page-header">
             <h1 class="page-title" th:text="${titulo}">Colecciones</h1>

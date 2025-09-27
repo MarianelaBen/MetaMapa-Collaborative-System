@@ -12,10 +12,9 @@
 
     <link rel="stylesheet" th:href="@{/css/base.css}" />
     <link rel="stylesheet" th:href="@{/css/header.css}" />
-    <link rel="stylesheet" th:href="@{/css/exploradorColecciones.css}" />
-    <link rel="stylesheet" th:href="@{/css/detalleColeccion.css}" />
+    <link rel="stylesheet" th:href="@{/css/footer.css}" />
     <link rel="stylesheet" th:href="@{/css/landing.css}" />
-
+    <div th:replace="${css} :: css"></div>
 </head>
 <body>
 
@@ -31,7 +30,7 @@
     </nav>
 </header>
 
-<main class="container my-4 flex-grow-1">
+<main>
     <div th:replace="${contenido} :: contenido"></div>
 </main>
 

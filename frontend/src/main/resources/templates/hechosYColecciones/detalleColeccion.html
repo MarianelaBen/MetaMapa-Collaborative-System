@@ -1,5 +1,8 @@
 <html th:replace="~{layout/base :: html}" xmlns:th="http://www.thymeleaf.org">
 
+        <div th:fragment="css">
+            <link rel="stylesheet" th:href="@{/css/detalleColeccion.css}" />
+        </div>
         <div class="container" th:fragment="contenido">
             <div class="breadcrumb">
                 <a th:href="@{/inicio}">Inicio </a> › <a th:href="@{/colecciones}"> Colecciones </a> › <p th:text = ${coleccion.titulo}></p>

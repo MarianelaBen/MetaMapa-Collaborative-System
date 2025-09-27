@@ -1,6 +1,10 @@
 <html th:replace="~{layout/base :: html}" xmlns:th="http://www.thymeleaf.org">
 
-<main th:fragment="contenido">
+<div th:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/landing.css}" />
+</div>
+
+<div th:fragment="contenido">
     <div class="landing-banner">
         <h1 class="landing-title">Potenciá el Poder de los <br> Datos Geográficos</h1>
         <h5 class="landing-subtitle">MetaMapa le permite organizar, analizar y visualizar <br>
@@ -416,7 +420,7 @@
           })
         */
     </script>
-</main>
+</div>
 
     <script src="/js/include-footer.js" defer></script>
 </body>
