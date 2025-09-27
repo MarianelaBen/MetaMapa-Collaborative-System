@@ -32,7 +32,7 @@ public class ColeccionController {
     return Arrays.asList(
         new ColeccionDTO(
             "Incendios forestales en Argentina 2025",
-            "Monitoreo de incendios forestales ocurridos durante el año 2025 en territorio argentino. Datos actualizados desde múltiples fuentes oficiales y reportes ciudadanos. · 892 hechos · Última actualización: hace 30 minutos",
+            "Monitoreo de incendios forestales ocurridos durante el año 2025 en territorio argentino. Datos actualizados desde múltiples fuentes oficiales y reportes ciudadanos.",
             Arrays.asList(
                 new HechoDTO("IF-001", "Incendio en provincia A"),
                 new HechoDTO("IF-002", "Incendio en provincia B")
@@ -41,7 +41,7 @@ public class ColeccionController {
 
         new ColeccionDTO(
             "Desapariciones vinculadas a crímenes de odio",
-            "Registro de casos de desapariciones forzadas relacionadas con crímenes de odio en Argentina. Incluye información sobre víctimas, fechas y ubicaciones de los últimos reportes. · 1,247 hechos · Última actualización: hace 2 horas",
+            "Registro de casos de desapariciones forzadas relacionadas con crímenes de odio en Argentina. Incluye información sobre víctimas, fechas y ubicaciones de los últimos reportes.",
             Arrays.asList(
                 new HechoDTO("DV-001", "Desaparición - caso 1"),
                 new HechoDTO("DV-002", "Desaparición - caso 2")
@@ -50,7 +50,7 @@ public class ColeccionController {
 
         new ColeccionDTO(
             "Víctimas de muertes viales en Argentina",
-            "Base de datos de accidentes de tránsito fatales en rutas y calles de Argentina. Información recopilada para análisis de seguridad vial y prevención. · 3,456 hechos · Última actualización: hace 1 día",
+            "Base de datos de accidentes de tránsito fatales en rutas y calles de Argentina. Información recopilada para análisis de seguridad vial y prevención.",
             Arrays.asList(
                 new HechoDTO("MV-001", "Accidente - ruta X"),
                 new HechoDTO("MV-002", "Accidente - calle Y")
@@ -59,7 +59,7 @@ public class ColeccionController {
 
         new ColeccionDTO(
             "Desastres Naturales",
-            "Registro histórico de eventos climáticos extremos, terremotos, inundaciones y otros desastres naturales que han afectado la región. · 678 hechos · Última actualización: hace 3 horas",
+            "Registro histórico de eventos climáticos extremos, terremotos, inundaciones y otros desastres naturales que han afectado la región.",
             Arrays.asList(
                 new HechoDTO("DN-001", "Inundación - zona 1"),
                 new HechoDTO("DN-002", "Terremoto - localidad 2")
@@ -68,7 +68,7 @@ public class ColeccionController {
 
         new ColeccionDTO(
             "Personas asesinadas por el estado",
-            "Documentación de casos de violencia institucional y abusos por parte de fuerzas de seguridad en Argentina. · 234 hechos · Última actualización: hace 5 horas",
+            "Documentación de casos de violencia institucional y abusos por parte de fuerzas de seguridad en Argentina.",
             Arrays.asList(
                 new HechoDTO("PAE-001", "Caso institucional 1"),
                 new HechoDTO("PAE-002", "Caso institucional 2")
@@ -77,7 +77,7 @@ public class ColeccionController {
 
         new ColeccionDTO(
             "Incendios forestales en España",
-            "Datos sobre incendios forestales en territorio español, integrados desde fuentes oficiales europeas para análisis comparativo regional. · 445 hechos · Última actualización: hace 2 días",
+            "Datos sobre incendios forestales en territorio español, integrados desde fuentes oficiales europeas para análisis comparativo regional.",
             Arrays.asList(
                 new HechoDTO("IF-ES-001", "Incendio - región ES1"),
                 new HechoDTO("IF-ES-002", "Incendio - región ES2")

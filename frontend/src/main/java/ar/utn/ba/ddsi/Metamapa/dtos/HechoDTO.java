@@ -1,7 +1,11 @@
 package ar.utn.ba.ddsi.Metamapa.dtos;
 
 
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class HechoDTO {
   private String id;
   private String titulo;
