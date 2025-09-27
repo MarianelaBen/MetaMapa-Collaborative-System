@@ -28,6 +28,7 @@ public class LandingController {
         new ColeccionDTO(
             "Incendios forestales en Argentina 2025",
             "Monitoreo de incendios forestales ocurridos durante el año 2025 en territorio argentino. Datos actualizados desde múltiples fuentes oficiales y reportes ciudadanos.",
+            "8",
             Arrays.asList(
                 new HechoDTO(
                     "Incendio forestal activo en Parque Nacional Los Glaciares",
@@ -49,6 +50,7 @@ public class LandingController {
         new ColeccionDTO(
             "Desapariciones vinculadas a crímenes de odio",
             "Registro de casos de desapariciones forzadas relacionadas con crímenes de odio en Argentina. Incluye información sobre víctimas, fechas y ubicaciones de los últimos reportes.",
+            "9",
             Arrays.asList(
                 new HechoDTO(
                     "Accidente múltiple en Ruta Nacional 9",
@@ -70,6 +72,7 @@ public class LandingController {
         new ColeccionDTO(
             "Víctimas de muertes viales en Argentina",
             "Base de datos de accidentes de tránsito fatales en rutas y calles de Argentina. Información recopilada para análisis de seguridad vial y prevención.",
+            "10",
             Arrays.asList(
                 new HechoDTO(
                     "Inundaciones en barrios del Delta del Paraná",

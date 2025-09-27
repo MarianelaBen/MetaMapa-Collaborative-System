@@ -20,7 +20,7 @@
                     <span th:text="${coleccion.hechos.size()}">0</span>
                 </div>
                 <div class="collection-actions">
-                    <a class="btn btn-ver-hechos">Ver Hechos</a>
+                    <a class="btn btn-ver-hechos" th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}">Ver Hechos</a>
                     <a class="btn btn-secondary">Ver en Mapa</a>
                 </div>
             </div>
