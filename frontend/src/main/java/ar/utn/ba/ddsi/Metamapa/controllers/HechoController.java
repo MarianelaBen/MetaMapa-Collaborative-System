@@ -21,18 +21,31 @@ import java.util.List;
 public class HechoController {
   private final HechoService hechoService;
 
-  @GetMapping
-  public String listarHechos(Model model){
-    List<HechoDTO> hechos = this.generarHechosEjemplo(); // TODO se obtiene de hechoService
-    model.addAttribute("hechos", hechos);
-    model.addAttribute("titulo", hechos.get(0).getTitulo());
-    model.addAttribute("descripcion", hechos.get(0).getDescripcion());
-    model.addAttribute("totalHecos", hechos.size());
-    return "hechosYColecciones/detalleHecho";
+  @GetMapping("/{id}")
+  public String verDetalleHecho(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes){
+    try{
+      HechoDTO hecho =
+          new HechoDTO(
+              "Incendio forestal activo en Parque Nacional Los Glaciares",
+              "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",
+              "Incendio forestal",
+              LocalDateTime.of(2025, 8, 12, 9, 15),
+              "Santa Cruz"
+          );
+          model.addAttribute("hecho", hecho);
+          model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
 
+      return "hechosYColecciones/detalleHecho";
+    }
+    catch(NotFoundException ex){
+      redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+      return "redirect:/404";
+    }
   }
+}
 
-  public static List<HechoDTO> generarHechosEjemplo(){
+  /*
+  public static List<HechoDTO> generarHechoEjemplo(){
     return Arrays.asList(
     new HechoDTO(
         "Incendio forestal activo en Parque Nacional Los Glaciares",
@@ -48,8 +61,9 @@ public class HechoController {
             LocalDateTime.of(2025, 8, 15, 16, 40),
             "Santa Fe"
         )
-    )
+    );
 
   }
 
 }
+*/

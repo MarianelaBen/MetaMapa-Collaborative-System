@@ -34,7 +34,7 @@ public class ColeccionController {
   @GetMapping("/{handle}")
   public String verDetalleColeccion(Model model, @PathVariable String handle, RedirectAttributes redirectAttributes){
     try{
-      ColeccionDTO coleccion =         new ColeccionDTO(
+      ColeccionDTO coleccion =        new ColeccionDTO(
                                       "Incendios forestales en Argentina 2025",
                                       "Monitoreo de incendios forestales ocurridos durante el año 2025 en territorio argentino. Datos actualizados desde múltiples fuentes oficiales y reportes ciudadanos.",
                                       "1",

@@ -1,11 +1,11 @@
-<html th:replace="~{layout/base :: html}" xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{layout/base :: layout}" xmlns:th="http://www.thymeleaf.org">
 
-        <div th:fragment="css">
+<div th:fragment="css">
             <link rel="stylesheet" th:href="@{/css/detalleColeccion.css}" />
         </div>
         <div class="container" th:fragment="contenido">
             <div class="breadcrumb">
-                <a th:href="@{/inicio}">Inicio </a> › <a th:href="@{/colecciones}"> Colecciones </a> › <p th:text = ${coleccion.titulo}></p>
+                <a th:href="@{/inicio}">Inicio </a> › <a th:href="@{/colecciones}"> Colecciones </a> › <p th:text ="${coleccion.titulo}"></p>
             </div>
 
             <div class="collection-header">
@@ -105,9 +105,10 @@
                     </div>
 
                     <div class="hecho-actions">
-                        <button class="btn btn-principal">Ver Detalles</button>
-                        <button class="btn btn-secondary">Solicitar Eliminación</button>
+                        <a class="btn btn-principal" th:href="@{/hechos/1}">Ver Detalles</a>
+                        <button class="btn btn-secondary">Solicitar Eliminación</button> //TODO CAMBIAR ACA PARA QUE LLEVE AL FORM DE ELIMINACION PERO NO SE PUEDE SI LOS HECHOS NO TIENEN ID
                     </div>
+
                 </div>
 
             </div>
