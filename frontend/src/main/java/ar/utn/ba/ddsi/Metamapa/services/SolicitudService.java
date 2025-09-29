@@ -5,7 +5,7 @@ import java.util.UUID;
 
 @Service
 public class SolicitudService {
-  public String crearSolicitudEliminacion(String hechoId, String justificacion) { //TODO POR AHORA AHARDCODEADO DSP CONECTAR CONM BACK
+  public String crearSolicitudEliminacion(Long hechoId, String justificacion) { //TODO POR AHORA AHARDCODEADO DSP CONECTAR CONM BACK
     String shortId = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     return "SOL-" + shortId;
   }

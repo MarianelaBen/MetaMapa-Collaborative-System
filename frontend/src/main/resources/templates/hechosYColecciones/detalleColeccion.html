@@ -93,7 +93,8 @@
 
             <div class="hechos-grid">
 
-                <div class="hecho-card" th:each="hecho : ${coleccion.hechos}">
+                <!--//TODO CAMBIAR, AHORA ESTA UN METODO PARA ITERAR QUE ENCONTRE CON LOS HECHOS, PERO EN REALIDAD NECESITAMOS UN ID EN HECHO PARA ASOCIAR LA SOLICITUD AL ID, ENTRE OTRAS COSAS-->
+                <!--<div class="hecho-card" th:each="hecho : ${coleccion.hechos}">
                     <h3 class="hecho-title" th:text="${hecho.titulo}"></h3>
                     <div class="hecho-category" th:text="${hecho.categoria}"></div>
                     <p class="hecho-description" th:text="${hecho.descripcion}"></p>
@@ -104,15 +105,40 @@
                         <div><strong>Coordenadas:</strong> -50.2938, -73.0138</div>
                     </div>
 
+
                     <div class="hecho-actions">
                         <a class="btn btn-principal" th:href="@{/hechos/1}">Ver Detalles</a>
-                        <button class="btn btn-secondary">Solicitar Eliminación</button> //TODO CAMBIAR ACA PARA QUE LLEVE AL FORM DE ELIMINACION PERO NO SE PUEDE SI LOS HECHOS NO TIENEN ID
+                        <button class="btn btn-secondary">Solicitar Eliminación</button>
+                    </div> -->
+                    <div class="hecho-card" th:each="hecho, iter : ${coleccion.hechos}">
+                        <h3 class="hecho-title" th:text="${hecho.titulo}"></h3>
+                        <div class="hecho-category" th:text="${hecho.categoria}"></div>
+                        <p class="hecho-description" th:text="${hecho.descripcion}"></p>
+
+                        <div class="hecho-meta">
+                            <div th:text="${hecho.fechaAcontecimiento}">
+                                <strong>Fecha del hecho:</strong> 12/08/2025
+                            </div>
+                            <div th:text="${hecho.fechaCarga}">
+                                <strong>Reportado:</strong> 13/08/2025
+                            </div>
+                            <div th:text="${hecho.provincia}">
+                                <strong>Ubicación:</strong> Santa Cruz, Argentina
+                            </div>
+                            <div><strong>Coordenadas:</strong> -50.2938, -73.0138</div>
+                        </div>
+
+                        <div class="hecho-actions">
+                            <a class="btn btn-principal"
+                               th:href="@{/hechos/{id}(id=${iter.count})}">
+                                Ver Detalles
+                            </a>
+                            <a class="btn btn-secondary"
+                               th:href="@{/hechos/{id}/solicitudes/eliminacion/nueva(id=${iter.count})}">
+                                Solicitar Eliminación
+                            </a>
+                        </div>
                     </div>
-
                 </div>
-
-            </div>
         </div>
-
-
 </html>

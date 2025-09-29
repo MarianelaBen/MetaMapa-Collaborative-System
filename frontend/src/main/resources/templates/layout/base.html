@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> <!--TODO CHEQUEAR QUE ESTA FALTANDO EL RECIBIR LOS APRAMETROS QUE SE LE MANDAN EN LA PARTE DE <div th:replace="${contenido} :: contenido"></div>-->
 <html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="layout">
 <head>
     <title th:text="${titulo}"></title>
@@ -16,6 +16,17 @@
     <link rel="stylesheet" th:href="@{/css/landing.css}" />
     <div th:replace="${css} :: css"></div>
 </head>
+
+<!--Para los popups-->
+<script th:if="${mensaje}">
+    document.addEventListener('DOMContentLoaded', function () {
+        var el = document.getElementById('flashToast');
+        if (el && window.bootstrap && bootstrap.Toast) {
+            new bootstrap.Toast(el, { delay: 4000 }).show();
+        }
+    });
+</script>
+
 <body>
 
 <header class="main-header --public">
@@ -34,6 +45,19 @@
     <div th:replace="${contenido} :: contenido"></div>
 </main>
 
+<!-- Para popups -->
+<div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index:1100;"
+     th:if="${mensaje}">
+    <div id="flashToast"
+         class="toast align-items-center"
+         role="alert" aria-live="assertive" aria-atomic="true"
+         th:classappend="${tipoMensaje}=='success' ? ' text-bg-success' : ' text-bg-danger'">
+        <div class="d-flex">
+            <div class="toast-body" th:text="${mensaje}">Operación realizada.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        </div>
+    </div>
+</div>
 
 <footer class="site-footer">
     <div class="footer-container">

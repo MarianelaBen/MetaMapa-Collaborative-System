@@ -16,19 +16,19 @@ public class SolicitudesController {
 
 
     @GetMapping("/nueva")
-    public String mostrarFormulario(@PathVariable String hechoId, Model model) {
+    public String mostrarFormulario(@PathVariable Long hechoId, Model model) {
         model.addAttribute("titulo", "Solicitar eliminación de hecho");
         model.addAttribute("hechoId", hechoId);
 
         if (!model.containsAttribute("justificacion")) {
             model.addAttribute("justificacion", "");
         }
-        return "solicitudes/eliminacion/crear";
+        return "hechosYColecciones/solicitudEliminacion";
     }
 
 
     @PostMapping("/crear")
-    public String crear(@PathVariable String hechoId,
+    public String crear(@PathVariable Long hechoId,
                         @RequestParam("justificacion") String justificacion,
                         Model model,
                         RedirectAttributes flash) {
@@ -39,14 +39,14 @@ public class SolicitudesController {
             model.addAttribute("hechoId", hechoId);
             model.addAttribute("justificacion", justificacion);
             model.addAttribute("error", "La justificación debe tener al menos 500 caracteres. Actualmente: " + texto.length());
-            return "solicitudes/eliminacion/crear";
+            return "hechosYColecciones/solicitudEliminacion";
         }
 
         try {
 
             String solicitudId = solicitudService.crearSolicitudEliminacion(hechoId, texto);
 
-            flash.addFlashAttribute("mensaje", "Solicitud creada (ID "  + "). Quedó en estado PENDIENTE.");
+            flash.addFlashAttribute("mensaje", "Solicitud creada (ID " + solicitudId + "). Quedó en estado PENDIENTE.");
             flash.addFlashAttribute("tipoMensaje", "success");
             return "redirect:/hechos/" + hechoId;
 
@@ -55,7 +55,7 @@ public class SolicitudesController {
             model.addAttribute("hechoId", hechoId);
             model.addAttribute("justificacion", justificacion);
             model.addAttribute("error", "Error al crear la solicitud: " + e.getMessage());
-            return "solicitudes/eliminacion/crear";
+            return "hechosYColecciones/solicitudEliminacion";
         }
     }
 }
