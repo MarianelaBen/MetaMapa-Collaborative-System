@@ -8,10 +8,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,6 +48,70 @@ public class HechoController {
       return "redirect:/404";
     }
   }
+
+  @GetMapping("/nuevo")
+  public String mostrarFormulario(Model model) {
+    model.addAttribute("titulo","Subir hecho");
+    model.addAttribute("hecho", new HechoDTO(
+        null,
+        null,
+        null,
+        null,
+        null
+    ));
+    model.addAttribute("categorias", List.of("Incendio forestal", "Accidente vial", "Inundación"));
+    model.addAttribute("localidades", List.of("CABA", "La Plata", "Rosario"));
+
+  return "hechosYColecciones/formularioHecho";
+  }
+
+  @PostMapping("/nuevo")
+  public String procesarFormularioNuevo(@ModelAttribute("hecho") HechoDTO hecho, @RequestParam("fecha") String fecha, @RequestParam("hora") String hora, @RequestParam(name = "multimedia", required = false) MultipartFile[] multimedia, RedirectAttributes redirect, Model model){
+
+    //si algun campo obligatorio no esta, que tire error
+    boolean error = false;
+    if (hecho.getTitulo() == null || hecho.getTitulo().isBlank()) { error = true; }
+    if (hecho.getCategoria() == null || hecho.getCategoria().isBlank()) { error = true; }
+    if (hecho.getDescripcion() == null || hecho.getDescripcion().isBlank()) { error = true; }
+    if (hecho.getProvincia() == null || hecho.getProvincia().isBlank()) { error = true; }
+    if (fecha == null || fecha.isBlank() || hora == null || hora.isBlank()) { error = true; }
+
+    try {
+      // convierto la hora y fecha que vienen separados desde el formulario, a LocalDateTime para el DTO
+      if (!error) {
+        LocalDate d = LocalDate.parse(fecha);
+        LocalTime t = LocalTime.parse(hora);
+        hecho.setFechaAcontecimiento(LocalDateTime.of(d, t));
+      }
+    } catch (Exception e) {
+      error = true;
+    }
+
+    if (error) { //esto es si ya se mando el formulario y por alguna razon llega un campo obligatorio vacio
+      // si hay error que vuelva a cargar el form y le pase al model los mismos datos harcodeados
+      model.addAttribute("titulo", "Subir hecho");
+      model.addAttribute("categorias", List.of("Incendio forestal", "Accidente vial", "Inundación"));
+      model.addAttribute("localidades", List.of("CABA", "La Plata", "Rosario"));
+      model.addAttribute("error", "Competar los campos obligatorios.");
+      return "hechosYColecciones/formularioHecho";
+    }
+
+    if (multimedia != null ) { //esto es un log para ver si se estan subiendo, por que en la pantalla no aparece
+      for (MultipartFile file : multimedia) {
+        if (file != null && !file.isEmpty()) {
+          System.out.println("Recibido archivo: " + file.getOriginalFilename()); //si subiste un archivo, por consola debe aparecer el nombre
+        }
+      }
+    }
+
+    // TODO: aca hariamos el post de hecho
+    redirect.addFlashAttribute("mensaje", "Hecho enviado para revisión");
+    redirect.addFlashAttribute("tipoMensaje", "success"); //mensaje de que esta ok
+
+    return "redirect:/hechos/nuevo";
+
+  }
+
 }
 
   /*
