@@ -1,28 +1,12 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Política de Privacidad - MetaMapa</title>
-  <link rel="stylesheet" href="../../static/css/privacidad.css">
-</head>
-<body>
-<header>
-  <nav>
-    <a class="logo-link" href="../landing/landing.html" aria-label="Ir al inicio">
-    <h1 class="logo">🌍 MetaMapa</h1></a>
-    </div>
-    <ul>
-      <li><a href="landing.html">Inicio</a></li>
-    </ul>
-  </nav>
-</header>
+<html th:replace="~{layout/base :: layout}" xmlns:th="http://www.thymeleaf.org">
 
-<main class="privacy-container">
+<div th:fragment="css">
+  <link rel="stylesheet" th:href="@{/css/privacidad.css}" />
+</div>
+
+<div th:fragment="contenido" class="privacy-container">
   <div class="privacy-header">
-    <h1>Política de Privacidad</h1>
+    <h1 th:text="${titulo}">Política de Privacidad</h1>
     <div class="document-actions">
       <button onclick="window.print()" class="action-btn print-btn">
         🖨️ Imprimir
@@ -127,55 +111,11 @@
       </ul>
     </section>
   </div>
-</main>
 
-<footer class="site-footer">
-  <div class="footer-container">
-    <!-- Columna 1 -->
-    <div class="footer-col">
-      <h4>Información</h4>
-      <ul>
-        <li><a href="privacidad.html">Información Legal & Privacidad</a></li>
-        <li><a href="#">Preguntas Frecuentes</a></li>
-      </ul>
-    </div>
 
-    <!-- Columna 2 -->
-    <div class="footer-col">
-      <h4>Contacto</h4>
-      <ul class="contact-list">
-        <li><i class="fa-regular fa-envelope"></i>
-          <a href="mailto:info@metamapa.com">info@metamapa.com</a>
-        </li>
-        <li><i class="fa-solid fa-phone"></i>
-          <a href="tel:+1234567890">+11 3456 7890</a>
-        </li>
-        <li class="muted">Horario: Lunes - Viernes, 9:00 - 17:00</li>
-      </ul>
-    </div>
-
-    <!-- Columna 3 -->
-    <div class="footer-col">
-      <h4>Seguinos</h4>
-      <div class="socials">
-        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-        <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-      </div>
-    </div>
-
-    <!-- Columna 4 -->
-    <div class="footer-col">
-      <h4>MetaMapa</h4>
-      <p class="about">Ofreciendo soluciones innovadoras para un futuro conectado.</p>
-      <p class="muted">© 2025 MetaMapa. Todos los derechos reservados.</p>
-    </div>
-  </div>
-</footer>
 
 <!-- Libreria para descargar PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" referrerpolicy="no-referrer"></script>
-
 <script>
   function downloadPDF() {
     const element = document.querySelector('.privacy-container');
@@ -184,7 +124,6 @@
       return;
     }
 
-    <!-- Aca se ajusta para que quede bien el PDF-->
     const opt = {
       margin:       [10, 10, 10, 10],
       filename:     'Politica_de_Privacidad_MetaMapa.pdf',
@@ -197,6 +136,5 @@
     html2pdf().set(opt).from(element).save();
   }
 </script>
-
-</body>
+</div>
 </html>
