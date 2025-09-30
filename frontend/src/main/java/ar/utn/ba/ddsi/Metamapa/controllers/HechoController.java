@@ -55,7 +55,7 @@ public class HechoController {
   }
 
   @GetMapping("/nuevo")
-  public String mostrarFormulario(Model model) {
+  public String verFormulario(Model model) {
     model.addAttribute("titulo","Subir hecho");
     model.addAttribute("hecho", new HechoDTO(
         null,
@@ -71,7 +71,11 @@ public class HechoController {
   }
 
   @PostMapping("/nuevo")
-  public String procesarFormularioNuevo(@ModelAttribute("hecho") HechoDTO hecho, @RequestParam("fecha") String fecha, @RequestParam("hora") String hora, @RequestParam(name = "multimedia", required = false) MultipartFile[] multimedia, RedirectAttributes redirect, Model model){
+  public String procesarFormulario(@ModelAttribute("hecho") HechoDTO hecho,
+                                        @RequestParam("fecha") String fecha,
+                                        @RequestParam("hora") String hora,
+                                        @RequestParam(name = "multimedia", required = false) MultipartFile[] multimedia,
+                                        RedirectAttributes redirect, Model model){
 
     //si algun campo obligatorio no esta, que tire error
     boolean error = false;
@@ -104,13 +108,13 @@ public class HechoController {
     if (multimedia != null ) { //esto es un log para ver si se estan subiendo, por que en la pantalla no aparece
       for (MultipartFile file : multimedia) {
         if (file != null && !file.isEmpty()) {
-          System.out.println("Recibido archivo: " + file.getOriginalFilename()); //si subiste un archivo, por consola debe aparecer el nombre
+          System.out.println("Llego el archivo: " + file.getOriginalFilename()); //si subiste un archivo, por consola debe aparecer el nombre
         }
       }
     }
 
     // TODO: aca hariamos el post de hecho
-    redirect.addFlashAttribute("mensaje", "Hecho enviado para revisión");
+    redirect.addFlashAttribute("mensaje", "Se envio correctamente el Hecho");
     redirect.addFlashAttribute("tipoMensaje", "success"); //mensaje de que esta ok
 
     return "redirect:/hechos/nuevo";
