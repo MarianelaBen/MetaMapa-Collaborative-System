@@ -28,7 +28,10 @@ public class HechoController {
   private final HechoService hechoService;
 
   @GetMapping("/{id}")
-  public String verDetalleHecho(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes){
+  public String verDetalleHecho(@PathVariable Long id,
+                                @RequestParam(name="chandle", required=false) String coleccionHandle,
+                                @RequestParam(name="ctitulo", required=false) String coleccionTitulo,
+                                Model model, RedirectAttributes redirectAttributes){
     try{
       HechoDTO hecho =
           new HechoDTO(
@@ -40,6 +43,8 @@ public class HechoController {
           );
           model.addAttribute("hecho", hecho);
           model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
+          model.addAttribute("coleccionHandle", coleccionHandle);
+          model.addAttribute("coleccionTitulo", coleccionTitulo);
 
       return "hechosYColecciones/detalleHecho";
     }

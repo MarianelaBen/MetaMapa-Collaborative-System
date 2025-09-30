@@ -7,11 +7,12 @@
 <div class="container" th:fragment="contenido">
 
     <div class="breadcrumb">
-        <a th:href="@{/inicio}">Inicio</a> ›
-        <a th:href="@{/colecciones}">Colecciones</a> ›
-        <a th:href="@{/colecciones/handle}"> "${coleccion.titulo}" </a> ›
-
-
+        <a th:href="@{/inicio}"> Inicio </a> ›
+        <a th:href="@{/colecciones}"> Colecciones </a> ›
+        <span th:if="${coleccionTitulo}"> </span>
+        <a th:if="${coleccionTitulo}"
+           th:href="@{/colecciones/{handle}(handle=${coleccionHandle})}"
+           th:text="${coleccionTitulo}">Colección</a> ›
         <span>Detalle del hecho</span>
     </div>
 
