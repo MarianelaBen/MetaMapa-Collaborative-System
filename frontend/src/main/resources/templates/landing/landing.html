@@ -10,9 +10,9 @@
         <h5 class="landing-subtitle">MetaMapa le permite organizar, analizar y visualizar <br>
             información geoespacial como nunca antes.</h5>
         <div class="call-to-action-buttons">
-            <button class="btn-signup" onclick="location.href='../authentication/signup.html'">Registrarse</button>
-            <button class="btn-login" onclick="location.href='../authentication/login.html'">Iniciar sesión</button>
-            <a href="../hechosYColecciones/exploradorColecciones.html" class="btn-explorar">Explorar Colecciones</a>
+            <button class="btn-signup" th:href="@{/signup}">Registrarse</button>
+            <button class="btn-login" th:href="@{/login}">Iniciar sesión</button>
+            <a th:href="@{/exploradorColecciones}" class="btn-explorar">Explorar Colecciones</a>
         </div>
     </div>
 

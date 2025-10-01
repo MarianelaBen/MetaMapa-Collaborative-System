@@ -1,31 +1,10 @@
-<!DOCTYPE html>
-<html>
+<html th:replace="~{layout/base :: layout}" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
-              <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="login.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-</head>
+        <div th:fragment="css">
+            <link rel="stylesheet" th:href="@{/css/login.css}" />
+        </div>
 
-<body>
-    <header class="main-header --public">
-        <a class="logo" href="../landing/landing.html" aria-label="Ir al inicio">🌍 MetaMapa</a>
-        <nav>
-            <ul>
-                <li><a href="../landing/landing.html">Inicio</a></li>
-                <li><a href="../hechosYColecciones/exploradorColecciones.html">Colecciones</a></li>
-                <li><a href="../hechosYColecciones/formularioHecho.html">Contribuir</a></li>
-                <li><a href="#">Iniciar Sesión</a></li>
-            </ul>
-        </nav>
-    </header>
-
-        <div class="form-container">
+        <div class="form-container" th:fragment="contenido">
             <div class="logo-placeholder">🌍</div>
             <h2>Bienvenido/a </h2>
 
@@ -41,58 +20,10 @@
                 <a href="../landing/landing.html" class="btn-submit">Iniciar Sesión</a>
 
                 <p class="cambiar-text">
-                    ¿No tenés una cuenta? <a href="./signup.html" id="cambiar-para-registrarse">Registrate</a>
+                    ¿No tenés una cuenta? <a th:href="@{/signup}" id="cambiar-para-registrarse">Registrate</a>
                 </p>
             </form>
         </div>
 
-
-
-    <footer class="site-footer">
-        <div class="footer-container">
-            <!-- Columna 1 -->
-            <div class="footer-col">
-                <h4>Información</h4>
-                <ul>
-                    <li><a href="../landing/privacidad.html">Información Legal & Privacidad</a></li>
-                    <li><a href="#">Preguntas Frecuentes</a></li>
-                </ul>
-            </div>
-
-            <!-- Columna 2 -->
-            <div class="footer-col">
-                <h4>Contacto</h4>
-                <ul class="contact-list">
-                    <li><i class="fa-regular fa-envelope"></i>
-                        <a href="mailto:info@metamapa.com">info@metamapa.com</a>
-                    </li>
-                    <li><i class="fa-solid fa-phone"></i>
-                        <a href="tel:+1234567890">+11 3456 7890</a>
-                    </li>
-                    <li class="muted">Horario: Lunes - Viernes, 9:00 - 17:00</li>
-                </ul>
-            </div>
-
-            <!-- Columna 3 -->
-            <div class="footer-col">
-                <h4>Seguinos</h4>
-                <div class="socials">
-                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-                </div>
-            </div>
-
-            <!-- Columna 4 -->
-            <div class="footer-col">
-                <h4>MetaMapa</h4>
-                <p class="about">Ofreciendo soluciones innovadoras para un futuro conectado.</p>
-                <p class="muted">© 2025 MetaMapa. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </footer>
-
-
-</body>
 
 </html>
