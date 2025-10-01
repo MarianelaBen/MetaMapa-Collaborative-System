@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.Metamapa.dtos;
 
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class HechoDTO {
   private String titulo;
   private String descripcion;

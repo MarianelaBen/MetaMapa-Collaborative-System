@@ -1,127 +1,3 @@
-/*header.main-header {
-    background: #004080;
-    color: #fff;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-header .logo {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-.header-admin-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.btn-notification {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    position: relative;
-}
-
-.notification-count {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #ef4444;
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.user-menu {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    border-radius: 8px;
-    transition: background-color 0.3s;
-    cursor: pointer;
-    border: none;
-    background-color: transparent;
-    color: #fff;
-
-}
-
-.user-menu:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    background-color: #f4f4f4;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-header.main-header {
-    background: #004080;
-    color: #fff;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-header .logo {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-.logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-}
-
-nav a {
-    color: white;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-nav a:hover {
-    background-color: rgba(255,255,255,0.1);
-}*/
-
 main {
     padding: 2rem 0;
 }
@@ -361,7 +237,7 @@ main {
     transition: 1s;
 }
 
-.btn-editar :hover{
+.btn-editar:hover{
     border: none;
     background-color: transparent;
     color: #1869ba;
@@ -459,3 +335,111 @@ main {
         font-size: 1.6rem;
     }
 }
+
+/* ------------------------ NUEVO ----------------------------------------*/
+
+/* ---- TITULAR COMO INPUT ---- */
+.fact-header { padding: 2rem; border-bottom: 1px solid #eee; }
+.fact-header .fact-title {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #1f2d3d;
+    line-height: 1.3;
+    margin: 0 0 1rem 0;
+}
+.fact-header .fact-title::placeholder {
+    color: #94a3b8;
+}
+
+/* ---- SELECT COMO PASTILLA (categoría) ---- */
+select.fact-category {
+    appearance: none;          /* quitar estilo nativo */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 0.35rem 1rem;
+    border-radius: 9999px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+}
+select.fact-category:focus {
+    outline: 2px solid #cfe0ff;
+    box-shadow: 0 0 0 4px rgba(21,94,239,.1);
+}
+
+/* ---- TEXTO DE DESCRIPCIÓN COMO TEXTAREA “PLANO” ---- */
+textarea.fact-description {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #555;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 0 0 1.5rem 0;
+    padding: 0;
+    resize: vertical;
+}
+textarea.fact-description:focus {
+    outline: 2px solid #cfe0ff;
+    box-shadow: 0 0 0 4px rgba(21,94,239,.1);
+}
+
+/* ---- CAMPOS DEL SIDEBAR (fecha/hora/fuente) ---- */
+.metadata-table input[type="date"],
+.metadata-table input[type="time"],
+.metadata-table input[type="text"] {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: .5rem .75rem;
+    font-size: .95rem;
+}
+.metadata-table input:focus {
+    outline: 2px solid #cfe0ff;
+    box-shadow: 0 0 0 4px rgba(21,94,239,.1);
+    border-color: #cfe0ff;
+}
+
+.info-card .info-value {
+    font-size: 1rem;
+    color: #2c3e50;
+    font-weight: 500;
+}
+.info-card input.info-value {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: .5rem .75rem;
+    font-weight: 500;
+}
+
+/* ---- BOTÓN LÁPIZ (corrección de hover) ---- */
+.btn-editar{
+    border: none;
+    background: transparent;
+    color: #004080;
+    cursor: pointer;
+}
+.btn-editar:hover{
+    color: #1869ba;
+}
+
+form .btn { width: auto; }
+
+.editable-line,
+.editable-cell,
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.section-title { margin-bottom: 1rem; color: #2c3e50; }

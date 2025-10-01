@@ -33,14 +33,12 @@ public class HechoController {
                                 @RequestParam(name="ctitulo", required=false) String coleccionTitulo,
                                 Model model, RedirectAttributes redirectAttributes){
     try{
-      HechoDTO hecho =
-          new HechoDTO(
-              "Incendio forestal activo en Parque Nacional Los Glaciares",
-              "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",
-              "Incendio forestal",
-              LocalDateTime.of(2025, 8, 12, 9, 15),
-              "Santa Cruz"
-          );
+      // MOCK de breadcrumb
+      if (coleccionHandle == null) coleccionHandle = "1";
+      if (coleccionTitulo == null) coleccionTitulo = "Incendios forestales en Argentina 2025";
+
+      // MOCK del hecho
+      HechoDTO hecho = mockHecho(id);
           model.addAttribute("hecho", hecho);
           model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
           model.addAttribute("coleccionHandle", coleccionHandle);
@@ -121,6 +119,94 @@ public class HechoController {
 
   }
 
+  @GetMapping("/{id}/editar")
+  public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+    try {
+      // HechoDTO hecho = hechoService.obtenerPorId(id).orElseThrow(() -> new NotFoundException("Hecho", id.toString()));
+
+      HechoDTO hecho = mockHecho(id);
+
+      model.addAttribute("hecho", hecho);
+      model.addAttribute("categorias", categoriasMock());
+      model.addAttribute("hechoId", id);
+      model.addAttribute("titulo", "Editar Hecho");
+      return "contribuyente/editorHechos";
+
+    } catch (NotFoundException ex) {
+      redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+      return "redirect:/404";
+    }
+  }
+
+  @PostMapping("/{id}/editar")
+  public String procesarEdicion(@PathVariable Long id,
+                                @ModelAttribute("hecho") HechoDTO hecho,
+                                @RequestParam("fecha") String fecha,
+                                @RequestParam("hora") String hora,
+                                @RequestParam(name = "multimedia", required = false) MultipartFile[] multimedia,
+                                RedirectAttributes redirect,
+                                Model model) {
+
+    boolean error = false;
+
+    if (hecho.getTitulo() == null || hecho.getTitulo().isBlank()) { error = true; }
+    if (hecho.getCategoria() == null || hecho.getCategoria().isBlank()) { error = true; }
+    if (hecho.getDescripcion() == null || hecho.getDescripcion().isBlank()) { error = true; }
+    if (hecho.getProvincia() == null || hecho.getProvincia().isBlank()) { error = true; }
+    if (fecha == null || fecha.isBlank() || hora == null || hora.isBlank()) { error = true; }
+
+    try {
+      if (!error) {
+        LocalDate d = LocalDate.parse(fecha);
+        LocalTime t = LocalTime.parse(hora);
+        hecho.setFechaAcontecimiento(LocalDateTime.of(d, t));
+      }
+    } catch (Exception e) {
+      error = true;
+    }
+
+    if (error) {
+      model.addAttribute("categorias", categoriasMock());
+      model.addAttribute("hechoId", id);
+      model.addAttribute("titulo", "Editar Hecho");
+      model.addAttribute("error", "Completá los campos obligatorios.");
+      return "contribuyente/editorHechos";
+    }
+
+    // log de archivos por ahora
+    if (multimedia != null) {
+      for (MultipartFile file : multimedia) {
+        if (file != null && !file.isEmpty()) {
+          System.out.println("Archivo subido (edición): " + file.getOriginalFilename());
+        }
+      }
+    }
+
+    // TODO cuando conectemos con el backend: hechoService.actualizar(id, hecho, multimedia);
+
+    redirect.addFlashAttribute("mensaje", "Hecho actualizado correctamente");
+    redirect.addFlashAttribute("tipoMensaje", "success");
+    return "redirect:/hechos/" + id; // vuelve al detalle
+  }
+
+
+  /* ===================== MOCK DEL HECHO ===================== */
+
+  private List<String> categoriasMock() {
+    return List.of("Incendio forestal", "Accidente vial", "Inundación");
+  }
+
+  private HechoDTO mockHecho(Long id) {
+    HechoDTO dto = new HechoDTO(
+        "Incendio forestal activo en Parque Nacional Los Glaciares",
+        "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",
+        "Incendio forestal",
+        LocalDateTime.of(2025, 8, 12, 9, 15),
+        "Santa Cruz"
+    );
+    return dto;
+  }
+
 }
 
   /*
@@ -141,8 +227,6 @@ public class HechoController {
             "Santa Fe"
         )
     );
-
   }
-
 }
 */

@@ -1,6 +1,170 @@
-<!DOCTYPE html>
-<html lang="en">
+<!--/*@thymesVar id="hecho" type="ar.utn.ba.ddsi.Metamapa.dtos.HechoDTO"*/-->
+<!--/*@thymesVar id="categorias" type="java.util.List<java.lang.String>"*/-->
 
+<html th:replace="~{layout/base :: layout}" xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/editorHechos.css}" />
+</div>
+
+<div class="container" th:fragment="contenido">
+
+    <div class="breadcrumb">
+        <a th:href="@{/misHechos}"> Mis Hechos </a> ›
+        <span>Edición del Hecho</span>
+    </div>
+
+    <!-- Formulario de edición -->
+    <form th:action="@{/hechos/{id}/editar(id=${hechoId})}"
+          th:object="${hecho}"
+          method="post"
+          enctype="multipart/form-data">
+
+        <div class="fact-container">
+            <div class="fact-main">
+                <div class="fact-header">
+                    <div class="editable-line">
+                    <input class="fact-title"
+                           th:field="*{titulo}"
+                           type="text"
+                           placeholder="Título del hecho" />
+                        <button class="btn-editar" type="button" title="Editar">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    </div>
+
+                        <select class="fact-category" th:field="*{categoria}">
+                            <option th:each="cat : ${categorias}"
+                                    th:value="${cat}"
+                                    th:text="${cat}">
+                            </option>
+                        </select>
+
+                    <!-- Estado visual (opcional, solo decorativo por ahora) -->
+                    <div class="fact-status" style="margin-top: .75rem;">
+                        <div class="consensus-indicator">
+                            <div class="consensus-dot consensus-verified"></div>
+                            <span><strong>Estado:</strong> Verificado por consenso</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fact-content">
+                    <section>
+                        <h3 class="section-title">
+                            Descripción
+                            <button class="btn-editar" type="button" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                        </h3>
+
+                        <textarea class="fact-description"
+                                  th:field="*{descripcion}"
+                                  rows="6"
+                                  placeholder="Describe el hecho con el mayor detalle posible..."></textarea>
+                    </section>
+
+                    <!-- Multimedia -->
+                    <section class="multimedia-section">
+                        <h3 class="multimedia-title">Contenido Multimedia</h3>
+
+                        <!-- listado simple de archivos ya adjuntos -->
+                        <div class="multimedia-grid"
+                             th:if="${hecho.idContenidoMultimedia != null and !#lists.isEmpty(hecho.idContenidoMultimedia)}">
+                            <div class="multimedia-item"
+                                 th:each="path : ${hecho.idContenidoMultimedia}">
+                                <div class="multimedia-placeholder"
+                                     th:text="${#strings.substringAfterLast(path,'/')}">archivo.jpg</div>
+                            </div>
+                        </div>
+
+                        <!-- agregar nuevos archivos -->
+                        <div style="margin-top: .75rem;">
+                            <input type="file" name="multimedia" multiple />
+                            <small class="text-muted" style="display:block;margin-top:.25rem;">
+                                Podés seleccionar varias imágenes/videos a la vez.
+                            </small>
+                        </div>
+                    </section>
+
+                    <!-- Acciones -->
+                    <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
+                        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                        <a th:href="@{/hechos/{id}(id=${hechoId})}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="fact-sidebar">
+                <!-- Info básica -->
+                <div class="info-card">
+                    <h3>Información Básica</h3>
+
+                    <table class="metadata-table">
+                        <tr>
+                            <td>Fecha del acontecimiento:</td>
+                            <td class="editable-cell">
+                                <input type="date"
+                                       name="fecha"
+                                       th:value="${hecho.fechaAcontecimiento != null ? #temporals.format(hecho.fechaAcontecimiento,'yyyy-MM-dd') : ''}"/>
+                                <button class="btn-editar" type="button" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                        <tr>
+                            <td>Hora del acontecimiento:</td>
+                            <td class="editable-cell">
+                                <input type="time"
+                                       name="hora"
+                                       th:value="${hecho.fechaAcontecimiento != null ? #temporals.format(hecho.fechaAcontecimiento,'HH:mm') : ''}"/>
+                                <button class="btn-editar" type="button" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Ubicación -->
+                <div class="info-card">
+                    <h3>Ubicación</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Provincia</span>
+                            <div class="editable-line">
+                                <input class="info-value" th:field="*{provincia}" placeholder="Provincia"/>
+                                <button class="btn-editar" type="button" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    <div class="location-map">
+                        <div>
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🗺️</div>
+                            <p>Mapa de referencia<br/> (pendiente de integrar)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    <!-- Volver -->
+    <div style="text-align: center;">
+        <a th:href="@{/misHechos}" class="btn btn
+        -secondary">← Volver a Mis Hechos</a>
+    </div>
+
+</div>
+</html>
+
+
+<!--
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
           crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -27,7 +191,6 @@
     <header class="main-header main-header--contrib">
   <a class="logo" href="/landing/landing.html" aria-label="Ir al inicio">🌍 MetaMapa</a>
 
-  <!-- nav opcional para accesos rápidos de admin; si no lo usás, déjalo vacío -->
   <nav class="admin-nav"></nav>
 
   <div class="header-admin-info">
@@ -53,17 +216,13 @@
 </header>
     <main>
         <div class="container">
-            <!-- Breadcrumb -->
             <div class="breadcrumb">
                 <a href="../landing/landing.html">Mis Hechos</a> ›
                 Edición del Hecho
             </div>
 
-            <!-- Fact Container -->
             <div class="fact-container">
-                <!-- Main Content -->
                 <div class="fact-main">
-                    <!-- Fact Header -->
                     <div class="fact-header">
                         <h1 class="fact-title">Incendio forestal activo en Parque Nacional Los Glaciares <button
                                 class="btn-editar" title="Editar"><i class="fa-solid fa-pen"></i></button></h1>
@@ -76,9 +235,7 @@
 
                     </div>
 
-                    <!-- Fact Content -->
                     <div class="fact-content">
-                        <!-- Description -->
                         <section>
                             <h3 style="margin-bottom: 1rem; color: #2c3e50;">Descripción <button class="btn-editar"
                                     title="Editar"><i class="fa-solid fa-pen"></i></button>
@@ -102,7 +259,6 @@
                             </p>
                         </section>
 
-                        <!-- Multimedia Section -->
                         <section class="multimedia-section">
                             <h3 class="multimedia-title">Contenido Multimedia <button class="btn-editar"
                                     title="Editar"><i class="fa-solid fa-pen"></i></button></h3>
@@ -125,9 +281,7 @@
 
                 </div>
 
-                <!-- Sidebar -->
                 <div class="fact-sidebar">
-                    <!-- Basic Information -->
                      <div class="info-card">
                     <div class="info-grid">
                         <h3>Información Básica</h3>
@@ -183,7 +337,6 @@
                 </div>
             </div>
 
-            <!-- Back Navigation -->
             <div style="text-align: center;">
                 <a href="../hechosYColecciones/detalleHecho.html" class="btn btn-secondary">← Volver al Hecho</a>
             </div>
@@ -193,7 +346,7 @@
 
     <footer class="site-footer">
         <div class="footer-container">
-            <!-- Columna 1 -->
+
             <div class="footer-col">
                 <h4>Información</h4>
                 <ul>
@@ -202,7 +355,6 @@
                 </ul>
             </div>
 
-            <!-- Columna 2 -->
             <div class="footer-col">
                 <h4>Contacto</h4>
                 <ul class="contact-list">
@@ -216,7 +368,6 @@
                 </ul>
             </div>
 
-            <!-- Columna 3 -->
             <div class="footer-col">
                 <h4>Seguinos</h4>
                 <div class="socials">
@@ -226,7 +377,6 @@
                 </div>
             </div>
 
-            <!-- Columna 4 -->
             <div class="footer-col">
                 <h4>MetaMapa</h4>
                 <p class="about">Ofreciendo soluciones innovadoras para un futuro conectado.</p>
@@ -237,3 +387,5 @@
 </body>
 
 </html>
+
+-->
