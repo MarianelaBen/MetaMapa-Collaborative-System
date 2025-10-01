@@ -13,6 +13,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class HechoDTO {
+    private Integer id;
   private String titulo;
   private String descripcion;
   private String categoria;
@@ -26,11 +27,12 @@ public class HechoDTO {
   private String fuenteExterna;
 
 
-  public HechoDTO(String titulo, String descripcion, String categoria, LocalDateTime fechaAcontecimiento, String provincia) {
+  public HechoDTO(String titulo, String descripcion, String categoria, LocalDateTime fechaAcontecimiento, String provincia, Integer id) {
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
     this.fechaAcontecimiento = fechaAcontecimiento;
     this.provincia = provincia;
+    this.id = id;
   }
 }

@@ -28,21 +28,14 @@ public class HechoController {
   private final HechoService hechoService;
 
   @GetMapping("/{id}")
-  public String verDetalleHecho(@PathVariable Long id,
-                                @RequestParam(name="chandle", required=false) String coleccionHandle,
-                                @RequestParam(name="ctitulo", required=false) String coleccionTitulo,
+  public String verDetalleHecho(@PathVariable Integer id,
                                 Model model, RedirectAttributes redirectAttributes){
     try{
-      // MOCK de breadcrumb
-      if (coleccionHandle == null) coleccionHandle = "1";
-      if (coleccionTitulo == null) coleccionTitulo = "Incendios forestales en Argentina 2025";
-
       // MOCK del hecho
       HechoDTO hecho = mockHecho(id);
           model.addAttribute("hecho", hecho);
           model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
-          model.addAttribute("coleccionHandle", coleccionHandle);
-          model.addAttribute("coleccionTitulo", coleccionTitulo);
+
 
       return "hechosYColecciones/detalleHecho";
     }
@@ -60,7 +53,7 @@ public class HechoController {
         null,
         null,
         null,
-        null
+        null, null
     ));
     model.addAttribute("categorias", List.of("Incendio forestal", "Accidente vial", "Inundación"));
     model.addAttribute("localidades", List.of("CABA", "La Plata", "Rosario"));
@@ -120,7 +113,7 @@ public class HechoController {
   }
 
   @GetMapping("/{id}/editar")
-  public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+  public String mostrarFormularioEditar(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
     try {
       // HechoDTO hecho = hechoService.obtenerPorId(id).orElseThrow(() -> new NotFoundException("Hecho", id.toString()));
 
@@ -196,13 +189,14 @@ public class HechoController {
     return List.of("Incendio forestal", "Accidente vial", "Inundación");
   }
 
-  private HechoDTO mockHecho(Long id) {
+  private HechoDTO mockHecho(Integer id) {
     HechoDTO dto = new HechoDTO(
         "Incendio forestal activo en Parque Nacional Los Glaciares",
         "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",
         "Incendio forestal",
         LocalDateTime.of(2025, 8, 12, 9, 15),
-        "Santa Cruz"
+        "Santa Cruz",
+            id
     );
     return dto;
   }

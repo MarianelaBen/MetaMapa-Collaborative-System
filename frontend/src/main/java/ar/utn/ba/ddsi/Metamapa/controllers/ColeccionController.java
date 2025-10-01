@@ -44,14 +44,16 @@ public class ColeccionController {
                                               "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",
                                               "Incendio forestal",
                                               LocalDateTime.of(2025, 8, 12, 9, 15),
-                                              "Santa Cruz"
+                                              "Santa Cruz",
+                                                  1
                                           ),
                                           new HechoDTO(
                                               "Accidente múltiple en Ruta Nacional 9",
                                               "Colisión múltiple involucrando cuatro vehículos en el km 847, con varios heridos y corte parcial de la calzada. Brigadas de emergencia en el lugar.",
                                               "Accidente vial",
                                               LocalDateTime.of(2025, 8, 15, 16, 40),
-                                              "Santa Fe"
+                                              "Santa Fe",
+                                                  2
                                           )
                                       )
                                   );
@@ -78,14 +80,16 @@ public class ColeccionController {
                     "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",
                     "Incendio forestal",
                     LocalDateTime.of(2025, 8, 12, 9, 15),
-                    "Santa Cruz"
+                    "Santa Cruz",
+                        3
                 ),
                 new HechoDTO(
                     "Accidente múltiple en Ruta Nacional 9",
                     "Colisión múltiple involucrando cuatro vehículos en el km 847, con varios heridos y corte parcial de la calzada. Brigadas de emergencia en el lugar.",
                     "Accidente vial",
                     LocalDateTime.of(2025, 8, 15, 16, 40),
-                    "Santa Fe"
+                    "Santa Fe",
+                        4
                 )
             )
         ),
@@ -100,14 +104,16 @@ public class ColeccionController {
                     "Colisión múltiple involucrando cuatro vehículos en el km 847, con varios heridos y corte parcial de la calzada. Brigadas de emergencia en el lugar.",
                     "Accidente vial",
                     LocalDateTime.of(2025, 8, 15, 16, 40),
-                    "Santa Fe"
+                    "Santa Fe",
+                        5
                 ),
                 new HechoDTO(
                     "Derrame químico en planta industrial",
                     "Reporte de un derrame de sustancias químicas en una planta ubicada en las afueras de la ciudad. Se evalúa riesgo de contaminación y se solicita evacuación preventiva de la zona cercana.",
                     "Accidente ambiental",
                     LocalDateTime.of(2025, 8, 10, 11, 5),
-                    "Córdoba"
+                    "Córdoba",
+                        6
                 )
             )
         ),
@@ -122,14 +128,16 @@ public class ColeccionController {
                     "Crecida del río provocó desborde en barrios ribereños; anegamientos en calles y viviendas. Equipos de protección civil realizan evacuaciones y asistencia.",
                     "Inundación",
                     LocalDateTime.of(2025, 7, 28, 3, 0),
-                    "Entre Ríos"
+                    "Entre Ríos",
+                        7
                 ),
                 new HechoDTO(
                     "Corte de energía masivo en Gran Buenos Aires",
                     "Falla en una subestación de distribución dejó sin servicio a amplios sectores de la zona metropolitana. Se trabaja en la normalización progresiva del suministro.",
                     "Corte de servicio",
                     LocalDateTime.of(2025, 9, 1, 20, 30),
-                    "Buenos Aires"
+                    "Buenos Aires",
+                        8
                 )
             )
         ),
@@ -144,14 +152,16 @@ public class ColeccionController {
                     "Lluvias intensas provocaron desborde en canales de riego y anegamiento de viñedos en la zona productiva; daños preliminares en cultivos y caminos rurales.",
                     "Riesgo hidrológico",
                     LocalDateTime.of(2025, 6, 5, 7, 45),
-                    "Mendoza"
+                    "Mendoza",
+                        9
                 ),
                 new HechoDTO(
                     "Explosión en planta de gas en zona industrial",
                     "Explosión con incendio secundario en una planta de procesamiento; personal de emergencias controla el fuego y se realizan peritajes para determinar causas.",
                     "Accidente industrial",
                     LocalDateTime.of(2025, 8, 20, 2, 10),
-                    "Salta"
+                    "Salta",
+                        10
                 )
             )
         ),
@@ -166,14 +176,16 @@ public class ColeccionController {
                     "Explosión con incendio secundario en una planta de procesamiento; personal de emergencias controla el fuego y se realizan peritajes para determinar causas.",
                     "Accidente industrial",
                     LocalDateTime.of(2025, 8, 20, 2, 10),
-                    "Salta"
+                    "Salta",
+                        11
                 ),
                 new HechoDTO(
                     "Derrame de hidrocarburos en costa patagónica",
                     "Contaminación por vertido de hidrocarburos en la costa, afectando fauna marina y playas; se activan equipos de contención y remediación.",
                     "Contaminación marina",
                     LocalDateTime.of(2025, 5, 18, 13, 0),
-                    "Chubut"
+                    "Chubut",
+                        12
                 )
             )
         ),
@@ -188,14 +200,16 @@ public class ColeccionController {
                     "Crecida del río provocó desborde en barrios ribereños; anegamientos en calles y viviendas. Equipos de protección civil realizan evacuaciones y asistencia.",
                     "Inundación",
                     LocalDateTime.of(2025, 7, 28, 3, 0),
-                    "Entre Ríos"
+                    "Entre Ríos",
+                        13
                 ),
                 new HechoDTO(
                     "Corte de energía masivo en Gran Buenos Aires",
                     "Falla en una subestación de distribución dejó sin servicio a amplios sectores de la zona metropolitana. Se trabaja en la normalización progresiva del suministro.",
                     "Corte de servicio",
                     LocalDateTime.of(2025, 9, 1, 20, 30),
-                    "Buenos Aires"
+                    "Buenos Aires",
+                        14
                 )
             )
         )

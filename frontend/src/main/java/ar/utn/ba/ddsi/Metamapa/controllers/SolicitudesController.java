@@ -9,14 +9,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ar.utn.ba.ddsi.Metamapa.services.SolicitudService;
 
 @Controller
-@RequestMapping("/hechos/{hechoId}/solicitudes/eliminacion")
+@RequestMapping("/hechos/{hechoId}/solicitud")
 @RequiredArgsConstructor
 public class SolicitudesController {
     private final SolicitudService solicitudService;
 
 
-    @GetMapping("/nueva")
-    public String mostrarFormulario(@PathVariable Long hechoId, Model model) {
+    @GetMapping
+    public String mostrarFormulario(@PathVariable Integer hechoId, Model model) {
         model.addAttribute("titulo", "Solicitar eliminación de hecho");
         model.addAttribute("hechoId", hechoId);
 

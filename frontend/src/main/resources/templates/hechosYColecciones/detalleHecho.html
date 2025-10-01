@@ -45,11 +45,10 @@
                     <div class="multimedia-item"><div class="multimedia-placeholder">📊</div></div>
                 </div>
             </section>
-
-            <button class="btn btn-danger"
-                    th:onclick="|location.href='@{/hechos/{id}/solicitud-eliminacion(id=${hechoId})}'|">
-                Solicitar Eliminación
-            </button>
+                <a class="btn btn-danger"
+                   th:href="@{/hechos/{id}/solicitud(id=${hecho.id})}">
+                    Solicitar Eliminación
+                </a>
         </div>
         </div>
 
