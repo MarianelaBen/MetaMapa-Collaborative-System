@@ -13,7 +13,7 @@
     <link rel="stylesheet" th:href="@{/css/base.css}" />
     <link rel="stylesheet" th:href="@{/css/header.css}" />
     <link rel="stylesheet" th:href="@{/css/footer.css}" />
-    <link rel="stylesheet" th:href="@{/css/landing.css}" />
+
     <div th:replace="${css} :: css"></div>
 </head>
 
@@ -41,9 +41,9 @@
     </nav>
 </header>
 
-<main>
+
     <div th:replace="${contenido} :: contenido"></div>
-</main>
+
 
 <!-- Para popups -->
 <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index:1100;"

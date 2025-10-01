@@ -49,6 +49,11 @@ nav a:hover {
 main {
     padding: 2rem 0;
 }
+
+.contenido{
+    margin: 40px
+}
+
 .page-header {
     margin-bottom: 2rem;
 }
