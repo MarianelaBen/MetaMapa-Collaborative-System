@@ -130,11 +130,11 @@
 
                         <div class="hecho-actions">
                             <a class="btn btn-principal"
-                               th:href="@{/hechos/1(chandle=${coleccion.handle}, ctitulo=${coleccion.titulo})}">
+                               th:href="@{/hechos/{id}(id=${hecho.id})}">
                                 Ver Detalles
                             </a>
                             <a class="btn btn-secondary"
-                               th:href="@{/hechos/{id}/solicitudes/eliminacion/nueva(id=${iter.count})}">
+                               th:href="@{/hechos/{id}/solicitud(id=${hecho.id})}">
                                 Solicitar Eliminación
                             </a>
                         </div>
