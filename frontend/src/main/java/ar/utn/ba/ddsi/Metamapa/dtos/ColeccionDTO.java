@@ -9,19 +9,18 @@ import java.util.Set;
 @Getter
 @Setter
 public class ColeccionDTO {
-  private String titulo;
-  private String descripcion;
-  private List<HechoDTO> hechos = new ArrayList<>();
-  private String handle;
-  private String algoritmoDeConsenso;
-  private Set<Long> fuenteIds;
-  private Set<Long> criterioIds;
+    private String titulo;
+    private String descripcion;
+    private String handle;
+    private String algoritmoDeConsenso;
+    private Set<Long> fuenteIds;
+    private Set<Long> criterioIds;
+    private Set<Long> hechoIds;
 
-
-  public ColeccionDTO(String titulo, String descripcion, String handle, List<HechoDTO> hechos) {
+  public ColeccionDTO(String titulo, String descripcion, String handle) {
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.handle = handle;
-    this.hechos = hechos;
+
   }
 }

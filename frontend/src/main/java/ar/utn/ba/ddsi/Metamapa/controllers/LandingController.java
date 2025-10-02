@@ -28,73 +28,19 @@ public class LandingController {
         new ColeccionDTO(
             "Incendios forestales en Argentina 2025",
             "Monitoreo de incendios forestales ocurridos durante el año 2025 en territorio argentino. Datos actualizados desde múltiples fuentes oficiales y reportes ciudadanos.",
-            "8",
-            Arrays.asList(
-                new HechoDTO(
-                    "Incendio forestal activo en Parque Nacional Los Glaciares",
-                    "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",
-                    "Incendio forestal",
-                    LocalDateTime.of(2025, 8, 12, 9, 15),
-                    "Santa Cruz",
-                        1
-                ),
-                new HechoDTO(
-                    "Accidente múltiple en Ruta Nacional 9",
-                    "Colisión múltiple involucrando cuatro vehículos en el km 847, con varios heridos y corte parcial de la calzada. Brigadas de emergencia en el lugar.",
-                    "Accidente vial",
-                    LocalDateTime.of(2025, 8, 15, 16, 40),
-                    "Santa Fe",
-                        2
-                )
-            )
+            "8"
         ),
 
         new ColeccionDTO(
             "Desapariciones vinculadas a crímenes de odio",
             "Registro de casos de desapariciones forzadas relacionadas con crímenes de odio en Argentina. Incluye información sobre víctimas, fechas y ubicaciones de los últimos reportes.",
-            "9",
-            Arrays.asList(
-                new HechoDTO(
-                    "Accidente múltiple en Ruta Nacional 9",
-                    "Colisión múltiple involucrando cuatro vehículos en el km 847, con varios heridos y corte parcial de la calzada. Brigadas de emergencia en el lugar.",
-                    "Accidente vial",
-                    LocalDateTime.of(2025, 8, 15, 16, 40),
-                    "Santa Fe",
-                        3
-                ),
-                new HechoDTO(
-                    "Derrame químico en planta industrial",
-                    "Reporte de un derrame de sustancias químicas en una planta ubicada en las afueras de la ciudad. Se evalúa riesgo de contaminación y se solicita evacuación preventiva de la zona cercana.",
-                    "Accidente ambiental",
-                    LocalDateTime.of(2025, 8, 10, 11, 5),
-                    "Córdoba",
-                        4
-                )
-            )
+            "9"
         ),
 
         new ColeccionDTO(
             "Víctimas de muertes viales en Argentina",
             "Base de datos de accidentes de tránsito fatales en rutas y calles de Argentina. Información recopilada para análisis de seguridad vial y prevención.",
-            "10",
-            Arrays.asList(
-                new HechoDTO(
-                    "Inundaciones en barrios del Delta del Paraná",
-                    "Crecida del río provocó desborde en barrios ribereños; anegamientos en calles y viviendas. Equipos de protección civil realizan evacuaciones y asistencia.",
-                    "Inundación",
-                    LocalDateTime.of(2025, 7, 28, 3, 0),
-                    "Entre Ríos",
-                        5
-                ),
-                new HechoDTO(
-                    "Corte de energía masivo en Gran Buenos Aires",
-                    "Falla en una subestación de distribución dejó sin servicio a amplios sectores de la zona metropolitana. Se trabaja en la normalización progresiva del suministro.",
-                    "Corte de servicio",
-                    LocalDateTime.of(2025, 9, 1, 20, 30),
-                    "Buenos Aires",
-                        6
-                )
-            )
+            "10"
         ));
   }
 

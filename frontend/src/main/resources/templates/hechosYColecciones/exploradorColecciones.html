@@ -19,7 +19,7 @@
                     <h3 class="collection-title" th:text="${coleccion.titulo}">Título</h3>
                     <p class="collection-description" th:text="${coleccion.descripcion}"></p>
                     <div class="collection-meta">
-                        <span th:text="${coleccion.hechos.size()}">0</span>
+                        <span th:text="${coleccion.hechoIds.size()}">0</span>
                     </div>
                     <div class="collection-actions">
                         <a class="btn btn-ver-hechos" th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}">Ver Hechos</a>
