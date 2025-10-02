@@ -11,9 +11,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/administrador")
+@RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
+
+    @GetMapping("/panel-control")
+    public String mostrarPanelControl(Model model, RedirectAttributes redirectAttributes) {
+        model.addAttribute("titulo", "Panel de Control");
+        return "administrador/panelControl";
+    }
 
   @GetMapping("/importarCSV")
   public String verImportadorCSV(Model model) {
