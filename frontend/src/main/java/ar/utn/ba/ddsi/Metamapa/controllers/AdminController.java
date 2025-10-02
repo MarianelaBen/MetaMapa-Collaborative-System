@@ -1,7 +1,9 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
 import ar.utn.ba.ddsi.Metamapa.dtos.ColeccionDTO;
+import ar.utn.ba.ddsi.Metamapa.dtos.SolicitudDTO;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
+import ar.utn.ba.ddsi.Metamapa.services.SolicitudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController {
     private final ColeccionService coleccionService;
+    private final SolicitudService solicitudService;
 
     @GetMapping("/panel-control")
     public String mostrarPanelControl(Model model, RedirectAttributes redirectAttributes) {
@@ -30,7 +33,9 @@ public class AdminController {
 
     @GetMapping("/gestor-solicitudes")
     public String mostrarGestorSolicitudes(Model model, RedirectAttributes redirectAttributes) {
+        List<SolicitudDTO> solicitudes = this.solicitudService.getSolicitudes();
         model.addAttribute("titulo", "Gestor de Solicitudes");
+        model.addAttribute("solicitudes", solicitudes);
         return "administrador/gestorSolicitudes";
     }
 

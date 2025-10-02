@@ -98,131 +98,19 @@
                         </tr>
                     </thead>
                     <tbody id="requestsTable">
-                        <tr data-status="pending" data-user="alice@example.com" data-id="DR001">
-                            <td>DR001</td>
-                            <td>2023-10-26</td>
+                        <tr data-status="pending" data-user="alice@example.com" data-id="DR001" th:each="solicitud : ${solicitudes}">
+                            <td th:text="${solicitud.id}">DR001</td>
+                            <td th:text="${solicitud.fechaEntrada}">2023-10-26</td>
                             <td>alice@example.com</td>
                             <td>
-                                <div
-                                    style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    "El calentamiento global no es causado por humanos"
-                                </div>
-                                <small style="color: #6c757d;">ID: F1234</small>
+                                <small style="color: #6c757d;" th:text="${solicitud.hechoId}">ID: F1234</small>
                             </td>
                             <td>Información desactualizada</td>
-                            <td><span class="status-badge status-pending">Pendiente</span></td>
+                            <td><span class="status-badge status-pending" th:text="${solicitud.estado}">Pendiente</span></td>
                             <td>
                                 <div class="action-buttons">
                                     <button class="btn-action edit" title="Aprobar">
                                         <i class="fa-solid fa-check"></i>
-                                    </button>
-                                    <button class="btn-action view" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-action delete" title="Rechazar">
-                                        <i class="fas fa-xmark"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr data-status="approved" data-user="bob@example.com" data-id="DR002">
-                            <td>DR002</td>
-                            <td>2023-10-25</td>
-                            <td>bob@example.com</td>
-                            <td>
-                                <div
-                                    style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    "Las vacunas causan autism"
-                                </div>
-                                <small style="color: #6c757d;">ID: F5678</small>
-                            </td>
-                            <td>Desinformación médica</td>
-                            <td><span class="status-badge status-approved">Aprobado</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-action edit" title="Aprobar">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn-action view" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-action delete" title="Rechazar">
-                                        <i class="fas fa-xmark"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr data-status="rejected" data-user="charlie@example.com" data-id="DR003">
-                            <td>DR003</td>
-                            <td>2023-10-24</td>
-                            <td>charlie@example.com</td>
-                            <td>
-                                <div
-                                    style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    "París es la capital de Francia"
-                                </div>
-                                <small style="color: #6c757d;">ID: F9012</small>
-                            </td>
-                            <td>Solicitud sin fundamento</td>
-                            <td><span class="status-badge status-rejected">Rechazado</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-action edit" title="Aprobar">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn-action view" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-action delete" title="Rechazar">
-                                        <i class="fas fa-xmark"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr data-status="pending" data-user="diana@example.com" data-id="DR004">
-                            <td>DR004</td>
-                            <td>2023-10-23</td>
-                            <td>diana@example.com</td>
-                            <td>
-                                <div
-                                    style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    "El COVID-19 se originó en un laboratorio"
-                                </div>
-                                <small style="color: #6c757d;">ID: F3456</small>
-                            </td>
-                            <td>Teoría de conspiración</td>
-                            <td><span class="status-badge status-pending">Pendiente</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-action edit" title="Aprobar">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn-action view" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-action delete" title="Rechazar">
-                                        <i class="fas fa-xmark"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr data-status="approved" data-user="eve@example.com" data-id="DR005">
-                            <td>DR005</td>
-                            <td>2023-10-22</td>
-                            <td>eve@example.com</td>
-                            <td>
-                                <div
-                                    style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    "Los dinosaurios vivieron hace 6000 años"
-                                </div>
-                                <small style="color: #6c757d;">ID: F7890</small>
-                            </td>
-                            <td>Información científicamente incorrecta</td>
-                            <td><span class="status-badge status-approved">Aprobado</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-action edit" title="Aprobar">
-                                        <i class="fas fa-check"></i>
                                     </button>
                                     <button class="btn-action view" title="Ver">
                                         <i class="fas fa-eye"></i>

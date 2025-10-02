@@ -5,11 +5,12 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class SolicitudDto {
+public class SolicitudDTO {
 
     private Long id;
     private String estado;
     private String justificacion;
     private LocalDateTime fechaEntrada;
     private LocalDateTime fechaAtencion;
+    private Long hechoId;
 }
