@@ -23,7 +23,7 @@ public class ColeccionController {
 
   @GetMapping
   public String listarColecciones(Model model){
-    List<ColeccionDTO> colecciones = this.coleccionService.getColecciones(); //acá debería llamar al ColeccionService TODO implementar ColeccionService
+    List<ColeccionDTO> colecciones = this.coleccionService.getColeccionesConHechos(); //acá debería llamar al ColeccionService TODO implementar ColeccionService
     model.addAttribute("colecciones", colecciones);
     model.addAttribute("titulo", "Explorador de Colecciones");
     model.addAttribute("descripcion", "Navega por las diferentes colecciones de hechos disponibles en esta instancia de MetaMapa. Cada colección contiene información organizada temáticamente y geográficamente.");
