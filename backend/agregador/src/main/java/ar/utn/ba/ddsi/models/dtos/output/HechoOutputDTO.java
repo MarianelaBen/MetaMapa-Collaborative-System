@@ -18,6 +18,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class HechoOutputDTO {
+    private Integer id;
   private String titulo;
   private String descripcion;
   private String categoria;
