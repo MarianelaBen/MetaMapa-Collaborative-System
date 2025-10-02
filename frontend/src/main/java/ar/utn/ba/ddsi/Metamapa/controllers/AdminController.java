@@ -1,5 +1,7 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
+import ar.utn.ba.ddsi.Metamapa.dtos.ColeccionDTO;
+import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,14 +12,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
+    private final ColeccionService coleccionService;
 
     @GetMapping("/panel-control")
     public String mostrarPanelControl(Model model, RedirectAttributes redirectAttributes) {
+        List<ColeccionDTO> colecciones = this.coleccionService.getColecciones();
         model.addAttribute("titulo", "Panel de Control");
+        model.addAttribute("colecciones", colecciones);
         return "administrador/panelControl";
     }
 

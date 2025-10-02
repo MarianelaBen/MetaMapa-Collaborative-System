@@ -135,12 +135,12 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>001</td>
-              <td>Puntos Críticos de Biodiversidad Global</td>
-              <td><span class="status-badge active">Activa</span></td>
-              <td>1250</td>
-              <td><span class="consensus-badge">Absoluta</span></td>
+            <tr th:each="coleccion : ${colecciones}">
+              <td th:text="${coleccion.handle}">001</td>
+              <td th:text="${coleccion.descripcion}">Puntos Críticos de Biodiversidad Global</td>
+              <td><span class="status-badge active" th:text="${coleccion.handle}">Activa</span></td>
+              <td th:text="${coleccion.hechoIds.size()}">1250</td>
+              <td><span class="consensus-badge" th:text="${coleccion.algoritmoDeConsenso}">Absoluta</span></td>
               <td>15/03/2024</td>
               <td>Juan Lopez</td>
               <td>Biodiversity.org</td>
@@ -160,41 +160,6 @@
               </td>
             </tr>
 
-            <tr>
-              <td>002</td>
-              <td>Espacios Verdes Urbanos - Berlín</td>
-              <td><span class="status-badge draft">Borrador</span></td>
-              <td>85</td>
-              <td><span class="consensus-badge">MayoriaSimple</span></td>
-              <td>14/03/2024</td>
-              <td>Ezequiel Escobar</td>
-              <td>City Data API</td>
-              <td>
-                <div class="action-buttons">
-                  <button class="btn-action edit" title="Editar"><i class="fas fa-edit"></i></button>
-                  <button class="btn-action view" title="Ver"><i class="fas fa-eye"></i></button>
-                  <button class="btn-action delete" title="Eliminar"><i class="fas fa-trash"></i></button>
-                </div>
-              </td>
-            </tr>
-
-            <tr>
-              <td>003</td>
-              <td>Patrones Climáticos Históricos - Reino Unido</td>
-              <td><span class="status-badge active">Activa</span></td>
-              <td>2340</td>
-              <td><span class="consensus-badge">MultiplesMenciones</span></td>
-              <td>13/03/2024</td>
-              <td>Carol Davis</td>
-              <td>UK Met Office</td>
-              <td>
-                <div class="action-buttons">
-                  <button class="btn-action edit" title="Editar"><i class="fas fa-edit"></i></button>
-                  <button class="btn-action view" title="Ver"><i class="fas fa-eye"></i></button>
-                  <button class="btn-action delete" title="Eliminar"><i class="fas fa-trash"></i></button>
-                </div>
-              </td>
-            </tr>
             </tbody>
           </table>
         </div>
