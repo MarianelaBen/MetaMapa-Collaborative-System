@@ -43,6 +43,20 @@ public class AdminController {
     }
   }
 
+    @GetMapping("/colecciones/{handle}")
+    public ResponseEntity<?> getColeccionByHandle(@PathVariable String handle) {
+        try {
+            ColeccionOutputDTO dto = servicio.getColeccionByHandle(handle);
+            return ResponseEntity.ok(dto);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Colección no encontrada", "handle", handle));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al buscar la colección", "mensaje", e.getMessage()));
+        }
+    }
+
   //Crear una nueva colección.
   @PostMapping("/colecciones") //Recibe un DTO con los datos de la coleccion
   public ResponseEntity<?> crearColeccion(@RequestBody ColeccionInputDTO dto) {

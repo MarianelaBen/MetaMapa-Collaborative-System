@@ -21,6 +21,7 @@ import java.util.Optional;
 
 public interface IAdminService {
   List<ColeccionOutputDTO> getColecciones();
+  ColeccionOutputDTO getColeccionByHandle(String handle);
   // ColeccionOutputDTO crearColeccion(ColeccionInputDTO dto);
   ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO dto);
   void eliminarColeccion(String id);

@@ -7,5 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IColeccionRepository extends JpaRepository<Coleccion,String> {
+    Optional<Coleccion> findByHandle(String handle);
 
 }

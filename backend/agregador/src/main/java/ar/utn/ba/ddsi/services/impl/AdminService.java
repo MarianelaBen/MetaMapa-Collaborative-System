@@ -8,6 +8,7 @@ import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
 import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
+import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAdminService;
 import ar.utn.ba.ddsi.services.IColeccionService;
@@ -27,17 +28,20 @@ public class AdminService implements IAdminService {
   private final IFuenteRepository fuenteRepo;
   private final ISolicitudRepository solicitudRepo;
   private final IColeccionService coleccionService;
+  private final IHechoRepository hechoRepo;
 
   public AdminService(IColeccionRepository coleccionRepo,
                       IFuenteRepository fuenteRepo,
                       //ConsensoRepository consensoRepo,
                       ISolicitudRepository solicitudRepo,
-                      IColeccionService coleccionService) {
+                      IColeccionService coleccionService,
+                      IHechoRepository hechoRepo) {
     this.coleccionRepo = coleccionRepo;
    // this.consensoRepo = consensoRepo;
     this.solicitudRepo = solicitudRepo;
     this.coleccionService = coleccionService;
     this.fuenteRepo = fuenteRepo;
+    this.hechoRepo = hechoRepo;
   }
 
   //API ADMINISTRATIVA
@@ -50,8 +54,15 @@ public class AdminService implements IAdminService {
         .map(ColeccionOutputDTO::fromEntity) //Convertimos cada entidad a DTO
         .collect(Collectors.toList());
   }
+    @Override
+    public ColeccionOutputDTO getColeccionByHandle(String handle) {
+        var coleccion = coleccionRepo.findByHandle(handle)
+                .orElseThrow(() -> new NoSuchElementException("Coleccion no encontrada con handle: " + handle));
+        return ColeccionOutputDTO.fromEntity(coleccion);
+    }
 
-  @Override
+
+    @Override
   public ColeccionOutputDTO modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id) {
     Coleccion coleccion = coleccionRepo.findById(id)
         .orElseThrow(() -> new NoSuchElementException("No se puede modificar el Algoritmo de Consenso. Coleccion no encontrada con ID: " + id));
@@ -83,14 +94,18 @@ public class AdminService implements IAdminService {
   //Sirve para pruebas sin meterse en modos
   @Override
   public List<HechoOutputDTO> getHechos(String coleccionId) {
-    var coleccion = coleccionRepo.findById(coleccionId)
-        .orElseThrow(() -> new RuntimeException("Coleccion no encontrada con id: " + coleccionId));
+      // opcional: validar que la colección exista
+      if (!coleccionRepo.existsById(coleccionId)) {
+          throw new RuntimeException("Coleccion no encontrada con id: " + coleccionId);
+      }
 
-    return coleccion.getHechos()
-        .stream()
-        .map(this::hechoOutputDTO)
-        .collect(Collectors.toList());
+      List<Hecho> hechos = hechoRepo.findByColeccionHandle(coleccionId);
+
+      return hechos.stream()
+              .map(this::hechoOutputDTO)   // usás tu mapeador existente
+              .collect(Collectors.toList());
   }
+
 
   public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
