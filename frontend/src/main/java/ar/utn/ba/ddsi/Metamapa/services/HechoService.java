@@ -1,14 +1,42 @@
 package ar.utn.ba.ddsi.Metamapa.services;
+import ar.utn.ba.ddsi.Metamapa.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.dtos.HechoDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-@RequiredArgsConstructor
 public class HechoService {
+    private final WebClient webClient;
+
+    public HechoService(WebClient.Builder webClientBuilder,
+                            @Value("${backend.api.base-url}") String baseUrl) {
+        this.webClient = webClientBuilder
+                .baseUrl(baseUrl)
+                .build();
+    }
+
+    //TODO: falta modificar método de obtención de hechos en el back
+    public List<HechoDTO> getHechos() {
+        List<HechoDTO> hechos = webClient.get()
+                .uri("/hechos")
+                .retrieve()
+                .bodyToFlux(HechoDTO.class)
+                .collectList()
+                .block();
+
+        if (hechos == null || hechos.isEmpty()) {
+            return List.of();
+        }
+
+        return hechos;
+    }
 
   /*
   private final WebClient backendWebClient;

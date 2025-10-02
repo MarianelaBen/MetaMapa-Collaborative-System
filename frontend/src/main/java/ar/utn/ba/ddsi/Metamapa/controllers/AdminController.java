@@ -1,8 +1,10 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
 import ar.utn.ba.ddsi.Metamapa.dtos.ColeccionDTO;
+import ar.utn.ba.ddsi.Metamapa.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.dtos.SolicitudDTO;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
+import ar.utn.ba.ddsi.Metamapa.services.HechoService;
 import ar.utn.ba.ddsi.Metamapa.services.SolicitudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,7 @@ import java.util.List;
 public class AdminController {
     private final ColeccionService coleccionService;
     private final SolicitudService solicitudService;
+    private final HechoService hechoService;
 
     @GetMapping("/panel-control")
     public String mostrarPanelControl(Model model, RedirectAttributes redirectAttributes) {
@@ -41,6 +44,7 @@ public class AdminController {
 
     @GetMapping("/gestor-hechos")
     public String mostrarGestorHechos(Model model, RedirectAttributes redirectAttributes) {
+        List<HechoDTO> hechos = this.hechoService.getHechos();
         model.addAttribute("titulo", "Gestor de Hechos");
         return "administrador/gestorHechos";
     }
