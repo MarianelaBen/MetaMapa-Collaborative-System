@@ -13,6 +13,7 @@ public class SolicitudOutputDTO {
   private String justificacion;
   private LocalDateTime fechaEntrada;
   private LocalDateTime fechaAtencion;
+  private Long hechoId;
 
 
   public static SolicitudOutputDTO fromEntity(SolicitudDeEliminacion s) {

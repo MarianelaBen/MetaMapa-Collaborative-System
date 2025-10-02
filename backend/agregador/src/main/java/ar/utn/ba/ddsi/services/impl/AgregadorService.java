@@ -4,11 +4,14 @@ import ar.utn.ba.ddsi.adapters.AdapterFuenteDinamica;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteEstatica;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteProxy;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
+import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +31,24 @@ private final AdapterFuenteProxy adapterFuenteProxy;
 private  final NormalizadorService normalizadorService;
 private final IHechoRepository hechoRepository;
 private final ICategoriaRepository categoriaRepository; //TODO BORRAR CUANDO SE ARREGLE NORMALIZADOR
+    private final ISolicitudRepository solicitudesRepo;
 
-public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuenteEstatica adapterFuenteEstatica, AdapterFuenteProxy adapterFuenteProxy, NormalizadorService normalizadorService, IHechoRepository hechoRepository, ICategoriaRepository categoriaRepository){
+public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuenteEstatica adapterFuenteEstatica, AdapterFuenteProxy adapterFuenteProxy, NormalizadorService normalizadorService, IHechoRepository hechoRepository, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudesRepo) {
   this.adapterFuenteDinamica = adapterFuenteDinamica;
   this.adapterFuenteEstatica = adapterFuenteEstatica;
   this.adapterFuenteProxy = adapterFuenteProxy;
   this.normalizadorService = normalizadorService;
   this.hechoRepository = hechoRepository;
   this.categoriaRepository = categoriaRepository;
+  this.solicitudesRepo = solicitudesRepo;
 }
+
+    @Override
+    public List<SolicitudOutputDTO> getSolicitudes() {
+        return solicitudesRepo.findAll().stream()
+                .map(SolicitudOutputDTO::fromEntity) //Convertimos cada entidad a DTO
+                .collect(Collectors.toList());
+    }
 
   @Override
   public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes) {

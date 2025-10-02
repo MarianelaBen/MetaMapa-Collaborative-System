@@ -170,7 +170,7 @@ public class AgregadorController {
 
   @GetMapping("/solicitudes")
   public ResponseEntity<?> getSolicitudes() {
-    return ResponseEntity.ok(solicitudRepository.findAll());
+    return ResponseEntity.ok(this.agregadorService.getSolicitudes());
   }
 
 

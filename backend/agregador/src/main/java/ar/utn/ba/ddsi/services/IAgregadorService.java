@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.services;
 
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
@@ -15,5 +16,5 @@ public interface IAgregadorService {
   public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes);
   public HechoOutputDTO hechoOutputDTO(Hecho hecho);
   List<HechoOutputDTO> obtenerHechosFiltrados(String coleccionId, String categoria, String fechaDesde, String fechaHasta);
-
+    List<SolicitudOutputDTO> getSolicitudes();
 }
