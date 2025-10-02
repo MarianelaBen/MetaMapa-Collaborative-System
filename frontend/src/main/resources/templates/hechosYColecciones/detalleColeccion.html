@@ -15,7 +15,7 @@
                 <div class="collection-stats">
                     <div class="stat">
                         <span class="stat-label">Total de hechos</span>
-                        <span class="stat-value" th:text="${coleccion.hechos.size()}"></span>
+                        <span class="stat-value" th:text="${coleccion.hechoIds.size()}"></span>
                     </div>
                     <div class="stat">
                         <span class="stat-label">Algoritmo de consenso</span>
@@ -110,7 +110,7 @@
                         <a class="btn btn-principal" th:href="@{/hechos/1}">Ver Detalles</a>
                         <button class="btn btn-secondary">Solicitar Eliminación</button>
                     </div> -->
-                    <div class="hecho-card" th:each="hecho, iter : ${coleccion.hechos}">
+                    <div class="hecho-card" th:each="hecho : ${hechos}">
                         <h3 class="hecho-title" th:text="${hecho.titulo}"></h3>
                         <div class="hecho-category" th:text="${hecho.categoria}"></div>
                         <p class="hecho-description" th:text="${hecho.descripcion}"></p>

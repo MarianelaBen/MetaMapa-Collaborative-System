@@ -28,7 +28,7 @@ public class HechoController {
   private final HechoService hechoService;
 
   @GetMapping("/{id}")
-  public String verDetalleHecho(@PathVariable Integer id,
+  public String verDetalleHecho(@PathVariable Long id,
                                 Model model, RedirectAttributes redirectAttributes){
     try{
       // MOCK del hecho
@@ -113,7 +113,7 @@ public class HechoController {
   }
 
   @GetMapping("/{id}/editar")
-  public String mostrarFormularioEditar(@PathVariable Integer id, Model model, RedirectAttributes redirectAttributes) {
+  public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
     try {
       // HechoDTO hecho = hechoService.obtenerPorId(id).orElseThrow(() -> new NotFoundException("Hecho", id.toString()));
 
@@ -189,7 +189,7 @@ public class HechoController {
     return List.of("Incendio forestal", "Accidente vial", "Inundación");
   }
 
-  private HechoDTO mockHecho(Integer id) {
+  private HechoDTO mockHecho(Long id) {
     HechoDTO dto = new HechoDTO(
         "Incendio forestal activo en Parque Nacional Los Glaciares",
         "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",

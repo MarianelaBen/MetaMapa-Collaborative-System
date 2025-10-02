@@ -34,12 +34,10 @@ public class ColeccionController {
   @GetMapping("/{handle}")
   public String verDetalleColeccion(Model model, @PathVariable String handle, RedirectAttributes redirectAttributes){
     try{
-      ColeccionDTO coleccion =        new ColeccionDTO(
-                                      "Incendios forestales en Argentina 2025",
-                                      "Monitoreo de incendios forestales ocurridos durante el año 2025 en territorio argentino. Datos actualizados desde múltiples fuentes oficiales y reportes ciudadanos.",
-                                      "1"
-                                  );
+      ColeccionDTO coleccion = this.coleccionService.getColeccionByHandle(handle);
+      List<HechoDTO> hechosDeColeccion = this.coleccionService.getHechosDeColeccion(handle);
       model.addAttribute("coleccion", coleccion);
+      model.addAttribute("hechos", hechosDeColeccion);
       model.addAttribute("titulo", "Coleccion " + coleccion.getHandle());
       return "hechosYColecciones/detalleColeccion";
 

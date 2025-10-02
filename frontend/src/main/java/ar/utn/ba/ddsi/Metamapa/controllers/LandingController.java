@@ -53,7 +53,7 @@ public class LandingController {
             "Riesgo hidrológico",
             LocalDateTime.of(2025, 6, 5, 7, 45),
             "Mendoza",
-                7
+                7L
         ),
         new HechoDTO(
             "Explosión en planta de gas en zona industrial",
@@ -61,7 +61,7 @@ public class LandingController {
             "Accidente industrial",
             LocalDateTime.of(2025, 8, 20, 2, 10),
             "Salta",
-                8
+                8L
         ),
         new HechoDTO(
             "Derrame de hidrocarburos en costa patagónica",
@@ -69,7 +69,7 @@ public class LandingController {
             "Contaminación marina",
             LocalDateTime.of(2025, 5, 18, 13, 0),
             "Chubut",
-                9
+                9L
         ));
   }
 }
