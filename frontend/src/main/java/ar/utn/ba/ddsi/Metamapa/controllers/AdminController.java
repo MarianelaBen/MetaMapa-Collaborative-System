@@ -21,6 +21,18 @@ public class AdminController {
         return "administrador/panelControl";
     }
 
+    @GetMapping("/gestor-solicitudes")
+    public String mostrarGestorSolicitudes(Model model, RedirectAttributes redirectAttributes) {
+        model.addAttribute("titulo", "Gestor de Solicitudes");
+        return "administrador/gestorSolicitudes";
+    }
+
+    @GetMapping("/gestor-hechos")
+    public String mostrarGestorHechos(Model model, RedirectAttributes redirectAttributes) {
+        model.addAttribute("titulo", "Gestor de Hechos");
+        return "administrador/gestorHechos";
+    }
+
   @GetMapping("/importarCSV")
   public String verImportadorCSV(Model model) {
     model.addAttribute("titulo", "Importacion de hechos en archivos CSV");

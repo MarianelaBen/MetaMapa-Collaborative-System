@@ -10,21 +10,21 @@
     <nav class="sidebar-nav">
       <ul>
         <li class="nav-item active">
-          <a href="#dashboard" class="nav-link">
+          <a href="#" class="nav-link">
             <i class="fas fa-tachometer-alt"></i>
             <span>Panel Principal</span>
           </a>
         </li>
 
         <li class="nav-item">
-          <a href="./gestorSolicitudes.html" class="nav-link">
+          <a th:href="@{/admin/gestor-solicitudes}" class="nav-link">
             <i class="fas fa-trash-alt"></i>
             <span>Solicitudes de Eliminación</span>
           </a>
         </li>
 
         <li class="nav-item">
-          <a href="#deletion-requests" class="nav-link" onclick="location.href='./gestorHechos.html'">
+          <a th:href="@{/admin/gestor-hechos}" class="nav-link">
             <i class="fas fa-file"></i>
             <span>Hechos</span>
           </a>
@@ -36,7 +36,7 @@
   <!-- Main Content -->
   <main class="admin-main">
     <div class="dashboard-header">
-      <h1>Panel de Control</h1>
+      <h1 th:text="${titulo}"></h1>
     </div>
 
     <!-- Stats Cards -->
