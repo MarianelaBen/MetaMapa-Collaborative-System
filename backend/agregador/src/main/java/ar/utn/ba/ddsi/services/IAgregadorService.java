@@ -17,4 +17,5 @@ public interface IAgregadorService {
   public HechoOutputDTO hechoOutputDTO(Hecho hecho);
   List<HechoOutputDTO> obtenerHechosFiltrados(String coleccionId, String categoria, String fechaDesde, String fechaHasta);
     List<SolicitudOutputDTO> getSolicitudes();
+    List<HechoOutputDTO> obtenerHechos();
 }

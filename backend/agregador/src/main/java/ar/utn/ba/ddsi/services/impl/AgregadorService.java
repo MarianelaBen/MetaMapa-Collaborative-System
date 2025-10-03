@@ -83,6 +83,13 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     return hechos;
 }
 
+    @Override
+    public List<HechoOutputDTO> obtenerHechos() {
+        return this.hechoRepository.findAll().stream()
+                .map(this::hechoOutputDTO)
+                .collect(Collectors.toList());
+    }
+
   private Categoria ensureCategoria(String nombre) { //todo borrar con normlaizacion ya se arregla
     return categoriaRepository.findByNombreIgnoreCase(nombre)
         .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));
@@ -121,7 +128,7 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     System.out.println(hecho.getCategoria().getNombre());
     hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
     if(hecho.getEtiquetas() != null){
-      hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
+      hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
     }
     if(hecho.getPathMultimedia() != null){
       hechoOutputDTO.setIdContenidoMultimedia(new ArrayList<>(hecho.getPathMultimedia()));

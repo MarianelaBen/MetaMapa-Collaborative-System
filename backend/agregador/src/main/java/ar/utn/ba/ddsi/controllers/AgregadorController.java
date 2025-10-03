@@ -43,7 +43,7 @@ public class AgregadorController {
   }
 
   //pruebas
-  @GetMapping("/hechos")
+  /*@GetMapping("/hechos")
   public ResponseEntity<?> getHechos(Set<Fuente> fuentes){
     try{
       return ResponseEntity.ok(this.agregadorService.obtenerTodosLosHechos(fuentes).stream().map(agregadorService::hechoOutputDTO));
@@ -58,7 +58,24 @@ public class AgregadorController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
     }
-  }
+  }*/
+    @GetMapping("/hechos")
+    public ResponseEntity<?> getHechos(){
+        try{
+            return ResponseEntity.ok(this.agregadorService.obtenerHechos());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error","Solicitud no valida","mensaje", e.getMessage()));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error","Hechos no encontrados","mensaje", e.getMessage()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
+        }
+    }
+
 
   @GetMapping("/colecciones/{coleccionId}/hechos")
   public ResponseEntity<?> getHechosPorColeccion(@PathVariable String coleccionId, @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr) { //valor predeterminado IRRESTRICTA por si no se especifica nada de cuial se quiere usar

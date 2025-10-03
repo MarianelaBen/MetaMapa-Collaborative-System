@@ -118,7 +118,7 @@ public class AdminService implements IAdminService {
     hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
     hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
     if(hecho.getEtiquetas() != null){
-      hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
+      hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
     }
     if(hecho.getPathMultimedia() != null){
       hechoOutputDTO.setIdContenidoMultimedia(new ArrayList<>(hecho.getPathMultimedia()));
