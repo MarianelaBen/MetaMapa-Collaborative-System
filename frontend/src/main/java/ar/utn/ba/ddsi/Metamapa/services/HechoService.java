@@ -16,7 +16,7 @@ public class HechoService {
     private final WebClient webClient;
 
     public HechoService(WebClient.Builder webClientBuilder,
-                            @Value("${backend.api.base-url}") String baseUrl) {
+                            @Value("${backend.api.base-url-agregador}") String baseUrl) {
         this.webClient = webClientBuilder
                 .baseUrl(baseUrl)
                 .build();

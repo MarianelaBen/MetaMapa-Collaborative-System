@@ -97,11 +97,11 @@
                         </tr>
                     </thead>
                     <tbody id="requestsTable">
-                        <tr data-status="pending" data-user="alice@example.com" data-id="DR001">
-                            <td>DR001</td>
-                            <td>2023-10-26</td>
-                            <td>Incendio forestal activo en Parque Nacional Los Glaciares</td>
-                            <td>Santa Cruz, Argentina</td>
+                        <tr data-status="pending" data-user="alice@example.com" data-id="DR001" th:each="hecho : ${hechos}">
+                            <td th:text="${hecho.id}">DR001</td>
+                            <td th:text="${hecho.fechaAcontecimiento}">2023-10-26</td>
+                            <td th:text="${hecho.titulo}">Incendio forestal activo en Parque Nacional Los Glaciares</td>
+                            <td th:text="${hecho.provincia}">Santa Cruz, Argentina</td>
                             <td><span class="status-badge status-pending">Pendiente</span></td>
                             <td>
                                 <div class="action-buttons">
@@ -117,86 +117,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr data-status="approved" data-user="bob@example.com" data-id="DR002">
-                            <td>DR002</td>
-                            <td>2023-10-25</td>
-                            <td>Incendio controlado en zona rural de Mendoza</td>
-                            <td>Mendoza, Argentina</td>
-                            <td><span class="status-badge status-approved">Aprobado</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-action edit" title="Aprobar">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn-action view" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-action delete" title="Rechazar">
-                                        <i class="fas fa-xmark"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr data-status="rejected" data-user="charlie@example.com" data-id="DR003">
-                            <td>DR003</td>
-                            <td>2023-10-24</td>
-                            <td>Alerta por condiciones de riesgo extremo en Neuquén</td>
-                            <td>Neuquén, Argentina</td>
-                            <td><span class="status-badge status-rejected">Rechazado</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-action edit" title="Aprobar">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn-action view" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-action delete" title="Rechazar">
-                                        <i class="fas fa-xmark"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr data-status="pending" data-user="diana@example.com" data-id="DR004">
-                            <td>DR004</td>
-                            <td>2023-10-23</td>
-                            <td>Foco de incendio detectado por satélite en Córdoba</td>
-                            <td>Córdoba, Argentina</td>
-                            <td><span class="status-badge status-pending">Pendiente</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-action edit" title="Aprobar">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn-action view" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-action delete" title="Rechazar">
-                                        <i class="fas fa-xmark"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr data-status="approved" data-user="eve@example.com" data-id="DR005">
-                            <td>DR005</td>
-                            <td>2023-10-22</td>
-                            <td>Incendio en pastizales de Entre Ríos controlado</td>
-                            <td>Entre Ríos, Argentina </td>
-                            <td><span class="status-badge status-approved">Aprobado</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-action edit" title="Aprobar">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="btn-action view" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-action delete" title="Rechazar">
-                                        <i class="fas fa-xmark"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+
                     </tbody>
                 </table>
                 <div class="table-footer">
