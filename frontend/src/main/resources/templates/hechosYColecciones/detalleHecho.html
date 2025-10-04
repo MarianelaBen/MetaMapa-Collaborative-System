@@ -1,10 +1,10 @@
 <html th:replace="~{layout/base :: layout}" xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="css">
-    <link rel="stylesheet" th:href="@{/css/detalleHecho.css}" />
+    <link rel="stylesheet" th:href="@{/css/detalleHecho.css(v=${#dates.createNow().time})}" />
 </div>
 
-<div class="container" th:fragment="contenido">
+<div class="container page-detalle" th:fragment="contenido">
 
     <div class="breadcrumb">
         <a th:href="@{/inicio}"> Inicio </a> ›
@@ -86,11 +86,12 @@
                 <a class="btn btn-mapa" th:href="@{/mapa}">Ver en Mapa Completo</a>
             </div>
         </div>
+        <div class="return-bar">
+            <a th:href="@{/colecciones}" class="return-link">← Volver a Colecciones</a>
+        </div>
     </div>
 
-    <div style="text-align: center;">
-        <a th:href="@{/colecciones}" class="btn btn-secondary">← Volver a Colecciones</a>
-    </div>
+
 </div>
 </html>
 

@@ -14,6 +14,10 @@
         <span>Edición del Hecho</span>
     </div>
 
+    <div class="alert alert-danger" th:if="${errorMsg}">
+        <strong>Atención:</strong> <span th:text="${errorMsg}">Hay campos obligatorios sin completar.</span>
+    </div>
+
     <!-- Formulario de edición -->
     <form th:action="@{/hechos/{id}/editar(id=${hechoId})}"
           th:object="${hecho}"
@@ -27,13 +31,14 @@
                         <textarea class="fact-title-input"
                            th:field="*{titulo}"
                            rows="2"
-                           placeholder="Título del hecho"></textarea>
+                           placeholder="Título del hecho"
+                                  required></textarea>
                         <button class="btn-editar" type="button" title="Editar">
                             <i class="fa-solid fa-pen"></i>
                         </button>
                     </div>
 
-                        <select class="fact-category" th:field="*{categoria}">
+                        <select class="fact-category" th:field="*{categoria}" required>
                             <option th:each="cat : ${categorias}"
                                     th:value="${cat}"
                                     th:text="${cat}">
@@ -61,7 +66,8 @@
                         <textarea class="fact-description"
                                   th:field="*{descripcion}"
                                   rows="6"
-                                  placeholder="Describe el hecho con el mayor detalle posible..."></textarea>
+                                  placeholder="Describe el hecho con el mayor detalle posible..."
+                                  required></textarea>
                     </section>
 
                     <!-- Multimedia -->
@@ -107,7 +113,8 @@
                             <td class="editable-cell">
                                 <input type="date"
                                        name="fecha"
-                                       th:value="${hecho.fechaAcontecimiento != null ? #temporals.format(hecho.fechaAcontecimiento,'yyyy-MM-dd') : ''}"/>
+                                       th:value="${hecho.fechaAcontecimiento != null ? #temporals.format(hecho.fechaAcontecimiento,'yyyy-MM-dd') : ''}"
+                                       required/>
                                 <button class="btn-editar" type="button" title="Editar">
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
@@ -119,7 +126,8 @@
                             <td class="editable-cell">
                                 <input type="time"
                                        name="hora"
-                                       th:value="${hecho.fechaAcontecimiento != null ? #temporals.format(hecho.fechaAcontecimiento,'HH:mm') : ''}"/>
+                                       th:value="${hecho.fechaAcontecimiento != null ? #temporals.format(hecho.fechaAcontecimiento,'HH:mm') : ''}"
+                                       required/>
                                 <button class="btn-editar" type="button" title="Editar">
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
@@ -135,7 +143,8 @@
                         <div class="info-item">
                             <span class="info-label">Provincia</span>
                             <div class="editable-line">
-                                <input class="info-value" th:field="*{provincia}" placeholder="Provincia"/>
+                                <input class="info-value" th:field="*{provincia}" placeholder="Provincia"
+                                       required/>
                                 <button class="btn-editar" type="button" title="Editar">
                                     <i class="fa-solid fa-pen"></i>
                                 </button>

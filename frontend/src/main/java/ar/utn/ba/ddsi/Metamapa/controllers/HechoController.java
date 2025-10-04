@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -142,7 +143,7 @@ public class HechoController {
 
     boolean error = false;
 
-    if (hecho.getTitulo() == null || hecho.getTitulo().isBlank()) { error = true; }
+    if (hecho.getTitulo() == null || hecho.getTitulo().isBlank()) { error = true;}
     if (hecho.getCategoria() == null || hecho.getCategoria().isBlank()) { error = true; }
     if (hecho.getDescripcion() == null || hecho.getDescripcion().isBlank()) { error = true; }
     if (hecho.getProvincia() == null || hecho.getProvincia().isBlank()) { error = true; }
@@ -162,8 +163,7 @@ public class HechoController {
       model.addAttribute("categorias", categoriasMock());
       model.addAttribute("hechoId", id);
       model.addAttribute("titulo", "Editar Hecho");
-      model.addAttribute("error", "Completá los campos obligatorios.");
-      return "contribuyente/editorHechos";
+      model.addAttribute("errorMsg", "Hay campos obligatorios sin completar.");      return "contribuyente/editorHechos";
     }
 
     // log de archivos por ahora

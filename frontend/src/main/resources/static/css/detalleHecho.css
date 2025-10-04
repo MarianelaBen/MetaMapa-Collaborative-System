@@ -15,10 +15,15 @@ main {
     padding: 2rem 0;
 }
 
-.breadcrumb {
-    margin-bottom: 1.5rem;
-    color: #666;
+.breadcrumb{
+    margin: 1.25rem 0 1.5rem;
+    color:#666
 }
+
+.container.page-detalle{
+    padding-top: 18px;   /* ajusta a 18–24px según te guste */
+}
+
 
 .breadcrumb a {
     color: #3498db;
@@ -78,6 +83,26 @@ main {
     gap: 1rem;
 }
 
+/* Barra “Volver” — igual a editorHechos */
+.return-bar{
+    background:#95a5a6;      /* mismo gris que el de editor */
+    border-radius:8px;
+    padding:12px 16px;
+    margin:20px 0 28px;
+}
+
+.return-link{
+    display:block;
+    text-align:center;
+    color:#fff;
+    text-decoration:none;
+    font-weight:400;         /* sin negrita, igual al otro */
+}
+
+.return-link:hover{
+    text-decoration:underline;
+}
+
 .consensus-indicator {
     display: flex;
     align-items: center;
@@ -101,6 +126,26 @@ main {
 
 .fact-content {
     padding: 2rem;
+}
+
+.fact-content .return-bar{
+    background:#95a5a6;
+    border-radius:8px;
+    padding:12px 16px;
+    margin-top:20px;
+    width:100%;
+}
+
+.fact-content .return-link{
+    display:block;
+    text-align:center;
+    color:#fff;
+    text-decoration:none;
+    font-weight:400;
+}
+
+.fact-content .return-link:hover{
+    text-decoration:underline;
 }
 
 .multimedia-section {
@@ -363,5 +408,3 @@ main {
     .footer-container{ grid-template-columns:1fr; }
     .socials a{ margin-bottom:8px; }
 }
-
-
