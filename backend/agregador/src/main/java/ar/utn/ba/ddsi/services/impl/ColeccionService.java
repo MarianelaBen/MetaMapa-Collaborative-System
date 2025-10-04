@@ -2,23 +2,37 @@ package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.Exceptions.ColeccionCreacionException;
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
+import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
+import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
 import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
 //import ar.utn.ba.ddsi.models.repositories.impl.FuenteRepository;
+import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.modosDeNavegacion.IModoDeNavegacion;
 import ar.utn.ba.ddsi.modosDeNavegacion.impl.ModoDeNavegacionFactory;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -36,9 +50,23 @@ public class ColeccionService implements IColeccionService {
   private @Lazy IAgregadorService agregadorService;
   @Autowired
   private IFuenteRepository fuenteRepo;
+  @Autowired
+  private IHechoRepository hechoRepository;
+  @Autowired
+  private ICategoriaRepository categoriaRepository;
 
+    private final Path uploadRoot;
 
-  @Override
+    public ColeccionService(@Value("${app.upload-dir:${user.home}/uploads}") String uploadDir) {
+        this.uploadRoot = Paths.get(uploadDir).toAbsolutePath().normalize();
+        try {
+            Files.createDirectories(this.uploadRoot);
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo crear carpeta para uploads: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
   public Coleccion crearColeccion(Coleccion coleccion){
     if (!coleccion.getFuentes().isEmpty()){ this.filtrarHechos(coleccion); }
 
@@ -106,5 +134,84 @@ public class ColeccionService implements IColeccionService {
 
     return modo.aplicarModo(hechos, coleccion.getAlgoritmoDeConsenso());
   }
+
+    @Transactional
+    public HechoOutputDTO subirHecho(HechoInputDTO input, MultipartFile[] multimedia) {
+        // validaciones básicas
+        if (input.getTitulo() == null || input.getTitulo().isBlank()) {
+            throw new IllegalArgumentException("Título obligatorio");
+        }
+        if (input.getDescripcion() == null || input.getDescripcion().isBlank()) {
+            throw new IllegalArgumentException("Descripción obligatoria");
+        }
+        if (input.getCategoria() == null || input.getCategoria().isBlank()) {
+            throw new IllegalArgumentException("Categoría obligatoria");
+        }
+        if (input.getFechaAcontecimiento() == null) {
+            throw new IllegalArgumentException("Fecha/hora del acontecimiento obligatoria");
+        }
+
+        // buscar o crear la categoria (según tu lógica)
+        Categoria categoria = categoriaRepository.findByNombreIgnoreCase(input.getCategoria())
+                .orElseGet(() -> {
+                    Categoria c = new Categoria();
+                    c.setNombre(input.getCategoria());
+                    return categoriaRepository.save(c);
+                });
+
+        // crear entidad Hecho
+        Hecho hecho = new Hecho();
+        hecho.setTitulo(input.getTitulo());
+        hecho.setDescripcion(input.getDescripcion());
+        hecho.setCategoria(categoria);
+        hecho.setFechaAcontecimiento(input.getFechaAcontecimiento());
+        hecho.setFechaCarga(LocalDate.now());
+        hecho.setFuenteExterna(input.getFuenteExterna());
+        hecho.setFueEliminado(false);
+
+        // Ubicacion: adaptá según tu clase Ubicacion (si tenés lat/long en el form, guardalos)
+        Ubicacion ub = new Ubicacion();
+        ub.setProvincia(input.getProvincia());
+        hecho.setUbicacion(ub);
+
+        // Save preliminary to get ID for filenames (opcional)
+        Hecho saved = hechoRepository.save(hecho);
+
+        // manejar archivos multimedia
+        List<String> paths = new ArrayList<>();
+        if (multimedia != null && multimedia.length > 0) {
+            for (MultipartFile file : multimedia) {
+                if (file != null && !file.isEmpty()) {
+                    String filename = saved.getId() + "_" + System.currentTimeMillis() + "_" + Path.of(file.getOriginalFilename()).getFileName();
+                    try {
+                        Path target = this.uploadRoot.resolve(filename);
+                        Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+                        paths.add(target.toString());
+                    } catch (IOException e) {
+                        // si falla guardar un archivo, podés decidir rollback o ignorar;
+                        // Aquí lanzo RuntimeException para forzar rollback
+                        throw new RuntimeException("No se pudo guardar archivo: " + file.getOriginalFilename(), e);
+                    }
+                }
+            }
+        }
+
+        // setear paths y actualizar la entidad
+        saved.setPathMultimedia(paths);
+        saved = hechoRepository.save(saved);
+
+        // convertir a OutputDTO (puedes usar tu helper)
+        HechoOutputDTO dto = new HechoOutputDTO();
+        dto.setId(saved.getId());
+        dto.setTitulo(saved.getTitulo());
+        dto.setDescripcion(saved.getDescripcion());
+        dto.setCategoria(saved.getCategoria() != null ? saved.getCategoria().getNombre() : null);
+        dto.setFechaAcontecimiento(saved.getFechaAcontecimiento());
+        dto.setFechaCarga(saved.getFechaCarga());
+        dto.setIdContenidoMultimedia(saved.getPathMultimedia());
+        // etc: completar otros campos si querés
+
+        return dto;
+    }
 }
 

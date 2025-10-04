@@ -90,6 +90,8 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
                 .collect(Collectors.toList());
     }
 
+
+
   private Categoria ensureCategoria(String nombre) { //todo borrar con normlaizacion ya se arregla
     return categoriaRepository.findByNombreIgnoreCase(nombre)
         .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));

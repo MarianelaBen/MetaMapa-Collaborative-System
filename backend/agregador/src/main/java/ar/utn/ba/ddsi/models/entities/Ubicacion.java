@@ -11,10 +11,10 @@ import lombok.Setter;
 @Setter
 @Embeddable
 public class Ubicacion {
-  @Column(name = "latitud",  nullable = false)
+  @Column(name = "latitud",  nullable = true)
    private Double latitud;
 
-  @Column(name = "longitud", nullable = false)
+  @Column(name = "longitud", nullable = true)
   private Double longitud;
 
   @Column(name = "provincia")

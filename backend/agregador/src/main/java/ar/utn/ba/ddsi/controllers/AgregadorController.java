@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.controllers;
 
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
+import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Fuente;
@@ -14,11 +15,16 @@ import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IConsensoService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
+import ar.utn.ba.ddsi.services.impl.ColeccionService;
 import ar.utn.ba.ddsi.services.impl.SolicitudService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,15 +38,17 @@ public class AgregadorController {
   private final IConsensoService consensoService;
   private final ICategoriaRepository categoriaRepository;
   private final ISolicitudRepository solicitudRepository;
+    private final ColeccionService coleccionService;
 
-  public AgregadorController(IAgregadorService agregadorService, ISolicitudService solicitudService, IFuenteRepository fuenteRepository, IConsensoService consensoService, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudRepository){
+    public AgregadorController(IAgregadorService agregadorService, ISolicitudService solicitudService, IFuenteRepository fuenteRepository, IConsensoService consensoService, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudRepository, ColeccionService coleccionService){
     this.agregadorService = agregadorService;
     this.solicitudService = solicitudService;
     this.fuenteRepository = fuenteRepository;
     this.consensoService = consensoService;
     this.categoriaRepository = categoriaRepository;
     this.solicitudRepository = solicitudRepository;
-  }
+        this.coleccionService = coleccionService;
+    }
 
   //pruebas
   /*@GetMapping("/hechos")
@@ -76,6 +84,21 @@ public class AgregadorController {
         }
     }
 
+    @PostMapping(value = "/hechos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> crearHecho(
+            @RequestPart("hecho") HechoInputDTO hechoInput,
+            @RequestPart(value = "multimedia", required = false) MultipartFile[] multimedia) {
+        try {
+            HechoOutputDTO creado = coleccionService.subirHecho(hechoInput, multimedia);
+            // devolver 201 con Location opcional
+            return ResponseEntity.created(URI.create("/api/public/hechos/" + creado.getId())).body(creado);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(500).body("Error creando hecho: " + ex.getMessage());
+        }
+    }
 
   @GetMapping("/colecciones/{coleccionId}/hechos")
   public ResponseEntity<?> getHechosPorColeccion(@PathVariable String coleccionId, @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr) { //valor predeterminado IRRESTRICTA por si no se especifica nada de cuial se quiere usar
