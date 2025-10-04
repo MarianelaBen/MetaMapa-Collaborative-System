@@ -104,7 +104,7 @@ public class HechoController {
       }
     }
 
-    // TODO: aca hariamos el post de hecho
+    HechoDTO creado = this.hechoService.subirHecho(hecho, multimedia);
     redirect.addFlashAttribute("mensaje", "Se envio correctamente el Hecho");
     redirect.addFlashAttribute("tipoMensaje", "success"); //mensaje de que esta ok
 
