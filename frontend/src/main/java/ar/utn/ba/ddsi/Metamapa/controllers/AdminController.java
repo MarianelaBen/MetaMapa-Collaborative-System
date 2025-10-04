@@ -46,6 +46,7 @@ public class AdminController {
     public String mostrarGestorHechos(Model model, RedirectAttributes redirectAttributes) {
         List<HechoDTO> hechos = this.hechoService.getHechos();
         model.addAttribute("titulo", "Gestor de Hechos");
+        model.addAttribute("hechos", hechos);
         return "administrador/gestorHechos";
     }
 
