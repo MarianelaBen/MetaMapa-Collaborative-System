@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
@@ -23,7 +25,15 @@ public class ColeccionController {
 
   @GetMapping
   public String listarColecciones(Model model){
-    List<ColeccionDTO> colecciones = this.coleccionService.getColecciones();
+    List<ColeccionDTO> colecciones;
+
+    //Agrego esto por que no levante el back
+    try{
+      colecciones = this.coleccionService.getColecciones();
+    } catch (Exception e) {
+      colecciones = List.of();
+    }
+
     model.addAttribute("colecciones", colecciones);
     model.addAttribute("titulo", "Explorador de Colecciones");
     model.addAttribute("descripcion", "Navega por las diferentes colecciones de hechos disponibles en esta instancia de MetaMapa. Cada colección contiene información organizada temáticamente y geográficamente.");
@@ -46,6 +56,26 @@ public class ColeccionController {
       return "redirect:/404";
     }
   }
+
+@GetMapping("/nueva")
+public String verFormulario(Model model) {
+    model.addAttribute("titulo", "Crear nueva Coleccion");
+    model.addAttribute("coleccion", new ColeccionDTO(null,null,null));
+    model.addAttribute("algoritmos", List.of("Absoluta", "Mayoria Simple", "Multiples Menciones"));
+    return "administrador/crearColeccion";
+}
+
+@PostMapping("/nueva")
+public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion, RedirectAttributes redirect){
+  try {
+    ColeccionDTO creada = coleccionService.crearColeccion(coleccion);
+    redirect.addFlashAttribute("mensaje", "Coleccion creada: " + creada.getTitulo());
+    return "redirect:/colecciones";
+  } catch (Exception e) {
+    redirect.addFlashAttribute("error", "Error al crear la coleccion.");
+    return "redirect:/colecciones/nueva";
+  }
+}
 
   //método para generar coleccion de ejemplo
   public static List<ColeccionDTO> generarColeccionesEjemplo() {

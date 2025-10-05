@@ -74,4 +74,13 @@ public class ColeccionService {
             throw new RuntimeException("Error al obtener hechos de la colección: " + e.getMessage(), e);
         }
     }
+
+    public ColeccionDTO crearColeccion(ColeccionDTO coleccion) {
+        return webClient.post()
+            .uri("/colecciones")
+            .bodyValue(coleccion)
+            .retrieve()
+            .bodyToMono(ColeccionDTO.class)
+            .block();
+    }
 }
