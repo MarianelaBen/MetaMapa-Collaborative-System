@@ -116,9 +116,8 @@ public class HechoController {
   @GetMapping("/{id}/editar")
   public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
     try {
-      // HechoDTO hecho = hechoService.obtenerPorId(id).orElseThrow(() -> new NotFoundException("Hecho", id.toString()));
-
-      HechoDTO hecho = mockHecho(id);
+      //HechoDTO hecho = mockHecho(id);
+      HechoDTO hecho = hechoService.getHechoPorId(id);
 
       model.addAttribute("hecho", hecho);
       model.addAttribute("categorias", categoriasMock());
@@ -138,6 +137,7 @@ public class HechoController {
                                 @RequestParam("fecha") String fecha,
                                 @RequestParam("hora") String hora,
                                 @RequestParam(name = "multimedia", required = false) MultipartFile[] multimedia,
+                                @RequestParam(name = "replaceMedia", defaultValue = "false") boolean replaceMedia,
                                 RedirectAttributes redirect,
                                 Model model) {
 
@@ -163,23 +163,16 @@ public class HechoController {
       model.addAttribute("categorias", categoriasMock());
       model.addAttribute("hechoId", id);
       model.addAttribute("titulo", "Editar Hecho");
-      model.addAttribute("errorMsg", "Hay campos obligatorios sin completar.");      return "contribuyente/editorHechos";
+      model.addAttribute("errorMsg", "Hay campos obligatorios sin completar.");
+      return "contribuyente/editorHechos";
     }
 
-    // log de archivos por ahora
-    if (multimedia != null) {
-      for (MultipartFile file : multimedia) {
-        if (file != null && !file.isEmpty()) {
-          System.out.println("Archivo subido (edición): " + file.getOriginalFilename());
-        }
-      }
-    }
-
-    // TODO cuando conectemos con el backend: hechoService.actualizar(id, hecho, multimedia);
+    hecho.setId(id);
+    hechoService.actualizarHecho(id, hecho, multimedia, replaceMedia);
 
     redirect.addFlashAttribute("mensaje", "Hecho actualizado correctamente");
     redirect.addFlashAttribute("tipoMensaje", "success");
-    return "redirect:/hechos/" + id; // vuelve al detalle
+    return "redirect:/hechos/" + id;
   }
 
 

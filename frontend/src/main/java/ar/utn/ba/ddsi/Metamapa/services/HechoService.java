@@ -112,6 +112,62 @@ public class HechoService {
             throw new RuntimeException("Error serializando archivos para envío: " + e.getMessage(), e);
         }
     }
+
+    // HechoService.java
+    public HechoDTO obtenerHechoPorId(Long id) {
+        HechoDTO hecho = webClient.get()
+            .uri("/hechos/{id}", id)
+            .retrieve()
+            .bodyToMono(HechoDTO.class)
+            .block();
+        if (hecho == null) throw new NoSuchElementException("Hecho no encontrado");
+        return hecho;
+    }
+
+    public HechoDTO actualizarHecho(Long id, HechoDTO dto, MultipartFile[] multimedia, boolean replaceMedia) {
+        try {
+            MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+
+            String json = objectMapper.writeValueAsString(dto);
+            HttpHeaders jsonHeaders = new HttpHeaders();
+            jsonHeaders.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> hechoPart = new HttpEntity<>(json, jsonHeaders);
+            parts.add("hecho", hechoPart);
+
+            boolean hayArchivos = multimedia != null && Arrays.stream(multimedia).anyMatch(f -> f != null && !f.isEmpty());
+            if (hayArchivos) {
+                for (MultipartFile file : multimedia) {
+                    if (file != null && !file.isEmpty()) {
+                        ByteArrayResource resource = new ByteArrayResource(file.getBytes()) {
+                            @Override public String getFilename() { return file.getOriginalFilename(); }
+                        };
+                        HttpHeaders fileHeaders = new HttpHeaders();
+                        fileHeaders.setContentDispositionFormData("multimedia", file.getOriginalFilename());
+                        String contentType = file.getContentType() != null ? file.getContentType() : "application/octet-stream";
+                        fileHeaders.setContentType(MediaType.parseMediaType(contentType));
+                        HttpEntity<ByteArrayResource> filePart = new HttpEntity<>(resource, fileHeaders);
+                        parts.add("multimedia", filePart);
+                    }
+                }
+            }
+
+            return webClient.put()
+                .uri(uriBuilder -> uriBuilder
+                    .path("/hechos/{id}")
+                    .queryParam("replaceMedia", replaceMedia)
+                    .build(id))
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(parts))
+                .retrieve()
+                .bodyToMono(HechoDTO.class)
+                .block();
+        } catch (IOException e) {
+            throw new RuntimeException("Error serializando archivos para envío: " + e.getMessage(), e);
+        }
+    }
+
 }
+
+
 
 

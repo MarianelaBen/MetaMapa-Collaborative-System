@@ -24,6 +24,8 @@
           method="post"
           enctype="multipart/form-data">
 
+        <input type="hidden" name="replaceMedia" value="false"/>
+
         <div class="fact-container">
             <div class="fact-main">
                 <div class="fact-header">
@@ -113,7 +115,9 @@
                             <td class="editable-cell">
                                 <input type="date"
                                        name="fecha"
-                                       th:value="${hecho.fechaAcontecimiento != null ? #temporals.format(hecho.fechaAcontecimiento,'yyyy-MM-dd') : ''}"
+                                       th:value="${hecho.fechaAcontecimiento != null
+                                       ? #temporals.format(hecho.fechaAcontecimiento,'yyyy-MM-dd')
+                                       : ''}"
                                        required/>
                                 <button class="btn-editar" type="button" title="Editar">
                                     <i class="fa-solid fa-pen"></i>
@@ -160,7 +164,7 @@
                 </div>
             </div>
         </div>
-
+        </div>
     </form>
 
     <div class="return-bar">

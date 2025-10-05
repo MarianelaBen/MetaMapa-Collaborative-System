@@ -13,7 +13,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class HechoDTO {
-    private Long id;
+  private Long id;
   private String titulo;
   private String descripcion;
   private String categoria;
@@ -22,7 +22,7 @@ public class HechoDTO {
   private String provincia;
   private LocalDateTime fechaAcontecimiento;
   private LocalDate fechaCarga;
-  private Set<String> idEtiquetas;
+  private Set<Long> idEtiquetas;
   private List<String> idContenidoMultimedia;
   private String fuenteExterna;
 
