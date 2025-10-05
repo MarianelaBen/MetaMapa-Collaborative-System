@@ -35,6 +35,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -119,6 +120,61 @@ public class ColeccionService implements IColeccionService {
       filtrarHechos(coleccion);
       coleccionRepository.save(coleccion);
     }
+  }
+
+  @Transactional
+  public HechoOutputDTO actualizarHecho(Long id, HechoInputDTO input, MultipartFile[] multimedia, boolean replaceMedia) {
+    Hecho h = hechoRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado"));
+
+    if (input.getTitulo() == null || input.getTitulo().isBlank()) throw new IllegalArgumentException("Título obligatorio");
+    if (input.getDescripcion() == null || input.getDescripcion().isBlank()) throw new IllegalArgumentException("Descripción obligatoria");
+    if (input.getCategoria() == null || input.getCategoria().isBlank()) throw new IllegalArgumentException("Categoría obligatoria");
+    if (input.getFechaAcontecimiento() == null) throw new IllegalArgumentException("Fecha/hora del acontecimiento obligatoria");
+
+    Categoria categoria = categoriaRepository.findByNombreIgnoreCase(input.getCategoria())
+        .orElseGet(() -> {
+          Categoria c = new Categoria();
+          c.setNombre(input.getCategoria());
+          return categoriaRepository.save(c);
+        });
+
+    // Asignar campos
+    h.setTitulo(input.getTitulo());
+    h.setDescripcion(input.getDescripcion());
+    h.setCategoria(categoria);
+    h.setFechaAcontecimiento(input.getFechaAcontecimiento());
+    if (h.getFechaCarga() == null) h.setFechaCarga(LocalDate.now());
+    h.setFuenteExterna(input.getFuenteExterna());
+
+    // Ubicación
+    if (h.getUbicacion() == null) h.setUbicacion(new Ubicacion());
+    h.getUbicacion().setProvincia(input.getProvincia());
+    h.getUbicacion().setLatitud(input.getLatitud());
+    h.getUbicacion().setLongitud(input.getLongitud());
+
+    // Multimedia
+    List<String> pathsActuales = h.getPathMultimedia() == null ? new ArrayList<>() : new ArrayList<>(h.getPathMultimedia());
+    if (replaceMedia) pathsActuales.clear();
+
+    if (multimedia != null && multimedia.length > 0) {
+      for (MultipartFile file : multimedia) {
+        if (file != null && !file.isEmpty()) {
+          String filename = h.getId() + "_" + System.currentTimeMillis() + "_" + Path.of(file.getOriginalFilename()).getFileName();
+          try {
+            Path target = this.uploadRoot.resolve(filename);
+            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+            pathsActuales.add(target.toString());
+          } catch (IOException e) {
+            throw new RuntimeException("No se pudo guardar archivo: " + file.getOriginalFilename(), e);
+          }
+        }
+      }
+    }
+    h.setPathMultimedia(pathsActuales);
+
+    Hecho saved = hechoRepository.save(h);
+    return HechoOutputDTO.fromEntity(saved);
   }
 
   @Override

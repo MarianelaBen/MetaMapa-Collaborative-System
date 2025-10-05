@@ -103,6 +103,7 @@ public class AgregadorController {
         }
     }
 
+
   @GetMapping("/hechos/{id}")
   public ResponseEntity<Object> getHechoPorId(@PathVariable Long id) {
     return hechoRepository.findById(id)
@@ -110,6 +111,27 @@ public class AgregadorController {
         .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
             .<Object>body(Map.of("error","Hecho no encontrado","mensaje","id="+id)));
   }
+
+  @PutMapping(value = "/hechos/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<?> actualizarHecho(
+      @PathVariable Long id,
+      @RequestPart("hecho") HechoInputDTO hechoInput,
+      @RequestPart(value = "multimedia", required = false) MultipartFile[] multimedia,
+      @RequestParam(name = "replaceMedia", defaultValue = "false") boolean replaceMedia) {
+
+    try {
+      HechoOutputDTO actualizado = coleccionService.actualizarHecho(id, hechoInput, multimedia, replaceMedia);
+      return ResponseEntity.ok(actualizado);
+    } catch (NoSuchElementException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hecho no encontrado");
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(500).body("Error actualizando hecho: " + e.getMessage());
+    }
+  }
+
 
   @GetMapping("/colecciones/{coleccionId}/hechos")
   public ResponseEntity<?> getHechosPorColeccion(@PathVariable String coleccionId, @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr) { //valor predeterminado IRRESTRICTA por si no se especifica nada de cuial se quiere usar

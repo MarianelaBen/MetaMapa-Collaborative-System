@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 public class HechoOutputDTO {
-    private Long id;
+  private Long id;
   private String titulo;
   private String descripcion;
   private String categoria;
@@ -30,20 +30,56 @@ public class HechoOutputDTO {
   private String fuenteExterna;
   private Contribuyente contribuyente;
 
-    public static HechoOutputDTO fromEntity(Hecho h) {
-        HechoOutputDTO dto = new HechoOutputDTO();
-        dto.setId(h.getId());
-        dto.setTitulo(h.getTitulo());
-        dto.setDescripcion(h.getDescripcion());
-        dto.setCategoria(h.getCategoria().getNombre());
-        dto.setLatitud(h.getUbicacion().getLatitud());
-        dto.setLongitud(h.getUbicacion().getLongitud());
-        dto.setFechaAcontecimiento(h.getFechaAcontecimiento());
-        dto.setFechaCarga(h.getFechaCarga());
-        dto.setIdEtiquetas(h.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
-        dto.setIdContenidoMultimedia(h.getPathMultimedia());
-        dto.setFuenteExterna(h.getFuenteExterna());
-        return dto;
+  public static HechoOutputDTO fromEntity(Hecho h) {
+    HechoOutputDTO dto = new HechoOutputDTO();
+    dto.setId(h.getId());
+    dto.setTitulo(h.getTitulo());
+    dto.setDescripcion(h.getDescripcion());
+    dto.setCategoria(h.getCategoria() != null ? h.getCategoria().getNombre() : null);
+    if (h.getUbicacion() != null) {
+      dto.setLatitud(h.getUbicacion().getLatitud());
+      dto.setLongitud(h.getUbicacion().getLongitud());
+      dto.setProvincia(h.getUbicacion().getProvincia());
+    } else {
+      dto.setLatitud(null);
+      dto.setLongitud(null);
+      dto.setProvincia(null);
     }
+    dto.setFechaAcontecimiento(h.getFechaAcontecimiento());
+    dto.setFechaCarga(h.getFechaCarga());
+    dto.setIdEtiquetas(
+        h.getEtiquetas() != null
+            ? h.getEtiquetas().stream().map(Etiqueta::getId).collect(java.util.stream.Collectors.toSet())
+            : java.util.Set.of()
+    );
+    dto.setIdContenidoMultimedia(
+        h.getPathMultimedia() != null ? h.getPathMultimedia() : java.util.List.of());
+    dto.setFuenteExterna(h.getFuenteExterna());
+    return dto;
+  }
+
+  /*public static HechoOutputDTO fromEntity(Hecho h) {
+    HechoOutputDTO dto = new HechoOutputDTO();
+    dto.setId(h.getId());
+    dto.setTitulo(h.getTitulo());
+    dto.setDescripcion(h.getDescripcion());
+    dto.setCategoria(h.getCategoria() != null ? h.getCategoria().getNombre() : null);
+    if (h.getUbicacion() != null) {
+      dto.setLatitud(h.getUbicacion().getLatitud());
+      dto.setLongitud(h.getUbicacion().getLongitud());
+      dto.setProvincia(h.getUbicacion().getProvincia());
+    }
+    dto.setFechaAcontecimiento(h.getFechaAcontecimiento());
+    dto.setFechaCarga(h.getFechaCarga());
+    dto.setIdEtiquetas(
+        h.getEtiquetas() == null ? null :
+            h.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet())
+    );
+    dto.setIdContenidoMultimedia(h.getPathMultimedia()); // puede ser null y no pasa nada
+    dto.setFuenteExterna(h.getFuenteExterna());
+    return dto;
+  }
+*/
+
 
 }
