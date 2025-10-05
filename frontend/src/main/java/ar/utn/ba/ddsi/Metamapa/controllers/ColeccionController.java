@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/colecciones")
@@ -68,14 +70,37 @@ public String verFormulario(Model model) {
 @PostMapping("/nueva")
 public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion, RedirectAttributes redirect){
   try {
+
+    //agregado ahora por el error
+    if (coleccion.getHandle() == null || coleccion.getHandle().isBlank()) {
+      coleccion.setHandle(makeHandle(coleccion.getTitulo()));
+  }
+    if (coleccion.getFuenteIds() == null) coleccion.setFuenteIds(Set.of());
+    if (coleccion.getCriterioIds() == null) coleccion.setCriterioIds(Set.of());
+
     ColeccionDTO creada = coleccionService.crearColeccion(coleccion);
     redirect.addFlashAttribute("mensaje", "Coleccion creada: " + creada.getTitulo());
     return "redirect:/colecciones";
   } catch (Exception e) {
+    //agrego esto tmb
+    e.printStackTrace(); // para ver stack en consola
     redirect.addFlashAttribute("error", "Error al crear la coleccion.");
     return "redirect:/colecciones/nueva";
   }
 }
+//Raro
+  private String makeHandle(String titulo) {
+    if (titulo == null) return null;
+    String h = titulo.toLowerCase()
+        .replaceAll("\\s+", "-")         // espacios -> guion
+        .replaceAll("[^a-z0-9-]", "")    // solo letras, numeros y guiones
+        .replaceAll("-{2,}", "-")        // colapsa guiones repetidos
+        .replaceAll("(^-|-$)", "");      // saca guion al inicio/fin
+    if (h.isBlank()) {
+      h = "coleccion-" + System.currentTimeMillis(); // fallback
+    }
+    return h;
+  }
 
   //método para generar coleccion de ejemplo
   public static List<ColeccionDTO> generarColeccionesEjemplo() {

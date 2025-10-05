@@ -17,6 +17,8 @@ public class ColeccionDTO {
     private Set<Long> criterioIds;
     private Set<Long> hechoIds;
 
+  public ColeccionDTO() {}
+
   public ColeccionDTO(String titulo, String descripcion, String handle) {
     this.titulo = titulo;
     this.descripcion = descripcion;
