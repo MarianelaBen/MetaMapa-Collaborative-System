@@ -32,8 +32,8 @@ public class HechoController {
   public String verDetalleHecho(@PathVariable Long id,
                                 Model model, RedirectAttributes redirectAttributes){
     try{
-      // MOCK del hecho
-      HechoDTO hecho = mockHecho(id);
+      // HechoDTO hecho = mockHecho(id);
+      HechoDTO hecho = hechoService.getHechoPorId(id);
           model.addAttribute("hecho", hecho);
           model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
 
