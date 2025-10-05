@@ -11,6 +11,7 @@ import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
+import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IConsensoService;
@@ -38,16 +39,18 @@ public class AgregadorController {
   private final IConsensoService consensoService;
   private final ICategoriaRepository categoriaRepository;
   private final ISolicitudRepository solicitudRepository;
-    private final ColeccionService coleccionService;
+  private final IHechoRepository hechoRepository;
+  private final ColeccionService coleccionService;
 
-    public AgregadorController(IAgregadorService agregadorService, ISolicitudService solicitudService, IFuenteRepository fuenteRepository, IConsensoService consensoService, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudRepository, ColeccionService coleccionService){
+    public AgregadorController(IAgregadorService agregadorService, ISolicitudService solicitudService, IFuenteRepository fuenteRepository, IConsensoService consensoService, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudRepository, IHechoRepository hechoRepository, ColeccionService coleccionService){
     this.agregadorService = agregadorService;
     this.solicitudService = solicitudService;
     this.fuenteRepository = fuenteRepository;
     this.consensoService = consensoService;
     this.categoriaRepository = categoriaRepository;
     this.solicitudRepository = solicitudRepository;
-        this.coleccionService = coleccionService;
+    this.hechoRepository = hechoRepository;
+    this.coleccionService = coleccionService;
     }
 
   //pruebas
@@ -99,6 +102,14 @@ public class AgregadorController {
             return ResponseEntity.status(500).body("Error creando hecho: " + ex.getMessage());
         }
     }
+
+  @GetMapping("/hechos/{id}")
+  public ResponseEntity<Object> getHechoPorId(@PathVariable Long id) {
+    return hechoRepository.findById(id)
+        .map(h -> ResponseEntity.ok().<Object>body(agregadorService.hechoOutputDTO(h)))
+        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .<Object>body(Map.of("error","Hecho no encontrado","mensaje","id="+id)));
+  }
 
   @GetMapping("/colecciones/{coleccionId}/hechos")
   public ResponseEntity<?> getHechosPorColeccion(@PathVariable String coleccionId, @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr) { //valor predeterminado IRRESTRICTA por si no se especifica nada de cuial se quiere usar

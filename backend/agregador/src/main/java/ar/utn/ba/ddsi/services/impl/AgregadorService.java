@@ -129,6 +129,7 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
     System.out.println(hecho.getCategoria().getNombre());
     hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+    hechoOutputDTO.setProvincia(hecho.getUbicacion() != null ? hecho.getUbicacion().getProvincia() : null);
     if(hecho.getEtiquetas() != null){
       hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
     }
