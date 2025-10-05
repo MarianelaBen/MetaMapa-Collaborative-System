@@ -1,7 +1,8 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
-import ar.utn.ba.ddsi.Metamapa.dtos.ColeccionDTO;
-import ar.utn.ba.ddsi.Metamapa.dtos.HechoDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import java.util.List;
 public class LandingController {
 
   @GetMapping("/inicio")
+  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String inicio(Model model){
     List<ColeccionDTO> coleccionesDestacadas = this.generarColeccionesDestacadasEjemplo();
     List<HechoDTO> hechosDestacados = this.generarHechosDestacadosEjemplo();

@@ -1,10 +1,11 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
-import ar.utn.ba.ddsi.Metamapa.dtos.ColeccionDTO;
-import ar.utn.ba.ddsi.Metamapa.dtos.HechoDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.time.LocalDateTime;
+
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +26,7 @@ public class ColeccionController {
   private final ColeccionService coleccionService;
 
   @GetMapping
+  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String listarColecciones(Model model){
     List<ColeccionDTO> colecciones;
 
@@ -44,6 +45,7 @@ public class ColeccionController {
   }
 
   @GetMapping("/{handle}")
+  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String verDetalleColeccion(Model model, @PathVariable String handle, RedirectAttributes redirectAttributes){
     try{
       ColeccionDTO coleccion = this.coleccionService.getColeccionByHandle(handle);
@@ -60,6 +62,7 @@ public class ColeccionController {
   }
 
 @GetMapping("/nueva")
+@PreAuthorize("hasAnyRole('ADMIN') and hasAnyAuthority('ADMIN_COLECCCIONES')")
 public String verFormulario(Model model) {
     model.addAttribute("titulo", "Crear nueva Coleccion");
     model.addAttribute("coleccion", new ColeccionDTO(null,null,null));
@@ -68,6 +71,7 @@ public String verFormulario(Model model) {
 }
 
 @PostMapping("/nueva")
+@PreAuthorize("hasAnyRole('ADMIN') and hasAnyAuthority('ADMIN_COLECCCIONES')")
 public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion, RedirectAttributes redirect){
   try {
 

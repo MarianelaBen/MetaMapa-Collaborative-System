@@ -1,7 +1,6 @@
 package ar.utn.ba.ddsi.Metamapa.services;
 
-import ar.utn.ba.ddsi.Metamapa.dtos.ColeccionDTO;
-import ar.utn.ba.ddsi.Metamapa.dtos.SolicitudDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.SolicitudDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

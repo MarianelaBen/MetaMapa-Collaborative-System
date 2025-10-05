@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.Metamapa.dtos;
+package ar.utn.ba.ddsi.Metamapa.models.dtos;
 
 
 import lombok.Getter;

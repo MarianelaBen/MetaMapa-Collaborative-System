@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +17,7 @@ public class SolicitudesController {
 
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     public String mostrarFormulario(@PathVariable Integer hechoId, Model model) {
         model.addAttribute("titulo", "Solicitar eliminación de hecho");
         model.addAttribute("hechoId", hechoId);
@@ -28,6 +30,7 @@ public class SolicitudesController {
 
 
     @PostMapping("/crear")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CONTRIBUYENTE', 'VISUALIZADOR')")
     public String crear(@PathVariable Long hechoId,
                         @RequestParam("justificacion") String justificacion,
                         Model model,

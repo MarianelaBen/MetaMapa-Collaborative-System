@@ -1,10 +1,10 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
-import ar.utn.ba.ddsi.Metamapa.dtos.ColeccionDTO;
-import ar.utn.ba.ddsi.Metamapa.dtos.HechoDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +18,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -29,6 +27,7 @@ public class HechoController {
   private final HechoService hechoService;
 
   @GetMapping("/{id}")
+  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String verDetalleHecho(@PathVariable Long id,
                                 Model model, RedirectAttributes redirectAttributes){
     try{
@@ -47,6 +46,7 @@ public class HechoController {
   }
 
   @GetMapping("/nuevo")
+  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String verFormulario(Model model) {
     model.addAttribute("titulo","Subir hecho");
     model.addAttribute("hecho", new HechoDTO(
@@ -63,6 +63,7 @@ public class HechoController {
   }
 
   @PostMapping("/nuevo")
+  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String procesarFormulario(@ModelAttribute("hecho") HechoDTO hecho,
                                         @RequestParam("fecha") String fecha,
                                         @RequestParam("hora") String hora,
@@ -114,6 +115,7 @@ public class HechoController {
   }
 
   @GetMapping("/{id}/editar")
+  @PreAuthorize("hasAnyRole('CONTRIBUYENTE') and hasAnyAuthority('EDITAR_HECHO_PROPIO')")
   public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
     try {
       //HechoDTO hecho = mockHecho(id);
@@ -132,6 +134,7 @@ public class HechoController {
   }
 
   @PostMapping("/{id}/editar")
+  @PreAuthorize("hasAnyRole('CONTRIBUYENTE') and hasAnyAuthority('EDITAR_HECHO_PROPIO')")
   public String procesarEdicion(@PathVariable Long id,
                                 @ModelAttribute("hecho") HechoDTO hecho,
                                 @RequestParam("fecha") String fecha,
