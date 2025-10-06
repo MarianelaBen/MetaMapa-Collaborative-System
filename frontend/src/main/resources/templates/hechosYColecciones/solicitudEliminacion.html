@@ -7,7 +7,7 @@
 
 <div th:fragment="contenido">
     <form class="formulario-hecho"
-          th:action="@{/solicitud/{id}/crear(id=${hechoId})}"
+          th:action="@{/solicitud/{hechoId}/crear(hechoId=${hecho.id})}"
           method="post">
 
         <h4>Solicitar eliminación</h4>

@@ -29,7 +29,7 @@ public class SolicitudesController {
         }
         model.addAttribute("titulo", "Solicitar eliminación de hecho");
         model.addAttribute("hecho", hecho);
-        model.addAttribute("hechoId", hechoId); // <-- agregado
+
 
         if (!model.containsAttribute("justificacion")) {
             model.addAttribute("justificacion", "");
