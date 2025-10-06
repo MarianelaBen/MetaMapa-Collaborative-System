@@ -2,10 +2,16 @@ package ar.utn.ba.ddsi.Metamapa.services;
 
 import ar.utn.ba.ddsi.Metamapa.models.dtos.SolicitudDTO;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -35,8 +41,46 @@ public class SolicitudService {
         return solicitudes;
     }
 
-  public String crearSolicitudEliminacion(Long hechoId, String justificacion) { //TODO POR AHORA AHARDCODEADO DSP CONECTAR CONM BACK
-    String shortId = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-    return "SOL-" + shortId;
-  }
+    public String crearSolicitudEliminacion(Long hechoId, String justificacion) {
+        try {
+            ResponseEntity<SolicitudDTO> resp = webClient.post()
+                    .uri("/solicitudes")
+                    .bodyValue(Map.of("hechoId", hechoId, "justificacion", justificacion))
+                    .retrieve()
+                    .onStatus(HttpStatusCode::isError, clientResponse ->
+                            clientResponse.bodyToMono(String.class)
+                                    .flatMap(body -> Mono.<RuntimeException>error(
+                                            new RuntimeException("Backend error: " + body)
+                                    ))
+                    )
+                    .toEntity(SolicitudDTO.class)
+                    .block();
+
+            // 1) Si llegó body, devolvemos su id
+            if (resp != null && resp.getBody() != null && resp.getBody().getId() != null) {
+                return String.valueOf(resp.getBody().getId());
+            }
+
+            // 2) Si no hay body, intentar extraer id del header Location
+            if (resp != null && resp.getHeaders() != null && resp.getHeaders().getLocation() != null) {
+                URI loc = resp.getHeaders().getLocation();
+                String path = loc.getPath(); // p.ej. "/api/solicitudes/1234"
+                String id = path.substring(path.lastIndexOf('/') + 1);
+                return id;
+            }
+
+            // 3) Intentar header personalizado (ej: X-Resource-Id)
+            if (resp != null && resp.getHeaders().containsKey("X-Resource-Id")) {
+                String headerId = resp.getHeaders().getFirst("X-Resource-Id");
+                if (headerId != null && !headerId.isBlank()) return headerId;
+            }
+
+            // 4) Fallback: crear un id local (o lanzar excepción si preferís)
+            return "SOL-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo crear la solicitud: " + e.getMessage(), e);
+        }
+    }
+
 }

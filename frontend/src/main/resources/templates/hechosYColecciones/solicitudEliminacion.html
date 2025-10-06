@@ -7,22 +7,17 @@
 
 <div th:fragment="contenido">
     <form class="formulario-hecho"
-          th:action="@{/hechos/{id}/solicitudes/eliminacion/crear(id=${hechoId})}"
+          th:action="@{/solicitud/{id}/crear(id=${hechoId})}"
           method="post">
 
         <h4>Solicitar eliminación</h4>
-
-
+        <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
         <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
 
 
-        <h5 class="hecho-title">Incendio forestal activo en Parque Nacional Los Glaciares</h5>
-        <div class="hecho-category">Incendio forestal</div>
-        <p class="hecho-description">
-            Incendio de gran magnitud detectado en el sector norte del Parque Nacional Los Glaciares.
-            Las llamas han consumido aproximadamente 1,200 hectáreas de bosque nativo.
-            Equipos de bomberos trabajan en la zona desde las primeras horas de la madrugada.
-        </p>
+        <h5 class="hecho-title" th:text="${hecho.titulo}"></h5>
+        <div class="hecho-category" th:text="${hecho.categoria}"></div>
+        <p class="hecho-description" th:text="${hecho.descripcion}"></p>
 
         <div class="hecho-meta">
             <div><strong>Fecha del hecho:</strong> 12/08/2025</div>
