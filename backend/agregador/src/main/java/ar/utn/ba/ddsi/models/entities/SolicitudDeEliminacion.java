@@ -30,7 +30,7 @@ public class SolicitudDeEliminacion {
   @JoinColumn(name = "hecho_id")
   private Hecho hecho;
 
-  @Column(name = "justificacion")
+  @Column(name = "justificacion", columnDefinition = "TEXT", nullable = false)
   private String justificacion;
   @Enumerated(EnumType.STRING)
   @Column(name = "estado")

@@ -3,7 +3,9 @@ package ar.utn.ba.ddsi.controllers;
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
@@ -24,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.*;
@@ -173,19 +176,24 @@ public class AgregadorController {
     }
   }
 
-  @PostMapping("/solicitudes")
-  public ResponseEntity<?> crearSolicitudDeEliminacion(@RequestBody SolicitudDeEliminacion solicitud) {
-    try {
-      solicitudService.crearSolicitud(solicitud);
-      return ResponseEntity.status(HttpStatus.CREATED).build();
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(Map.of("error","Solicitud inválida","mensaje", e.getMessage()));
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error","Error al crear la solicitud","mensaje", e.getMessage()));
+    @PostMapping("/solicitudes")
+    public ResponseEntity<SolicitudOutputDTO> crearSolicitudDeEliminacion(@RequestBody SolicitudInputDTO dto) {
+        try {
+            SolicitudDeEliminacion creado = solicitudService.crearSolicitud(dto);
+            SolicitudOutputDTO out = SolicitudOutputDTO.fromEntity(creado);
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(creado.getId())
+                    .toUri();
+            return ResponseEntity.created(location).body(out);
+        } catch (IllegalArgumentException e) {
+            // convierte la excepción a un HTTP 400 con mensaje
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (Exception e) {
+            // HTTP 500 con mensaje genérico
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al crear la solicitud", e);
+        }
     }
-  }
 
   @PostMapping("/fuentes")
   public ResponseEntity<?> guardarFuente(@RequestBody FuenteInputDTO dto) {
