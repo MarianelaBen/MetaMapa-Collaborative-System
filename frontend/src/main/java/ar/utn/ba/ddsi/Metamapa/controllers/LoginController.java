@@ -10,14 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class LoginController {
 
     @GetMapping("/login")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
     public String verLogin(){
 
         return "authentication/login";
     }
 
     @GetMapping("/signup")
-    @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
     public String verSignup(){
 
         return "authentication/signup";

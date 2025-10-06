@@ -1,8 +1,10 @@
-/*
 package ar.utn.ba.ddsi.Metamapa.config;
 
+import ar.utn.ba.ddsi.Metamapa.providers.CustomAuthProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -10,6 +12,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig {
+
+   @Bean
+    public AuthenticationManager authManager(HttpSecurity http, CustomAuthProvider provider) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(provider)
+                .build();
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -19,17 +28,16 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/signup","/landing",
                                 "/css/**", "/js/**", "/images/**",
                                 "/colecciones", "/hechos/*", "/colecciones/*",
-                                "/hechos/*/
-//solicitud", "/hechos/nuevo", "/privacidad").permitAll()
+                                "/hechos/*/solicitud", "/hechos/nuevo", "/privacidad").permitAll()
                         // Ejemplo: Acceso a alumnos: ADMIN y DOCENTE
                         //.requestMatchers("/alumnos/**").hasAnyRole("ADMIN", "DOCENTE")
                         // Lo demás requiere autenticación
-                        /*.anyRequest().authenticated()
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .permitAll()
-                        .defaultSuccessUrl("/landing", true) 
+                        .defaultSuccessUrl("/landing", true)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -50,7 +58,7 @@ public class SecurityConfig {
                         )
                  */
 
-              /*  .exceptionHandling(ex -> ex
+                .exceptionHandling(ex -> ex
                         // Usuario no autenticado → redirigir a login
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendRedirect("/login?unauthorized")
@@ -64,4 +72,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-*/
