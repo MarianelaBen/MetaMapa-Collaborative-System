@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.Metamapa.models.entities;
+/*package ar.utn.ba.ddsi.Metamapa.models.entities;
 
 import ar.utn.ba.ddsi.Metamapa.enums.Permiso;
 import ar.utn.ba.ddsi.Metamapa.enums.Rol;
@@ -28,4 +28,4 @@ public class Usuario {
     public void agregarPermiso(Permiso p) {
         this.permisos.add(p);
     }
-}
+}*/

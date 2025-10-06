@@ -1,3 +1,4 @@
+/*
 package ar.utn.ba.ddsi.Metamapa.config;
 
 import org.springframework.context.annotation.Bean;
@@ -18,11 +19,12 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/signup","/landing",
                                 "/css/**", "/js/**", "/images/**",
                                 "/colecciones", "/hechos/*", "/colecciones/*",
-                                "/hechos/*/solicitud", "/hechos/nuevo", "/privacidad").permitAll()
+                                "/hechos/*/
+//solicitud", "/hechos/nuevo", "/privacidad").permitAll()
                         // Ejemplo: Acceso a alumnos: ADMIN y DOCENTE
                         //.requestMatchers("/alumnos/**").hasAnyRole("ADMIN", "DOCENTE")
                         // Lo demás requiere autenticación
-                        .anyRequest().authenticated()
+                        /*.anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -48,7 +50,7 @@ public class SecurityConfig {
                         )
                  */
 
-                .exceptionHandling(ex -> ex
+              /*  .exceptionHandling(ex -> ex
                         // Usuario no autenticado → redirigir a login
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendRedirect("/login?unauthorized")
@@ -62,3 +64,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+*/
