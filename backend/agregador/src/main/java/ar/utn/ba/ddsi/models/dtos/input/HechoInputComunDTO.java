@@ -16,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HechoInputComunDTO {
+    private Long id;
   private String titulo;
   private String descripcion;
   private String categoria;

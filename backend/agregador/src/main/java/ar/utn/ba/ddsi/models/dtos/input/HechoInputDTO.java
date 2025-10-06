@@ -15,7 +15,7 @@ import java.util.Set;
 @Setter
 @Getter
 public class HechoInputDTO {
-  private long id;
+  private Long id;
   private String titulo;
   private String descripcion;
   private String categoria;

@@ -120,6 +120,7 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
   @Override
   public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
+    hechoOutputDTO.setId(hecho.getId());
     hechoOutputDTO.setTitulo(hecho.getTitulo());
     hechoOutputDTO.setDescripcion(hecho.getDescripcion());
     hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
