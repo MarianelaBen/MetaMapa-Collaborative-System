@@ -2,6 +2,9 @@
 
 <div th:fragment="css">
     <link rel="stylesheet" th:href="@{/css/panelControl.css}" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </div>
 
 <div class="admin-layout" th:fragment="contenido">
@@ -150,12 +153,18 @@
                     <i class="fas fa-edit"></i>
                   </a>
                   <!-- FIX: se quitó un </button> suelto acá -->
-                  <button class="btn-action view" title="Ver">
+                  <a class="btn-action view" title="Ver" th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}">
                     <i class="fas fa-eye"></i>
-                  </button>
-                  <button class="btn-action delete" title="Eliminar">
-                    <i class="fas fa-trash"></i>
-                  </button>
+                  </a>
+                    <!-- botón en la fila (igual que el tuyo) -->
+                    <button type="button"
+                            class="btn-action delete"
+                            title="Eliminar"
+                            th:attr="data-handle=${coleccion.handle}"
+                            onclick="confirmDelete(this.dataset.handle)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+
                 </div>
               </td>
             </tr>
@@ -230,6 +239,46 @@
       </div>       <!-- FIX: faltaba cerrar .table-container -->
     </div>         <!-- FIX: faltaba cerrar .table-section (importaciones) -->
 
+      <!-- Formulario oculto único -->
+      <form id="deleteForm" th:method="post" style="display:none;">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+      </form>
+
+      <script>
+          function confirmDelete(handle) {
+              if (!handle) {
+                  console.warn('confirmDelete: handle vacío');
+                  return;
+              }
+
+              const doConfirm = () => {
+                  const form = document.getElementById('deleteForm');
+                  form.action = `/admin/${encodeURIComponent(handle)}/eliminar`;
+                  form.submit();
+              };
+
+              if (window.Swal) {
+                  Swal.fire({
+                      title: '¿Eliminar colección?',
+                      text: 'Esta acción no se puede deshacer',
+                      icon: 'warning',
+                      showCancelButton: true,
+                      confirmButtonText: 'Sí, eliminar',
+                      cancelButtonText: 'Cancelar',
+                      confirmButtonColor: '#d33',
+                      cancelButtonColor: '#3085d6'
+                  }).then(result => {
+                      if (result.isConfirmed) doConfirm();
+                  }).catch(err => {
+                      console.error('Swal error:', err);
+                  });
+              } else {
+                  if (window.confirm('¿Eliminar colección? Esta acción no se puede deshacer')) {
+                      doConfirm();
+                  }
+              }
+          }
+      </script>
   </main>
 </div>
 

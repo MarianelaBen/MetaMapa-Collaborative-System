@@ -1,5 +1,7 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
+import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
+import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.SolicitudDTO;
@@ -10,10 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -73,6 +73,36 @@ public class AdminController {
 
     redirect.addFlashAttribute("mensaje", "Archivo subido correctamente. ");
     return "redirect:/administrador/importadorArchivosCSV";
+  }
+
+  @PostMapping("/{handle}/eliminar")
+  @PreAuthorize("hasAnyRole('ADMIN')")
+  public String eliminarColeccion(@PathVariable String handle,
+                                  @ModelAttribute("coleccion") ColeccionDTO coleccionDTO,
+                                  BindingResult bindingResult,
+                                  Model model,
+                                  RedirectAttributes redirectAttributes
+  ) {
+      try {
+          coleccionService.eliminarColeccion(handle);
+          redirectAttributes.addFlashAttribute("mensaje", "Colección eliminada exitosamente");
+          redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+          // REDIRECT explícito a la ruta del panel
+          return "redirect:/admin/panel-control";
+      } catch (NotFoundException ex) {
+          redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+          redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+          return "redirect:/admin/panel-control";
+      } catch (ValidationException e) {
+          redirectAttributes.addFlashAttribute("mensaje", "Error de validación: " + e.getMessage());
+          redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+          return "redirect:/admin/panel-control";
+      } catch (Exception e) {
+
+          redirectAttributes.addFlashAttribute("mensaje", "Error al eliminar la colección");
+          redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+          return "redirect:/admin/panel-control";
+      }
   }
 
 }

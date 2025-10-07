@@ -105,15 +105,15 @@
                             <td><span class="status-badge status-pending">Pendiente</span></td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn-action edit" title="Aprobar">
+                                    <a class="btn-action edit" title="Aprobar">
                                         <i class="fa-solid fa-check"></i>
-                                    </button>
-                                    <button class="btn-action view" title="Ver">
+                                    </a>
+                                    <a class="btn-action view" title="Ver" th:href="@{/hechos/{id}(id=${hecho.id})}">
                                         <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-action delete" title="Rechazar">
+                                    </a>
+                                    <a class="btn-action delete" title="Rechazar">
                                         <i class="fas fa-xmark"></i>
-                                    </button>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

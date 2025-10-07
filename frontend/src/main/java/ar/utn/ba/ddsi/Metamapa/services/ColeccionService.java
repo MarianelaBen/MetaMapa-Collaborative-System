@@ -3,12 +3,15 @@ package ar.utn.ba.ddsi.Metamapa.services;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
@@ -79,5 +82,18 @@ public class ColeccionService {
             .retrieve()
             .bodyToMono(ColeccionDTO.class)
             .block();
+    }
+
+    public void eliminarColeccion(String handle){
+        try {
+            webClient
+                    .delete()
+                    .uri("/colecciones/{handle}", handle)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        } catch (WebClientResponseException e) {
+            throw new RuntimeException("Error al eliminar coleccion: " + e.getResponseBodyAsString(), e);
+        }
     }
 }
