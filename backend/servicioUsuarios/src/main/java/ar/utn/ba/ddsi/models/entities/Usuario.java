@@ -1,7 +1,7 @@
-/*package ar.utn.ba.ddsi.Metamapa.models.entities;
+package ar.utn.ba.ddsi.models.entities;
 
-import ar.utn.ba.ddsi.Metamapa.enums.Permiso;
-import ar.utn.ba.ddsi.Metamapa.enums.Rol;
+import ar.utn.ba.ddsi.models.enums.Permiso;
+import ar.utn.ba.ddsi.models.enums.Rol;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,4 +28,4 @@ public class Usuario {
     public void agregarPermiso(Permiso p) {
         this.permisos.add(p);
     }
-}*/
+}
