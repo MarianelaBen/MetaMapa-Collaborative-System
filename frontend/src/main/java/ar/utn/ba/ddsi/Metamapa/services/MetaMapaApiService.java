@@ -2,6 +2,8 @@ package ar.utn.ba.ddsi.Metamapa.services;
 
 import ar.utn.ba.ddsi.Metamapa.models.dtos.AuthResponseDTO;
 
+import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.RegisterRequestDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.RolesPermisosDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,17 +23,14 @@ public class MetaMapaApiService {
     private final WebClient webClient;
     private final WebApiCallerService webApiCallerService;
     private final String authServiceUrl;
-    private final String alumnosServiceUrl;
 
     @Autowired
     public MetaMapaApiService(
             WebApiCallerService webApiCallerService,
-            @Value("${auth.service.url}") String authServiceUrl,
-            @Value("${alumnos.service.url}") String alumnosServiceUrl) {
+            @Value("${auth.service.url}") String authServiceUrl) {
         this.webClient = WebClient.builder().build();
         this.webApiCallerService = webApiCallerService;
         this.authServiceUrl = authServiceUrl;
-        this.alumnosServiceUrl = alumnosServiceUrl;
     }
 
     public AuthResponseDTO login(String username, String password) {
@@ -42,8 +41,7 @@ public class MetaMapaApiService {
                     .bodyValue(Map.of(
                             "username", username,
                             "password", password
-                    ))
-                    .retrieve()
+                    ))                    .retrieve()
                     .bodyToMono(AuthResponseDTO.class)
                     .block();
             return response;
@@ -60,6 +58,15 @@ public class MetaMapaApiService {
         }
     }
 
+    public AuthResponseDTO signupAndGetTokens(RegisterRequestDTO dto) {
+        return webClient.post()
+                .uri(authServiceUrl + "/auth/register")
+                .bodyValue(dto)
+                .retrieve()
+                .bodyToMono(AuthResponseDTO.class)
+                .block();
+    }
+
 
     public RolesPermisosDTO getRolesPermisos(String accessToken) {
         try {
@@ -74,6 +81,85 @@ public class MetaMapaApiService {
             throw new RuntimeException("Error al obtener roles y permisos: " + e.getMessage(), e);
         }
     }
+
+   // ESTO ES DE CHAT GPT:
+
+
+    //   OPERACIONES PROTEGIDAS (Requieren token)
+/*
+
+    public void eliminarHecho(String idHecho, String accessToken) {
+        webApiCallerService.delete(agregadorServiceUrl + "/hechos/" + idHecho, //TODO tiene que llamar al agregador
+                accessToken
+        );
+    }
+
+    public SolicitudDTO aprobarSolicitud(String idSolicitud, String accessToken) {
+        return api.postWithAuth(
+                agregadorServiceUrl + "/solicitudes/" + idSolicitud + "/aprobar",
+                accessToken,
+                null,
+                SolicitudDTO.class
+        );
+    }
+
+    public SolicitudDTO rechazarSolicitud(String idSolicitud, String accessToken) {
+        return api.postWithAuth(
+                agregadorServiceUrl + "/solicitudes/" + idSolicitud + "/rechazar",
+                accessToken,
+                null,
+                SolicitudDTO.class
+        );
+    }
+
+    //===================== HECHOS (PROTEGIDO) =====================
+
+
+ public HechoDTO actualizarHecho(String id, HechoDTO body, String accessToken) {
+        HechoDTO dto = webApiCallerService.putWithAuth(
+                agregadorServiceUrl + "/hechos/" + id,
+                accessToken,
+                body,
+                HechoDTO.class
+        );
+        if (dto == null) throw new RuntimeException("Error al actualizar el Hecho");
+        return dto;
+    }
+
+
+
+     // ===================== SOLICITUDES DE ELIMINACIÓN =====================
+
+
+    // Listar pendientes (protegido para ADMIN)
+
+    public List<SolicitudDTO> listarSolicitudesPendientes(String accessToken) {
+        String url = agregadorServiceUrl + "/solicitudes?estado=PENDIENTE";
+        return webApiCallerService.getListWithAuth(url, accessToken, SolicitudDTO.class);
+    }
+
+
+    public SolicitudDTO aprobarSolicitud(String id, String accessToken) {
+        return webApiCallerService.postWithAuth(
+                agregadorServiceUrl + "/solicitudes/" + id + "/aprobar",
+                accessToken,
+                null,
+                SolicitudDTO.class
+        );
+    }
+
+    public SolicitudDTO rechazarSolicitud(String id, String accessToken) {
+        return webApiCallerService.postWithAuth(
+                agregadorServiceUrl + "/solicitudes/" + id + "/rechazar",
+                accessToken,
+                null,
+                SolicitudDTO.class
+        );
+    }
+    */
+
+
+
 
 
 }

@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.Metamapa.services;
+/*package ar.utn.ba.ddsi.Metamapa.services;
 
 import ar.utn.ba.ddsi.Metamapa.models.repositories.IUsuariosRepository;
 import org.springframework.context.annotation.Bean;
@@ -38,4 +38,4 @@ public class UsuarioService implements UserDetailsService {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-}
+}*/
