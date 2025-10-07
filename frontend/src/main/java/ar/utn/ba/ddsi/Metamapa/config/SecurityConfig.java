@@ -24,20 +24,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // Recursos estáticos y login público
-                        .requestMatchers("/login", "/signup","/landing",
-                                "/css/**", "/js/**", "/images/**",
-                                "/colecciones", "/hechos/*", "/colecciones/*",
-                                "/hechos/*/solicitud", "/hechos/nuevo", "/privacidad").permitAll()
-                        // Ejemplo: Acceso a alumnos: ADMIN y DOCENTE
-                        //.requestMatchers("/alumnos/**").hasAnyRole("ADMIN", "DOCENTE")
-                        // Lo demás requiere autenticación
+                        .requestMatchers(
+                                "/login", "/signup",
+                                "/inicio", "/landing",
+                                "/css/**", "/js/**", "/images/**", "/webjars/**",
+                                "/colecciones/**",
+                                "/hechos/**",
+                                "/hechos/nuevo",
+                                "/privacidad", "/error", "/403"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .permitAll()
-                        .defaultSuccessUrl("/landing", true)
+                        .defaultSuccessUrl("/inicio", true)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
