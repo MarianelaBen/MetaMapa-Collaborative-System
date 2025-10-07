@@ -106,7 +106,7 @@ public class AgregadorController {
         }
     }
 
-
+// para precargar el form
   @GetMapping("/hechos/{id}")
   public ResponseEntity<Object> getHechoPorId(@PathVariable Long id) {
     return hechoRepository.findById(id)
@@ -115,6 +115,7 @@ public class AgregadorController {
             .<Object>body(Map.of("error","Hecho no encontrado","mensaje","id="+id)));
   }
 
+  // para guardar cambios
   @PutMapping(value = "/hechos/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<?> actualizarHecho(
       @PathVariable Long id,
