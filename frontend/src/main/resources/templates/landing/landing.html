@@ -170,253 +170,127 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
-    <script>
-        // ======== HECHOS HARDCODEADOS ========
-        const hechos = [
-          {
-            id: 1,
-            titulo: 'Incendio en Parque Nacional Los Glaciares',
-            descripcion: 'Incendio de gran magnitud detectado en el sector norte del Parque Nacional Los Glaciares (Santa Cruz).',
-            fecha: '2025-08-12',
-            ubicacion: 'Parque Nacional Los Glaciares, Santa Cruz',
-            estado: 'Activo',
-            actualizado: 'hace 3 min',
-            lat: -49.3340,
-            lng: -72.2800,
-            detalleUrl: '../hechosYColecciones/detalleHecho.html'
-          },
-          {
-            id: 2,
-            titulo: 'Accidente múltiple en Ruta Nacional 9 (Rosario)',
-            descripcion: 'Colisión múltiple involucrando 4 vehículos en el km 847 de la RN9.',
-            fecha: '2025-08-15',
-            ubicacion: 'Rosario, Santa Fe',
-            estado: 'Finalizado',
-            actualizado: 'hace 1 hora',
-            lat: -32.9546,
-            lng: -60.6939,
-            detalleUrl: '#'
-          },
-          {
-            id: 3,
-            titulo: 'Derrame químico en fábrica industrial de Córdoba',
-            descripcion: 'Reporte de derrame de sustancias químicas en planta industrial en las afueras de Córdoba.',
-            fecha: '2025-08-10',
-            ubicacion: 'Córdoba, Provincia de Córdoba',
-            estado: 'En verificación',
-            actualizado: 'hace 2 horas',
-            lat: -31.4201,
-            lng: -64.1888,
-            detalleUrl: '#'
-          },
-          {
-            id: 4,
-            titulo: 'Manifestación masiva en Plaza de Mayo',
-            descripcion: 'Concentración y manifestación con cortes parciales en la zona céntrica.',
-            fecha: '2025-09-02',
-            ubicacion: 'Ciudad Autónoma de Buenos Aires',
-            estado: 'Finalizado',
-            actualizado: 'hace 2 horas',
-            lat: -34.6083,
-            lng: -58.3712,
-            detalleUrl: '#'
-          },
-          {
-            id: 5,
-            titulo: 'Corte de suministro eléctrico en La Plata',
-            descripcion: 'Falla en transformador que dejó sin luz varios barrios céntricos.',
-            fecha: '2025-09-03',
-            ubicacion: 'La Plata, Provincia de Buenos Aires',
-            estado: 'Resuelto',
-            actualizado: 'hace 30 min',
-            lat: -34.9214,
-            lng: -57.9545,
-            detalleUrl: '#'
-          },
-          {
-            id: 6,
-            titulo: 'Inundación por tormenta en Mar del Plata',
-            descripcion: 'Anegamientos en barrios bajos por intensa lluvia y desborde de desagües.',
-            fecha: '2025-07-28',
-            ubicacion: 'Mar del Plata, Buenos Aires',
-            estado: 'En seguimiento',
-            actualizado: 'hace 6 horas',
-            lat: -38.0055,
-            lng: -57.5426,
-            detalleUrl: '#'
-          },
-          {
-            id: 7,
-            titulo: 'Deslizamiento en Mendoza',
-            descripcion: 'Pequeño deslizamiento en ruta provincial que interrumpe tránsito local.',
-            fecha: '2025-08-20',
-            ubicacion: 'Mendoza, Mendoza',
-            estado: 'Activo',
-            actualizado: 'hace 1 hora',
-            lat: -32.8895,
-            lng: -68.8458,
-            detalleUrl: '#'
-          },
-          {
-            id: 8,
-            titulo: 'Incidente de salud pública en Salta',
-            descripcion: 'Aumento de consultas por gastroenteritis en un barrio periférico.',
-            fecha: '2025-08-30',
-            ubicacion: 'Salta, Salta',
-            estado: 'En verificación',
-            actualizado: 'hace 4 horas',
-            lat: -24.7821,
-            lng: -65.4232,
-            detalleUrl: '#'
-          },
-          {
-            id: 9,
-            titulo: 'Choque múltiple en San Miguel de Tucumán',
-            descripcion: 'Varios vehículos involucrados, intervención de emergencias.',
-            fecha: '2025-09-01',
-            ubicacion: 'San Miguel de Tucumán, Tucumán',
-            estado: 'Finalizado',
-            actualizado: 'hace 20 min',
-            lat: -26.8083,
-            lng: -65.2176,
-            detalleUrl: '#'
-          },
-          {
-            id: 10,
-            titulo: 'Corte de ruta por obras en Neuquén',
-            descripcion: 'Desvío temporal y obras de mantenimiento en la RN con retardos.',
-            fecha: '2025-08-25',
-            ubicacion: 'Neuquén, Neuquén',
-            estado: 'En curso',
-            actualizado: 'hace 3 horas',
-            lat: -38.9517,
-            lng: -68.0599,
-            detalleUrl: '#'
-          },
-          {
-            id: 11,
-            titulo: 'Incidente marítimo cercano a Ushuaia',
-            descripcion: 'Aviso por embarcación averiada; Prefectura realiza apoyo.',
-            fecha: '2025-08-05',
-            ubicacion: 'Ushuaia, Tierra del Fuego',
-            estado: 'Resuelto',
-            actualizado: 'hace 1 día',
-            lat: -54.8019,
-            lng: -68.3030,
-            detalleUrl: '#'
-          },
-          {
-            id: 12,
-            titulo: 'Accidente vial en Bahía Blanca',
-            descripcion: 'Choque en avenida principal; cortes y desvíos momentáneos.',
-            fecha: '2025-09-04',
-            ubicacion: 'Bahía Blanca, Buenos Aires',
-            estado: 'Finalizado',
-            actualizado: 'hace 10 min',
-            lat: -38.7230,
-            lng: -62.2686,
-            detalleUrl: '#'
-          },
-          {
-            id: 13,
-            titulo: 'Inundaciones en Corrientes',
-            descripcion: 'Suba de nivel en ríos que afecta zonas ribereñas y exige evacuaciones.',
-            fecha: '2025-08-18',
-            ubicacion: 'Corrientes, Corrientes',
-            estado: 'Activo',
-            actualizado: 'hace 45 min',
-            lat: -27.4806,
-            lng: -58.8342,
-            detalleUrl: '#'
-          }
-        ];
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const hechos = /*[[${hechos}]]*/ '[]';
+        /*]]>*/
+
+        // normalizo para usar latitud/longitud como nombres
+        const hechosNorm = (hechos || []).map(h => ({
+            id: h.id,
+            titulo: h.titulo,
+            descripcion: h.descripcion,
+            fechaAcontecimiento: h.fechaAcontecimiento,
+            provincia: h.provincia,
+            latitud: h.latitud,
+            longitud: h.longitud,
+            detalleUrl: h.detalleUrl // si existe
+        }));
 
         // ======= Inicializar mapa Leaflet =======
-        const map = L.map('map').setView([-34.626, -58.426], 5); // vista inicial para mostrar varios puntos
+        const map = L.map('map').setView([-34.626, -58.426], 5);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '&copy; OpenStreetMap contributors'
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // marcador por cada hecho
+        // marcador por cada hecho (con chequeo de coords)
         const markers = {};
-        hechos.forEach(h => {
-          const mk = L.marker([h.lat, h.lng]).addTo(map);
+        hechosNorm.forEach(h => {
+            const lat = Number(h.latitud);
+            const lng = Number(h.longitud);
 
-          // contenido del popup (botón con id único para poder capturar el click)
-          const popupHtml = `
-            <div>
-              <div class="popup-title">${h.titulo}</div>
-              <div style="font-size:0.9rem; margin-bottom:6px;">${h.ubicacion} • ${h.fecha}</div>
-              <div style="font-size:0.85rem; margin-bottom:8px;">${h.descripcion}</div>
-              <button id="popupBtn-${h.id}" class="btn btn-sm btn-primary">Ver detalles</button>
-            </div>
-          `;
-          mk.bindPopup(popupHtml);
-
-          // cuando el popup se abre, agrego el event listener al botón dentro del popup
-          mk.on('popupopen', () => {
-            // el DOM del popup se inyecta, así que podemos buscar el botón por id
-            const btn = document.getElementById(`popupBtn-${h.id}`);
-            if (btn) {
-              btn.addEventListener('click', (ev) => {
-                ev.preventDefault();
-                abrirDetalleModal(h);
-              });
+            // chequeo robusto: si lat o lng no son números válidos, salto este hecho
+            if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+                console.warn('Hecho sin coordenadas válidas, se saltea:', h.id, h.titulo, 'lat:', h.latitud, 'lng:', h.longitud);
+                return;
             }
-          });
 
-          // también al click del marcador centro y dejo el popup
-          mk.on('click', () => {
-            map.setView([h.lat, h.lng], 12, { animate: true });
-          });
+            const mk = L.marker([lat, lng]).addTo(map);
 
-          markers[h.id] = mk;
+            // contenido del popup
+            const popupHtml = `
+    <div>
+      <div class="popup-title">${escapeHtml(h.titulo)}</div>
+      <div style="font-size:0.9rem; margin-bottom:6px;">${escapeHtml(h.provincia || '')} • ${escapeHtml(h.fechaAcontecimiento || '')}</div>
+      <div style="font-size:0.85rem; margin-bottom:8px;">${escapeHtml(h.descripcion || '')}</div>
+      <button id="popupBtn-${h.id}" class="btn btn-sm btn-primary">Ver detalles</button>
+    </div>
+  `;
+            mk.bindPopup(popupHtml);
+
+            mk.on('popupopen', () => {
+                const btn = document.getElementById(`popupBtn-${h.id}`);
+                if (btn) {
+                    btn.addEventListener('click', (ev) => {
+                        ev.preventDefault();
+                        abrirDetalleModal(h);
+                    });
+                }
+            });
+
+            mk.on('click', () => {
+                map.setView([lat, lng], 12, { animate: true });
+            });
+
+            markers[h.id] = mk;
         });
 
-        // ======= Función para abrir modal con detalles =======
-        function abrirDetalleModal(h) {
-          const body = document.getElementById('detalleModalBody');
-          body.innerHTML = `
-            <h5>${h.titulo}</h5>
-            <p><strong>Fecha:</strong> ${h.fecha}</p>
-            <p><strong>Ubicación:</strong> ${h.ubicacion}</p>
-            <p><strong>Estado:</strong> ${h.estado}</p>
-            <p>${h.descripcion}</p>
-            <p><strong>Última actualización:</strong> ${h.actualizado}</p>
-            <p><strong>Coordenadas:</strong> ${h.lat.toFixed(6)}, ${h.lng.toFixed(6)}</p>
-          `;
-          const btnIr = document.getElementById('btnIrADetalle');
-          btnIr.href = h.detalleUrl || '#';
+        // helper para escapar texto y evitar inyección
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
-          // mostrar modal (Bootstrap)
-          const modalEl = document.getElementById('detalleModal');
-          const modal = new bootstrap.Modal(modalEl);
-          modal.show();
+        // abrir modal seguro (no usar toFixed sobre null)
+        function abrirDetalleModal(h) {
+            const body = document.getElementById('detalleModalBody');
+
+            // preparar coords presentables
+            const lat = Number(h.latitud);
+            const lng = Number(h.longitud);
+            const coordsText = (Number.isFinite(lat) && Number.isFinite(lng))
+                ? `${lat.toFixed(6)}, ${lng.toFixed(6)}`
+                : 'Sin coordenadas';
+
+            body.innerHTML = `
+    <h5>${escapeHtml(h.titulo)}</h5>
+    <p><strong>Fecha:</strong> ${escapeHtml(h.fechaAcontecimiento || '')}</p>
+    <p><strong>Ubicación:</strong> ${escapeHtml(h.provincia || '')}</p>
+    <p>${escapeHtml(h.descripcion || '')}</p>
+    <p><strong>Coordenadas:</strong> ${coordsText}</p>
+  `;
+
+            const btnIr = document.getElementById('btnIrADetalle');
+            if (btnIr) btnIr.href = h.detalleUrl || '#';
+
+            const modalEl = document.getElementById('detalleModal');
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
         }
 
         // ======= Botones "Ver en Mapa" en las cards =======
+        // IMPORTANTE: usar hechosNorm (no hechos) ya que es la lista con latitud/longitud normalizados
         document.querySelectorAll('.ver-en-mapa').forEach(btn => {
-          btn.addEventListener('click', (ev) => {
-            const id = parseInt(btn.getAttribute('data-id'));
-            const h = hechos.find(x => x.id === id);
-            if (!h) return;
-            map.setView([h.lat, h.lng], 12, { animate: true });
-            // abrir el popup del marcador
-            if (markers[id]) markers[id].openPopup();
-            // opcional: abrir el modal con detalle
-            // abrirDetalleModal(h);
-          });
+            btn.addEventListener('click', (ev) => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                const h = hechosNorm.find(x => x.id === id);
+                if (!h) return;
+                const lat = Number(h.latitud);
+                const lng = Number(h.longitud);
+                if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+                    console.warn('Intentaron ver en mapa un hecho sin coords:', id);
+                    return;
+                }
+                map.setView([lat, lng], 12, { animate: true });
+                if (markers[id]) markers[id].openPopup();
+            });
         });
-
-        // ======= Ejemplo: si en el futuro cargás desde backend, reemplazar hechos por fetch =======
-        /*
-        fetch('/api/hechos?limit=100')
-          .then(r => r.json())
-          .then(data => {
-             // reasignar hechos, crear/actualizar marcadores, etc.
-          })
-        */
     </script>
 </div>
 
