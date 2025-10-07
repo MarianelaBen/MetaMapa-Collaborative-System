@@ -33,9 +33,16 @@ public class HechoController {
     try{
       // HechoDTO hecho = mockHecho(id);
       HechoDTO hecho = hechoService.getHechoPorId(id);
-          model.addAttribute("hecho", hecho);
-          model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
 
+      List<String> nombresMultimedia =
+          hecho.getIdContenidoMultimedia() == null ? List.of()
+              : hecho.getIdContenidoMultimedia().stream()
+              .map(HechoController::filenameFromPath)
+              .toList();
+
+          model.addAttribute("hecho", hecho);
+          model.addAttribute("nombresMultimedia", nombresMultimedia);
+          model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
 
       return "hechosYColecciones/detalleHecho";
     }

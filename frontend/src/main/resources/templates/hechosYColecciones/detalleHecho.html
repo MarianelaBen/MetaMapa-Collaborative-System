@@ -37,14 +37,24 @@
                     </p>
                 </section>
 
-            <section class="multimedia-section">
-                <h3 class="multimedia-title">Contenido Multimedia</h3>
-                <div class="multimedia-grid">
-                    <div class="multimedia-item"><div class="multimedia-placeholder">📷</div></div>
-                    <div class="multimedia-item"><div class="multimedia-placeholder">🎥</div></div>
-                    <div class="multimedia-item"><div class="multimedia-placeholder">📊</div></div>
-                </div>
-            </section>
+                <section class="multimedia-section">
+                    <h3 class="multimedia-title">Contenido Multimedia</h3>
+
+                    <div class="multimedia-grid"
+                         th:if="${nombresMultimedia != null and !#lists.isEmpty(nombresMultimedia)}">
+                        <div class="multimedia-item" th:each="name : ${nombresMultimedia}">
+                            <div class="multimedia-placeholder">📄</div>
+                            <div th:text="${name}">archivo.jpg</div>
+                        </div>
+                    </div>
+
+                    <div class="multimedia-item"
+                         th:if="${nombresMultimedia == null or #lists.isEmpty(nombresMultimedia)}">
+                        <div class="multimedia-placeholder">—</div>
+                        <div>No hay archivos adjuntos</div>
+                    </div>
+                </section>
+
                 <a class="btn btn-danger"
                    th:href="@{/solicitud/{hechoId}(hechoId=${hecho.id})}">
                     Solicitar Eliminación
