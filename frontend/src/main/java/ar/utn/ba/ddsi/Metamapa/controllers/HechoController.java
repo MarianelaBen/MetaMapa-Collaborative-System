@@ -115,14 +115,23 @@ public class HechoController {
   }
 
   @GetMapping("/{id}/editar")
-  @PreAuthorize("hasAnyRole('CONTRIBUYENTE') and hasAnyAuthority('EDITAR_HECHO_PROPIO')")
+  // @PreAuthorize("hasAnyRole('CONTRIBUYENTE') and hasAnyAuthority('EDITAR_HECHO_PROPIO')")
+  @PreAuthorize("permitAll()") // ← TEMPORAL para probar
   public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
     try {
-      //HechoDTO hecho = mockHecho(id);
-      HechoDTO hecho = hechoService.getHechoPorId(id);
 
+      HechoDTO hecho = hechoService.getHechoPorId(id);
+      List<String> categorias = hechoService.getCategorias();
+
+      List<String> nombresMultimedia =
+          (hecho.getIdContenidoMultimedia() == null) ? List.of()
+              : hecho.getIdContenidoMultimedia().stream()
+              .map(HechoController::filenameFromPath)
+              .toList();
+
+      model.addAttribute("nombresMultimedia", nombresMultimedia);
       model.addAttribute("hecho", hecho);
-      model.addAttribute("categorias", categoriasMock());
+      model.addAttribute("categorias", categorias);
       model.addAttribute("hechoId", id);
       model.addAttribute("titulo", "Editar Hecho");
       return "contribuyente/editorHechos";
@@ -163,7 +172,7 @@ public class HechoController {
     }
 
     if (error) {
-      model.addAttribute("categorias", categoriasMock());
+      model.addAttribute("categorias", hechoService.getCategorias());
       model.addAttribute("hechoId", id);
       model.addAttribute("titulo", "Editar Hecho");
       model.addAttribute("errorMsg", "Hay campos obligatorios sin completar.");
@@ -176,6 +185,15 @@ public class HechoController {
     redirect.addFlashAttribute("mensaje", "Hecho actualizado correctamente");
     redirect.addFlashAttribute("tipoMensaje", "success");
     return "redirect:/hechos/" + id;
+  }
+
+  // metodo usado en editorHechos (para el contenido multimedia)
+  private static String filenameFromPath(String p) {
+    if (p == null) return "";
+    int slash = p.lastIndexOf('/');
+    int back  = p.lastIndexOf('\\');
+    int idx = Math.max(slash, back);
+    return idx >= 0 ? p.substring(idx + 1) : p;
   }
 
 

@@ -78,11 +78,9 @@
 
                         <!-- listado simple de archivos ya adjuntos -->
                         <div class="multimedia-grid"
-                             th:if="${hecho.idContenidoMultimedia != null and !#lists.isEmpty(hecho.idContenidoMultimedia)}">
-                            <div class="multimedia-item"
-                                 th:each="path : ${hecho.idContenidoMultimedia}">
-                                <div class="multimedia-placeholder"
-                                     th:text="${#strings.substringAfterLast(path,'/')}">archivo.jpg</div>
+                             th:if="${nombresMultimedia != null and !#lists.isEmpty(nombresMultimedia)}">
+                            <div class="multimedia-item" th:each="name : ${nombresMultimedia}">
+                                <div class="multimedia-placeholder" th:text="${name}">archivo.jpg</div>
                             </div>
                         </div>
 

@@ -1,4 +1,5 @@
 package ar.utn.ba.ddsi.Metamapa.services;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -109,7 +110,6 @@ public class HechoService {
         }
     }
 
-    // HechoService.java
     public HechoDTO obtenerHechoPorId(Long id) {
         HechoDTO hecho = webClient.get()
             .uri("/hechos/{id}", id)
@@ -161,6 +161,19 @@ public class HechoService {
             throw new RuntimeException("Error serializando archivos para envío: " + e.getMessage(), e);
         }
     }
+
+    public List<String> getCategorias() {
+        List<CategoriaDTO> categorias = webClient.get()
+            .uri("/categorias")
+            .retrieve()
+            .bodyToFlux(CategoriaDTO.class)
+            .collectList()
+            .block();
+
+        if (categorias == null) return List.of();
+        return categorias.stream().map(CategoriaDTO::getNombre).toList();
+    }
+
 
 }
 
