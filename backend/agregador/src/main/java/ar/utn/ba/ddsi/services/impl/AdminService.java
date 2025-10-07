@@ -83,10 +83,10 @@ public class AdminService implements IAdminService {
 
   //Elimina coleccion por ID
   @Override
-  public void eliminarColeccion(String id) {
-    Coleccion coleccion = coleccionRepo.findById(id)
-        .orElseThrow(() -> new NoSuchElementException("No se puede eliminar. Coleccion no encontrada con ID: " + id));
-    coleccionRepo.deleteById(id);
+  public void eliminarColeccion(String handle) {
+    Coleccion coleccion = coleccionRepo.findByHandle(handle)
+        .orElseThrow(() -> new NoSuchElementException("No se puede eliminar. Coleccion no encontrada con handle: " + handle));
+    coleccionRepo.deleteByHandle(handle);
   }
 
 

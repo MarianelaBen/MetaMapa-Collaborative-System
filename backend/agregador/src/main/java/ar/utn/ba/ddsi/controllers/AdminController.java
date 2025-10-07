@@ -88,10 +88,10 @@ public class AdminController {
 
 
   //Borra coleccion por su id
-  @DeleteMapping("/colecciones/{id}")
-  public ResponseEntity<?> eliminarColeccion(@PathVariable String id) {
+  @DeleteMapping("/colecciones/{handle}")
+  public ResponseEntity<?> eliminarColeccion(@PathVariable String handle) {
     try{
-      servicio.eliminarColeccion(id);
+      servicio.eliminarColeccion(handle);
       return ResponseEntity.ok(Map.of("mensaje", "Coleccion borrada correctamente"));
     } catch(Exception e) {
       return ResponseEntity.status((HttpStatus.NOT_FOUND))
