@@ -124,7 +124,7 @@
 
         <div class="table-container">
           <table class="admin-table">
-            <thead>
+            <thead th:if="${colecciones.size() >= 1}">
             <tr>
               <th>ID</th>
               <th>Nombre</th>
@@ -138,7 +138,11 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="coleccion : ${colecciones}">
+            <div th:if="${colecciones.isEmpty()}" class="text-center py-5">
+                <i class="fa-regular fa-folder-open fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No hay colecciones registradas</h5>
+            </div>
+            <tr th:if="${colecciones.size() >= 1}" th:each="coleccion : ${colecciones}">
               <td th:text="${coleccion.handle}">001</td>
               <td th:text="${coleccion.descripcion}">Puntos Críticos de Biodiversidad Global</td>
               <td><span class="status-badge active" th:text="${coleccion.handle}">Activa</span></td>
@@ -182,7 +186,7 @@
         <div class="section-actions">
           <button class="btn-add-new" onclick="location.href='./importadorArchivosCSV.html'">
             <i class="fas fa-file-upload"></i>
-            Nueva Importación
+            Nueva Importación CSV
           </button>
         </div>
       </div>
