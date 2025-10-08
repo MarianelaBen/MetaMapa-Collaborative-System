@@ -92,12 +92,8 @@ public class AdminService implements IAdminService {
         // forzamos inicialización de la colección si está LAZY (opcional pero seguro)
         coleccion.getHechos().size();
 
-        // BORRAR pasando la entidad gestionada a JPA (NO usar deleteByHandle aquí)
         coleccionRepo.delete(coleccion);
 
-        // opcional: flush para forzar ejecución inmediata y ver excepciones ahora
-        // if coleccionRepo es JpaRepository, podés inyectar EntityManager/Repository y flush:
-        // entityManager.flush();
     }
 
 

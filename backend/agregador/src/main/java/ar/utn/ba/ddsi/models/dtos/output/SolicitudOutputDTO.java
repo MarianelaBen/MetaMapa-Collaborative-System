@@ -19,7 +19,7 @@ public class SolicitudOutputDTO {
   public static SolicitudOutputDTO fromEntity(SolicitudDeEliminacion s) {
     SolicitudOutputDTO dto = new SolicitudOutputDTO();
     dto.setId(s.getId());
-    dto.setEstado(s.getEstado().name());
+    dto.setEstado(String.valueOf(s.getEstado()));
     dto.setJustificacion(s.getJustificacion());
     dto.setFechaEntrada(s.getFechaEntrada());
     dto.setFechaAtencion(s.getFechaAtencion());
