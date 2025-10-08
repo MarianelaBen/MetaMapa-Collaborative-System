@@ -13,6 +13,7 @@ import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAdminService;
 import ar.utn.ba.ddsi.services.IColeccionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
@@ -81,13 +82,23 @@ public class AdminService implements IAdminService {
   }
 
 
-  //Elimina coleccion por ID
-  @Override
-  public void eliminarColeccion(String handle) {
-    Coleccion coleccion = coleccionRepo.findByHandle(handle)
-        .orElseThrow(() -> new NoSuchElementException("No se puede eliminar. Coleccion no encontrada con handle: " + handle));
-    coleccionRepo.deleteByHandle(handle);
-  }
+    @Override
+    @Transactional
+    public void eliminarColeccion(String handle) {
+        Coleccion coleccion = coleccionRepo.findByHandle(handle)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "No se puede eliminar. Coleccion no encontrada con handle: " + handle));
+
+        // forzamos inicialización de la colección si está LAZY (opcional pero seguro)
+        coleccion.getHechos().size();
+
+        // BORRAR pasando la entidad gestionada a JPA (NO usar deleteByHandle aquí)
+        coleccionRepo.delete(coleccion);
+
+        // opcional: flush para forzar ejecución inmediata y ver excepciones ahora
+        // if coleccionRepo es JpaRepository, podés inyectar EntityManager/Repository y flush:
+        // entityManager.flush();
+    }
 
 
   //Obtención de todos los hechos de una colección
