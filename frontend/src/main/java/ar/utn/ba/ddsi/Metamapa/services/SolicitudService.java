@@ -101,4 +101,16 @@ public class SolicitudService {
         }
     }
 
+    public void rechazarSolicitud(Long id){
+        try{
+            webClientAdmin.post()
+                    .uri("/solicitudes-eliminacion/{id}/denegar", id)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        }catch(WebClientResponseException e){
+            throw new RuntimeException("Error al rechazar solicitud: " + e.getResponseBodyAsString(), e);
+        }
+    }
+
 }

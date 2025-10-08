@@ -129,4 +129,27 @@ public class AdminController {
 
   }
 
+  @PostMapping("/{id}/rechazar")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+  public String rechazarSolicitud(@PathVariable Long id,
+                                 @ModelAttribute("solicitud") SolicitudDTO solicitudDTO,
+                                 Model model,
+                                 RedirectAttributes redirectAttributes){
+      try {
+          solicitudService.rechazarSolicitud(id);
+          redirectAttributes.addFlashAttribute("mensaje", "Solicitud rechazada exitosamente");
+          redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+          // REDIRECT explícito a la ruta del panel
+          return "redirect:/admin/gestor-solicitudes";
+      } catch (NotFoundException ex) {
+          redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+          redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+          return "redirect:/admin/gestor-solicitudes";
+      } catch (ValidationException e) {
+          redirectAttributes.addFlashAttribute("mensaje", "Error de validación: " + e.getMessage());
+          redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+          return "redirect:/admin/gestor-solicitudes";
+      }
+
+  }
 }
