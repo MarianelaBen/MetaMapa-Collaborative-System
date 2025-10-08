@@ -1,4 +1,4 @@
-/*package ar.utn.ba.ddsi.Metamapa.config;
+package ar.utn.ba.ddsi.Metamapa.config;
 
 import ar.utn.ba.ddsi.Metamapa.providers.CustomAuthProvider;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/inicio", true)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/logout")  //ruta para cerrar sesion
                         .logoutSuccessUrl("/login?logout") // redirigir tras logout
                         .permitAll()
                 )
@@ -59,7 +59,6 @@ public class SecurityConfig {
                         )
                  */
 
-/*
                 .exceptionHandling(ex -> ex
                         // Usuario no autenticado → redirigir a login
                         .authenticationEntryPoint((request, response, authException) ->
@@ -74,4 +73,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-*/

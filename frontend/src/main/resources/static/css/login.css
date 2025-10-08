@@ -6,6 +6,23 @@ body{
     align-items: center;
 }
 
+.password-container {
+    position: relative;
+}
+
+.password-container input {
+    padding-right: 35px;
+}
+
+.password-container i {
+    position: absolute;
+    top: 70%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+}
+
 .btn-notification {
     background: none;
     border: none;

@@ -16,6 +16,28 @@ body{
     position: relative;
 }
 
+.password-container {
+    /* Permite posicionar el ícono de forma absoluta dentro de este contenedor */
+    position: relative;
+    width: fit-content; /* Ajusta el ancho al contenido */
+}
+
+.password-container input {
+    padding-right: 30px; /* Añade espacio a la derecha para que el texto no se solape con el ícono */
+}
+
+.password-container i {
+    /* Posiciona el ícono */
+    position: absolute;
+    top: 70%; /* Ajusta la posición vertical del ícono */
+    right: 10px; /* Ajusta la posición horizontal */
+    transform: translateY(-50%);
+
+    /* Cambia el cursor para indicar que es clickeable */
+    cursor: pointer;
+    color: #888; /* Color gris para el ícono */
+}
+
 .notification-count {
     position: absolute;
     top: -8px;

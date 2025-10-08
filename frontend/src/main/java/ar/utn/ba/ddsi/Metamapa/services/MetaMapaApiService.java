@@ -1,4 +1,4 @@
-/*package ar.utn.ba.ddsi.Metamapa.services;
+package ar.utn.ba.ddsi.Metamapa.services;
 
 import ar.utn.ba.ddsi.Metamapa.models.dtos.AuthResponseDTO;
 
@@ -84,9 +84,9 @@ public class MetaMapaApiService {
 
    // ESTO ES DE CHAT GPT:
 
-
-    //   OPERACIONES PROTEGIDAS (Requieren token)
 /*
+    //   OPERACIONES PROTEGIDAS (Requieren token)
+
 
     public void eliminarHecho(String idHecho, String accessToken) {
         webApiCallerService.delete(agregadorServiceUrl + "/hechos/" + idHecho, //TODO tiene que llamar al agregador
@@ -156,8 +156,8 @@ public class MetaMapaApiService {
                 SolicitudDTO.class
         );
     }
-    */
 
-/*
-}
 */
+
+}
+
