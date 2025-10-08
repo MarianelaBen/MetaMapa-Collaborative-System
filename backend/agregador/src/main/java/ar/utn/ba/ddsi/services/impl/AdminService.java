@@ -188,7 +188,12 @@ public class AdminService implements IAdminService {
   public SolicitudOutputDTO aprobarSolicitud(Long id) {
     SolicitudDeEliminacion s = solicitudRepo.findById(id)
         .orElseThrow(() -> new NoSuchElementException("No se encontró la solicitud " + id));
+    Long hechoId = s.getHecho().getId();
+        Hecho h = hechoRepo.findById(hechoId)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró el hecho " + hechoId));
+        h.setFueEliminado(true);
     s.setEstado(EstadoSolicitud.ACEPTADA);
+    hechoRepo.save(h);
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
 

@@ -100,6 +100,8 @@
                             <th>Acciones</th>
                         </tr>
                     </thead>
+                    <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+                    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
                     <tbody id="requestsTable" th:if="${!solicitudes.isEmpty()}">
                     <tr th:each="solicitud : ${solicitudes}"
                         th:attr="data-status=${solicitud.estado}, data-id=${solicitud.id}">

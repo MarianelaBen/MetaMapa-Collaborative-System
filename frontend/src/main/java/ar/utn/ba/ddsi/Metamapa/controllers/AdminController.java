@@ -125,11 +125,6 @@ public class AdminController {
           redirectAttributes.addFlashAttribute("mensaje", "Error de validación: " + e.getMessage());
           redirectAttributes.addFlashAttribute("tipoMensaje", "error");
           return "redirect:/admin/gestor-solicitudes";
-      } catch (Exception e) {
-
-          redirectAttributes.addFlashAttribute("mensaje", "Error al aprobar la solicitud");
-          redirectAttributes.addFlashAttribute("tipoMensaje", "error");
-          return "redirect:/admin/gestor-solicitudes";
       }
 
   }
