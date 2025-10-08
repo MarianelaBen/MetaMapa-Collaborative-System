@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -17,13 +19,16 @@ public class Usuario {
     @GeneratedValue
     private Long id;
     private String nombre;
-    @Column(unique = true) private String nombreDeUsuario;
+    private String apellido;
+    @Column(unique = true)
+    private String nombreDeUsuario;
     private String contrasenia; // cifrada
-    @Enumerated(EnumType.STRING) private Rol rol;
-
+    private String mail;
+    @Enumerated(EnumType.STRING)
+    private Rol rol;
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private Set<Permiso> permisos = new HashSet<>();
+    private List<Permiso> permisos = new ArrayList<>();
 
     public void agregarPermiso(Permiso p) {
         this.permisos.add(p);
