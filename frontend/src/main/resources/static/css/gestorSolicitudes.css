@@ -16,6 +16,22 @@ div.container{
     padding: 0;
 }
 
+
+.status-approved {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-rejected {
+    background-color: #dc3545;
+    color: white;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: #333;
+}
+
 /*header.main-header {
     background: #004080;
     color: #fff;
@@ -402,12 +418,12 @@ header .logo {
     transition: all 0.3s ease;
 }
 
-.btn-action.edit {
+.btn-action.approve {
     background: #f0f9ff;
-    color: #0284c7;
+    color: #0284c7 !important;
 }
 
-.btn-action.edit:hover {
+.btn-action.approve:hover {
     background: #e0f2fe;
 }
 
@@ -420,14 +436,21 @@ header .logo {
     background: #dcfce7;
 }
 
-.btn-action.delete {
+.btn-action.reject {
     background: #f8fafc;
     color: #64748b;
 }
 
-.btn-action.delete:hover {
+.btn-action.reject:hover {
     background: #f1f5f9;
 }
+
+
+.btn-action:disabled {
+
+    cursor: not-allowed;
+}
+
 /* ===== Footer ===== */
 .site-footer{
     background:#CDD0D4;

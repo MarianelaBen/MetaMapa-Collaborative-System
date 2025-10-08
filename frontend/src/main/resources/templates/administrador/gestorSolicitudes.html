@@ -2,6 +2,9 @@
 
 <div th:fragment="css">
     <link rel="stylesheet" th:href="@{/css/gestorSolicitudes.css}" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </div>
     <div class="container" th:fragment="contenido">
         <!-- Sidebar -->
@@ -85,7 +88,7 @@
 
             <!-- Table -->
             <div class="table-container">
-                <table class="table">
+                <table th:if="${solicitudes.size() >= 1}" class="table">
                     <thead>
                         <tr>
                             <th>ID Solicitud</th>
@@ -97,30 +100,51 @@
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="requestsTable">
-                        <tr data-status="pending" data-user="alice@example.com" data-id="DR001" th:each="solicitud : ${solicitudes}">
-                            <td th:text="${solicitud.id}">DR001</td>
-                            <td th:text="${solicitud.fechaEntrada}">2023-10-26</td>
-                            <td>alice@example.com</td>
-                            <td>
-                                <small style="color: #6c757d;" th:text="${solicitud.hechoId}">ID: F1234</small>
-                            </td>
-                            <td>Información desactualizada</td>
-                            <td><span class="status-badge status-pending" th:text="${solicitud.estado}">Pendiente</span></td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn-action edit" title="Aprobar">
-                                        <i class="fa-solid fa-check"></i>
-                                    </button>
-                                    <button class="btn-action view" title="Ver">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-action delete" title="Rechazar">
-                                        <i class="fas fa-xmark"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                    <tbody id="requestsTable" th:if="${!solicitudes.isEmpty()}">
+                    <tr th:each="solicitud : ${solicitudes}"
+                        th:attr="data-status=${solicitud.estado}, data-id=${solicitud.id}">
+                        <td th:text="${solicitud.id}">DR001</td>
+                        <td th:text="${solicitud.fechaEntrada}">2023-10-26</td>
+                        <td>alice@example.com</td>
+                        <td><small style="color: #6c757d;" th:text="${solicitud.hechoId}">ID: F1234</small></td>
+                        <td th:text="${solicitud.justificacion}">Información desactualizada</td>
+
+                        <!-- badge dinámico según estado -->
+                        <td>
+      <span th:classappend="${solicitud.estado == 'ACEPTADA'} ? 'status-badge status-approved' :
+                             (solicitud.estado == 'RECHAZADA' ? 'status-badge status-rejected' : 'status-badge status-pending')"
+            th:text="${solicitud.estado}">
+        Pendiente
+      </span>
+                        </td>
+
+                        <!-- botones -->
+                        <td>
+                            <div class="action-buttons">
+                                <!-- Botón Aprobar -->
+                                <button type="button" class="btn-action approve"
+                                        title="Aprobar"
+                                        th:attr="data-id=${solicitud.id}"
+                                        onclick="aprobar(this.dataset.id)"
+                                        th:disabled="${solicitud.estado == 'ACEPTADA'}">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+
+                                <!-- Botón Ver -->
+                                <button type="button" class="btn-action view" title="Ver">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+
+                                <!-- Botón Rechazar -->
+                                <button type="button" class="btn-action reject"
+                                        title="Rechazar"
+                                        th:attr="data-id=${solicitud.id}"
+                                        th:disabled="${solicitud.estado == 'RECHAZADA'}">
+                                    <i class="fas fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
                 <div class="table-footer">
@@ -137,6 +161,45 @@
                 </div>
             </div>
         </div>
+        <!-- Formulario oculto único -->
+        <form id="aprobarForm" th:method="post" style="display:none;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        </form>
+
+        <script>
+            function aprobar(id) {
+                if (!id) {
+                    console.warn('aprobar: id vacío');
+                    return;
+                }
+
+                const doConfirm = () => {
+                    const form = document.getElementById('aprobarForm');
+                    form.action = `/admin/${encodeURIComponent(id)}/aprobar`;
+                    form.submit();
+                };
+
+                if (window.Swal) {
+                    Swal.fire({
+                        title: '¿Aprobar solicitud?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí, aprobar',
+                        cancelButtonText: 'Cancelar',
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6'
+                    }).then(result => {
+                        if (result.isConfirmed) doConfirm();
+                    }).catch(err => {
+                        console.error('Swal error:', err);
+                    });
+                } else {
+                    if (window.confirm('¿Aprobar solicitud?')) {
+                        doConfirm();
+                    }
+                }
+            }
+        </script>
     </div>
 
 

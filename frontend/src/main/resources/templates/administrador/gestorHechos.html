@@ -43,12 +43,10 @@
                     <p class="page-subtitle">Gestiona los hechos recibidos de las distintas fuentes
                     </p>
                 </div>
-                <div class="header-actions update-button">
-                    <a href="#" class="btn-add-new">
-                        <i class="fas fa-sync-alt"></i>
-                        Actualizar
-                    </a>
-                </div>
+                <button class="btn-add-new" onclick="location.href='/admin/importarCSV'">
+                    <i class="fas fa-file-upload"></i>
+                    Nueva Importación CSV
+                </button>
             </div>
 
 
@@ -84,7 +82,8 @@
             </div>
 
             <!-- Table -->
-            <div class="table-container">
+
+            <div th:if="${hechos.size() >= 1}" class="table-container">
                 <table class="table">
                     <thead>
                         <tr>
@@ -95,9 +94,14 @@
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
+
                     </thead>
                     <tbody id="requestsTable">
-                        <tr data-status="pending" data-user="alice@example.com" data-id="DR001" th:each="hecho : ${hechos}">
+                    <div th:if="${hechos.isEmpty()}" class="text-center py-5">
+                        <i class="fa-regular fa-folder-open fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No hay hechos registrados</h5>
+                    </div>
+                        <tr th:if="${hechos.size() >= 1}" data-status="pending" data-user="alice@example.com" data-id="DR001" th:each="hecho : ${hechos}">
                             <td th:text="${hecho.id}">DR001</td>
                             <td th:text="${hecho.fechaAcontecimiento}">2023-10-26</td>
                             <td th:text="${hecho.titulo}">Incendio forestal activo en Parque Nacional Los Glaciares</td>

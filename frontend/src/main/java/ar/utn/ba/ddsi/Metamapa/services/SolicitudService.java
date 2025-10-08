@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -16,18 +17,23 @@ import java.util.UUID;
 
 @Service
 public class SolicitudService {
-    private final WebClient webClient;
+    private final WebClient webClientPublic;
+    private final WebClient webClientAdmin;
 
     public SolicitudService(WebClient.Builder webClientBuilder,
-                            @Value("${backend.api.base-url-agregador}") String baseUrl) {
-        this.webClient = webClientBuilder
+                            @Value("${backend.api.base-url-agregador}") String baseUrl,
+                            @Value("${backend.api.base-url}") String baseUrlAdmin) {
+        this.webClientPublic = webClientBuilder
                 .baseUrl(baseUrl)
+                .build();
+        this.webClientAdmin = webClientBuilder
+                .baseUrl(baseUrlAdmin)
                 .build();
     }
 
     public List<SolicitudDTO> getSolicitudes() {
         // 1) obtener colecciones (salida del backend)
-        List<SolicitudDTO> solicitudes = webClient.get()
+        List<SolicitudDTO> solicitudes = webClientPublic.get()
                 .uri("/solicitudes")
                 .retrieve()
                 .bodyToFlux(SolicitudDTO.class)
@@ -43,7 +49,7 @@ public class SolicitudService {
 
     public String crearSolicitudEliminacion(Long hechoId, String justificacion) {
         try {
-            ResponseEntity<SolicitudDTO> resp = webClient.post()
+            ResponseEntity<SolicitudDTO> resp = webClientPublic.post()
                     .uri("/solicitudes")
                     .bodyValue(Map.of("hechoId", hechoId, "justificacion", justificacion))
                     .retrieve()
@@ -80,6 +86,18 @@ public class SolicitudService {
 
         } catch (Exception e) {
             throw new RuntimeException("No se pudo crear la solicitud: " + e.getMessage(), e);
+        }
+    }
+
+    public void aprobarSolicitud(Long id){
+        try{
+            webClientAdmin.post()
+                    .uri("/solicitudes-eliminacion/{id}/aprobar", id)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        }catch(WebClientResponseException e){
+            throw new RuntimeException("Error al aprobar solicitud: " + e.getResponseBodyAsString(), e);
         }
     }
 

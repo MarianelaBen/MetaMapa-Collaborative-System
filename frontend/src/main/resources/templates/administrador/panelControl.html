@@ -48,8 +48,7 @@
         <div class="stat-icon"><i class="fas fa-folder"></i></div>
         <div class="stat-content">
           <h3>Total de Colecciones</h3>
-          <div class="stat-number">250</div>
-          <div class="stat-change positive">15 nuevas este mes</div>
+          <div class="stat-number" th:text="${colecciones.size()}"></div>
         </div>
       </div>
 
@@ -58,7 +57,6 @@
         <div class="stat-content">
           <h3>Usuarios Activos</h3>
           <div class="stat-number">1,200</div>
-          <div class="stat-change positive">8% aumento en Q1</div>
         </div>
       </div>
 
@@ -67,7 +65,6 @@
         <div class="stat-content">
           <h3>Solicitudes Pendientes</h3>
           <div class="stat-number">18</div>
-          <div class="stat-change">7 solicitudes de eliminación</div>
         </div>
       </div>
 
@@ -76,31 +73,9 @@
         <div class="stat-content">
           <h3>Fuentes de Datos</h3>
           <div class="stat-number">72</div>
-          <div class="stat-change positive">5 nuevas integraciones</div>
         </div>
       </div>
     </div>
-
-    <!-- Charts Section -->
-    <div class="charts-section">
-      <div class="chart-container">
-        <div class="chart-header">
-          <h3>Estado de Asignación de Colecciones</h3>
-          <p>Resumen de la distribución de propiedad de colecciones.</p>
-        </div>
-        <div class="chart-content">
-          <div class="pie-chart-placeholder">
-            <div class="pie-slice assigned"></div>
-            <div class="pie-slice unassigned"></div>
-            <div class="pie-slice needs-reassignment"></div>
-          </div>
-          <div class="chart-legend">
-            <div class="legend-item"><span class="legend-dot assigned"></span><span>Asignadas</span></div>
-            <div class="legend-item"><span class="legend-dot unassigned"></span><span>Sin Asignar</span></div>
-            <div class="legend-item"><span class="legend-dot needs-reassignment"></span><span>Requieren Reasignación</span></div>
-          </div>
-        </div>
-      </div>
 
       <!-- Collections Management Table -->
       <div class="table-section">
@@ -115,7 +90,7 @@
               <i class="fas fa-sync-alt"></i>
               Actualizar
             </button>
-            <a href="crearColeccion.html" class="btn-add-new">
+            <a th:href="@{/colecciones/nueva}" class="btn-add-new">
               <i class="fas fa-plus"></i>
               Nueva Colección
             </a>
@@ -144,7 +119,7 @@
             </div>
             <tr th:if="${colecciones.size() >= 1}" th:each="coleccion : ${colecciones}">
               <td th:text="${coleccion.handle}">001</td>
-              <td th:text="${coleccion.descripcion}">Puntos Críticos de Biodiversidad Global</td>
+              <td th:text="${coleccion.titulo}">Puntos Críticos de Biodiversidad Global</td>
               <td><span class="status-badge active" th:text="${coleccion.handle}">Activa</span></td>
               <td th:text="${coleccion.hechoIds.size()}">1250</td>
               <td><span class="consensus-badge" th:text="${coleccion.algoritmoDeConsenso}">Absoluta</span></td>
@@ -176,23 +151,11 @@
             </tbody>
           </table>
         </div>
-      </div> <!-- /table-section (colecciones) -->
-    </div> <!-- /charts-section -->
-
-    <!-- Recent Imports Table -->
-    <div class="table-section">
-      <div class="section-header">
-        <h3>Importaciones Recientes</h3>
-        <div class="section-actions">
-          <button class="btn-add-new" onclick="location.href='./importadorArchivosCSV.html'">
-            <i class="fas fa-file-upload"></i>
-            Nueva Importación CSV
-          </button>
-        </div>
       </div>
+    </div>
 
 
-      <!-- Formulario oculto único -->
+<!-- Formulario oculto único -->
       <form id="deleteForm" th:method="post" style="display:none;">
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
       </form>
