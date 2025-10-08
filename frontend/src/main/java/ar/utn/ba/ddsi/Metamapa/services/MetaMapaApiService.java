@@ -58,6 +58,7 @@ public class MetaMapaApiService {
         }
     }
 
+
     public AuthResponseDTO signupAndGetTokens(RegisterRequestDTO dto) {
         return webClient.post()
                 .uri(authServiceUrl + "/auth/register")

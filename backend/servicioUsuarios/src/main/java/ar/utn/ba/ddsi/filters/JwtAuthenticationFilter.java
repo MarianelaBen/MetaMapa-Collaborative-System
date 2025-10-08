@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -44,8 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 var auth = new UsernamePasswordAuthenticationToken( //crea un objeto de autenticacion
                         username,
                         null, //sin contraseña
-                        Collections.singletonList(new SimpleGrantedAuthority(rolUsuario.toString())) //con sus roles
-                );
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + rolUsuario.toString())) //con sus roles
+                );                              //(new SimpleGrantedAuthority("ROLE_" + rolUsuario.name()))
                 SecurityContextHolder.getContext().setAuthentication(auth); //una vez que tenemos al usuario logueado con sus datos lo seteamos en el contexto
             } catch (Exception e) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
@@ -58,10 +59,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        // No aplicar el filtro JWT solo a los endpoints públicos de autenticación
+        if (!path.startsWith("/api/")) return true; // saltar filtro para web
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true; // CORS preflight
         return path.equals("/api/auth") || path.equals("/api/auth/refresh");
     }
+    /* METODO ORIGINAL
+    @Override
+        protected boolean shouldNotFilter(HttpServletRequest request) {
+            String path = request.getRequestURI();
+            // No aplicar el filtro JWT solo a los endpoints públicos de autenticación
+            return path.equals("/api/auth") || path.equals("/api/auth/refresh");
+    }*/
+
 }

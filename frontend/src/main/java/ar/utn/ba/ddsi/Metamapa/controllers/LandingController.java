@@ -19,7 +19,6 @@ public class LandingController {
     private final HechoService hechoService;
 
   @GetMapping("/inicio")
-  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String inicio(Model model){
     List<ColeccionDTO> coleccionesDestacadas = this.generarColeccionesDestacadasEjemplo();
     List<HechoDTO> hechosDestacados = this.generarHechosDestacadosEjemplo();

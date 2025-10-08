@@ -27,7 +27,6 @@ public class HechoController {
   private final HechoService hechoService;
 
   @GetMapping("/{id}")
-  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String verDetalleHecho(@PathVariable Long id,
                                 Model model, RedirectAttributes redirectAttributes){
     try{
@@ -53,7 +52,6 @@ public class HechoController {
   }
 
   @GetMapping("/nuevo")
-  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String verFormulario(Model model) {
     model.addAttribute("titulo","Subir hecho");
     model.addAttribute("hecho", new HechoDTO(
@@ -70,7 +68,6 @@ public class HechoController {
   }
 
   @PostMapping("/nuevo")
-  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String procesarFormulario(@ModelAttribute("hecho") HechoDTO hecho,
                                         @RequestParam("fecha") String fecha,
                                         @RequestParam("hora") String hora,

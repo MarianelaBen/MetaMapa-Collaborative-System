@@ -26,7 +26,6 @@ public class ColeccionController {
   private final ColeccionService coleccionService;
 
   @GetMapping
-  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String listarColecciones(Model model){
     List<ColeccionDTO> colecciones;
 
@@ -45,7 +44,6 @@ public class ColeccionController {
   }
 
   @GetMapping("/{handle}")
-  @PreAuthorize("hasAnyRole('CONTRIBUYENTE', 'VISUALIZADOR', 'ADMIN')")
   public String verDetalleColeccion(Model model, @PathVariable String handle, RedirectAttributes redirectAttributes){
     try{
       ColeccionDTO coleccion = this.coleccionService.getColeccionByHandle(handle);
@@ -62,7 +60,7 @@ public class ColeccionController {
   }
 
 @GetMapping("/nueva")
-@PreAuthorize("hasAnyRole('ADMIN') and hasAnyAuthority('ADMIN_COLECCCIONES')")
+@PreAuthorize("hasAnyRole('ADMIN') and hasAnyAuthority('ADMIN_COLECCIONES')")
 public String verFormulario(Model model) {
     model.addAttribute("titulo", "Crear nueva Coleccion");
     model.addAttribute("coleccion", new ColeccionDTO(null,null,null));
@@ -71,7 +69,7 @@ public String verFormulario(Model model) {
 }
 
 @PostMapping("/nueva")
-@PreAuthorize("hasAnyRole('ADMIN') and hasAnyAuthority('ADMIN_COLECCCIONES')")
+@PreAuthorize("hasAnyRole('ADMIN') and hasAnyAuthority('ADMIN_COLECCIONES')")
 public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion, RedirectAttributes redirect){
   try {
 

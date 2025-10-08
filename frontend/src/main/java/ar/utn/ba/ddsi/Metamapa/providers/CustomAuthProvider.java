@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.Metamapa.services.MetaMapaApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +15,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.ArrayList;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -35,6 +39,7 @@ public class CustomAuthProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
 
         try {
+            System.out.println("al custom auth llega!!!");
             // Llamada a servicio externo para obtener tokens
             AuthResponseDTO authResponse = externalAuthService.login(username, password);
 
@@ -74,4 +79,6 @@ public class CustomAuthProvider implements AuthenticationProvider {
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
+
+
 }

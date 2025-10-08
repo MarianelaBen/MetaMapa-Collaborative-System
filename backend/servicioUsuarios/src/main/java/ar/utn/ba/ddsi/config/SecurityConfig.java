@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/auth", "/api/auth/refresh").permitAll();
+                    auth.requestMatchers("/api/auth/**", "/api/auth/refresh/**").permitAll();
                     auth.requestMatchers("/api/auth/user/roles-permisos").authenticated();
                     auth.anyRequest().authenticated();
                 })
@@ -36,3 +36,11 @@ public class SecurityConfig {
         return http.build();
     }
 }
+/*
+    ORIGINAL:
+    .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers("/api/auth/**", "/api/auth/refresh/**").permitAll();
+                    auth.requestMatchers("/api/auth/user/roles-permisos").authenticated();
+                    auth.anyRequest().authenticated();
+                })
+)*/
