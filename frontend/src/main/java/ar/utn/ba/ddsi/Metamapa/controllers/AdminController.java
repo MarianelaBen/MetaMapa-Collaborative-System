@@ -75,7 +75,7 @@ public class AdminController {
     return "redirect:/administrador/importadorArchivosCSV";
   }
 
-  @PostMapping("/{handle}/eliminar")
+  @PostMapping("coleccion/{handle}/eliminar")
   @PreAuthorize("hasAnyRole('ADMIN')")
   public String eliminarColeccion(@PathVariable String handle,
                                   @ModelAttribute("coleccion") ColeccionDTO coleccionDTO,
@@ -150,6 +150,35 @@ public class AdminController {
           redirectAttributes.addFlashAttribute("tipoMensaje", "error");
           return "redirect:/admin/gestor-solicitudes";
       }
-
   }
+
+    @PostMapping("hecho/{id}/eliminar")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String eliminarHecho(@PathVariable Long id,
+                                    @ModelAttribute("hecho") HechoDTO hechoDTO,
+                                    BindingResult bindingResult,
+                                    Model model,
+                                    RedirectAttributes redirectAttributes
+    ) {
+        try {
+            hechoService.eliminarHecho(id);
+            redirectAttributes.addFlashAttribute("mensaje", "Hecho eliminado exitosamente");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+            // REDIRECT explícito a la ruta del panel
+            return "redirect:/admin/gestor-hechos";
+        } catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/admin/gestor-hechos";
+        } catch (ValidationException e) {
+            redirectAttributes.addFlashAttribute("mensaje", "Error de validación: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/admin/gestor-hechos";
+        } catch (Exception e) {
+
+            redirectAttributes.addFlashAttribute("mensaje", "Error al eliminar el hecho");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/admin/gestor-hechos";
+        }
+    }
 }

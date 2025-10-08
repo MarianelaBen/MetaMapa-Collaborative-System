@@ -169,7 +169,7 @@
 
               const doConfirm = () => {
                   const form = document.getElementById('deleteForm');
-                  form.action = `/admin/${encodeURIComponent(handle)}/eliminar`;
+                  form.action = `/admin/coleccion/${encodeURIComponent(handle)}/eliminar`;
                   form.submit();
               };
 

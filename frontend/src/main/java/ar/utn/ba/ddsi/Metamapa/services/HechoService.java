@@ -13,6 +13,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -21,19 +22,26 @@ import java.util.NoSuchElementException;
 
 @Service
 public class HechoService {
-    private final WebClient webClient;
+
+    private final WebClient webClientPublic;
+    private final WebClient webClientAdmin;
     private final ObjectMapper objectMapper;
 
     public HechoService(WebClient.Builder webClientBuilder,
-                            @Value("${backend.api.base-url-agregador}" ) String baseUrl, ObjectMapper objectMapper) {
-        this.webClient = webClientBuilder
+                            @Value("${backend.api.base-url-agregador}") String baseUrl,
+                            @Value("${backend.api.base-url}") String baseUrlAdmin,
+                            ObjectMapper objectMapper) {
+        this.webClientPublic = webClientBuilder
                 .baseUrl(baseUrl)
+                .build();
+        this.webClientAdmin = webClientBuilder
+                .baseUrl(baseUrlAdmin)
                 .build();
         this.objectMapper = objectMapper;
     }
 
     public List<HechoDTO> getHechos() {
-        List<HechoDTO> hechos = webClient.get()
+        List<HechoDTO> hechos = webClientPublic.get()
                 .uri("/hechos")
                 .retrieve()
                 .bodyToFlux(HechoDTO.class)
@@ -48,7 +56,7 @@ public class HechoService {
     }
 
     public HechoDTO getHechoPorId(Long id) {
-        HechoDTO hecho = webClient.get()
+        HechoDTO hecho = webClientPublic.get()
             .uri("/hechos/{id}", id)
             .retrieve()
             .bodyToMono(HechoDTO.class)
@@ -97,7 +105,7 @@ public class HechoService {
             }
 
             // Hacemos la petición
-            return webClient.post()
+            return webClientPublic.post()
                     .uri("/hechos") // si tu baseUrl es http://localhost:8083/api/public
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(BodyInserters.fromMultipartData(parts))
@@ -111,7 +119,7 @@ public class HechoService {
     }
 
     public HechoDTO obtenerHechoPorId(Long id) {
-        HechoDTO hecho = webClient.get()
+        HechoDTO hecho = webClientPublic.get()
             .uri("/hechos/{id}", id)
             .retrieve()
             .bodyToMono(HechoDTO.class)
@@ -147,7 +155,7 @@ public class HechoService {
                 }
             }
 
-            return webClient.put()
+            return webClientPublic.put()
                 .uri(uriBuilder -> uriBuilder
                     .path("/hechos/{id}")
                     .queryParam("replaceMedia", replaceMedia)
@@ -163,7 +171,7 @@ public class HechoService {
     }
 
     public List<String> getCategorias() {
-        List<CategoriaDTO> categorias = webClient.get()
+        List<CategoriaDTO> categorias = webClientPublic.get()
             .uri("/categorias")
             .retrieve()
             .bodyToFlux(CategoriaDTO.class)
@@ -172,6 +180,19 @@ public class HechoService {
 
         if (categorias == null) return List.of();
         return categorias.stream().map(CategoriaDTO::getNombre).toList();
+    }
+
+    public void eliminarHecho(Long id){
+        try{
+            webClientAdmin.post()
+                    .uri("/hechos/{id}/eliminar", id)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        }catch(WebClientResponseException e){
+            throw new RuntimeException("Error al eliminar hecho: " + e.getResponseBodyAsString(), e);
+        }
+
     }
 
 

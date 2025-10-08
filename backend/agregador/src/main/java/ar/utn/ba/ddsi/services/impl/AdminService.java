@@ -93,7 +93,15 @@ public class AdminService implements IAdminService {
         coleccion.getHechos().size();
 
         coleccionRepo.delete(coleccion);
+    }
 
+    @Override
+    public void eliminarHecho(Long id){
+        Hecho hecho = hechoRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "No se puede eliminar. Hecho no encontrado con id: " + id));
+        hecho.setFueEliminado(true);
+        hechoRepo.save(hecho);
     }
 
 

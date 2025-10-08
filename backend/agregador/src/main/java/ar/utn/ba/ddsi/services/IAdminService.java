@@ -37,4 +37,5 @@ public interface IAdminService {
   ColeccionOutputDTO  modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id);
   SolicitudOutputDTO aprobarSolicitud(Long id);
   SolicitudOutputDTO denegarSolicitud(Long id);
+    void eliminarHecho(Long id);
 }

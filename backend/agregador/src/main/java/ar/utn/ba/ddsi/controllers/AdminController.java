@@ -99,6 +99,17 @@ public class AdminController {
     }
   }
 
+  @PostMapping("hechos/{id}/eliminar")
+  public ResponseEntity<?> eliminarHecho(@PathVariable Long id) {
+      try{
+          servicio.eliminarHecho(id);
+          return ResponseEntity.ok(Map.of("mensaje", "Hecho eliminado correctamente"));
+      } catch (Exception e) {
+          return ResponseEntity.status((HttpStatus.NOT_FOUND))
+                  .body(Map.of("error", "Error al eliminar el hecho", "mensaje", e.getMessage()));
+      }
+  }
+
   //Obtener todos los hechos de una coleccion especifica
   @GetMapping("/colecciones/{colId}/hechos")
   public ResponseEntity<?> getHechos(@PathVariable String colId) {
