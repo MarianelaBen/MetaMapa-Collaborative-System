@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.Metamapa.config;
+/*package ar.utn.ba.ddsi.Metamapa.config;
 
 import ar.utn.ba.ddsi.Metamapa.providers.CustomAuthProvider;
 import org.springframework.context.annotation.Bean;
@@ -61,7 +61,7 @@ public class SecurityConfig {
                         //.ignoringRequestMatchers("/api/**")
                         )
                  */
-
+/*
                 .exceptionHandling(ex -> ex
                         // Usuario no autenticado → redirigir a login
                         .authenticationEntryPoint((request, response, authException) ->
@@ -81,3 +81,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+*/

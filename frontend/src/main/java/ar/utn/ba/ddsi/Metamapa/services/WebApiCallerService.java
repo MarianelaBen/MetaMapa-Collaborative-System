@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.Metamapa.services;
+/*package ar.utn.ba.ddsi.Metamapa.services;
 
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.AuthResponseDTO;
@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 /**
  * Servicio genérico para hacer llamadas HTTP con manejo automático de tokens
  */
+/*
 @Service
 public class WebApiCallerService {
 
@@ -31,6 +32,7 @@ public class WebApiCallerService {
      * @param apiCall función que ejecuta la llamada al API
      * @return resultado de la llamada al API
      */
+/*
     public <T> T executeWithTokenRetry(ApiCall<T> apiCall) {
         String accessToken = getAccessTokenFromSession();
         String refreshToken = getRefreshTokenFromSession();
@@ -66,6 +68,7 @@ public class WebApiCallerService {
     /**
      * Ejecuta una llamada HTTP GET
      */
+/*
     public <T> T get(String url, Class<T> responseType) {
         return executeWithTokenRetry(accessToken ->
                 webClient
@@ -81,6 +84,7 @@ public class WebApiCallerService {
     /**
      * Ejecuta una llamada HTTP GET que retorna una lista
      */
+/*
     public <T> java.util.List<T> getList(String url, Class<T> responseType) {
         return executeWithTokenRetry(accessToken ->
                 webClient
@@ -97,6 +101,7 @@ public class WebApiCallerService {
     /**
      * Ejecuta una llamada HTTP GET con un token específico (sin usar sesión)
      */
+/*
     public <T> T getWithAuth(String url, String accessToken, Class<T> responseType) {
         try {
             return webClient
@@ -114,6 +119,7 @@ public class WebApiCallerService {
     /**
      * Ejecuta una llamada HTTP POST
      */
+/*
     public <T> T post(String url, Object body, Class<T> responseType) {
         return executeWithTokenRetry(accessToken ->
                 webClient
@@ -130,6 +136,7 @@ public class WebApiCallerService {
     /**
      * Ejecuta una llamada HTTP PUT
      */
+/*
     public <T> T put(String url, Object body, Class<T> responseType) {
         return executeWithTokenRetry(accessToken ->
                 webClient
@@ -146,6 +153,7 @@ public class WebApiCallerService {
     /**
      * Ejecuta una llamada HTTP DELETE
      */
+/*
     public void delete(String url) {
         executeWithTokenRetry(accessToken -> {
             webClient
@@ -162,6 +170,7 @@ public class WebApiCallerService {
     /**
      * Refresca el access token usando el refresh token
      */
+/*
     private AuthResponseDTO refreshToken(String refreshToken) {
         try {
             RefreshTokenDTO refreshRequest = RefreshTokenDTO.builder()
@@ -187,6 +196,7 @@ public class WebApiCallerService {
     /**
      * Obtiene el access token de la sesión
      */
+/*
     private String getAccessTokenFromSession() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
@@ -196,6 +206,7 @@ public class WebApiCallerService {
     /**
      * Obtiene el refresh token de la sesión
      */
+/*
     private String getRefreshTokenFromSession() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
@@ -205,6 +216,7 @@ public class WebApiCallerService {
     /**
      * Actualiza los tokens en la sesión
      */
+/*
     private void updateTokensInSession(String accessToken, String refreshToken) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
@@ -216,8 +228,10 @@ public class WebApiCallerService {
     /**
      * Interfaz funcional para ejecutar llamadas al API con token
      */
+/*
     @FunctionalInterface
     public interface ApiCall<T> {
         T execute(String accessToken) throws Exception;
     }
 }
+*/
