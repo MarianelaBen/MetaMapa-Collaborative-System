@@ -80,7 +80,8 @@
                         <div class="multimedia-grid"
                              th:if="${nombresMultimedia != null and !#lists.isEmpty(nombresMultimedia)}">
                             <div class="multimedia-item" th:each="name : ${nombresMultimedia}">
-                                <div class="multimedia-placeholder" th:text="${name}">archivo.jpg</div>
+                                <div class="multimedia-placeholder"></div>
+                                <span class="filename" th:text="${name}"></span>
                             </div>
                         </div>
 
