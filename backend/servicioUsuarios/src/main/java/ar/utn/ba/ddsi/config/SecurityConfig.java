@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.config;
+/* package ar.utn.ba.ddsi.config;
 
 import ar.utn.ba.ddsi.filters.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;

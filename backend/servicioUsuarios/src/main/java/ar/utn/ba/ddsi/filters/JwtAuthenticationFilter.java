@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.filters;
+/*package ar.utn.ba.ddsi.filters;
 
 
 import ar.utn.ba.ddsi.models.entities.Usuario;
@@ -74,5 +74,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // No aplicar el filtro JWT solo a los endpoints públicos de autenticación
             return path.equals("/api/auth") || path.equals("/api/auth/refresh");
     }*/
-
+/*
 }
+*/

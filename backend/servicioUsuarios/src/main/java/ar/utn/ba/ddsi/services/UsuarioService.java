@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.services;
+/*package ar.utn.ba.ddsi.services;
 
 import ar.utn.ba.ddsi.models.repositories.IUsuariosRepository;
 import org.springframework.context.annotation.Bean;
@@ -39,3 +39,4 @@ public class UsuarioService implements UserDetailsService {
         return new BCryptPasswordEncoder();
     }
 }
+*/
