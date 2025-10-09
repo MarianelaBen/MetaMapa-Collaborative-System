@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -201,6 +202,7 @@ public class AdminService implements IAdminService {
                 .orElseThrow(() -> new NoSuchElementException("No se encontró el hecho " + hechoId));
         h.setFueEliminado(true);
     s.setEstado(EstadoSolicitud.ACEPTADA);
+    s.setFechaAtencion(LocalDateTime.now());
     hechoRepo.save(h);
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
@@ -211,6 +213,7 @@ public class AdminService implements IAdminService {
     SolicitudDeEliminacion s = solicitudRepo.findById(id)
         .orElseThrow(() -> new NoSuchElementException("No se encontró la solicitud " + id));
     s.setEstado(EstadoSolicitud.RECHAZADA);
+      s.setFechaAtencion(LocalDateTime.now());
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
 }
