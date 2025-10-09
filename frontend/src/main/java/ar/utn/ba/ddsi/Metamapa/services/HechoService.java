@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -56,15 +58,19 @@ public class HechoService {
     }
 
     public HechoDTO getHechoPorId(Long id) {
-        HechoDTO hecho = webClientPublic.get()
-            .uri("/hechos/{id}", id)
-            .retrieve()
-            .bodyToMono(HechoDTO.class)
-            .block();
-
-        if (hecho == null)
-            throw new NoSuchElementException("Hecho no encontrado id=" + id);
-        return hecho;
+        if (id == null) return null;
+        try {
+            return webClientPublic.get()
+                    .uri("/hechos/{id}", id)
+                    .retrieve()
+                    .onStatus(status -> status == HttpStatus.NOT_FOUND,
+                            resp -> Mono.error(new NoSuchElementException("Hecho no encontrado id=" + id)))
+                    .bodyToMono(HechoDTO.class)
+                    .block();
+        } catch (WebClientResponseException.NotFound e) {
+            // opcional: loguear e devolver null para que el controller lo maneje
+            return null;
+        }
     }
 
     public HechoDTO subirHecho(HechoDTO dto, MultipartFile[] multimedia) {

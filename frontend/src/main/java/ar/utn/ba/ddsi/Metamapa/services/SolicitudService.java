@@ -113,4 +113,16 @@ public class SolicitudService {
         }
     }
 
+    public SolicitudDTO obtenerSolicitud(Long id){
+        try{
+            return webClientAdmin.get()
+                    .uri("/solicitudes/{id}", id)
+                    .retrieve()
+                    .bodyToMono(SolicitudDTO.class)
+                    .block();
+        }catch(WebClientResponseException e){
+            throw new RuntimeException("Error al traer solicitud: " + e.getResponseBodyAsString(), e);
+        }
+    }
+
 }
