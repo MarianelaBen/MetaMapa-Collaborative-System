@@ -17,6 +17,7 @@ public class ColeccionOutputDTO {
   private Set<Long> fuenteIds;
   private Set<Long> criterioIds;
   private Set<Long> hechoIds;
+    private Integer cantVistas;
 
   public static ColeccionOutputDTO fromEntity(Coleccion c) {
     ColeccionOutputDTO dto = new ColeccionOutputDTO();
@@ -24,6 +25,7 @@ public class ColeccionOutputDTO {
     dto.setDescripcion(c.getDescripcion());
     dto.setHandle(c.getHandle());
     dto.setAlgoritmoDeConsenso(c.getAlgoritmoDeConsenso().name());
+    dto.setCantVistas(c.getCantVistas());
     // Extraemos solo los IDs de las colecciones relacionadas
     dto.setFuenteIds(
         c.getFuentes().stream()

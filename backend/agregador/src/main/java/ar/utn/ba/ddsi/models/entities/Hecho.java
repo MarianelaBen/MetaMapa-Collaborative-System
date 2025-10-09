@@ -98,6 +98,9 @@ public class Hecho {
   @Column(name = "fechaActualizacion", nullable = true)
    private LocalDate fechaActualizacion;
 
+    @Column(name = "cantidad_vistas")
+    private Integer cantVistas;
+
   // private String nombreAportante;
   // private String apellidoAportante;
   // private Integer edadAportante;

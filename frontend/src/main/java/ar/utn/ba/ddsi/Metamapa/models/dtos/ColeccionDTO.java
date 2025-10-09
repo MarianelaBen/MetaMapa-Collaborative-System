@@ -16,6 +16,7 @@ public class ColeccionDTO {
     private Set<Long> fuenteIds;
     private Set<Long> criterioIds;
     private Set<Long> hechoIds;
+    private Integer cantVistas;
 
   public ColeccionDTO() {}
 

@@ -10,6 +10,7 @@ import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
+import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
 import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
@@ -32,8 +33,9 @@ private  final NormalizadorService normalizadorService;
 private final IHechoRepository hechoRepository;
 private final ICategoriaRepository categoriaRepository; //TODO BORRAR CUANDO SE ARREGLE NORMALIZADOR
     private final ISolicitudRepository solicitudesRepo;
+    private final IColeccionRepository coleccionRepo;
 
-public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuenteEstatica adapterFuenteEstatica, AdapterFuenteProxy adapterFuenteProxy, NormalizadorService normalizadorService, IHechoRepository hechoRepository, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudesRepo) {
+public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuenteEstatica adapterFuenteEstatica, AdapterFuenteProxy adapterFuenteProxy, NormalizadorService normalizadorService, IHechoRepository hechoRepository, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudesRepo, IColeccionRepository coleccionRepo) {
   this.adapterFuenteDinamica = adapterFuenteDinamica;
   this.adapterFuenteEstatica = adapterFuenteEstatica;
   this.adapterFuenteProxy = adapterFuenteProxy;
@@ -41,6 +43,7 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
   this.hechoRepository = hechoRepository;
   this.categoriaRepository = categoriaRepository;
   this.solicitudesRepo = solicitudesRepo;
+  this.coleccionRepo = coleccionRepo;
 }
 
     @Override
@@ -88,6 +91,17 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
         return this.hechoRepository.findAll().stream()
                 .map(this::hechoOutputDTO)
                 .collect(Collectors.toList());
+    }
+
+    public void sumarVistaColeccion(String handle){
+        Coleccion c = coleccionRepo.findByHandle(handle)
+                .orElseThrow(() -> new NoSuchElementException("Coleccion no encontrada: " + handle));
+
+        Integer actuales = c.getCantVistas();
+        if (actuales == null) actuales = 0;
+        c.setCantVistas(actuales + 1);
+
+        coleccionRepo.save(c);
     }
 
 

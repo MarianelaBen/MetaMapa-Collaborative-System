@@ -28,7 +28,6 @@ public class AdminController {
     private final HechoService hechoService;
 
     @GetMapping("/panel-control")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     public String mostrarPanelControl(Model model, RedirectAttributes redirectAttributes) {
         List<ColeccionDTO> colecciones = this.coleccionService.getColecciones();
         model.addAttribute("titulo", "Panel de Control");
@@ -37,7 +36,6 @@ public class AdminController {
     }
 
     @GetMapping("/gestor-solicitudes")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     public String mostrarGestorSolicitudes(Model model, RedirectAttributes redirectAttributes) {
         List<SolicitudDTO> solicitudes = this.solicitudService.getSolicitudes();
         model.addAttribute("titulo", "Gestor de Solicitudes");
@@ -46,7 +44,6 @@ public class AdminController {
     }
 
     @GetMapping("/gestor-hechos")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     public String mostrarGestorHechos(Model model, RedirectAttributes redirectAttributes) {
         List<HechoDTO> hechos = this.hechoService.getHechos();
         model.addAttribute("titulo", "Gestor de Hechos");
@@ -55,14 +52,12 @@ public class AdminController {
     }
 
   @GetMapping("/importarCSV")
-  @PreAuthorize("hasAnyRole('ADMIN')")
   public String verImportadorCSV(Model model) {
     model.addAttribute("titulo", "Importacion de hechos en archivos CSV");
     return "administrador/importadorArchivosCSV";
   }
 
   @PostMapping("/importarCSV")
-  @PreAuthorize("hasAnyRole('ADMIN')")
   public String importarCSV(@RequestParam("archivo")MultipartFile archivo, RedirectAttributes redirect){
     if(archivo == null || archivo.isEmpty()) {
       redirect.addFlashAttribute("error", "Selecciona un archivo CSV");
@@ -75,8 +70,8 @@ public class AdminController {
     return "redirect:/administrador/importadorArchivosCSV";
   }
 
+
   @PostMapping("coleccion/{handle}/eliminar")
-  @PreAuthorize("hasAnyRole('ADMIN')")
   public String eliminarColeccion(@PathVariable String handle,
                                   @ModelAttribute("coleccion") ColeccionDTO coleccionDTO,
                                   BindingResult bindingResult,

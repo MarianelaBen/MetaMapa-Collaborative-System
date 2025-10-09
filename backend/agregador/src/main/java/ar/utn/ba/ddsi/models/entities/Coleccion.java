@@ -63,6 +63,9 @@ public class Coleccion {
      @Column(name = "algoritmo_de_consenso")
      private TipoAlgoritmoDeConsenso algoritmoDeConsenso;
 
+     @Column(name = "cantidad_vistas")
+     private Integer cantVistas;
+
   public Coleccion(String titulo, String descripcion, Set<Fuente> fuentes) {
     this.titulo = titulo;
     this.descripcion = descripcion;

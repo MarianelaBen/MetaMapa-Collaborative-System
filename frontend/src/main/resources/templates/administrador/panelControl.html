@@ -101,14 +101,10 @@
           <table class="admin-table">
             <thead th:if="${colecciones.size() >= 1}">
             <tr>
-              <th>ID</th>
+              <th>Handle</th>
               <th>Nombre</th>
-              <th>Estado</th>
               <th>Hechos</th>
               <th>Consenso</th>
-              <th>Última Actualización</th>
-              <th>Propietario</th>
-              <th>Fuente</th>
               <th>Acciones</th>
             </tr>
             </thead>
@@ -120,12 +116,8 @@
             <tr th:if="${colecciones.size() >= 1}" th:each="coleccion : ${colecciones}">
               <td th:text="${coleccion.handle}">001</td>
               <td th:text="${coleccion.titulo}">Puntos Críticos de Biodiversidad Global</td>
-              <td><span class="status-badge active" th:text="${coleccion.handle}">Activa</span></td>
               <td th:text="${coleccion.hechoIds.size()}">1250</td>
               <td><span class="consensus-badge" th:text="${coleccion.algoritmoDeConsenso}">Absoluta</span></td>
-              <td>15/03/2024</td>
-              <td>Juan Lopez</td>
-              <td>Biodiversity.org</td>
               <td>
                 <div class="action-buttons">
                   <a href="editarColeccion.html" class="btn-action edit" title="Editar">

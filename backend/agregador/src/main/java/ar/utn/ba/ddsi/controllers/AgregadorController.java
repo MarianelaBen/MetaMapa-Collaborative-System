@@ -196,6 +196,16 @@ public class AgregadorController {
         }
     }
 
+    @PostMapping("/coleccion/{handle}/vista")
+    public void sumarVistaColeccion(@PathVariable String handle){
+        try{
+            this.agregadorService.sumarVistaColeccion(handle);
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al sumar vista en colección", e);
+
+        }
+    }
+
   @PostMapping("/fuentes")
   public ResponseEntity<?> guardarFuente(@RequestBody FuenteInputDTO dto) {
     try {

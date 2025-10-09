@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
+import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
@@ -60,7 +61,6 @@ public class ColeccionController {
   }
 
 @GetMapping("/nueva")
-@PreAuthorize("hasAnyRole('ADMIN') and hasAnyAuthority('ADMIN_COLECCIONES')")
 public String verFormulario(Model model) {
     model.addAttribute("titulo", "Crear nueva Coleccion");
     model.addAttribute("coleccion", new ColeccionDTO(null,null,null));
@@ -69,7 +69,6 @@ public String verFormulario(Model model) {
 }
 
 @PostMapping("/nueva")
-@PreAuthorize("hasAnyRole('ADMIN') and hasAnyAuthority('ADMIN_COLECCIONES')")
 public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion, RedirectAttributes redirect){
   try {
 
@@ -104,44 +103,30 @@ public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion
     return h;
   }
 
-  //método para generar coleccion de ejemplo
-  public static List<ColeccionDTO> generarColeccionesEjemplo() {
-    return Arrays.asList(
-        new ColeccionDTO(
-            "Incendios forestales en Argentina 2025",
-            "Monitoreo de incendios forestales ocurridos durante el año 2025 en territorio argentino. Datos actualizados desde múltiples fuentes oficiales y reportes ciudadanos.",
-            "2"
-        ),
+    @PostMapping("/{handle}/sumarVista")
+    public String sumarVistaColeccion(@PathVariable String handle,
+                                      @ModelAttribute("coleccion") ColeccionDTO coleccionDTO,
+                                      RedirectAttributes redirectAttributes){
+        try {
+            coleccionService.sumarVistaColeccion(handle);
+            redirectAttributes.addFlashAttribute("mensaje", "Se sumó una vista a la colección exitosamente");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+            return "redirect:/exploradorColecciones";
+        } catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/exploradorColecciones";
+        } catch (ValidationException e) {
+            redirectAttributes.addFlashAttribute("mensaje", "Error de validación: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/exploradorColecciones";
+        } catch (Exception e) {
 
-        new ColeccionDTO(
-            "Desapariciones vinculadas a crímenes de odio",
-            "Registro de casos de desapariciones forzadas relacionadas con crímenes de odio en Argentina. Incluye información sobre víctimas, fechas y ubicaciones de los últimos reportes.",
-            "3"
-        ),
+            redirectAttributes.addFlashAttribute("mensaje", "Error al sumar vista a la colección");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/exploradorColecciones";
+        }
+    }
 
-        new ColeccionDTO(
-            "Víctimas de muertes viales en Argentina",
-            "Base de datos de accidentes de tránsito fatales en rutas y calles de Argentina. Información recopilada para análisis de seguridad vial y prevención.",
-            "4"
-        ),
 
-        new ColeccionDTO(
-            "Desastres Naturales",
-            "Registro histórico de eventos climáticos extremos, terremotos, inundaciones y otros desastres naturales que han afectado la región.",
-            "5"
-        ),
-
-        new ColeccionDTO(
-            "Personas asesinadas por el estado",
-            "Documentación de casos de violencia institucional y abusos por parte de fuerzas de seguridad en Argentina.",
-            "6"
-        ),
-
-        new ColeccionDTO(
-            "Incendios forestales en España",
-            "Datos sobre incendios forestales en territorio español, integrados desde fuentes oficiales europeas para análisis comparativo regional.",
-            "7"
-        )
-    );
-  }
 }
