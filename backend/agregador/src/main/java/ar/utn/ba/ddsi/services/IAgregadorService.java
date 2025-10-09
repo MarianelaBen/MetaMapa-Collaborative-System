@@ -19,4 +19,5 @@ public interface IAgregadorService {
     List<SolicitudOutputDTO> getSolicitudes();
     List<HechoOutputDTO> obtenerHechos();
     void sumarVistaColeccion(String handle);
+    public void sumarVistaHecho(Long id);
 }

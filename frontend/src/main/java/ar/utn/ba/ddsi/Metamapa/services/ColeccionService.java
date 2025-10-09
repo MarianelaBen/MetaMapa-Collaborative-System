@@ -113,7 +113,7 @@ public class ColeccionService {
                     .block();
 
         }catch (WebClientResponseException e){
-            throw new RuntimeException("Error al sumar coleccion: " + e.getResponseBodyAsString(), e);
+            throw new RuntimeException("Error al sumar vista a la coleccion: " + e.getResponseBodyAsString(), e);
         }
     }
 }

@@ -93,6 +93,7 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
                 .collect(Collectors.toList());
     }
 
+    @Override
     public void sumarVistaColeccion(String handle){
         Coleccion c = coleccionRepo.findByHandle(handle)
                 .orElseThrow(() -> new NoSuchElementException("Coleccion no encontrada: " + handle));
@@ -102,6 +103,18 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
         c.setCantVistas(actuales + 1);
 
         coleccionRepo.save(c);
+    }
+
+    @Override
+    public void sumarVistaHecho(Long id){
+        Hecho h = hechoRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + id));
+
+        Integer actuales = h.getCantVistas();
+        if (actuales == null) actuales = 0;
+        h.setCantVistas(actuales + 1);
+
+        hechoRepository.save(h);
     }
 
 
@@ -134,6 +147,7 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
   @Override
   public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
+    hechoOutputDTO.setCantVistas(hecho.getCantVistas());
     hechoOutputDTO.setId(hecho.getId());
     hechoOutputDTO.setTitulo(hecho.getTitulo());
     hechoOutputDTO.setDescripcion(hecho.getDescripcion());

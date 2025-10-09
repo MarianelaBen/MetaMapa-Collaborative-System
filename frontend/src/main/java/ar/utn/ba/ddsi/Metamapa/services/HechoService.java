@@ -201,6 +201,19 @@ public class HechoService {
 
     }
 
+    public void sumarVistaHecho(Long id) {
+        try {
+            webClientPublic.post()
+                    .uri("/hecho/{id}/vista", id)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+
+        }catch (WebClientResponseException e){
+            throw new RuntimeException("Error al sumar vista al hecho: " + e.getResponseBodyAsString(), e);
+        }
+    }
+
 
 }
 

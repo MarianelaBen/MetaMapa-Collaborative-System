@@ -28,5 +28,6 @@ public class HechoInputDTO {
   private Set<Long> idEtiquetas;
   private List<Long> idContenidoMultimedia;
   private String fuenteExterna; //es el "tipo" de fuente proxy
+    private Integer cantVistas;
 
 }

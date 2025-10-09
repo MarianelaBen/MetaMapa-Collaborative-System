@@ -1,5 +1,7 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
+import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
@@ -218,6 +220,30 @@ public class HechoController {
     );
     return dto;
   }
+
+    @PostMapping("/{id}/sumarVista")
+    public String sumarVistaHecho(@PathVariable Long id,
+                                      RedirectAttributes redirectAttributes){
+        try {
+            hechoService.sumarVistaHecho(id);
+            redirectAttributes.addFlashAttribute("mensaje", "Se sumó una vista al hecho exitosamente");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+            return "redirect:/detalleHecho/" + id;
+        } catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/detalleHecho/" + id;
+        } catch (ValidationException e) {
+            redirectAttributes.addFlashAttribute("mensaje", "Error de validación: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/detalleHecho/" + id;
+        } catch (Exception e) {
+
+            redirectAttributes.addFlashAttribute("mensaje", "Error al sumar vista al hecho");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/detalleHecho/" + id;
+        }
+    }
 
 }
 

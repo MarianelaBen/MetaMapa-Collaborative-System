@@ -2,6 +2,8 @@
 
 <div th:fragment="css">
             <link rel="stylesheet" th:href="@{/css/detalleColeccion.css}" />
+            <meta name="_csrf" th:content="${_csrf.token}"/>
+            <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
         </div>
         <div class="container" th:fragment="contenido">
             <div class="breadcrumb">
@@ -126,11 +128,13 @@
                                 <strong>Ubicación:</strong> Santa Cruz, Argentina
                             </div>
                             <div><strong>Coordenadas:</strong> -50.2938, -73.0138</div>
+                            <div><strong>Cantidad de vistas:</strong><p th:text="${hecho.cantVistas}"></p></div>
                         </div>
 
                         <div class="hecho-actions">
-                            <a class="btn btn-principal"
-                               th:href="@{/hechos/{id}(id=${hecho.id})}">
+                            <a class="btn btn-principal btn-verDetalleHecho"
+                               th:href="@{/hechos/{id}(id=${hecho.id})}"
+                               th:attr="data-handle=${hecho.id}">
                                 Ver Detalles
                             </a>
                             <a class="btn btn-secondary"
@@ -140,5 +144,55 @@
                         </div>
                     </div>
                 </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const csrfMeta = document.querySelector('meta[name="_csrf"]');
+                    const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+                    const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : null;
+                    const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.getAttribute('content') : 'X-CSRF-TOKEN';
+
+                    document.querySelectorAll('.btn-verDetalleHecho').forEach(anchor => {
+                        anchor.addEventListener('click', (ev) => {
+                            // Evitar navegación inmediata para poder disparar la petición primero
+                            ev.preventDefault();
+
+                            const handle = anchor.dataset.handle;
+                            const targetHref = anchor.href;
+
+                            if (!handle) {
+                                // si no hay handle, navegamos normalmente
+                                window.location.href = targetHref;
+                                return;
+                            }
+
+                            // Construimos la URL del POST (ajustala si tu RequestMapping difiere)
+                            const postUrl = `/hechos/${encodeURIComponent(handle)}/sumarVista`;
+
+                            // Payload vacío (el controller solo usa path variable)
+                            const body = ''; // o `coleccionId=...` si necesitas enviar algo
+
+                            // Envío con fetch; keepalive permite que la petición trate de completarse aunque haya navegación
+                            fetch(postUrl, {
+                                method: 'POST',
+                                credentials: 'same-origin',    // mantiene cookies/sesión
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    ...(csrfToken ? { [csrfHeader]: csrfToken } : {})
+                                },
+                                body: body,
+                                keepalive: true
+                            })
+                                .catch(err => {
+                                    // no queremos bloquear la navegación por un error de la suma de vista
+                                    console.warn('No se pudo registrar vista (no bloquea navegación):', err);
+                                })
+                                .finally(() => {
+                                    // navegamos al href (incluso si el POST aún está en progreso; keepalive ayuda)
+                                    window.location.href = targetHref;
+                                });
+                        });
+                    });
+                });
+            </script>
         </div>
 </html>

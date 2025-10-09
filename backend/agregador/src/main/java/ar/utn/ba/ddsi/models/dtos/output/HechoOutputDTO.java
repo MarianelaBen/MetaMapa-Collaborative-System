@@ -30,6 +30,7 @@ public class HechoOutputDTO {
   private String fuenteExterna;
   private Contribuyente contribuyente;
   private Boolean fueEliminado;
+    private Integer cantVistas;
 
   public static HechoOutputDTO fromEntity(Hecho h) {
     HechoOutputDTO dto = new HechoOutputDTO();
