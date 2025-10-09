@@ -216,4 +216,11 @@ public class AdminService implements IAdminService {
       s.setFechaAtencion(LocalDateTime.now());
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
+
+  @Override
+  public SolicitudOutputDTO getSolicitud(Long id){
+    SolicitudDeEliminacion s = solicitudRepo.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("No se encontró la solicitud " + id));
+    return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
+  }
 }

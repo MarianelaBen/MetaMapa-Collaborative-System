@@ -38,4 +38,5 @@ public interface IAdminService {
   SolicitudOutputDTO aprobarSolicitud(Long id);
   SolicitudOutputDTO denegarSolicitud(Long id);
     void eliminarHecho(Long id);
+    SolicitudOutputDTO getSolicitud(Long id);
 }

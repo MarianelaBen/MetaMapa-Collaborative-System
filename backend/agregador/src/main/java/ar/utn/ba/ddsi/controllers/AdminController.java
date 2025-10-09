@@ -209,6 +209,19 @@ public class AdminController {
     coleccionService.actualizarColecciones();
     return ResponseEntity.ok("ok");
   }
+
+  @GetMapping("/solicitudes/{id}")
+    public ResponseEntity<?> solicitudes(@PathVariable Long id){
+      try {
+          return ResponseEntity.ok(this.servicio.getSolicitud(id));
+      } catch (NoSuchElementException e) {
+          return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                  .body(Map.of("error", "Solicitud no encontrada", "mensaje", e.getMessage()));
+      } catch (Exception e) {
+          return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                  .body(Map.of("error", "Error al buscar la solicitud", "mensaje", e.getMessage()));
+      }
+  }
 }
 
 

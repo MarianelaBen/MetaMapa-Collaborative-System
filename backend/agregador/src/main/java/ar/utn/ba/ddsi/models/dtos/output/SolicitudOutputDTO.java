@@ -23,6 +23,7 @@ public class SolicitudOutputDTO {
     dto.setJustificacion(s.getJustificacion());
     dto.setFechaEntrada(s.getFechaEntrada());
     dto.setFechaAtencion(s.getFechaAtencion());
+    dto.setHechoId(s.getHecho().getId());
     return dto;
   }
 }
