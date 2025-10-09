@@ -135,9 +135,9 @@
                                 </button>
 
                                 <!-- Botón Ver -->
-                                <button type="button" class="btn-action view" title="Ver">
+                                <a type="button" class="btn-action view" title="Ver" th:href="@{/detalle/{solicitudId}(solicitudId=${solicitud.id})}">
                                     <i class="fas fa-eye"></i>
-                                </button>
+                                </a>
 
                                 <!-- Botón Rechazar -->
                                 <button type="button" class="btn-action reject"

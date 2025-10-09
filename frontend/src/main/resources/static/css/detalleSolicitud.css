@@ -68,15 +68,16 @@
 }
 
 .status-pending {
-    background-color: #f39c12; /* Naranja */
+    background-color: #fff3cd;
+    color: #856404;
 }
-
-.status-accepted {
-    background-color: #27ae60; /* Verde */
+.status-approved {
+    background-color: #d4edda;
+    color: #155724;
 }
-
 .status-rejected {
-    background-color: #e74c3c; /* Rojo */
+    background-color: #f8d7da;
+    color: #721c24;
 }
 
 /* Tarjeta específica para la justificación */

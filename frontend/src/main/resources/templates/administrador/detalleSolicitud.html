@@ -10,10 +10,8 @@
     <div class="container" th:fragment="contenido">
         <!-- Breadcrumb -->
         <div class="breadcrumb">
-            <a href="#">Inicio</a> ›
-            <a href="#">Colecciones</a> ›
-            <a href="#">Incendios forestales en Argentina 2025</a> ›
-            <a href="#">Detalle del hecho</a> ›
+            <a th:href="@{/inicio}">Inicio</a> ›
+            <a th:href="@{/admin/gestor-solicitudes}">Gestor de solicitudes</a> ›
             Detalle de la Solicitud
         </div>
 
@@ -24,14 +22,14 @@
             <div class="fact-summary-card">
                 <div class="fact-header">
                     <h2 class="fact-title">Hecho a eliminar</h2>
-                    <h3 class="fact-subtitle">Incendio forestal activo en Parque Nacional Los Glaciares</h3>
-                    <div class="fact-category">Incendio forestal</div>
+                    <h3 class="fact-subtitle" th:text="${hecho.titulo}">Incendio forestal activo en Parque Nacional Los Glaciares</h3>
+                    <div class="fact-category" th:text="${hecho.categoria}">Incendio forestal</div>
                 </div>
                 <div class="fact-content">
-                    <p class="fact-description">
+                    <p class="fact-description" th:text="${hecho.descripcion}">
                         Incendio de gran magnitud detectado en el sector norte del Parque Nacional Los Glaciares. Las llamas han consumido aproximadamente 1,200 hectáreas de bosque nativo...
                     </p>
-                    <a href="#" class="btn btn-secondary" style="width: 100%; text-align: center;">Ver Hecho Completo</a>
+                    <a th:href="@{/hechos/{id}(id=${hecho.id})}" class="btn btn-secondary" style="width: 100%; text-align: center;">Ver Hecho Completo</a>
                 </div>
             </div>
 
@@ -41,20 +39,12 @@
                     <h3>Detalles de la Solicitud</h3>
                     <table class="metadata-table">
                         <tr>
-                            <td>ID de Solicitud:</td>
-                            <td><strong>REQ-2025-09-15-00123</strong></td>
-                        </tr>
-                        <tr>
-                            <td>ID del Hecho:</td>
-                            <td><strong>FACT-2025-08-12-00045</strong></td>
-                        </tr>
-                        <tr>
                             <td>Fecha de Entrada:</td>
-                            <td><strong>15 de septiembre, 2025 - 14:30 hs</strong></td>
+                            <td><strong th:text="${solicitud.fechaEntrada}">15 de septiembre, 2025 - 14:30 hs</strong></td>
                         </tr>
                         <tr>
                             <td>Estado:</td>
-                            <td><span class="status-badge status-pending">PENDIENTE</span></td>
+                            <td><span class="status-badge status-pending" th:text="${solicitud.estado}">PENDIENTE</span></td>
                             <!-- Otros estados:
                              <td><span class="status-badge status-accepted">ACEPTADA</span></td>
                              <td><span class="status-badge status-rejected">RECHAZADA</span></td>
@@ -62,21 +52,14 @@
                         </tr>
                         <tr>
                             <td>Fecha de Atención:</td>
-                            <td><strong>--</strong></td>
-                        </tr>
-                        <tr>
-                            <td>Marcada como SPAM:</td>
-                            <td><strong>No</strong></td>
+                            <td><strong th:text="${solicitud.fechaAtencion}">--</strong></td>
                         </tr>
                     </table>
                 </div>
 
                 <div class="info-card justification-card">
                     <h3>Justificación de la Solicitud</h3>
-                    <p class="justification-text">
-                        La información presentada en este hecho es incorrecta y potencialmente maliciosa. El supuesto incendio en el Parque Nacional Los Glaciares no ha sido confirmado por ninguna fuente oficial, incluyendo la Administración de Parques Nacionales, el Servicio Nacional de Manejo del Fuego, ni los bomberos voluntarios de El Calafate. He contactado personalmente a la intendencia del parque y me han asegurado que no existen focos activos de la magnitud descrita.
-                        <br><br>
-                        La publicación de noticias falsas sobre desastres naturales puede generar pánico innecesario en la población y desviar recursos de emergencias reales. Considero que este "hecho" fue creado con la intención de desinformar, ya que las coordenadas proporcionadas corresponden a una zona que no ha presentado incidentes recientemente. La falta de contenido multimedia verídico (fotos, videos) también es una señal de alerta. Solicito la eliminación inmediata para mantener la integridad y fiabilidad de la plataforma MetaMapa. Este tipo de contenido daña la credibilidad del proyecto y puede tener consecuencias negativas para la comunidad.
+                    <p class="justification-text" th:text="${solicitud.justificacion}">
                     </p>
                 </div>
             </div>
@@ -84,7 +67,7 @@
 
         <!-- Navegación -->
         <div style="text-align: center; margin-top: 2rem;">
-            <a href="#" class="btn btn-secondary">← Volver a la Colección</a>
+            <a th:href="@{/admin/gestor-solicitudes}" class="btn btn-secondary">← Volver al gestor de solicitudes</a>
         </div>
     </div>
 </main>
