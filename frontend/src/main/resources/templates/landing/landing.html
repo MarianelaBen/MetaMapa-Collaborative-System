@@ -110,7 +110,7 @@
                     <p class="card-text" th:text="${coleccion.titulo}"></p>
 
                     <div style="margin-top:8px;">
-                        <a href="#" class="btn btn-signup">Ver Hechos</a>
+                        <a th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}" class="btn btn-signup">Ver Hechos</a>
                         <a href="#" class="btn btn-secondary">Ver en Mapa</a>
                     </div>
                 </div>
@@ -140,7 +140,7 @@
                     </div>
                 </div>
                 <div class="hecho-footer">
-                    <button href="../hechosYColecciones/detalleHecho.html" class="btn btn-signup">Ver Detalle</button>
+                    <button th:onclick="|window.location.href='@{/hechos/{id}(id=${hecho.id})}'|" class="btn btn-signup">Ver Detalle</button>
                     <button class="btn btn-secondary ver-en-mapa" data-id="1">Ver en Mapa</button>
                 </div>
             </div>

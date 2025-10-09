@@ -10,4 +10,5 @@ public interface IColeccionRepository extends JpaRepository<Coleccion,String> {
     Optional<Coleccion> findByHandle(String handle);
 
     void deleteByHandle(String handle);
+    List<Coleccion> findTop4ByOrderByCantVistasDesc();
 }

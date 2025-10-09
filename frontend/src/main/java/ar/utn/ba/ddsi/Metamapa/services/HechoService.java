@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.Metamapa.services;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -211,6 +212,20 @@ public class HechoService {
 
         }catch (WebClientResponseException e){
             throw new RuntimeException("Error al sumar vista al hecho: " + e.getResponseBodyAsString(), e);
+        }
+    }
+
+    public List<HechoDTO> traerHechosDestacados(){
+        try {
+            return webClientPublic.get()
+                    .uri("/hechos-destacados")
+                    .retrieve()
+                    .bodyToFlux(HechoDTO.class)
+                    .collectList()
+                    .block();
+
+        }catch (WebClientResponseException e){
+            throw new RuntimeException("Error al traer hechos: " + e.getResponseBodyAsString(), e);
         }
     }
 

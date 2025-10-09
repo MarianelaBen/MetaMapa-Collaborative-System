@@ -117,6 +117,15 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
         hechoRepository.save(h);
     }
 
+    public List<HechoOutputDTO> top4Hechos() {
+        List<Hecho> hechos = this.hechoRepository.findTop4ByFueEliminadoFalseOrderByCantVistasDesc();
+        return hechos.stream().map(this::hechoOutputDTO).collect(Collectors.toList());
+    }
+
+    public List<ColeccionOutputDTO> top4Colecciones() {
+        List<Coleccion> cols = this.coleccionRepo.findTop4ByOrderByCantVistasDesc();
+        return cols.stream().map(ColeccionOutputDTO::fromEntity).collect(Collectors.toList());
+    }
 
 
   private Categoria ensureCategoria(String nombre) { //todo borrar con normlaizacion ya se arregla

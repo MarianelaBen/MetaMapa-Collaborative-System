@@ -4,6 +4,7 @@ import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Categoria;
@@ -214,6 +215,18 @@ public class AgregadorController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al sumar vista en colección", e);
 
         }
+    }
+
+    @GetMapping("/hechos-destacados")
+    public ResponseEntity<List<HechoOutputDTO>> getTopHechos() {
+        List<HechoOutputDTO> top = this.agregadorService.top4Hechos();
+        return ResponseEntity.ok(top);
+    }
+
+    @GetMapping("/colecciones-destacadas")
+    public ResponseEntity<List<ColeccionOutputDTO>> getTopColecciones() {
+        List<ColeccionOutputDTO> top = this.agregadorService.top4Colecciones();
+        return ResponseEntity.ok(top);
     }
 
   @PostMapping("/fuentes")

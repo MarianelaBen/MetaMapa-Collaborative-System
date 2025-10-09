@@ -16,4 +16,5 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
             "WHERE TRIM(ch.coleccion_handle) = TRIM(:coleccionHandle)",
             nativeQuery = true)
     List<Hecho> findByColeccionHandle(@Param("coleccionHandle") String coleccionHandle);
+    List<Hecho> findTop4ByFueEliminadoFalseOrderByCantVistasDesc();
 }

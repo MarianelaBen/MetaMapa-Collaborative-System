@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.Metamapa.controllers;
 
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
+import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,11 +18,12 @@ import java.util.List;
 public class LandingController {
 
     private final HechoService hechoService;
+    private final ColeccionService coleccionService;
 
   @GetMapping("/inicio")
   public String inicio(Model model){
-    List<ColeccionDTO> coleccionesDestacadas = this.generarColeccionesDestacadasEjemplo();
-    List<HechoDTO> hechosDestacados = this.generarHechosDestacadosEjemplo();
+    List<ColeccionDTO> coleccionesDestacadas = this.coleccionService.traerColeccionesDestacadas();
+    List<HechoDTO> hechosDestacados = this.hechoService.traerHechosDestacados();
     List<HechoDTO> hechos = this.hechoService.getHechos();
     model.addAttribute("titulo", "Inicio");
     model.addAttribute("coleccionesDestacadas", coleccionesDestacadas);

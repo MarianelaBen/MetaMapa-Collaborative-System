@@ -116,4 +116,18 @@ public class ColeccionService {
             throw new RuntimeException("Error al sumar vista a la coleccion: " + e.getResponseBodyAsString(), e);
         }
     }
+
+    public List<ColeccionDTO> traerColeccionesDestacadas(){
+        try {
+            return webClientPublic.get()
+                    .uri("/colecciones-destacadas")
+                    .retrieve()
+                    .bodyToFlux(ColeccionDTO.class)
+                    .collectList()
+                    .block();
+
+        }catch (WebClientResponseException e){
+            throw new RuntimeException("Error al traer colecciones: " + e.getResponseBodyAsString(), e);
+        }
+    }
 }

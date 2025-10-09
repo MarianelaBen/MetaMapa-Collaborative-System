@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.services;
 
+import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Fuente;
@@ -20,4 +21,6 @@ public interface IAgregadorService {
     List<HechoOutputDTO> obtenerHechos();
     void sumarVistaColeccion(String handle);
     public void sumarVistaHecho(Long id);
+    List<HechoOutputDTO> top4Hechos();
+    List<ColeccionOutputDTO> top4Colecciones();
 }
