@@ -111,7 +111,12 @@
                             <td th:text="${hecho.fechaAcontecimiento}">2023-10-26</td>
                             <td th:text="${hecho.titulo}">Incendio forestal activo en Parque Nacional Los Glaciares</td>
                             <td th:text="${hecho.provincia}">Santa Cruz, Argentina</td>
-                            <td><span class="status-badge status-pending">Pendiente</span></td>
+                            <td>
+
+      <span th:classappend="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'status-badge status-approved' : 'status-badge status-rejected'"
+            th:text="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'APROBADO' : 'ELIMINADO'">
+      </span>
+                            </td>
                             <td>
                                 <div class="action-buttons">
                                     <a class="btn-action view" title="Ver" th:href="@{/hechos/{id}(id=${hecho.id})}">

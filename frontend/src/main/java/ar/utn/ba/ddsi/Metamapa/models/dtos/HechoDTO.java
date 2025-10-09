@@ -25,6 +25,7 @@ public class HechoDTO {
   private Set<Long> idEtiquetas;
   private List<String> idContenidoMultimedia;
   private String fuenteExterna;
+  private Boolean fueEliminado;
 
 
   public HechoDTO(String titulo, String descripcion, String categoria, LocalDateTime fechaAcontecimiento, String provincia, Long id) {

@@ -92,7 +92,7 @@ public class SolicitudesController {
         try {
             String solicitudId = solicitudService.crearSolicitudEliminacion(hechoId, texto);
 
-            flash.addFlashAttribute("mensaje", "Solicitud creada (ID " + solicitudId + "). Quedó en estado PENDIENTE.");
+            flash.addFlashAttribute("mensaje", "Solicitud creada correctamente. Quedó en estado pendiente.");
             flash.addFlashAttribute("tipoMensaje", "success");
             return "redirect:/solicitud/" + hechoId;
 
@@ -103,7 +103,7 @@ public class SolicitudesController {
             model.addAttribute("hecho", hecho);          // <-- importante
             model.addAttribute("hechoId", hechoId);
             model.addAttribute("justificacion", justificacion);
-            model.addAttribute("error", "Error al crear la solicitud: " + e.getMessage());
+            model.addAttribute("error", "Error al crear la solicitud");
             return "hechosYColecciones/solicitudEliminacion";
         }
     }
