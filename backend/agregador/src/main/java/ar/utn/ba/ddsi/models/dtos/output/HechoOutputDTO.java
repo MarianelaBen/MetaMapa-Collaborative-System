@@ -29,12 +29,14 @@ public class HechoOutputDTO {
   private List<String> idContenidoMultimedia;
   private String fuenteExterna;
   private Contribuyente contribuyente;
+  private Boolean fueEliminado;
 
   public static HechoOutputDTO fromEntity(Hecho h) {
     HechoOutputDTO dto = new HechoOutputDTO();
     dto.setId(h.getId());
     dto.setTitulo(h.getTitulo());
     dto.setDescripcion(h.getDescripcion());
+    dto.setFueEliminado(h.getFueEliminado());
     dto.setCategoria(h.getCategoria() != null ? h.getCategoria().getNombre() : null);
     if (h.getUbicacion() != null) {
       dto.setLatitud(h.getUbicacion().getLatitud());

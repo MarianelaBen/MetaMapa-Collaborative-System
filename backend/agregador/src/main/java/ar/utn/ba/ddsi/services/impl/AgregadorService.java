@@ -128,6 +128,7 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
     hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
+    hechoOutputDTO.setFueEliminado(hecho.getFueEliminado());
     System.out.println(hecho.getCategoria().getNombre());
     hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
     hechoOutputDTO.setProvincia(hecho.getUbicacion() != null ? hecho.getUbicacion().getProvincia() : null);
