@@ -39,7 +39,6 @@ public class CustomAuthProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
 
         try {
-            System.out.println("al custom auth llega!!!");
             // Llamada a servicio externo para obtener tokens
             AuthResponseDTO authResponse = externalAuthService.login(username, password);
 

@@ -24,7 +24,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("al security config llega!!!");
+        //System.out.println("al security config llega!!!");
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
