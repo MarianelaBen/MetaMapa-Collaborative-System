@@ -76,22 +76,32 @@
                     <section class="multimedia-section">
                         <h3 class="multimedia-title">Contenido Multimedia</h3>
 
-                        <!-- listado simple de archivos ya adjuntos -->
+                        <!-- EXISTENTES -->
                         <div class="multimedia-grid"
-                             th:if="${nombresMultimedia != null and !#lists.isEmpty(nombresMultimedia)}">
-                            <div class="multimedia-item" th:each="name : ${nombresMultimedia}">
+                             th:if="${nombresMultimedia != null and !#lists.isEmpty(nombresMultimedia)}"
+                             id="existing-media">
+                            <div class="multimedia-item"
+                                 th:each="name : ${nombresMultimedia}"
+                                 th:attr="data-name=${name}">
                                 <div class="multimedia-placeholder"></div>
+                                <button type="button" class="remove-btn remove-existing" aria-label="Eliminar existente">×</button>
                                 <span class="filename" th:text="${name}"></span>
                             </div>
                         </div>
 
-                        <!-- agregar nuevos archivos -->
-                        <div style="margin-top: .75rem;">
-                            <input type="file" name="multimedia" multiple />
+                        <!-- inputs ocultos con lo que el usuario decide borrar -->
+                        <div id="existing-to-delete"></div>
+
+                        <!-- NUEVOS -->
+                        <div style="margin-top:.75rem;">
+                            <input type="file" id="multimediaInput" name="multimedia" multiple />
                             <small class="text-muted" style="display:block;margin-top:.25rem;">
                                 Podés seleccionar varias imágenes/videos a la vez.
                             </small>
                         </div>
+
+                        <!-- previsualización de los nuevos -->
+                        <div id="new-media-preview" class="multimedia-grid" aria-live="polite"></div>
                     </section>
 
                     <!-- Acciones -->
@@ -165,6 +175,112 @@
         </div>
         </div>
     </form>
+
+    // codigo JS para contenido multimedia
+
+        <script>
+            (function(){
+                // ---------- EXISTENTES: marcar para borrar ----------
+                const existingContainer = document.getElementById('existing-media');
+                const hiddenDeletes = document.getElementById('existing-to-delete');
+
+                if (existingContainer) {
+                    existingContainer.addEventListener('click', (e) => {
+                        const btn = e.target.closest('.remove-existing');
+                        if (!btn) return;
+
+                        const item = btn.closest('.multimedia-item');
+                        const name = item?.dataset?.name;
+                        if (!name) return;
+
+                        const key = `del-${name}`;
+                        const existingInput = hiddenDeletes.querySelector(
+                            `[data-key="${CSS.escape(key)}"]`
+                        );
+
+                        if (existingInput) {
+                            // desmarcar
+                            existingInput.remove();
+                            item.classList.remove('removed');
+                        } else {
+                            // marcar
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'deleteExisting[]';
+                            input.value = name;
+                            input.setAttribute('data-key', key);
+                            hiddenDeletes.appendChild(input);
+                            item.classList.add('removed');
+                        }
+                    });
+                }
+
+                const input = document.getElementById('multimediaInput');
+                const preview = document.getElementById('new-media-preview');
+
+                if (input && preview) {
+                    let dt = new DataTransfer(); // lista editable
+
+                    input.addEventListener('change', () => {
+                        const incoming = Array.from(input.files);
+                        const keys = new Set(Array.from(dt.files).map(k));
+                        for (const f of incoming) {
+                            const key = k(f);
+                            if (!keys.has(key)) dt.items.add(f);
+                        }
+                        input.files = dt.files;
+                        renderPreview();
+                    });
+
+                    function renderPreview(){
+                        preview.innerHTML = '';
+                        Array.from(dt.files).forEach((file, idx) => {
+                            const item = document.createElement('div');
+                            item.className = 'multimedia-item';
+
+                            if (file.type.startsWith('image/')) {
+                                const img = document.createElement('img');
+                                img.className = 'multimedia-thumb';
+                                img.src = URL.createObjectURL(file);
+                                img.alt = file.name;
+                                item.appendChild(img);
+                            } else {
+                                const ph = document.createElement('div');
+                                ph.className = 'multimedia-placeholder';
+                                ph.textContent = file.name;
+                                item.appendChild(ph);
+                            }
+
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.className = 'remove-btn';
+                            btn.setAttribute('aria-label', `Quitar ${file.name}`);
+                            btn.textContent = '×';
+                            btn.addEventListener('click', () => removeAt(idx));
+
+                            const name = document.createElement('span');
+                            name.className = 'filename';
+                            name.textContent = file.name;
+
+                            item.appendChild(btn);
+                            item.appendChild(name);
+                            preview.appendChild(item);
+                        });
+                    }
+
+                    function removeAt(index){
+                        const files = Array.from(dt.files);
+                        dt = new DataTransfer();
+                        files.forEach((f,i) => { if (i !== index) dt.items.add(f); });
+                        input.files = dt.files;
+                        renderPreview();
+                    }
+
+                    function k(f){ return `${f.name}|${f.size}|${f.lastModified}`; }
+                }
+            })();
+        </script>
+
 
     <div class="return-bar">
         <a th:href="@{/misHechos}" class="return-link">← Volver a Mis Hechos</a>

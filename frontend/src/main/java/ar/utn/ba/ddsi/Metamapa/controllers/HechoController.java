@@ -202,25 +202,6 @@ public class HechoController {
     return idx >= 0 ? p.substring(idx + 1) : p;
   }
 
-
-  /* ===================== MOCK DEL HECHO ===================== */
-
-  private List<String> categoriasMock() {
-    return List.of("Incendio forestal", "Accidente vial", "Inundación");
-  }
-
-  private HechoDTO mockHecho(Long id) {
-    HechoDTO dto = new HechoDTO(
-        "Incendio forestal activo en Parque Nacional Los Glaciares",
-        "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",
-        "Incendio forestal",
-        LocalDateTime.of(2025, 8, 12, 9, 15),
-        "Santa Cruz",
-            id
-    );
-    return dto;
-  }
-
     @PostMapping("/{id}/sumarVista")
     public String sumarVistaHecho(@PathVariable Long id,
                                       RedirectAttributes redirectAttributes){
@@ -245,7 +226,27 @@ public class HechoController {
         }
     }
 
+  /* ===================== MOCK DEL HECHO ===================== */
+
+  private List<String> categoriasMock() {
+    return List.of("Incendio forestal", "Accidente vial", "Inundación");
+  }
+
+  private HechoDTO mockHecho(Long id) {
+    HechoDTO dto = new HechoDTO(
+        "Incendio forestal activo en Parque Nacional Los Glaciares",
+        "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",
+        "Incendio forestal",
+        LocalDateTime.of(2025, 8, 12, 9, 15),
+        "Santa Cruz",
+        id
+    );
+    return dto;
+  }
+
 }
+
+
 
   /*
   public static List<HechoDTO> generarHechoEjemplo(){
