@@ -1,6 +1,9 @@
 package ar.utn.ba.ddsi.Metamapa.services;
 
+import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
+import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.CriterioDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -130,4 +133,18 @@ public class ColeccionService {
             throw new RuntimeException("Error al traer colecciones: " + e.getResponseBodyAsString(), e);
         }
     }
+
+    public ColeccionDTO actualizarColeccion(String handle, ColeccionDTO dto) {
+        try {
+            return webClient.put()
+                .uri("/colecciones/{handle}", handle)   // mapea al AdminController del backend
+                .bodyValue(dto)                          // dto con titulo, descripcion, algoritmoDeConsenso, criterioIds, etc.
+                .retrieve()
+                .bodyToMono(ColeccionDTO.class)
+                .block();
+        } catch (WebClientResponseException e) {
+            throw new RuntimeException("Error al actualizar la colección: " + e.getResponseBodyAsString(), e);
+        }
+    }
+
 }

@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
@@ -176,4 +178,71 @@ public class AdminController {
             return "redirect:/admin/gestor-hechos";
         }
     }
+
+  @GetMapping("/coleccion/{handle}/editar")
+  @PreAuthorize("hasAnyRole('ADMIN')")
+  public String editarColeccionForm(@PathVariable String handle, Model model, RedirectAttributes redirect) {
+    try {
+      ColeccionDTO coleccion = coleccionService.getColeccionByHandle(handle);
+
+      /*String criterioCsv = (coleccion.getCriterioIds() == null) ? "" :
+          coleccion.getCriterioIds().stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(","));
+      */
+      model.addAttribute("titulo", "Editar Colección");
+      model.addAttribute("coleccion", coleccion);
+      //model.addAttribute("criterioIdsCsv", criterioCsv);
+      model.addAttribute("algoritmosDisponibles", java.util.List.of("CONSENSO_ABSOLUTO", "MAYORIA_SIMPLE", "MULTIPLES_MENCIONES"));
+
+      return "administrador/editarColeccion";
+
+    } catch (NotFoundException e) {
+      redirect.addFlashAttribute("mensaje", e.getMessage());
+      return "redirect:/404";
+    }
+  }
+
+  @PostMapping("/coleccion/{handle}/editar")
+  @PreAuthorize("hasAnyRole('ADMIN')")
+  public String editarColeccionGuardar(@PathVariable String handle,
+                                       @ModelAttribute("coleccion") ColeccionDTO form,
+                                       //@RequestParam(value = "criterioIdsCsv", required = false) String criterioIdsCsv,
+                                       BindingResult binding,
+                                       RedirectAttributes redirect) {
+    if (binding.hasErrors()) {
+      redirect.addFlashAttribute("mensaje", "Revisá los campos del formulario.");
+      redirect.addFlashAttribute("tipoMensaje", "error");
+      return "redirect:/admin/coleccion/" + handle + "/editar";
+    }
+    try {
+      /*
+    }
+      Set<Long> ids = new LinkedHashSet<>();
+      if (criterioIdsCsv != null && !criterioIdsCsv.isBlank()) {
+        for (String tok : criterioIdsCsv.split(",")) {
+          String t = tok.trim();
+          if (!t.isEmpty()) ids.add(Long.parseLong(t));
+        }
+      }
+      form.setCriterioIds(ids);
+  */
+      // Si querés forzar que el handle de ruta sea el que manda:
+      form.setHandle(handle);
+      coleccionService.actualizarColeccion(handle, form);
+
+      redirect.addFlashAttribute("mensaje", "Colección actualizada correctamente.");
+      redirect.addFlashAttribute("tipoMensaje", "success");
+      return "redirect:/admin/panel-control";
+
+    } catch (ValidationException e) {
+      redirect.addFlashAttribute("mensaje", "Error de validación: " + e.getMessage());
+      redirect.addFlashAttribute("tipoMensaje", "error");
+      return "redirect:/admin/coleccion/" + handle + "/editar";
+
+    } catch (NotFoundException e) {
+      redirect.addFlashAttribute("mensaje", e.getMessage());
+      redirect.addFlashAttribute("tipoMensaje", "error");
+      return "redirect:/admin/panel-control";
+    }
+  }
+
 }
