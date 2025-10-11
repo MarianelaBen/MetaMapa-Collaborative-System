@@ -5,6 +5,11 @@
 </div>
 
 <div th:fragment="contenido">
+
+    <div class="alert alert-success" th:if="${param.login}">
+        Sesión iniciada con éxito.
+    </div>
+
     <div class="landing-banner">
         <h1 class="landing-title">Potenciá el Poder de los <br> Datos Geográficos</h1>
         <h5 class="landing-subtitle">MetaMapa le permite organizar, analizar y visualizar <br>
