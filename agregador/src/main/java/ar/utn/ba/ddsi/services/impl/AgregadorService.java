@@ -4,6 +4,7 @@ import ar.utn.ba.ddsi.adapters.AdapterFuenteDinamica;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteEstatica;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteProxy;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.ContribuyenteDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
@@ -11,6 +12,9 @@ import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IColeccionService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -38,7 +42,11 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
   this.categoriaRepository = categoriaRepository;
 }
 
+  @PersistenceContext
+  private EntityManager em; //TODO PARA PRUEBAS PORQUE NO HAY CONTR REPO TDV
+
   @Override
+  @Transactional //TODO PARA PRUEBAS PORQUE NO HAY CONTR REPO TDV
   public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes) {
     if (fuentes == null || fuentes.isEmpty()) {
       throw new IllegalArgumentException("No se especificaron fuentes.");
@@ -46,35 +54,24 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     List<Hecho> hechos = fuentes.stream()
         .flatMap( f-> obtenerTodosLosHechosDeFuente(f)
             .stream())
-            //.map(h -> { //TODO ARREGLAR NORMALIZADOR
-            //  System.out.println(h);
-            //  try { //para que si falla la normalizacion de un hecho no falle toda la normalizacion
-            //    normalizadorService.normalizar(h);
-            //    return h;
-            //  } catch (IllegalArgumentException e) {
-            //    return null;
-            //  }
-            //})
-        //.filter(Objects::nonNull)
+            .map(h -> {
+              System.out.println(h);
+              try { //para que si falla la normalizacion de un hecho no falle toda la normalizacion
+                normalizadorService.normalizar(h);
+                return h;
+              } catch (IllegalArgumentException e) {
+                return null;
+              }
+            })
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
     if (hechos.isEmpty()) {
       throw new NoSuchElementException("No se encontraron hechos para las fuentes indicadas.");
     }
 
-    for (Hecho h : hechos) {//todo borrar con normlaizacion ya se arregla
-      String nombre = (h.getCategoria() != null && h.getCategoria().getNombre() != null)
-          ? h.getCategoria().getNombre()
-          : "OTROS";
-      h.setCategoria(ensureCategoria(nombre));
-    }
     hechoRepository.saveAll(hechos); //TODO COMO EVITAR DUPLICADOS
     return hechos;
 }
-
-  private Categoria ensureCategoria(String nombre) { //todo borrar con normlaizacion ya se arregla
-    return categoriaRepository.findByNombreIgnoreCase(nombre)
-        .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));
-  }
 
   @Override
   public List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente) {
@@ -115,7 +112,12 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
       hechoOutputDTO.setIdContenidoMultimedia(new ArrayList<>(hecho.getPathMultimedia()));
     }
     if(hecho.getContribuyente() != null){
-      hechoOutputDTO.setContribuyente(hecho.getContribuyente());
+      ContribuyenteDTO contrDto = new ContribuyenteDTO();
+      contrDto.setId(hecho.getContribuyente().getId());
+      contrDto.setNombre(hecho.getContribuyente().getNombre());
+      contrDto.setApellido(hecho.getContribuyente().getApellido());
+      contrDto.setFechaDeNacimiento(hecho.getContribuyente().getFechaDeNacimiento());
+      hechoOutputDTO.setContribuyente(contrDto);
     }
     if(hecho.getFuenteExterna() != null){
       hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());

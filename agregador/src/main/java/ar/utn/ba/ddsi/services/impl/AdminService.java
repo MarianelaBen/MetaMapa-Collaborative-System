@@ -109,7 +109,12 @@ public class AdminService implements IAdminService {
       hechoOutputDTO.setIdContenidoMultimedia(new ArrayList<>(hecho.getPathMultimedia()));
     }
     if(hecho.getContribuyente() != null){
-      hechoOutputDTO.setContribuyente(hecho.getContribuyente());
+      ContribuyenteDTO contrDto = new ContribuyenteDTO();
+      contrDto.setId(hecho.getContribuyente().getId());
+      contrDto.setNombre(hecho.getContribuyente().getNombre());
+      contrDto.setApellido(hecho.getContribuyente().getApellido());
+      contrDto.setFechaDeNacimiento(hecho.getContribuyente().getFechaDeNacimiento());
+      hechoOutputDTO.setContribuyente(contrDto);
     }
     if(hecho.getFuenteExterna() != null){
       hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());

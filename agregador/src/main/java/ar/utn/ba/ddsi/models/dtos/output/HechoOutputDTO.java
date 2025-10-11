@@ -29,5 +29,5 @@ public class HechoOutputDTO {
   private Set<String> idEtiquetas;
   private List<String> idContenidoMultimedia;
   private String fuenteExterna;
-  private Contribuyente contribuyente;
+  private ContribuyenteDTO contribuyente;
 }

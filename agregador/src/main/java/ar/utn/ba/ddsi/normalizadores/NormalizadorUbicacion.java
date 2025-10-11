@@ -24,8 +24,9 @@ public class NormalizadorUbicacion {
       return; //no hace nada
     }
     String provincia = ubicacion.getProvincia();
-    if(provincia == null){
-      throw new IllegalArgumentException("Provincia invalida ");
+    if(provincia == null || provincia.isBlank()){
+      //throw new IllegalArgumentException("Provincia invalida ");
+      return;
     }
 
     String normalizada = normalizador.normalizar(ubicacion.getProvincia());
