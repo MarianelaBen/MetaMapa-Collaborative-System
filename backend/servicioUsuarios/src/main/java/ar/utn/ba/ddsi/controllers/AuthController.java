@@ -3,9 +3,11 @@ package ar.utn.ba.ddsi.controllers;
 import ar.utn.ba.ddsi.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.models.dtos.AuthResponseDTO;
 import ar.utn.ba.ddsi.models.dtos.RefreshRequest;
+import ar.utn.ba.ddsi.models.dtos.SingupDTO;
 import ar.utn.ba.ddsi.models.dtos.TokenResponse;
 import ar.utn.ba.ddsi.models.dtos.UserRolesPermissionsDTO;
 import ar.utn.ba.ddsi.services.LoginService;
+import ar.utn.ba.ddsi.services.SingupService;
 import ar.utn.ba.ddsi.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -28,6 +30,7 @@ public class AuthController {
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final LoginService loginService;
+    private final SingupService singupService;
 
     @PostMapping
     public ResponseEntity<AuthResponseDTO> loginApi(@RequestBody Map<String, String> credentials) {
@@ -105,4 +108,27 @@ public class AuthController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponseDTO> register (@RequestBody SingupDTO dto){
+        try {
+            singupService.registrarUsuario(dto);
+
+            String username = dto.getEmail();
+            String access = loginService.generarAccessToken(username);
+            String refresh = loginService.generarRefreshToken(username);
+
+            return ResponseEntity.ok(
+                AuthResponseDTO.builder()
+                    .accessToken(access)
+                    .refreshToken(refresh)
+                    .build());
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // email duplicado
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }
