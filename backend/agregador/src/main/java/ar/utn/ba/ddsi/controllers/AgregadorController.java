@@ -306,32 +306,4 @@ public class AgregadorController {
           .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
     }
   }
-
-  @PostMapping("/hechos/csv")
-  public ResponseEntity<?> importarHechosCsv(
-      @RequestParam("archivo") MultipartFile archivo
-  ) {
-    try {
-      if (archivo == null || archivo.isEmpty()) {
-        return ResponseEntity.badRequest().body(Map.of(
-            "error", "Archivo faltante o vacío",
-            "detalle", "Enviá el campo 'archivo' como multipart/form-data"
-        ));
-      }
-
-      InformeDeResultados resultado = importHechosService.procesarCsv(file);
-      return ResponseEntity.ok(resultado);
-
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-          "error", "CSV inválido",
-          "mensaje", e.getMessage()
-      ));
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-          "error", "Error al procesar el CSV",
-          "mensaje", e.getMessage()
-      ));
-    }
-  }
 }
