@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,16 +57,7 @@ public class ColeccionService implements IColeccionService {
   @Autowired
   private ICategoriaRepository categoriaRepository;
 
-    private final Path uploadRoot;
-
-    public ColeccionService(@Value("${app.upload-dir:${user.home}/uploads}") String uploadDir) {
-        this.uploadRoot = Paths.get(uploadDir).toAbsolutePath().normalize();
-        try {
-            Files.createDirectories(this.uploadRoot);
-        } catch (IOException e) {
-            throw new RuntimeException("No se pudo crear carpeta para uploads: " + e.getMessage(), e);
-        }
-    }
+  private static final Path UPLOAD_DIR = Paths.get("uploads").normalize();
 
     @Override
   public Coleccion crearColeccion(Coleccion coleccion){
@@ -160,11 +152,9 @@ public class ColeccionService implements IColeccionService {
     if (multimedia != null && multimedia.length > 0) {
       for (MultipartFile file : multimedia) {
         if (file != null && !file.isEmpty()) {
-          String filename = h.getId() + "_" + System.currentTimeMillis() + "_" + Path.of(file.getOriginalFilename()).getFileName();
           try {
-            Path target = this.uploadRoot.resolve(filename);
-            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
-            pathsActuales.add(target.toString());
+            String rutaWeb = guardarArchivoEnUploads(h.getId(), file);
+            pathsActuales.add(rutaWeb);
           } catch (IOException e) {
             throw new RuntimeException("No se pudo guardar archivo: " + file.getOriginalFilename(), e);
           }
@@ -240,11 +230,9 @@ public class ColeccionService implements IColeccionService {
         if (multimedia != null && multimedia.length > 0) {
             for (MultipartFile file : multimedia) {
                 if (file != null && !file.isEmpty()) {
-                    String filename = saved.getId() + "_" + System.currentTimeMillis() + "_" + Path.of(file.getOriginalFilename()).getFileName();
                     try {
-                        Path target = this.uploadRoot.resolve(filename);
-                        Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
-                        paths.add(target.toString());
+                      String rutaWeb = guardarArchivoEnUploads(saved.getId(), file);
+                      paths.add(rutaWeb);
                     } catch (IOException e) {
                         // si falla guardar un archivo, podés decidir rollback o ignorar;
                         // Aquí lanzo RuntimeException para forzar rollback
@@ -271,5 +259,20 @@ public class ColeccionService implements IColeccionService {
 
         return dto;
     }
+
+  private static String safeFileName(String original) {
+    String base = Paths.get(original).getFileName().toString(); // saca directorios tipo C:\...
+    return base.replaceAll("[^a-zA-Z0-9._-]", "_");
+  }
+
+  private String guardarArchivoEnUploads(Long hechoId, MultipartFile file) throws IOException {
+    Files.createDirectories(UPLOAD_DIR);
+    String nombre = hechoId + "_" + System.currentTimeMillis() + "_" + safeFileName(file.getOriginalFilename());
+    Path destino = UPLOAD_DIR.resolve(nombre);
+    try (InputStream in = file.getInputStream()) {
+      Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+    }
+    return "/uploads/" + nombre;
+  }
 }
 
