@@ -10,11 +10,13 @@ import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.services.IAdminService;
+import ar.utn.ba.ddsi.services.InformeDeResultados;
 import ar.utn.ba.ddsi.services.impl.ColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -235,7 +237,7 @@ public class AdminController {
         ));
       }
 
-      InformeDeResultados resultado = importHechosService.procesarCsv(file);
+      InformeDeResultados resultado = servicio.procesarCsv(archivo);
       return ResponseEntity.ok(resultado);
 
     } catch (IllegalArgumentException e) {

@@ -46,12 +46,6 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
   this.coleccionRepo = coleccionRepo;
 }
 
-  @Value("${imports.dir:data/imports}") // configurable
-  private String importsDir;
-
-  private static final DateTimeFormatter FECHA_CSV = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-
     @Override
     public List<SolicitudOutputDTO> getSolicitudes() {
         return solicitudesRepo.findAll().stream()

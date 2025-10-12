@@ -5,22 +5,33 @@ import ar.utn.ba.ddsi.models.dtos.input.*;
 import ar.utn.ba.ddsi.models.dtos.output.*;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
+import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
-import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
-import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
-import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
-import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
+import ar.utn.ba.ddsi.models.repositories.*;
 import ar.utn.ba.ddsi.services.IAdminService;
 import ar.utn.ba.ddsi.services.IColeccionService;
+import ar.utn.ba.ddsi.services.InformeDeResultados;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
+import lombok.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,20 +42,28 @@ public class AdminService implements IAdminService {
   private final ISolicitudRepository solicitudRepo;
   private final IColeccionService coleccionService;
   private final IHechoRepository hechoRepo;
+  private final ICategoriaRepository categoriaRepo;
 
   public AdminService(IColeccionRepository coleccionRepo,
                       IFuenteRepository fuenteRepo,
                       //ConsensoRepository consensoRepo,
                       ISolicitudRepository solicitudRepo,
                       IColeccionService coleccionService,
-                      IHechoRepository hechoRepo) {
+                      IHechoRepository hechoRepo,
+                      ICategoriaRepository categoriaRepo) {
     this.coleccionRepo = coleccionRepo;
    // this.consensoRepo = consensoRepo;
     this.solicitudRepo = solicitudRepo;
     this.coleccionService = coleccionService;
     this.fuenteRepo = fuenteRepo;
     this.hechoRepo = hechoRepo;
+    this.categoriaRepo = categoriaRepo;
   }
+
+  private static final DateTimeFormatter FECHA_CSV = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+  private static final List<String> HEADER_ESPERADO = List.of(
+      "Título","Descripción","Categoría","Latitud","Longitud","Fecha del hecho"
+  );
 
   //API ADMINISTRATIVA
 
@@ -225,31 +244,33 @@ public class AdminService implements IAdminService {
     return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
   }
 
-  public InformeDeResultados procesarCsv(MultipartFile file) throws Exception {
+  @Override
+  public InformeDeResultados procesarCsv(MultipartFile file) {
     long tiempo0 = System.currentTimeMillis();
 
-    String nombreOriginal = file.getOriginalFilename() != null ? file.getOriginalFilename() : "archivoNuevo.csv";
-    Path destino = guardarArchivo(file);
+    final String nombreOriginal = (file.getOriginalFilename() != null) ? file.getOriginalFilename() : "archivo.csv";
+    final Path destino = guardarArchivo(file); // staging: ./data/imports/UUID.csv
 
     long total = 0;
-    long guardados = 0;
+    List<Hecho> hechos = new ArrayList<>(10_000);
 
     try (BufferedReader br = Files.newBufferedReader(destino, StandardCharsets.UTF_8);
          CSVReader reader = new CSVReaderBuilder(br).build()) {
 
       String[] header = reader.readNext();
-      validarHeader(header);
 
       String[] fila;
       while ((fila = reader.readNext()) != null) {
         total++;
         Hecho h = leerArchivo(fila);
-        hechoRepository.save(h);
-        guardados++;
+        hechos.add(h);
       }
     } catch (IOException | CsvValidationException e) {
-      throw new RuntimeException("No se pudo leer el CSV: " + e.getMessage(), e);
+      throw new IllegalStateException("No se pudo leer el CSV: " + e.getMessage(), e);
     }
+
+
+    hechoRepo.saveAll(hechos);
 
     long tiempo = System.currentTimeMillis() - tiempo0;
 
@@ -257,55 +278,70 @@ public class AdminService implements IAdminService {
         .nombreOriginal(nombreOriginal)
         .guardadoComo(destino.toString().replace('\\','/'))
         .hechosTotales(total)
-        .guardadosTotales(guardados)
+        .guardadosTotales(hechos.size())
         .tiempoTardado(tiempo)
         .build();
   }
 
-  private Path guardarArchivo(MultipartFile file) throws IOException {
-    Path dir = Paths.get(importsDir);
-    Files.createDirectories(dir);
+  private Path guardarArchivo(MultipartFile file) {
+    try {
+      Path dir = Paths.get("src/main/java/ar/utn/ba/ddsi/imports");
+      Files.createDirectories(dir);
 
-    String nombre = UUID.randomUUID() + ".csv";
-    Path destino = dir.resolve(nombre);
+      String nombre = UUID.randomUUID() + ".csv";
+      Path destino = dir.resolve(nombre);
 
-    try (InputStream in = file.getInputStream()) {
-      Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+      try (InputStream in = file.getInputStream()) {
+        Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+      }
+      return destino;
+    } catch (IOException e) {
+      throw new IllegalStateException("No pude guardar el archivo en la carpeta de imports", e);
     }
-    return destino;
   }
 
   private Hecho leerArchivo(String[] fila) {
-    if (fila.length < 6) {
-      throw new IllegalArgumentException("Fila con columnas insuficientes");
+    if (fila == null || fila.length < 6) {
+      throw new IllegalArgumentException("Fila inválida: se esperaban 6 columnas");
     }
 
-    String titulo = trimOrNull(fila[0]);
-    String descripcion = trimOrNull(fila[1]);
-    String categoriaNombre = trimOrNull(fila[2]);
-    String latStr = trimOrNull(fila[3]);
-    String lonStr = trimOrNull(fila[4]);
-    String fechaStr = trimOrNull(fila[5]);
+    String titulo           = safeTrim(fila[0]);
+    String descripcion      = safeTrim(fila[1]);
+    String categoriaNombre  = safeTrim(fila[2]);
+    String latStr           = safeTrim(fila[3]);
+    String lonStr           = safeTrim(fila[4]);
+    String fechaStr         = safeTrim(fila[5]);
 
-    if (titulo == null || titulo.isBlank()) throw new IllegalArgumentException("Título requerido");
-    if (descripcion == null || descripcion.isBlank()) throw new IllegalArgumentException("Descripción requerida");
-    if (categoriaNombre == null || categoriaNombre.isBlank()) throw new IllegalArgumentException("Categoría requerida");
-    if (latStr == null || lonStr == null) throw new IllegalArgumentException("Coordenadas requeridas");
-    if (fechaStr == null) throw new IllegalArgumentException("Fecha del hecho requerida");
+    if (isBlank(titulo) || isBlank(descripcion) || isBlank(categoriaNombre)
+        || isBlank(latStr) || isBlank(lonStr) || isBlank(fechaStr)) {
+      throw new IllegalArgumentException("Fila con campos requeridos vacíos");
+    }
 
-    double latitud = Double.parseDouble(latStr);
-    double longitud = Double.parseDouble(lonStr);
+    final double latitud;
+    final double longitud;
+    final LocalDateTime fechaAcontecimiento;
 
-    LocalDate fecha = LocalDate.parse(fechaStr, FECHA_CSV);
-    LocalDateTime fechaAcontecimiento = fecha.atStartOfDay();
+    try {
+      latitud = Double.parseDouble(latStr);
+      longitud = Double.parseDouble(lonStr);
+    } catch (NumberFormatException nfe) {
+      throw new IllegalArgumentException("Coordenadas inválidas (no numéricas)");
+    }
 
-    Categoria categoria = categoriaRepository //TODO AGREGAR EL NORMALIZADOR CUANDO HAGAMOS MERGE
+    try {
+      LocalDate fecha = LocalDate.parse(fechaStr, FECHA_CSV);
+      fechaAcontecimiento = fecha.atStartOfDay();
+    } catch (Exception pe) {
+      throw new IllegalArgumentException("Fecha inválida (formato esperado dd/MM/yyyy)");
+    }
+
+    Categoria categoria = categoriaRepo
         .findByNombreIgnoreCase(categoriaNombre)
-        .orElseGet(() -> categoriaRepository.save(new Categoria(categoriaNombre)));
+        .orElseGet(() -> categoriaRepo.save(new Categoria(categoriaNombre))); // <- acá luego enchufás tu normalizador
 
     Ubicacion ubicacion = new Ubicacion(latitud, longitud);
 
-    Hecho h = new Hecho(
+    return new Hecho(
         titulo,
         descripcion,
         categoria,
@@ -315,32 +351,12 @@ public class AdminService implements IAdminService {
         Origen.PROVENIENTE_DE_DATASET,
         null
     );
-    return h;
   }
 
-  private void validarHeader(String[] header) {
-    if (header == null) throw new IllegalArgumentException("CSV vacío (sin encabezado)");
-
-    List<String> esperado = List.of(
-        "Título","Descripción","Categoría","Latitud","Longitud","Fecha del hecho"
-    );
-    List<String> recibido = Arrays.stream(header)
-        .map(h -> h == null ? "" : h.trim())
-        .toList();
-
-    if (recibido.size() < esperado.size()) {
-      throw new IllegalArgumentException("Header insuficiente. Se esperaban 6 columnas.");
-    }
-    for (int i = 0; i < esperado.size(); i++) {
-      if (!esperado.get(i).equalsIgnoreCase(recibido.get(i))) {
-        throw new IllegalArgumentException(
-            "Header inválido en columna " + (i + 1) +
-                ". Esperado: '" + esperado.get(i) + "', recibido: '" + recibido.get(i) + "'.");
-      }
-    }
+  private static String safeTrim(String s) {
+    return (s == null) ? null : s.replace('\u00A0',' ').trim();
   }
-
-  private static String trimOrNull(String s) {
-    return s == null ? null : s.replace('\u00A0',' ').trim();
+  private static boolean isBlank(String s) {
+    return s == null || s.trim().isEmpty();
   }
 }

@@ -10,6 +10,8 @@ import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
+import org.springframework.web.multipart.MultipartFile;
+import ar.utn.ba.ddsi.services.InformeDeResultados;
 
 /* TODO DTOs Consenso
 import ar.utn.ba.ddsi.models.dtos.output.ConsensoOutputDTO;
@@ -39,4 +41,6 @@ public interface IAdminService {
   SolicitudOutputDTO denegarSolicitud(Long id);
     void eliminarHecho(Long id);
     SolicitudOutputDTO getSolicitud(Long id);
+
+  InformeDeResultados procesarCsv(MultipartFile file);
 }
