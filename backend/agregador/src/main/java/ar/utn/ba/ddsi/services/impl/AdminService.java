@@ -285,7 +285,7 @@ public class AdminService implements IAdminService {
 
   private Path guardarArchivo(MultipartFile file) {
     try {
-      Path dir = Paths.get("src/main/java/ar/utn/ba/ddsi/imports");
+      Path dir = Paths.get("agregador/src/main/java/ar/utn/ba/ddsi/imports");
       Files.createDirectories(dir);
 
       String nombre = UUID.randomUUID() + ".csv";
@@ -337,7 +337,7 @@ public class AdminService implements IAdminService {
 
     Categoria categoria = categoriaRepo
         .findByNombreIgnoreCase(categoriaNombre)
-        .orElseGet(() -> categoriaRepo.save(new Categoria(categoriaNombre))); // <- acá luego enchufás tu normalizador
+        .orElseGet(() -> categoriaRepo.save(new Categoria(categoriaNombre)));
 
     Ubicacion ubicacion = new Ubicacion(latitud, longitud);
 
