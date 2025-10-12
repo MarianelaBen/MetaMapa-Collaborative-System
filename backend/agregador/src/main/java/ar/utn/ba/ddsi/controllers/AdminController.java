@@ -225,10 +225,11 @@ public class AdminController {
       }
   }
 
-  @PostMapping("import/hechos/csv")
+  @PostMapping("/import/hechos/csv")
   public ResponseEntity<?> importarHechosCsv(
       @RequestParam("archivo") MultipartFile archivo
   ) {
+    System.out.println("Entré a importarCSV");
     try {
       if (archivo == null || archivo.isEmpty()) {
         return ResponseEntity.badRequest().body(Map.of(
