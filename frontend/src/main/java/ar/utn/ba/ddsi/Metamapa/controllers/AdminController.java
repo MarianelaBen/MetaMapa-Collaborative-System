@@ -4,7 +4,9 @@ import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.InformeDeResultadosDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.SolicitudDTO;
+import ar.utn.ba.ddsi.Metamapa.services.AdminService;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
 import ar.utn.ba.ddsi.Metamapa.services.SolicitudService;
@@ -15,11 +17,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
@@ -28,6 +29,7 @@ public class AdminController {
     private final ColeccionService coleccionService;
     private final SolicitudService solicitudService;
     private final HechoService hechoService;
+    private final AdminService adminService;
 
     @GetMapping("/panel-control")
     public String mostrarPanelControl(Model model, RedirectAttributes redirectAttributes) {
@@ -65,10 +67,22 @@ public class AdminController {
       redirect.addFlashAttribute("error", "Selecciona un archivo CSV");
       return "redirect:/administrador/importadorArchivosCSV";
     }
-    //para pruebas
-    System.out.println("llego CSV: " + archivo.getOriginalFilename());
+    try {
+      InformeDeResultadosDTO informe = adminService.importarHechosCsv(archivo);
+      redirect.addFlashAttribute("mensaje",
+          "Importación OK: " + informe.getGuardadosTotales() + "/" + informe.getHechosTotales() + " guardados (" + informe.getTiempoTardado() + " ms)");
+      redirect.addFlashAttribute("tipoMensaje", "success");
+      redirect.addFlashAttribute("detalle",
+          "Archivo: " + informe.getNombreOriginal() + " → " + informe.getGuardadoComo());
+    } catch (WebClientResponseException e) {
+      redirect.addFlashAttribute("mensaje",
+          "El backend rechazó el CSV (" + e.getRawStatusCode() + "): " + e.getResponseBodyAsString());
+      redirect.addFlashAttribute("tipoMensaje", "error");
+    } catch (Exception e) {
+      redirect.addFlashAttribute("mensaje", "No se pudo importar el CSV: " + e.getMessage());
+      redirect.addFlashAttribute("tipoMensaje", "error");
+    }
 
-    redirect.addFlashAttribute("mensaje", "Archivo subido correctamente. ");
     return "redirect:/administrador/importadorArchivosCSV";
   }
 

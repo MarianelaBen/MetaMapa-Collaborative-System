@@ -22,7 +22,25 @@
 
     <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
     <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+    <div class="alert alert-info" th:if="${detalle}" th:text="${detalle}"></div>
 
+    <div class="results-summary" th:if="${hechosTotales}">
+      <div class="result-card success">
+        <div class="result-icon"><i class="fas fa-database"></i></div>
+        <div class="result-number" th:text="${hechosTotales}">0</div>
+        <div class="result-label">Hechos Totales</div>
+      </div>
+      <div class="result-card success">
+        <div class="result-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="result-number" th:text="${guardadosTotales}">0</div>
+        <div class="result-label">Guardados</div>
+      </div>
+      <div class="result-card warning">
+        <div class="result-icon"><i class="fas fa-clock"></i></div>
+        <div class="result-number" th:text="${tiempoTardado}">0</div>
+        <div class="result-label">Tiempo (ms)</div>
+      </div>
+    </div>
 
       <!-- Wizard Content -->
   <form th:action="@{/administrador/importarCSV}" method="post" enctype="multipart/form-data" class="wizard-content">
@@ -156,6 +174,29 @@
                 <select class="form-control"> -->
 
         </div>
+    <div class="wizard-navigation">
+      <button type="submit" class="nav-btn btn-import">
+        <i class="fas fa-upload"></i> Importar CSV
+      </button>
+    </div>
    </form>
  </div>
+
+<script>
+  const input = document.getElementById('csvFileInput');
+  const fileInfo = document.getElementById('fileInfo');
+  const fileNameEl = document.getElementById('fileName');
+  const fileSizeEl = document.getElementById('fileSize');
+
+  input.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      fileNameEl.textContent = file.name;
+      fileSizeEl.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+      fileInfo.classList.add('show');
+    } else {
+      fileInfo.classList.remove('show');
+    }
+  });
+</script>
 </html>
