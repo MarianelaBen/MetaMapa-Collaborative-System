@@ -228,6 +228,8 @@ public class ColeccionService implements IColeccionService {
         // Ubicacion: adaptá según tu clase Ubicacion (si tenés lat/long en el form, guardalos)
         Ubicacion ub = new Ubicacion();
         ub.setProvincia(input.getProvincia());
+        ub.setLatitud(input.getLatitud());
+        ub.setLongitud(input.getLongitud());
         hecho.setUbicacion(ub);
 
         // Save preliminary to get ID for filenames (opcional)
