@@ -21,12 +21,12 @@ public class AdminService {
 
   public InformeDeResultadosDTO importarHechosCsv(MultipartFile archivo) {
     MultipartBodyBuilder body = new MultipartBodyBuilder();
-    body.part("file", archivo.getResource())
+    body.part("archivo", archivo.getResource())
         .filename(archivo.getOriginalFilename() != null ? archivo.getOriginalFilename() : "import.csv")
         .contentType(MediaType.parseMediaType("text/csv"));
 
     return webClientAdmin.post()
-        .uri("/imports/hechos/csv")
+        .uri("/import/hechos/csv")
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .body(BodyInserters.fromMultipartData(body.build()))
         .retrieve()
