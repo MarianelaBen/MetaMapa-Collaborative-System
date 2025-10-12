@@ -43,7 +43,11 @@
     </div>
 
       <!-- Wizard Content -->
-  <form th:action="@{/administrador/importarCSV}" method="post" enctype="multipart/form-data" class="wizard-content">
+  <form th:action="@{/admin/importarCSV}" method="post" enctype="multipart/form-data" class="wizard-content">
+    <input type="hidden"
+           th:if="${_csrf != null}"
+           th:name="${_csrf.parameterName}"
+           th:value="${_csrf.token}"/>
         <!-- Step 1: Upload File -->
         <div class="step-content active" id="step-1">
           <div class="upload-area" id="uploadArea">
@@ -180,23 +184,27 @@
       </button>
     </div>
    </form>
- </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var input = document.getElementById('csvFileInput');
+      var fileInfo = document.getElementById('fileInfo');
+      var fileNameEl = document.getElementById('fileName');
+      var fileSizeEl = document.getElementById('fileSize');
 
-<script>
-  const input = document.getElementById('csvFileInput');
-  const fileInfo = document.getElementById('fileInfo');
-  const fileNameEl = document.getElementById('fileName');
-  const fileSizeEl = document.getElementById('fileSize');
+      if (!input) return;
+      input.addEventListener('change', function (e) {
+        var file = e.target.files && e.target.files[0];
+        if (file) {
+          fileNameEl.textContent = file.name;
+          fileSizeEl.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+          fileInfo.classList.add('show');
+        } else {
+          fileInfo.classList.remove('show');
+        }
+      });
+    });
+  </script>
 
-  input.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      fileNameEl.textContent = file.name;
-      fileSizeEl.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
-      fileInfo.classList.add('show');
-    } else {
-      fileInfo.classList.remove('show');
-    }
-  });
-</script>
+</div>
+
 </html>

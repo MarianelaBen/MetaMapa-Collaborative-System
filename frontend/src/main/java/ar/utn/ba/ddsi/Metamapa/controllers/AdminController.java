@@ -63,9 +63,10 @@ public class AdminController {
 
   @PostMapping("/importarCSV")
   public String importarCSV(@RequestParam("archivo")MultipartFile archivo, RedirectAttributes redirect){
+    System.out.println("Entré a importarCSV (FRONT)");
     if(archivo == null || archivo.isEmpty()) {
       redirect.addFlashAttribute("error", "Selecciona un archivo CSV");
-      return "redirect:/administrador/importadorArchivosCSV";
+      return "redirect:/admin/importarCSV";
     }
     try {
       InformeDeResultadosDTO informe = adminService.importarHechosCsv(archivo);
@@ -74,6 +75,9 @@ public class AdminController {
       redirect.addFlashAttribute("tipoMensaje", "success");
       redirect.addFlashAttribute("detalle",
           "Archivo: " + informe.getNombreOriginal() + " → " + informe.getGuardadoComo());
+      redirect.addFlashAttribute("hechosTotales", informe.getHechosTotales());
+      redirect.addFlashAttribute("guardadosTotales", informe.getGuardadosTotales());
+      redirect.addFlashAttribute("tiempoTardado", informe.getTiempoTardado());
     } catch (WebClientResponseException e) {
       redirect.addFlashAttribute("mensaje",
           "El backend rechazó el CSV (" + e.getRawStatusCode() + "): " + e.getResponseBodyAsString());
@@ -83,7 +87,7 @@ public class AdminController {
       redirect.addFlashAttribute("tipoMensaje", "error");
     }
 
-    return "redirect:/administrador/importadorArchivosCSV";
+    return "redirect:/admin/importarCSV";
   }
 
 
