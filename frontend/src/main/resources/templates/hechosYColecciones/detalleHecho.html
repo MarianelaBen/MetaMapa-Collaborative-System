@@ -42,9 +42,24 @@
 
                     <div class="multimedia-grid"
                          th:if="${nombresMultimedia != null and !#lists.isEmpty(nombresMultimedia)}">
-                        <div class="multimedia-item" th:each="name : ${nombresMultimedia}">
-                            <div class="multimedia-placeholder">📄</div>
-                            <div th:text="${name}">archivo.jpg</div>
+
+                        <div class="multimedia-item"
+                             th:each="name : ${nombresMultimedia}"
+                             th:with="ext=${#strings.toLowerCase(#strings.substring(name, name.lastIndexOf('.') + 1))},
+                                                    isImg=${#lists.contains(extensionesImagen, ext)},
+                                                    fullUrl=${#strings.startsWith(name,'http') ? name : backendOrigin + (name.startsWith('/') ? name : '/' + name)},
+                                                    fileOnly=${#strings.substring(name, name.lastIndexOf('/') + 1)}">
+
+                            <!-- Si es imagen: se muestra la imagen, sin texto de ruta -->
+                            <img th:if="${isImg}"
+                                 th:src="${fullUrl}"
+                                 alt="Imagen del hecho"
+                                 style="width:100%;height:auto;display:block;border-radius:8px;"/>
+
+                            <!-- Si NO es imagen: icono y nombre del archivo (sin ruta) -->
+                            <div th:unless="${isImg}" class="multimedia-placeholder" style="font-size:2rem;">📄</div>
+                            <div th:unless="${isImg}" th:text="${fileOnly}" style="margin-top:.25rem;"></div>
+
                         </div>
                     </div>
 

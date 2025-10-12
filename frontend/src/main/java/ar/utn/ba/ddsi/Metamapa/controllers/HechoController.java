@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,6 +28,8 @@ import java.util.List;
 @RequestMapping("/hechos")
 @RequiredArgsConstructor
 public class HechoController {
+  @Value("${backend.origin}")
+  private String backendOrigin;
   private final HechoService hechoService;
 
   @GetMapping("/{id}")
@@ -35,14 +39,14 @@ public class HechoController {
       // HechoDTO hecho = mockHecho(id);
       HechoDTO hecho = hechoService.getHechoPorId(id);
 
-      List<String> nombresMultimedia =
-          hecho.getIdContenidoMultimedia() == null ? List.of()
-              : hecho.getIdContenidoMultimedia().stream()
-              .map(HechoController::filenameFromPath)
-              .toList();
+      List<String> nombresMultimedia = (hecho.getIdContenidoMultimedia() == null)
+          ? List.of()
+          : hecho.getIdContenidoMultimedia();
 
           model.addAttribute("hecho", hecho);
           model.addAttribute("nombresMultimedia", nombresMultimedia);
+          model.addAttribute("extensionesImagen", List.of("jpg","jpeg","png","gif","webp"));
+          model.addAttribute("backendOrigin", backendOrigin);
           model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
 
       return "hechosYColecciones/detalleHecho";
@@ -131,16 +135,27 @@ public class HechoController {
       List<String> categorias = hechoService.getCategorias();
 
       List<String> nombresMultimedia =
-          (hecho.getIdContenidoMultimedia() == null) ? List.of()
+          hecho.getIdContenidoMultimedia() == null ? List.of()
               : hecho.getIdContenidoMultimedia().stream()
-              .map(HechoController::filenameFromPath)
+              .map(p -> {
+                if (p == null) return null;
+                if (p.contains(":") || p.contains("\\")) { // legacy absoluto
+                  return "/uploads/" + Paths.get(p).getFileName().toString();
+                }
+                if (p.startsWith("/uploads/") || p.startsWith("http")) return p;
+                return "/uploads/" + p;
+              })
               .toList();
+
 
       model.addAttribute("nombresMultimedia", nombresMultimedia);
       model.addAttribute("hecho", hecho);
       model.addAttribute("categorias", categorias);
       model.addAttribute("hechoId", id);
       model.addAttribute("titulo", "Editar Hecho");
+      model.addAttribute("mediaBaseUrl", "/uploads");
+      model.addAttribute("extensionesImagen", List.of("jpg", "jpeg", "png", "gif", "webp"));
+      model.addAttribute("backendOrigin", backendOrigin);
       return "contribuyente/editorHechos";
 
     } catch (NotFoundException ex) {

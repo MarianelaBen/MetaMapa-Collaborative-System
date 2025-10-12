@@ -80,14 +80,24 @@
                         <div class="multimedia-grid"
                              th:if="${nombresMultimedia != null and !#lists.isEmpty(nombresMultimedia)}"
                              id="existing-media">
+
                             <div class="multimedia-item"
                                  th:each="name : ${nombresMultimedia}"
+                                 th:with="ext=${#strings.toLowerCase(#strings.substring(name, name.lastIndexOf('.') + 1))},
+                                            isImg=${#lists.contains(extensionesImagen, ext)},
+                                               fullUrl=${#strings.startsWith(name,'http') ? name : backendOrigin + name},
+                                               fileOnly=${#strings.substring(name, name.lastIndexOf('/') + 1)}"
                                  th:attr="data-name=${name}">
-                                <div class="multimedia-placeholder"></div>
+
+                                <img th:if="${isImg}" th:src="${fullUrl}" class="multimedia-thumb" alt="Imagen multimedia"/>
+                                <div th:unless="${isImg}" class="multimedia-placeholder" th:text="${fileOnly}"></div>
+
                                 <button type="button" class="remove-btn remove-existing" aria-label="Eliminar existente">×</button>
-                                <span class="filename" th:text="${name}"></span>
+                                <span class="filename" th:text="${fileOnly}"></span>
                             </div>
+
                         </div>
+
 
                         <!-- inputs ocultos con lo que el usuario decide borrar -->
                         <div id="existing-to-delete"></div>
@@ -193,10 +203,9 @@
                         const name = item?.dataset?.name;
                         if (!name) return;
 
-                        const key = `del-${name}`;
-                        const existingInput = hiddenDeletes.querySelector(
-                            `[data-key="${CSS.escape(key)}"]`
-                        );
+                        // Busco si ya hay un hidden con ese value
+                        const existingInput = Array.from(hiddenDeletes.querySelectorAll('input[name="deleteExisting"]'))
+                            .find(i => i.value === name);
 
                         if (existingInput) {
                             // desmarcar
@@ -206,9 +215,8 @@
                             // marcar
                             const input = document.createElement('input');
                             input.type = 'hidden';
-                            input.name = 'deleteExisting[]';
+                            input.name = 'deleteExisting';   // mismo nombre, múltiples ocurrencias
                             input.value = name;
-                            input.setAttribute('data-key', key);
                             hiddenDeletes.appendChild(input);
                             item.classList.add('removed');
                         }
