@@ -11,16 +11,16 @@ import java.util.Optional;
 @Repository
 public interface IEstadisticaRepository extends JpaRepository<Estadistica, Long> {
 
-  List<Estadistica> findAllByPregunta_PreguntaOrderByFechaDeCalculoDesc(String pregunta);
+  List<Estadistica> findAllByHechosPorProvinciaEnColeccion_ColeccionHandleOrderByFechaDeCalculoDesc(String coleccionHandle);
+  Optional<Estadistica> findTopByHechosPorProvinciaEnColeccion_ColeccionHandleOrderByFechaDeCalculoDesc(String coleccionHandle);
 
-  Optional<Estadistica> findTopByPregunta_PreguntaOrderByFechaDeCalculoDesc(String pregunta);
+  List<Estadistica> findAllByProvinciaTopPorCategoria_CategoriaOrderByFechaDeCalculoDesc(Long categoriaId);
+  Optional<Estadistica> findTopByProvinciaTopPorCategoria_CategoriaOrderByFechaDeCalculoDesc(Long categoriaId);
 
-  List<Estadistica> findAllByPreguntaIdOrderByFechaDeCalculoDesc(Long preguntaId);
+  List<Estadistica> findAllByHorarioPicoPorCategoria_CategoriaOrderByFechaDeCalculoDesc(Long categoriaId);
+  Optional<Estadistica> findTopByHorarioPicoPorCategoria_CategoriaOrderByFechaDeCalculoDesc(Long categoriaId);
 
-  Optional<Estadistica> findTopByPreguntaIdOrderByFechaDeCalculoDesc(Long preguntaId);
+  Optional<Estadistica> findTopByTopCategoriaGlobal_CategoriaGanadoraIsNotNullOrderByFechaDeCalculoDesc();
 
-  List<Estadistica> findByFechaDeCalculo(LocalDateTime fechaDeCalculo);
-
-  List<Estadistica> findAllByPreguntaIdAndColeccionHandleOrderByFechaDeCalculoDesc(Long preguntaId, String coleccionHandle);
-
+  Optional<Estadistica> findTopBySolicitudesEliminacionResumen_TotalIsNotNullOrderByFechaDeCalculoDesc();
 }

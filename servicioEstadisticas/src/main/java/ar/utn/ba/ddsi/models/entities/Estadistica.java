@@ -11,43 +11,34 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "estadistica")
+@Table(name = "estadistica",
+    indexes = { //para facilitar la busqueda desde la bdd, para hacer que en el controller nos pidan directo algunas estats especif
+        @Index(name = "idx_estadistica_fecha", columnList = "fecha_de_calculo"),
+        @Index(name = "idx_estadistica_coleccion", columnList = "hechosPorProvincia_coleccion_handle"),
+        @Index(name = "idx_estadistica_categoria1", columnList = "provinciaTopPor_categoria"),
+        @Index(name = "idx_estadistica_categoria2", columnList = "horarioPico_categoria")
+    })
 public class Estadistica {
-
-  @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "pregunta_id", nullable=false)
-  private Pregunta pregunta;
-
-  @Column(name = "coleccion_handle")
-  private String coleccionHandle;
-
-  @Column (name = "categoria_id")
-  private Long categoriaId;
-
-  @Column(name="provincia")
-  private String provincia;
-
-  @Column(name="hora_del_dia")
-  private Integer horaDelDia;
-
-  @Column(name="valor", nullable=false)
-  private Long valor;
-
-  @Column(name="fecha_de_calculo", nullable=false)
+  @Column(name = "fecha_de_calculo", nullable = false)
   private LocalDateTime fechaDeCalculo;
 
-  public Estadistica(Pregunta pregunta, String coleccionHandle, Long categoriaId,
-                     String provincia, Integer horaDelDia, Long valor, LocalDateTime fechaDeCalculo) {
-    this.pregunta = pregunta;
-    this.coleccionHandle = coleccionHandle;
-    this.categoriaId = categoriaId;
-    this.provincia = provincia;
-    this.horaDelDia = horaDelDia;
-    this.valor = valor;
-    this.fechaDeCalculo = fechaDeCalculo;
-  }
+  @Embedded
+  private HechosPorProvinciaEnColeccion hechosPorProvinciaEnColeccion;
+
+  @Embedded
+  private CategoriaTopGlobal categoriaTopGlobal;
+
+  @Embedded
+  private ProvinciaTopPorCategoria provinciaTopPorCategoria;
+
+  @Embedded
+  private HorarioPicoPorCategoria horarioPicoPorCategoria;
+
+  @Embedded
+  private SolicitudesEliminacionSpam solicitudesEliminacionSpam;
 }
 
