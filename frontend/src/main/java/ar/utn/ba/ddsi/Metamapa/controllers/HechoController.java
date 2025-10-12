@@ -82,6 +82,7 @@ public class HechoController {
     if (hecho.getCategoria() == null || hecho.getCategoria().isBlank()) { error = true; }
     if (hecho.getDescripcion() == null || hecho.getDescripcion().isBlank()) { error = true; }
     if (hecho.getProvincia() == null || hecho.getProvincia().isBlank()) { error = true; }
+    if (hecho.getLatitud() == null || hecho.getLongitud() == null) { error = true; }
     if (fecha == null || fecha.isBlank() || hora == null || hora.isBlank()) { error = true; }
 
     try {

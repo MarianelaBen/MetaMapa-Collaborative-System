@@ -113,7 +113,7 @@ public class HechoService {
 
             // Hacemos la petición
             return webClientPublic.post()
-                    .uri("/hechos") // si tu baseUrl es http://localhost:8083/api/public
+                    .uri("/hechos")
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(BodyInserters.fromMultipartData(parts))
                     .retrieve()

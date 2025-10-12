@@ -10,7 +10,9 @@
               method="post"
               th:object="${hecho}"
               enctype="multipart/form-data"> <!-- hay que probar-->
-
+            <input type="hidden" th:field="*{latitud}"   id="latitud">
+            <input type="hidden" th:field="*{longitud}"  id="longitud">
+            <input type="hidden" th:field="*{provincia}" id="provincia">
         <h4 th:text="${titulo}">Subir hecho</h4>
 
         <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
@@ -32,42 +34,23 @@
 
         <label for="descripcion">Descripción <span style="color:red">*</span></label>
             <textarea id="descripcion" placeholder="Descripción" th:field="*{descripcion}" required></textarea>
-        <div class="row-imputs">
-            <div class="col">
-                <label for="fecha">Fecha del acontecimiento <span style="color:red">*</span></label>
-                <input type="date" id="fecha" name="fecha" required>
+            <div class="row-imputs">
+                <div class="col">
+                    <label for="fecha">Fecha del acontecimiento <span style="color:red">*</span></label>
+                    <input type="date" id="fecha" name="fecha" required>
+                </div>
+                <div class="col">
+                    <label for="hora">Hora del acontecimiento <span style="color:red">*</span></label>
+                    <input type="time" id="hora" name="hora" required>
+                </div>
             </div>
-            <div class="col">
-                <label for="hora">Hora del acontecimiento <span style="color:red">*</span></label>
-                <input type="time" id="hora" name="hora" required>
+            <div class="row-imputs">
+                <div class="col geo-autocomplete">
+                    <label for="buscador-geo">Ubicacion<span style="color:red">*</span></label>
+                    <input type="text" id="buscador-geo" placeholder="Ej: Rivadavia 4200, Caballito">
+                    <ul id="sugerencias-geo" class="sugerencias-geo"></ul>
+                </div>
             </div>
-        </div>
-        <div class="row-imputs">
-            <div class="col">
-                <label for="calle">Calle <span style="color:red">*</span></label>
-                <input type="text" id="calle" placeholder="Calle">
-            </div>
-            <div class="col">
-                <label for="altura">Altura <span style="color:red">*</span></label>
-                <input type="number" id="altura" placeholder="Altura">
-            </div>
-
-        </div>
-        <div class="row-imputs">
-            <div class="col">
-                <label for="ciudad">Ciudad <span style="color:red">*</span></label>
-                <input type="text" id="ciudad" placeholder="Ciudad" th:field="*{provincia}" required>
-            </div>
-            <div class="col">
-                <label for="localidad">Localidad <span style="color:red">*</span></label>
-                <select id="localidad" name="localidad" required>
-                    <option value="">Seleccione una localidad</option>
-                    <option th:each="localidad : ${localidades}" th:value="${localidad}" th:text="${localidad}">...</option>
-                </select>
-            </div>
-
-
-        </div>
             <div class="col">
                 <label for="multimedia">Contenido multimedia</label>
                 <div class="file-input-wrapper">
@@ -81,6 +64,88 @@
 
         <button class="btn-submit" type="submit">Subir hecho</button>
     </form>
-    </div>
+        <script>
+            (function() {
+                const $buscador = document.getElementById('buscador-geo');
+                const $sugs = document.getElementById('sugerencias-geo');
+                const $lat = document.getElementById('latitud');
+                const $lon = document.getElementById('longitud');
+                const $prov = document.getElementById('provincia');
 
+                let timer = null;
+
+                function limpiarSugerencias() {
+                    $sugs.innerHTML = '';
+                    $sugs.style.display = 'none';
+                }
+
+                function renderSugerencias(items) {
+                    if (!items || items.length === 0) {
+                        limpiarSugerencias();
+                        return;
+                    }
+                    $sugs.innerHTML = '';
+                    items.forEach((it) => {
+                        const li = document.createElement('li');
+                        li.textContent = it.label || '';
+                        li.tabIndex = 0;
+                        li.addEventListener('click', () => onSelect(it));
+                        li.addEventListener('keypress', (e) => { if (e.key === 'Enter') onSelect(it); });
+                        $sugs.appendChild(li);
+                    });
+                    $sugs.style.display = 'block';
+                }
+
+                function onSelect(it) {
+                    // Setear lo que PERSISTE
+                    $lat.value = it.latitud ?? '';
+                    $lon.value = it.longitud ?? '';
+                    $prov.value = it.provinciaNombre ?? '';
+
+
+                    $buscador.value = it.label || '';
+                    limpiarSugerencias();
+                }
+
+                async function buscar(q) {
+                    const url = `http://localhost:8083/api/geo/sugerencias?query=${encodeURIComponent(q)}&max=8`;
+                    try {
+                        const res = await fetch(url);
+                        if (!res.ok) return limpiarSugerencias();
+                        const data = await res.json();
+                        renderSugerencias(data);
+                    } catch {
+                        limpiarSugerencias();
+                    }
+                }
+
+                $buscador.addEventListener('input', () => {
+                    const q = $buscador.value.trim();
+                    if (timer) clearTimeout(timer);
+                    if (q.length < 3) {
+                        limpiarSugerencias();
+                        return;
+                    }
+                    timer = setTimeout(() => buscar(q), 250);
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!($sugs.contains(e.target) || e.target === $buscador)) {
+                        limpiarSugerencias();
+                    }
+                });
+
+                //exigir lat y long
+                const form = document.querySelector('form.formulario-hecho');
+                form.addEventListener('submit', (e) => {
+                    if (!$lat.value || !$lon.value || !$prov.value) {
+                        e.preventDefault();
+                        alert('Seleccioná una Ubicación de la lista para continuar.');
+                        $buscador.focus();
+                    }
+                });
+            })();
+        </script>
+
+    </div>
 </html>
