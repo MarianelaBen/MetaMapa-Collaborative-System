@@ -36,11 +36,12 @@ public class SingupService {
     usuario.setNombreDeUsuario(username);
     usuario.setMail(dto.getEmail());
     usuario.setContrasenia(passwordEncoder.encode(dto.getContrasenia()));
-    usuario.setRol(Rol.CONTRIBUYENTE);
+    usuario.setRol(Rol.ADMIN);
 
     // permisos por defecto para contribuyente
     usuario.getPermisos().add(Permiso.CREAR_HECHO);
     usuario.getPermisos().add(Permiso.EDITAR_HECHO_PROPIO);
+    usuario.getPermisos().add(Permiso.VER_PANEL_DE_CONTROL);
 
     return usuariosRepository.save(usuario);
   }
