@@ -46,22 +46,21 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")  //ruta para cerrar sesion
-                        .logoutSuccessUrl("/login?logout") // redirigir tras logout
-                        .permitAll()
+                        .deleteCookies("JSESSIONID")
+                        .invalidateHttpSession(true)
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            // limpiar tokens guardados en sesión (nombres reales que usás)
+                            var session = request.getSession(false);
+                            if (session != null) {
+                                session.removeAttribute("accessToken");
+                                session.removeAttribute("refreshToken");
+                            }
+                            // redirigir con mensaje simple
+                            response.sendRedirect("/login?logout");
+                        })
                 )
-                /* el de chat:
-                  .logout(l -> l.logoutUrl("/logout")
-                   .logoutSuccessUrl("/login?logout").permitAll())
-                    .rememberMe(r -> r.tokenValiditySeconds(1209600)) // 14 días
-                      .sessionManagement(s -> s
-                        .sessionFixation().migrateSession()
-                         .maximumSessions(1) // evita cuentas compartidas
-                        )
-                        .csrf(csrf -> csrf
-                        // si tenés endpoints REST JSON en este mismo proyecto:
-                        //.ignoringRequestMatchers("/api/**")
-                        )
-                 */
+
+
 
                 .exceptionHandling(ex -> ex
                         // Usuario no autenticado → redirigir a login

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -220,4 +221,42 @@ public class WebApiCallerService {
     public interface ApiCall<T> {
         T execute(String accessToken) throws Exception;
     }
+
+    public <T> T postMultipart(String url,
+                               String partName,
+                               MultipartFile file,
+                               Class<T> responseType) {
+        return executeWithTokenRetry(accessToken -> {
+            try {
+                var body = new org.springframework.util.LinkedMultiValueMap<String, Object>();
+
+                var resource = new org.springframework.core.io.ByteArrayResource(file.getBytes()) {
+                    @Override public String getFilename() {
+                        return (file.getOriginalFilename() != null && !file.getOriginalFilename().isBlank())
+                                ? file.getOriginalFilename() : "import.csv";
+                    }
+                };
+
+                var fileHeaders = new org.springframework.http.HttpHeaders();
+                fileHeaders.setContentDispositionFormData(partName, resource.getFilename());
+                fileHeaders.setContentType(org.springframework.http.MediaType.parseMediaType("text/csv"));
+
+                var filePart = new org.springframework.http.HttpEntity<>(resource, fileHeaders);
+                body.add(partName, filePart);
+
+                return webClient.post()
+                        .uri(url)
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(org.springframework.http.MediaType.MULTIPART_FORM_DATA)
+                        .body(org.springframework.web.reactive.function.BodyInserters.fromMultipartData(body))
+                        .retrieve()
+                        .bodyToMono(responseType)
+                        .block();
+
+            } catch (java.io.IOException e) {
+                throw new RuntimeException("No se pudo leer el CSV: " + e.getMessage(), e);
+            }
+        });
+    }
+
 }

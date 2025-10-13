@@ -92,7 +92,7 @@ public class AdminController {
       return "redirect:/admin/importarCSV";
     }
     try {
-      InformeDeResultadosDTO informe = adminService.importarHechosCsv(archivo);
+      InformeDeResultadosDTO informe = this.metamapaApiService.importarHechosCsv(archivo);
       redirect.addFlashAttribute("mensaje",
           "Importación OK: " + informe.getGuardadosTotales() + "/" + informe.getHechosTotales() + " guardados (" + informe.getTiempoTardado() + " ms)");
       redirect.addFlashAttribute("tipoMensaje", "success");

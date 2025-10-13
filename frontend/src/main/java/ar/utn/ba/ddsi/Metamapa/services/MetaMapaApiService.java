@@ -7,7 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -151,7 +154,22 @@ public class MetaMapaApiService {
         );
     }
 
+    public InformeDeResultadosDTO importarHechosCsv(MultipartFile archivo){
+        MultipartBodyBuilder body = new MultipartBodyBuilder();
+        body.part("archivo", archivo.getResource())
+                .filename(archivo.getOriginalFilename() != null ? archivo.getOriginalFilename() : "import.csv")
+                .contentType(MediaType.parseMediaType("text/csv"));
+        final String PART_NAME = "archivo";
+        return webApiCallerService.postMultipart(
+                baseAdminUrl + "/import/hechos/csv",
+                PART_NAME,
+                archivo,
+                InformeDeResultadosDTO.class
+
+        );
     }
+}
+
 
 
 
