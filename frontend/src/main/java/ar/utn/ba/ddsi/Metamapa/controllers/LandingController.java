@@ -22,13 +22,13 @@ public class LandingController {
 
   @GetMapping("/inicio")
   public String inicio(Model model){
+      List<HechoDTO> hechos = this.hechoService.getHechos();
     List<ColeccionDTO> coleccionesDestacadas = this.coleccionService.traerColeccionesDestacadas();
     List<HechoDTO> hechosDestacados = this.hechoService.traerHechosDestacados();
-    List<HechoDTO> hechos = this.hechoService.getHechos();
     model.addAttribute("titulo", "Inicio");
     model.addAttribute("coleccionesDestacadas", coleccionesDestacadas);
     model.addAttribute("hechosDestacados", hechosDestacados);
-    model.addAttribute("hechos", hechos);
+    model.addAttribute("hechos", hechosDestacados);
     return "landing/landing";
   }
 

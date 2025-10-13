@@ -1,4 +1,4 @@
-/*package ar.utn.ba.ddsi.Metamapa.providers;
+package ar.utn.ba.ddsi.Metamapa.providers;
 
 import ar.utn.ba.ddsi.Metamapa.models.dtos.AuthResponseDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.RolesPermisosDTO;
@@ -81,4 +81,3 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
 
 }
-*/

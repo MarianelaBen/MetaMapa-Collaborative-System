@@ -1,4 +1,4 @@
-/*package ar.utn.ba.ddsi.Metamapa.config;
+package ar.utn.ba.ddsi.Metamapa.config;
 
 import ar.utn.ba.ddsi.Metamapa.providers.CustomAuthProvider;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-   @Bean
+    @Bean
     public AuthenticationManager authManager(HttpSecurity http, CustomAuthProvider provider) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
                 .authenticationProvider(provider)
@@ -39,10 +39,10 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")
-                        .permitAll()
-                        .defaultSuccessUrl("/inicio?login=ok", true)
-                      //.defaultSuccessUrl("/inicio", true)
+                                .loginPage("/login")
+                                .permitAll()
+                                .defaultSuccessUrl("/inicio?login=ok", true)
+                        //.defaultSuccessUrl("/inicio", true)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")  //ruta para cerrar sesion
@@ -62,7 +62,7 @@ public class SecurityConfig {
                         //.ignoringRequestMatchers("/api/**")
                         )
                  */
-/*
+
                 .exceptionHandling(ex -> ex
                         // Usuario no autenticado → redirigir a login
                         .authenticationEntryPoint((request, response, authException) ->
@@ -82,4 +82,3 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-*/

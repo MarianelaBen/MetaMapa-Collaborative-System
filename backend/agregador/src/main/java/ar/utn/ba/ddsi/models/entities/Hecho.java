@@ -101,11 +101,11 @@ public class Hecho {
   @Column(name = "cantidad_vistas")
   private Integer cantVistas;
 
-  @Column(name = "editable" )
-  private boolean editable;
+  //@Column(name = "editable" )
+  //private boolean editable;
 
-  @Column(name = "diasRestantesEdicion")
-  private int diasRestantesEdicion;
+  //@Column(name = "diasRestantesEdicion")
+  //private int diasRestantesEdicion;
 
   // private String nombreAportante;
   // private String apellidoAportante;

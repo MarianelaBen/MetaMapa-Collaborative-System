@@ -1,4 +1,4 @@
-/*package ar.utn.ba.ddsi.utils;
+package ar.utn.ba.ddsi.utils;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -45,4 +45,3 @@ public class JwtUtil {
                 .getSubject();
     }
 }
-*/

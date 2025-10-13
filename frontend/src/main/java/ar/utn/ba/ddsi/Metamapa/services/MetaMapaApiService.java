@@ -1,4 +1,4 @@
-/*package ar.utn.ba.ddsi.Metamapa.services;
+package ar.utn.ba.ddsi.Metamapa.services;
 
 import ar.utn.ba.ddsi.Metamapa.models.dtos.AuthResponseDTO;
 
@@ -89,13 +89,13 @@ public class MetaMapaApiService {
     public ResumenDTO getPanelDeControl() {
         String accesToken = webApiCallerService.getAccessTokenFromSession();
         return webApiCallerService.getWithAuth(
-            baseAdminUrl + "/resumen", //el metodo que voy a agregar al back
-            accesToken,
-            ResumenDTO.class
+                baseAdminUrl + "/resumen", //el metodo que voy a agregar al back
+                accesToken,
+                ResumenDTO.class
         );
     }
 
-   // ESTO ES DE CHAT GPT:
+    // ESTO ES DE CHAT GPT:
 
 /*
     //   OPERACIONES PROTEGIDAS (Requieren token)
@@ -171,7 +171,5 @@ public class MetaMapaApiService {
     }
 
 */
-/*
-}
 
-*/
+}

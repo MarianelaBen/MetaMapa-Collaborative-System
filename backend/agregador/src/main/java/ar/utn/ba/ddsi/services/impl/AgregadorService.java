@@ -191,16 +191,16 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     }
 
     // Cálculo edición: 7 días desde fechaCarga
-    LocalDate fc = hecho.getFechaCarga();
-    if (fc != null) {
-      long dias = ChronoUnit.DAYS.between(fc, LocalDate.now());
-      boolean editable = dias < 7;
-      hechoOutputDTO.setEditable(editable);
-      hechoOutputDTO.setDiasRestantesEdicion(editable ? (int) (7 - dias) : 0);
-    } else {
-      hechoOutputDTO.setEditable(false);
-      hechoOutputDTO.setDiasRestantesEdicion(0);
-    }
+//    LocalDate fc = hecho.getFechaCarga();
+//    if (fc != null) {
+//      long dias = ChronoUnit.DAYS.between(fc, LocalDate.now());
+//      boolean editable = dias < 7;
+//      hechoOutputDTO.setEditable(editable);
+//      hechoOutputDTO.setDiasRestantesEdicion(editable ? (int) (7 - dias) : 0);
+//    } else {
+//      hechoOutputDTO.setEditable(false);
+//      hechoOutputDTO.setDiasRestantesEdicion(0);
+//    }
 
     return hechoOutputDTO;
   }

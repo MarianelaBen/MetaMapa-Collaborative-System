@@ -282,9 +282,9 @@ public class HechoController {
     model.addAttribute("descripcion", "Gestiona los hechos que has reportado. Puedes editarlos durante los primeros 7 días luego de su publicación.");
 
     return "contribuyente/misHechos";
-    */
 
-  }
+
+  }*/
 }
 
 

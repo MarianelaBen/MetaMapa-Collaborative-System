@@ -1,4 +1,4 @@
-/* package ar.utn.ba.ddsi.config;
+package ar.utn.ba.ddsi.config;
 
 import ar.utn.ba.ddsi.filters.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/auth/**", "/api/auth/refresh/**").permitAll();
+                    auth.requestMatchers("/api/auth/**", "/api/auth/refresh/**", "/api/public/**", "/api/admin/**").permitAll();
                     auth.requestMatchers("/api/auth/user/roles-permisos").authenticated();
                     auth.anyRequest().authenticated();
                 })
