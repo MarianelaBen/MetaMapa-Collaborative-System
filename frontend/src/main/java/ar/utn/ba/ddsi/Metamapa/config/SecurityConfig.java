@@ -31,7 +31,7 @@ public class SecurityConfig {
                                 "/login/**", "/signup/**",
                                 "/inicio/**", "/landing/**",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**",
-                                "/colecciones/**",
+                                "/colecciones",
                                 "/hechos/**",
                                 "/hechos/nuevo/**",
                                 "/privacidad/**", "/error/**", "/403/**"

@@ -140,7 +140,7 @@
               <td><span class="consensus-badge" th:text="${coleccion.algoritmoDeConsenso}">Absoluta</span></td>
               <td>
                 <div class="action-buttons">
-                  <a href="editarColeccion.html" class="btn-action edit" title="Editar">
+                  <a href="editarColeccion.html" class="btn-action edit" title="Editar" th:href="@{/colecciones/{handle}/editar(handle=${coleccion.handle})}">
                     <i class="fas fa-edit"></i>
                   </a>
                   <!-- FIX: se quitó un </button> suelto acá -->

@@ -28,7 +28,7 @@ public class LandingController {
     model.addAttribute("titulo", "Inicio");
     model.addAttribute("coleccionesDestacadas", coleccionesDestacadas);
     model.addAttribute("hechosDestacados", hechosDestacados);
-    model.addAttribute("hechos", hechosDestacados);
+    model.addAttribute("hechos", hechos);
     return "landing/landing";
   }
 

@@ -1,10 +1,7 @@
 package ar.utn.ba.ddsi.Metamapa.services;
 
-import ar.utn.ba.ddsi.Metamapa.models.dtos.AuthResponseDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.*;
 
-import ar.utn.ba.ddsi.Metamapa.models.dtos.ResumenDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.RegisterRequestDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.RolesPermisosDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -24,16 +24,20 @@ public class MetaMapaApiService {
     private final WebApiCallerService webApiCallerService;
     private final String authServiceUrl;
     private final String baseAdminUrl;
+    private final String basePublicUrl;
 
     @Autowired
     public MetaMapaApiService(
+            //backend.api.base-url-agregador=http://localhost:8083/api/public
             WebApiCallerService webApiCallerService,
             @Value("${auth.service.url}") String authServiceUrl,
-            @Value("${backend.api.base-url}") String baseAdminUrl) {
+            @Value("${backend.api.base-url}") String baseAdminUrl,
+            @Value("${backend.api.base-url-agregador}") String basePublicUrl) {
         this.webClient = WebClient.builder().build();
         this.webApiCallerService = webApiCallerService;
         this.authServiceUrl = authServiceUrl;
         this.baseAdminUrl = baseAdminUrl;
+        this.basePublicUrl = basePublicUrl;
     }
 
     public AuthResponseDTO login(String username, String password) {
@@ -95,81 +99,59 @@ public class MetaMapaApiService {
         );
     }
 
-    // ESTO ES DE CHAT GPT:
+    public List<SolicitudDTO> getSolicitudes() {
 
-/*
-    //   OPERACIONES PROTEGIDAS (Requieren token)
+        String accessToken = webApiCallerService.getAccessTokenFromSession();
 
-
-    public void eliminarHecho(String idHecho, String accessToken) {
-        webApiCallerService.delete(agregadorServiceUrl + "/hechos/" + idHecho, //TODO tiene que llamar al agregador
-                accessToken
-        );
-    }
-
-    public SolicitudDTO aprobarSolicitud(String idSolicitud, String accessToken) {
-        return api.postWithAuth(
-                agregadorServiceUrl + "/solicitudes/" + idSolicitud + "/aprobar",
+        // Pedimos un array de DTOs y lo convertimos a List
+        SolicitudDTO[] arr = webApiCallerService.getWithAuth(
+                basePublicUrl + "/solicitudes",
                 accessToken,
-                null,
-                SolicitudDTO.class
+                SolicitudDTO[].class
         );
+
+        if (arr == null || arr.length == 0) {
+            return Collections.emptyList();
+        }
+
+        return Arrays.asList(arr);
     }
 
-    public SolicitudDTO rechazarSolicitud(String idSolicitud, String accessToken) {
-        return api.postWithAuth(
-                agregadorServiceUrl + "/solicitudes/" + idSolicitud + "/rechazar",
+    public List<HechoDTO> getHechos() {
+
+        String accessToken = webApiCallerService.getAccessTokenFromSession();
+
+        // Pedimos un array de DTOs y lo convertimos a List
+        HechoDTO[] arr = webApiCallerService.getWithAuth(
+                basePublicUrl + "/hechos",
                 accessToken,
-                null,
-                SolicitudDTO.class
+                HechoDTO[].class
+        );
+
+        if (arr == null || arr.length == 0) {
+            return Collections.emptyList();
+        }
+
+        return Arrays.asList(arr);
+    }
+
+    public ColeccionDTO crearColeccion(ColeccionDTO coleccion) {
+        return webApiCallerService.post(
+                baseAdminUrl + "/colecciones",
+                coleccion,
+                ColeccionDTO.class
         );
     }
 
-    //===================== HECHOS (PROTEGIDO) =====================
-
-
- public HechoDTO actualizarHecho(String id, HechoDTO body, String accessToken) {
-        HechoDTO dto = webApiCallerService.putWithAuth(
-                agregadorServiceUrl + "/hechos/" + id,
-                accessToken,
-                body,
-                HechoDTO.class
-        );
-        if (dto == null) throw new RuntimeException("Error al actualizar el Hecho");
-        return dto;
-    }
-
-
-
-     // ===================== SOLICITUDES DE ELIMINACIÓN =====================
-
-
-    // Listar pendientes (protegido para ADMIN)
-
-    public List<SolicitudDTO> listarSolicitudesPendientes(String accessToken) {
-        String url = agregadorServiceUrl + "/solicitudes?estado=PENDIENTE";
-        return webApiCallerService.getListWithAuth(url, accessToken, SolicitudDTO.class);
-    }
-
-
-    public SolicitudDTO aprobarSolicitud(String id, String accessToken) {
-        return webApiCallerService.postWithAuth(
-                agregadorServiceUrl + "/solicitudes/" + id + "/aprobar",
-                accessToken,
-                null,
-                SolicitudDTO.class
+    public ColeccionDTO actualizarColeccion(String handle, ColeccionDTO coleccion){
+        return webApiCallerService.put(
+                baseAdminUrl + "/colecciones/" + handle,
+                coleccion,
+                ColeccionDTO.class
         );
     }
 
-    public SolicitudDTO rechazarSolicitud(String id, String accessToken) {
-        return webApiCallerService.postWithAuth(
-                agregadorServiceUrl + "/solicitudes/" + id + "/rechazar",
-                accessToken,
-                null,
-                SolicitudDTO.class
-        );
     }
 
-*/
 
-}
+

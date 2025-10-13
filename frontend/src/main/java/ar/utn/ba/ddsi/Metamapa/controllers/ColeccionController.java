@@ -5,6 +5,7 @@ import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
+import ar.utn.ba.ddsi.Metamapa.services.MetaMapaApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -25,8 +26,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ColeccionController {
   private final ColeccionService coleccionService;
+    private final MetaMapaApiService metaMapaApiService;
 
-  @GetMapping
+    @GetMapping
   public String listarColecciones(Model model){
     List<ColeccionDTO> colecciones;
 
@@ -61,6 +63,7 @@ public class ColeccionController {
   }
 
 @GetMapping("/nueva")
+@PreAuthorize("hasAnyRole('ADMIN')")
 public String verFormulario(Model model) {
     model.addAttribute("titulo", "Crear nueva Coleccion");
     model.addAttribute("coleccion", new ColeccionDTO(null,null,null));
@@ -69,6 +72,7 @@ public String verFormulario(Model model) {
 }
 
 @PostMapping("/nueva")
+@PreAuthorize("hasAnyRole('ADMIN')")
 public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion, RedirectAttributes redirect){
   try {
 
@@ -79,7 +83,7 @@ public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion
     if (coleccion.getFuenteIds() == null) coleccion.setFuenteIds(Set.of());
     if (coleccion.getCriterioIds() == null) coleccion.setCriterioIds(Set.of());
 
-    ColeccionDTO creada = coleccionService.crearColeccion(coleccion);
+    ColeccionDTO creada = metaMapaApiService.crearColeccion(coleccion);
     redirect.addFlashAttribute("mensaje", "Coleccion creada: " + creada.getTitulo());
     return "redirect:/colecciones";
   } catch (Exception e) {

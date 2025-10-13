@@ -35,37 +35,43 @@ public class AdminController {
     private final MetaMapaApiService metamapaApiService;
 
     @GetMapping("/panel-control")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public String mostrarPanelControl(Model model, RedirectAttributes redirectAttributes) {
-       // List<ColeccionDTO> colecciones = this.coleccionService.getColecciones();
 
       ResumenDTO resumen;
       try {
         resumen = metamapaApiService.getPanelDeControl();
+        List<ColeccionDTO> colecciones = this.coleccionService.getColecciones();
+          model.addAttribute("resumen",resumen);
+          model.addAttribute("titulo", "Panel de Control");
+          model.addAttribute("colecciones", colecciones);
       } catch (Exception ex) {
         System.err.println("[/admin/panel-control] " + ex.getMessage());
         resumen = new ResumenDTO(); // fallback
       }
 
-        //var resumen = metamapaApiService.getPanelDeControl();
-
-        model.addAttribute("resumen",resumen);
-        model.addAttribute("titulo", "Panel de Control");
-        model.addAttribute("colecciones", List.of());
         return "administrador/panelControl";
     }
 
-
     @GetMapping("/gestor-solicitudes")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public String mostrarGestorSolicitudes(Model model, RedirectAttributes redirectAttributes) {
-        List<SolicitudDTO> solicitudes = this.solicitudService.getSolicitudes();
-        model.addAttribute("titulo", "Gestor de Solicitudes");
-        model.addAttribute("solicitudes", solicitudes);
+        try {
+            List<SolicitudDTO> solicitudes = this.metamapaApiService.getSolicitudes();
+            model.addAttribute("titulo", "Gestor de Solicitudes");
+            model.addAttribute("solicitudes", solicitudes);
+
+        } catch (Exception ex) {
+            System.err.println("[/admin/gestor-solicitudes] " + ex.getMessage());
+        }
+
         return "administrador/gestorSolicitudes";
     }
 
     @GetMapping("/gestor-hechos")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public String mostrarGestorHechos(Model model, RedirectAttributes redirectAttributes) {
-        List<HechoDTO> hechos = this.hechoService.getHechos();
+        List<HechoDTO> hechos = this.metamapaApiService.getHechos();
         model.addAttribute("titulo", "Gestor de Hechos");
         model.addAttribute("hechos", hechos);
         return "administrador/gestorHechos";
@@ -265,7 +271,7 @@ public class AdminController {
   */
       // Si querés forzar que el handle de ruta sea el que manda:
       form.setHandle(handle);
-      coleccionService.actualizarColeccion(handle, form);
+      metamapaApiService.actualizarColeccion(handle, form);
 
       redirect.addFlashAttribute("mensaje", "Colección actualizada correctamente.");
       redirect.addFlashAttribute("tipoMensaje", "success");
