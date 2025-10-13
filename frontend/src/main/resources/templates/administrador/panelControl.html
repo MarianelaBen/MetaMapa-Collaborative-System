@@ -62,6 +62,7 @@
        </div>
      </div>  -->
 
+    <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
         <div class="stat-content">
@@ -77,10 +78,9 @@
           <div class="stat-number" th:text="${resumen?.totalFuentes} ?: 0">0</div>
         </div>
       </div>
-    </div>
 
 
-    <div class="stats-grid">
+    <!--  <div class="stats-grid"> -->
       <div class="stat-card">
         <div class="stat-icon"><i class="fas fa-map-marker-alt"></i></div>
         <div class="stat-content">
@@ -126,10 +126,17 @@
             </tr>
             </thead>
             <tbody>
-            <div th:if="${colecciones.isEmpty()}" class="text-center py-5">
+            <!--<div th:if="${colecciones.isEmpty()}" class="text-center py-5">
                 <i class="fa-regular fa-folder-open fa-3x text-muted mb-3"></i>
                 <h5 class="text-muted">No hay colecciones registradas</h5>
-            </div>
+            </div>  LO CAMBIO XQ SINO NO FUNCIONA-->
+            <tr th:if="${colecciones.isEmpty()}">
+              <td colspan="9" class="text-center py-5">
+                <i class="fa-regular fa-folder-open fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No hay colecciones registradas</h5>
+              </td>
+            </tr>
+
             <tr th:if="${colecciones.size() >= 1}" th:each="coleccion : ${colecciones}">
               <td th:text="${coleccion.handle}">001</td>
               <td th:text="${coleccion.titulo}">Puntos Críticos de Biodiversidad Global</td>
@@ -165,7 +172,6 @@
           </table>
         </div>
       </div>
-    </div>
 
 
 <!-- Formulario oculto único -->

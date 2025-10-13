@@ -9,6 +9,5 @@ public class ResumenDTO {
   private long totalHechos;
   private long totalFuentes;
   private long solicitudesPendientes;
-  private long totalColecciones;
   //private long usuariosActivos; TODO estaria bueno pero el tiempo es tirano
 }

@@ -214,18 +214,18 @@ public class AdminController {
 
   }
 
-  @GetMapping
-  public ResponseEntity<?> getResumen(){
-    try {
+  @GetMapping("/resumen")
+  public ResponseEntity<ResumenDTO> getResumen(){
+    //try {
       ResumenDTO dto = new ResumenDTO();
-      dto.totalFuentes = this.fuenteRepository.count();
-      dto.solicituesPendientes = this.solicitudService.contarPorEstado(EstadoSolicitud.PENDIENTE);
-      dto.totalHechos = this.hechoRepository.count();
+      dto.totalFuentes = fuenteRepository.count();
+      dto.solicitudesPendientes = solicitudService.contarPorEstado(EstadoSolicitud.PENDIENTE);
+      dto.totalHechos = hechoRepository.count();
       return ResponseEntity.ok(dto);
-    }catch (Exception e){
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error","Error al obtener el resumen","mensaje", e.getMessage()));
-    }
+   // }catch (Exception e){
+   //   return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+   //       .body(Map.of("error","Error al obtener el resumen","mensaje", e.getMessage()));
+   // }
   }
 
 
