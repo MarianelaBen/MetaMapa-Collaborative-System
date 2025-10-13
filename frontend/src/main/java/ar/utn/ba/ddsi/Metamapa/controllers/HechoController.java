@@ -8,6 +8,7 @@ import ar.utn.ba.ddsi.Metamapa.services.HechoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,8 +35,8 @@ public class HechoController {
 
   @GetMapping("/{id}")
   public String verDetalleHecho(@PathVariable Long id,
-                                Model model, RedirectAttributes redirectAttributes){
-    try{
+                                Model model, RedirectAttributes redirectAttributes) {
+    try {
       // HechoDTO hecho = mockHecho(id);
       HechoDTO hecho = hechoService.getHechoPorId(id);
 
@@ -43,15 +44,14 @@ public class HechoController {
           ? List.of()
           : hecho.getIdContenidoMultimedia();
 
-          model.addAttribute("hecho", hecho);
-          model.addAttribute("nombresMultimedia", nombresMultimedia);
-          model.addAttribute("extensionesImagen", List.of("jpg","jpeg","png","gif","webp"));
-          model.addAttribute("backendOrigin", backendOrigin);
-          model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
+      model.addAttribute("hecho", hecho);
+      model.addAttribute("nombresMultimedia", nombresMultimedia);
+      model.addAttribute("extensionesImagen", List.of("jpg", "jpeg", "png", "gif", "webp"));
+      model.addAttribute("backendOrigin", backendOrigin);
+      model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
 
       return "hechosYColecciones/detalleHecho";
-    }
-    catch(NotFoundException ex){
+    } catch (NotFoundException ex) {
       redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
       return "redirect:/404";
     }
@@ -59,7 +59,7 @@ public class HechoController {
 
   @GetMapping("/nuevo")
   public String verFormulario(Model model) {
-    model.addAttribute("titulo","Subir hecho");
+    model.addAttribute("titulo", "Subir hecho");
     model.addAttribute("hecho", new HechoDTO(
         null,
         null,
@@ -70,24 +70,36 @@ public class HechoController {
     model.addAttribute("categorias", List.of("Incendio forestal", "Accidente vial", "Inundación"));
     model.addAttribute("localidades", List.of("CABA", "La Plata", "Rosario"));
 
-  return "hechosYColecciones/formularioHecho";
+    return "hechosYColecciones/formularioHecho";
   }
 
   @PostMapping("/nuevo")
   public String procesarFormulario(@ModelAttribute("hecho") HechoDTO hecho,
-                                        @RequestParam("fecha") String fecha,
-                                        @RequestParam("hora") String hora,
-                                        @RequestParam(name = "multimedia", required = false) MultipartFile[] multimedia,
-                                        RedirectAttributes redirect, Model model){
+                                   @RequestParam("fecha") String fecha,
+                                   @RequestParam("hora") String hora,
+                                   @RequestParam(name = "multimedia", required = false) MultipartFile[] multimedia,
+                                   RedirectAttributes redirect, Model model) {
 
     //si algun campo obligatorio no esta, que tire error
     boolean error = false;
-    if (hecho.getTitulo() == null || hecho.getTitulo().isBlank()) { error = true; }
-    if (hecho.getCategoria() == null || hecho.getCategoria().isBlank()) { error = true; }
-    if (hecho.getDescripcion() == null || hecho.getDescripcion().isBlank()) { error = true; }
-    if (hecho.getProvincia() == null || hecho.getProvincia().isBlank()) { error = true; }
-    if (hecho.getLatitud() == null || hecho.getLongitud() == null) { error = true; }
-    if (fecha == null || fecha.isBlank() || hora == null || hora.isBlank()) { error = true; }
+    if (hecho.getTitulo() == null || hecho.getTitulo().isBlank()) {
+      error = true;
+    }
+    if (hecho.getCategoria() == null || hecho.getCategoria().isBlank()) {
+      error = true;
+    }
+    if (hecho.getDescripcion() == null || hecho.getDescripcion().isBlank()) {
+      error = true;
+    }
+    if (hecho.getProvincia() == null || hecho.getProvincia().isBlank()) {
+      error = true;
+    }
+    if (hecho.getLatitud() == null || hecho.getLongitud() == null) {
+      error = true;
+    }
+    if (fecha == null || fecha.isBlank() || hora == null || hora.isBlank()) {
+      error = true;
+    }
 
     try {
       // convierto la hora y fecha que vienen separados desde el formulario, a LocalDateTime para el DTO
@@ -109,7 +121,7 @@ public class HechoController {
       return "hechosYColecciones/formularioHecho";
     }
 
-    if (multimedia != null ) { //esto es un log para ver si se estan subiendo, por que en la pantalla no aparece
+    if (multimedia != null) { //esto es un log para ver si se estan subiendo, por que en la pantalla no aparece
       for (MultipartFile file : multimedia) {
         if (file != null && !file.isEmpty()) {
           System.out.println("Llego el archivo: " + file.getOriginalFilename()); //si subiste un archivo, por consola debe aparecer el nombre
@@ -178,11 +190,21 @@ public class HechoController {
 
     boolean error = false;
 
-    if (hecho.getTitulo() == null || hecho.getTitulo().isBlank()) { error = true;}
-    if (hecho.getCategoria() == null || hecho.getCategoria().isBlank()) { error = true; }
-    if (hecho.getDescripcion() == null || hecho.getDescripcion().isBlank()) { error = true; }
-    if (hecho.getProvincia() == null || hecho.getProvincia().isBlank()) { error = true; }
-    if (fecha == null || fecha.isBlank() || hora == null || hora.isBlank()) { error = true; }
+    if (hecho.getTitulo() == null || hecho.getTitulo().isBlank()) {
+      error = true;
+    }
+    if (hecho.getCategoria() == null || hecho.getCategoria().isBlank()) {
+      error = true;
+    }
+    if (hecho.getDescripcion() == null || hecho.getDescripcion().isBlank()) {
+      error = true;
+    }
+    if (hecho.getProvincia() == null || hecho.getProvincia().isBlank()) {
+      error = true;
+    }
+    if (fecha == null || fecha.isBlank() || hora == null || hora.isBlank()) {
+      error = true;
+    }
 
     try {
       if (!error) {
@@ -215,55 +237,55 @@ public class HechoController {
   private static String filenameFromPath(String p) {
     if (p == null) return "";
     int slash = p.lastIndexOf('/');
-    int back  = p.lastIndexOf('\\');
+    int back = p.lastIndexOf('\\');
     int idx = Math.max(slash, back);
     return idx >= 0 ? p.substring(idx + 1) : p;
   }
 
-    @PostMapping("/{id}/sumarVista")
-    public String sumarVistaHecho(@PathVariable Long id,
-                                      RedirectAttributes redirectAttributes){
-        try {
-            hechoService.sumarVistaHecho(id);
-            redirectAttributes.addFlashAttribute("mensaje", "Se sumó una vista al hecho exitosamente");
-            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
-            return "redirect:/detalleHecho/" + id;
-        } catch (NotFoundException ex) {
-            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
-            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
-            return "redirect:/detalleHecho/" + id;
-        } catch (ValidationException e) {
-            redirectAttributes.addFlashAttribute("mensaje", "Error de validación: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
-            return "redirect:/detalleHecho/" + id;
-        } catch (Exception e) {
+  @PostMapping("/{id}/sumarVista")
+  public String sumarVistaHecho(@PathVariable Long id,
+                                RedirectAttributes redirectAttributes) {
+    try {
+      hechoService.sumarVistaHecho(id);
+      redirectAttributes.addFlashAttribute("mensaje", "Se sumó una vista al hecho exitosamente");
+      redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+      return "redirect:/detalleHecho/" + id;
+    } catch (NotFoundException ex) {
+      redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+      redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+      return "redirect:/detalleHecho/" + id;
+    } catch (ValidationException e) {
+      redirectAttributes.addFlashAttribute("mensaje", "Error de validación: " + e.getMessage());
+      redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+      return "redirect:/detalleHecho/" + id;
+    } catch (Exception e) {
 
-            redirectAttributes.addFlashAttribute("mensaje", "Error al sumar vista al hecho");
-            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
-            return "redirect:/detalleHecho/" + id;
-        }
+      redirectAttributes.addFlashAttribute("mensaje", "Error al sumar vista al hecho");
+      redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+      return "redirect:/detalleHecho/" + id;
     }
-
-  /* ===================== MOCK DEL HECHO ===================== */
-
-  private List<String> categoriasMock() {
-    return List.of("Incendio forestal", "Accidente vial", "Inundación");
   }
 
-  private HechoDTO mockHecho(Long id) {
-    HechoDTO dto = new HechoDTO(
-        "Incendio forestal activo en Parque Nacional Los Glaciares",
-        "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",
-        "Incendio forestal",
-        LocalDateTime.of(2025, 8, 12, 9, 15),
-        "Santa Cruz",
-        id
-    );
-    return dto;
-  }
+  /*
+  // Si usás Spring Security, mapeá tu user/principal a contribuyenteId.
+  @GetMapping("/mis-hechos")
+  public String verMisHechos(Model model
+                             //,@AuthenticationPrincipal UsuarioActual usuario
+  ) {
+    // Fallback de desarrollo: si no hay login, usar un ID fijo (ajusta a tu esquema)
+    Long contribuyenteId = (usuario != null) ? usuario.getId() : 100L;
 
+    List<HechoDTO> hechos = hechoService.listarHechosDeContribuyente(contribuyenteId);
+    model.addAttribute("hechos", hechos);
+    model.addAttribute("categorias", categoriaService.listarCategorias());
+    model.addAttribute("titulo", "Mis Hechos");
+    model.addAttribute("descripcion", "Gestiona los hechos que has reportado. Puedes editarlos durante los primeros 7 días luego de su publicación.");
+
+    return "contribuyente/misHechos";
+    */
+
+  }
 }
-
 
 
   /*

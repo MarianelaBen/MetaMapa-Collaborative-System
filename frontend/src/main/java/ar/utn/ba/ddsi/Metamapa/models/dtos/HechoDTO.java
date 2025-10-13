@@ -26,7 +26,9 @@ public class HechoDTO {
   private List<String> idContenidoMultimedia;
   private String fuenteExterna;
   private Boolean fueEliminado;
-    private Integer cantVistas;
+  private Integer cantVistas;
+  private boolean editable;    // 7 días desde fechaCarga
+  private int diasRestantesEdicion;
 
 
   public HechoDTO(String titulo, String descripcion, String categoria, LocalDateTime fechaAcontecimiento, String provincia, Long id) {
