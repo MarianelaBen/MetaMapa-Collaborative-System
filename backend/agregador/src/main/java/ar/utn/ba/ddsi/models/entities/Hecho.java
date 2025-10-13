@@ -93,13 +93,19 @@ public class Hecho {
    private List<String> pathMultimedia = new ArrayList<>(); //mismo
 
   @Column(name = "rutaNombre", nullable = true)
-   private String rutaNombre;
+     private String rutaNombre;
 
   @Column(name = "fechaActualizacion", nullable = true)
    private LocalDate fechaActualizacion;
 
-    @Column(name = "cantidad_vistas")
-    private Integer cantVistas;
+  @Column(name = "cantidad_vistas")
+  private Integer cantVistas;
+
+  @Column(name = "editable" )
+  private boolean editable;
+
+  @Column(name = "diasRestantesEdicion")
+  private int diasRestantesEdicion;
 
   // private String nombreAportante;
   // private String apellidoAportante;

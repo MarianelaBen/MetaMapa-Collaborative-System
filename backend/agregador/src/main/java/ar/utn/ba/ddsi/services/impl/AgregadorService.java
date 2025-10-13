@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -156,19 +157,26 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
   @Override
   public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
+
     hechoOutputDTO.setCantVistas(hecho.getCantVistas());
     hechoOutputDTO.setId(hecho.getId());
     hechoOutputDTO.setTitulo(hecho.getTitulo());
     hechoOutputDTO.setDescripcion(hecho.getDescripcion());
-    hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
-    hechoOutputDTO.setLatitud(hecho.getUbicacion().getLatitud());
-    hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
-    hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
+    hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
+    hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     hechoOutputDTO.setFueEliminado(hecho.getFueEliminado());
-    System.out.println(hecho.getCategoria().getNombre());
-    hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
-    hechoOutputDTO.setProvincia(hecho.getUbicacion() != null ? hecho.getUbicacion().getProvincia() : null);
+
+    if (hecho.getUbicacion() != null) {
+      hechoOutputDTO.setLatitud(hecho.getUbicacion().getLatitud());
+      hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
+      hechoOutputDTO.setProvincia(hecho.getUbicacion().getProvincia());
+    } else {
+      hechoOutputDTO.setLatitud(null);
+      hechoOutputDTO.setLongitud(null);
+      hechoOutputDTO.setProvincia(null);
+    }
+
     if(hecho.getEtiquetas() != null){
       hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
     }
@@ -180,6 +188,18 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     }
     if(hecho.getFuenteExterna() != null){
       hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+    }
+
+    // Cálculo edición: 7 días desde fechaCarga
+    LocalDate fc = hecho.getFechaCarga();
+    if (fc != null) {
+      long dias = ChronoUnit.DAYS.between(fc, LocalDate.now());
+      boolean editable = dias < 7;
+      hechoOutputDTO.setEditable(editable);
+      hechoOutputDTO.setDiasRestantesEdicion(editable ? (int) (7 - dias) : 0);
+    } else {
+      hechoOutputDTO.setEditable(false);
+      hechoOutputDTO.setDiasRestantesEdicion(0);
     }
 
     return hechoOutputDTO;

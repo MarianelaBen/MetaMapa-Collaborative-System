@@ -17,4 +17,8 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
             nativeQuery = true)
     List<Hecho> findByColeccionHandle(@Param("coleccionHandle") String coleccionHandle);
     List<Hecho> findTop4ByFueEliminadoFalseOrderByCantVistasDesc();
+
+    List<Hecho> findByContribuyente_IdAndFueEliminadoFalseOrderByFechaCargaDesc(Long contribuyenteId);
+    List<Hecho> findAllByContribuyenteWithJoins(@Param("contribuyenteId") Long contribuyenteId);
+
 }

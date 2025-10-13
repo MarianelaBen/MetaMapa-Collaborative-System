@@ -30,7 +30,9 @@ public class HechoOutputDTO {
   private String fuenteExterna;
   private Contribuyente contribuyente;
   private Boolean fueEliminado;
-    private Integer cantVistas;
+  private Integer cantVistas;
+  private boolean editable;    // 7 días desde fechaCarga
+  private int diasRestantesEdicion;
 
   public static HechoOutputDTO fromEntity(Hecho h) {
     HechoOutputDTO dto = new HechoOutputDTO();
@@ -60,29 +62,6 @@ public class HechoOutputDTO {
     dto.setFuenteExterna(h.getFuenteExterna());
     return dto;
   }
-
-  /*public static HechoOutputDTO fromEntity(Hecho h) {
-    HechoOutputDTO dto = new HechoOutputDTO();
-    dto.setId(h.getId());
-    dto.setTitulo(h.getTitulo());
-    dto.setDescripcion(h.getDescripcion());
-    dto.setCategoria(h.getCategoria() != null ? h.getCategoria().getNombre() : null);
-    if (h.getUbicacion() != null) {
-      dto.setLatitud(h.getUbicacion().getLatitud());
-      dto.setLongitud(h.getUbicacion().getLongitud());
-      dto.setProvincia(h.getUbicacion().getProvincia());
-    }
-    dto.setFechaAcontecimiento(h.getFechaAcontecimiento());
-    dto.setFechaCarga(h.getFechaCarga());
-    dto.setIdEtiquetas(
-        h.getEtiquetas() == null ? null :
-            h.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet())
-    );
-    dto.setIdContenidoMultimedia(h.getPathMultimedia()); // puede ser null y no pasa nada
-    dto.setFuenteExterna(h.getFuenteExterna());
-    return dto;
-  }
-*/
 
 
 }
