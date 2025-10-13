@@ -79,6 +79,12 @@ public SolicitudService(ISolicitudRepository solicitudRepository, IDetectorDeSpa
         return saved;
     }
 
+    @Override
+    public Long contarPorEstado(EstadoSolicitud estado){
+    return this.solicitudRepository.countByEstado(estado);
+    }
+
+
 }
 
 
