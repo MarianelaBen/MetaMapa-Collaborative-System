@@ -187,7 +187,7 @@ public class WebApiCallerService {
     /**
      * Obtiene el access token de la sesión
      */
-    private String getAccessTokenFromSession() {
+    public String getAccessTokenFromSession() { //TODO revisar si corresponde o no cambiar a publico
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         return (String) request.getSession().getAttribute("accessToken");

@@ -7,6 +7,7 @@ import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.SolicitudDTO;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
+import ar.utn.ba.ddsi.Metamapa.services.MetaMapaApiService;
 import ar.utn.ba.ddsi.Metamapa.services.SolicitudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,15 +27,22 @@ public class AdminController {
     private final ColeccionService coleccionService;
     private final SolicitudService solicitudService;
     private final HechoService hechoService;
+    private final MetaMapaApiService metamapaApiService;
 
     @GetMapping("/panel-control")
+
     @PreAuthorize("hasAnyRole('ADMIN')")
     public String mostrarPanelControl(Model model, RedirectAttributes redirectAttributes) {
         List<ColeccionDTO> colecciones = this.coleccionService.getColecciones();
+
+        var resumen = metamapaApiService.getPanelDeControl();
+
+        model.addAttribute("resumen",resumen);
         model.addAttribute("titulo", "Panel de Control");
-        model.addAttribute("colecciones", colecciones);
+        //model.addAttribute("colecciones", colecciones);
         return "administrador/panelControl";
     }
+
 
     @GetMapping("/gestor-solicitudes")
     @PreAuthorize("hasAnyRole('ADMIN')")
