@@ -135,7 +135,7 @@ public class HechoService {
         return hecho;
     }
 
-    public HechoDTO actualizarHecho(Long id, HechoDTO dto, MultipartFile[] multimedia, boolean replaceMedia) {
+    public HechoDTO actualizarHecho(Long id, HechoDTO dto, MultipartFile[] multimedia, boolean replaceMedia, List<String> deleteExisting) {
         try {
             MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
 
@@ -159,6 +159,16 @@ public class HechoService {
                         HttpEntity<ByteArrayResource> filePart = new HttpEntity<>(resource, fileHeaders);
                         parts.add("multimedia", filePart);
                     }
+                }
+            }
+
+            if (deleteExisting != null && !deleteExisting.isEmpty()) {
+                for (String path : deleteExisting) {
+                    // Podés agregar Strings directamente: Spring los manda como text/plain
+                    parts.add("deleteExisting", path);
+                    // Si preferís ser explícito:
+                    // HttpHeaders h = new HttpHeaders(); h.setContentType(MediaType.TEXT_PLAIN);
+                    // parts.add("deleteExisting", new HttpEntity<>(path, h));
                 }
             }
 

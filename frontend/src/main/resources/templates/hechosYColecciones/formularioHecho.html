@@ -53,19 +53,27 @@
             </div>
             <div class="col">
                 <label for="multimedia">Contenido multimedia</label>
+
                 <div class="file-input-wrapper">
-                    <input type="file" id="multimedia" class="file-input" name="multimedia" accept="image/*,video/*">
-                    <div class="file-input-display">
-                            <div>Haz clic para subir archivos o arrastra y suelta</div>
-                        </div>
+                    <input type="file"
+                           id="multimedia"
+                           class="file-input"
+                           name="multimedia"
+                           accept="image/*,video/*"
+                           multiple>
+
+                    <div class="file-input-display" id="dropzone">
+                        <div class="file-helper">Haz clic para subir archivos o arrastra y suelta</div>
+                        <div id="previews" class="previews-grid"></div>
                     </div>
                 </div>
+            </div>
 
 
         <button class="btn-submit" type="submit">Subir hecho</button>
     </form>
         <script>
-            (function() {
+            (function () {
                 const $buscador = document.getElementById('buscador-geo');
                 const $sugs = document.getElementById('sugerencias-geo');
                 const $lat = document.getElementById('latitud');
@@ -97,12 +105,9 @@
                 }
 
                 function onSelect(it) {
-                    // Setear lo que PERSISTE
                     $lat.value = it.latitud ?? '';
                     $lon.value = it.longitud ?? '';
                     $prov.value = it.provinciaNombre ?? '';
-
-
                     $buscador.value = it.label || '';
                     limpiarSugerencias();
                 }
@@ -119,31 +124,134 @@
                     }
                 }
 
-                $buscador.addEventListener('input', () => {
-                    const q = $buscador.value.trim();
-                    if (timer) clearTimeout(timer);
-                    if (q.length < 3) {
-                        limpiarSugerencias();
-                        return;
-                    }
-                    timer = setTimeout(() => buscar(q), 250);
-                });
+                if ($buscador) {
+                    $buscador.addEventListener('input', () => {
+                        const q = $buscador.value.trim();
+                        if (timer) clearTimeout(timer);
+                        if (q.length < 3) {
+                            limpiarSugerencias();
+                            return;
+                        }
+                        timer = setTimeout(() => buscar(q), 250);
+                    });
 
-                document.addEventListener('click', (e) => {
-                    if (!($sugs.contains(e.target) || e.target === $buscador)) {
-                        limpiarSugerencias();
-                    }
-                });
+                    document.addEventListener('click', (e) => {
+                        if (!($sugs.contains(e.target) || e.target === $buscador)) {
+                            limpiarSugerencias();
+                        }
+                    });
+                }
 
-                //exigir lat y long
                 const form = document.querySelector('form.formulario-hecho');
-                form.addEventListener('submit', (e) => {
-                    if (!$lat.value || !$lon.value || !$prov.value) {
-                        e.preventDefault();
-                        alert('Seleccioná una Ubicación de la lista para continuar.');
-                        $buscador.focus();
+                if (form) {
+                    form.addEventListener('submit', (e) => {
+                        if (!$lat.value || !$lon.value || !$prov.value) {
+                            e.preventDefault();
+                            alert('Seleccioná una Ubicación de la lista para continuar.');
+                            $buscador?.focus();
+                        }
+                    });
+                }
+
+                /* ===== PREVIEWS + REMOVE (dentro de la dropzone) ===== */
+                const input = document.getElementById('multimedia');
+                const dropzone = document.getElementById('dropzone');
+                const previews = document.getElementById('previews');
+                const helper = dropzone?.querySelector('.file-helper');
+
+                let selected = []; // Files reales
+                const dt = new DataTransfer();
+
+                function toggleHelper() {
+                    if (!helper) return;
+                    helper.classList.toggle('hidden', selected.length > 0);
+                    // si hay archivos, la dropzone deja de centrar verticalmente por el grid
+                    dropzone.style.justifyContent = selected.length > 0 ? 'flex-start' : 'center';
+                }
+
+                function syncInput() {
+                    dt.items.clear();
+                    selected.forEach(f => dt.items.add(f));
+                    input.files = dt.files;
+                    toggleHelper();
+                }
+
+                function makeThumb(file) {
+                    const card = document.createElement('div');
+                    card.className = 'preview-card';
+
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'remove-btn';
+                    btn.textContent = '×';
+
+                    let node;
+                    if (file.type.startsWith('image/')) {
+                        node = document.createElement('img');
+                        node.src = URL.createObjectURL(file);
+                        node.onload = () => URL.revokeObjectURL(node.src);
+                    } else if (file.type.startsWith('video/')) {
+                        node = document.createElement('video');
+                        node.src = URL.createObjectURL(file);
+                        node.muted = true;
+                        node.playsInline = true;
+                        node.loop = true;
+                        node.autoplay = true;
+                        node.onloadeddata = () => URL.revokeObjectURL(node.src);
+                    } else {
+                        node = document.createElement('div');
+                        node.style.padding = '8px';
+                        node.textContent = file.name;
                     }
+
+                    btn.addEventListener('click', () => {
+                        selected = selected.filter(f => !(f.name === file.name && f.lastModified === file.lastModified));
+                        syncInput();
+                        card.remove();
+                    });
+
+                    card.appendChild(node);
+                    card.appendChild(btn);
+                    previews.appendChild(card);
+                }
+
+                function addFiles(fileList) {
+                    const asArray = Array.from(fileList || []);
+                    if (!asArray.length) return;
+
+                    asArray.forEach(file => {
+                        const exists = selected.some(f => f.name === file.name && f.lastModified === file.lastModified);
+                        if (exists) return;
+                        selected.push(file);
+                        makeThumb(file);
+                    });
+                    syncInput();
+                }
+
+                dropzone?.addEventListener('click', () => input?.click());
+                input?.addEventListener('change', () => addFiles(input.files));
+
+                ['dragenter','dragover'].forEach(ev =>
+                    dropzone?.addEventListener(ev, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropzone.classList.add('dragover');
+                    })
+                );
+                ['dragleave','drop'].forEach(ev =>
+                    dropzone?.addEventListener(ev, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropzone.classList.remove('dragover');
+                    })
+                );
+                dropzone?.addEventListener('drop', (e) => {
+                    const files = e.dataTransfer?.files;
+                    addFiles(files);
                 });
+
+                // estado inicial
+                toggleHelper();
             })();
         </script>
 

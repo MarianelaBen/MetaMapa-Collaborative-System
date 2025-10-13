@@ -172,6 +172,7 @@ public class HechoController {
                                 @RequestParam("hora") String hora,
                                 @RequestParam(name = "multimedia", required = false) MultipartFile[] multimedia,
                                 @RequestParam(name = "replaceMedia", defaultValue = "false") boolean replaceMedia,
+                                @RequestParam(value = "deleteExisting", required = false) List<String> deleteExisting,
                                 RedirectAttributes redirect,
                                 Model model) {
 
@@ -202,7 +203,8 @@ public class HechoController {
     }
 
     hecho.setId(id);
-    hechoService.actualizarHecho(id, hecho, multimedia, replaceMedia);
+    hechoService.actualizarHecho(id, hecho, multimedia, replaceMedia,
+        deleteExisting == null ? List.of() : deleteExisting);
 
     redirect.addFlashAttribute("mensaje", "Hecho actualizado correctamente");
     redirect.addFlashAttribute("tipoMensaje", "success");

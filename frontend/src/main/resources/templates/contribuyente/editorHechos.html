@@ -212,10 +212,9 @@
                             existingInput.remove();
                             item.classList.remove('removed');
                         } else {
-                            // marcar
                             const input = document.createElement('input');
                             input.type = 'hidden';
-                            input.name = 'deleteExisting';   // mismo nombre, múltiples ocurrencias
+                            input.name = 'deleteExisting';
                             input.value = name;
                             hiddenDeletes.appendChild(input);
                             item.classList.add('removed');
