@@ -4,6 +4,7 @@ import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.ResumenDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.SolicitudDTO;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
@@ -30,16 +31,23 @@ public class AdminController {
     private final MetaMapaApiService metamapaApiService;
 
     @GetMapping("/panel-control")
-
     @PreAuthorize("hasAnyRole('ADMIN')")
     public String mostrarPanelControl(Model model, RedirectAttributes redirectAttributes) {
-        List<ColeccionDTO> colecciones = this.coleccionService.getColecciones();
+       // List<ColeccionDTO> colecciones = this.coleccionService.getColecciones();
 
-        var resumen = metamapaApiService.getPanelDeControl();
+      ResumenDTO resumen;
+      try {
+        resumen = metamapaApiService.getPanelDeControl();
+      } catch (Exception ex) {
+        System.err.println("[/admin/panel-control] " + ex.getMessage());
+        resumen = new ResumenDTO(); // fallback
+      }
+
+        //var resumen = metamapaApiService.getPanelDeControl();
 
         model.addAttribute("resumen",resumen);
         model.addAttribute("titulo", "Panel de Control");
-        //model.addAttribute("colecciones", colecciones);
+        model.addAttribute("colecciones", List.of());
         return "administrador/panelControl";
     }
 
