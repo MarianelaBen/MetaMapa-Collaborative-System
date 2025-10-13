@@ -9,19 +9,25 @@
     <div class="logo-placeholder">🌍</div>
     <h2>Bienvenido/a</h2>
 
-    <form th:action="@{/login}" method="post">
+    <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+    <div class="alert alert-danger"  th:if="${error}"   th:text="${error}"></div>
+
+    <form th:action="@{/login}" method="post" autocomplete="off">
         <div class="form-group">
             <label for="email">Usuario <span style="color:red">*</span></label>
-            <input type="text" id="email" placeholder="hola@ejemplo.com" required>
+            <input type="text" id="email" name="username" placeholder="hola@ejemplo.com" autocomplete="username" required/>
 
             <div class="password-container">
-                <label for="contraseña">Contraseña <span style="color:red">*</span></label>
-                <input type="password" id="contraseña" placeholder="••••••••" required>
+                <label for="contrasenia">Contraseña <span style="color:red">*</span></label>
+                <input type="password" id="contrasenia" name="password" placeholder="••••••••" autocomplete="current-password" required/>
                 <i class="fa-solid fa-eye" id="togglePassword"></i>
             </div>
 
             <a href="#"> ¿Olvidaste tu contraseña?</a>
         </div>
+
+        <!-- agrego -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
         <button type="submit" class="btn-submit">Iniciar Sesión</button>
 

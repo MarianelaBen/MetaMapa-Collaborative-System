@@ -5,10 +5,12 @@ import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.InformeDeResultadosDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.ResumenDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.SolicitudDTO;
 import ar.utn.ba.ddsi.Metamapa.services.AdminService;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
+import ar.utn.ba.ddsi.Metamapa.services.MetaMapaApiService;
 import ar.utn.ba.ddsi.Metamapa.services.SolicitudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,14 +32,28 @@ public class AdminController {
     private final SolicitudService solicitudService;
     private final HechoService hechoService;
     private final AdminService adminService;
+    private final MetaMapaApiService metamapaApiService;
 
     @GetMapping("/panel-control")
     public String mostrarPanelControl(Model model, RedirectAttributes redirectAttributes) {
-        List<ColeccionDTO> colecciones = this.coleccionService.getColecciones();
+       // List<ColeccionDTO> colecciones = this.coleccionService.getColecciones();
+
+      ResumenDTO resumen;
+      try {
+        resumen = metamapaApiService.getPanelDeControl();
+      } catch (Exception ex) {
+        System.err.println("[/admin/panel-control] " + ex.getMessage());
+        resumen = new ResumenDTO(); // fallback
+      }
+
+        //var resumen = metamapaApiService.getPanelDeControl();
+
+        model.addAttribute("resumen",resumen);
         model.addAttribute("titulo", "Panel de Control");
-        model.addAttribute("colecciones", colecciones);
+        model.addAttribute("colecciones", List.of());
         return "administrador/panelControl";
     }
+
 
     @GetMapping("/gestor-solicitudes")
     public String mostrarGestorSolicitudes(Model model, RedirectAttributes redirectAttributes) {
@@ -56,14 +72,15 @@ public class AdminController {
     }
 
   @GetMapping("/importarCSV")
+  @PreAuthorize("hasAnyRole('ADMIN')")
   public String verImportadorCSV(Model model) {
     model.addAttribute("titulo", "Importacion de hechos en archivos CSV");
     return "administrador/importadorArchivosCSV";
   }
 
   @PostMapping("/importarCSV")
+  @PreAuthorize("hasAnyRole('ADMIN')")
   public String importarCSV(@RequestParam("archivo")MultipartFile archivo, RedirectAttributes redirect){
-    System.out.println("Entré a importarCSV (FRONT)");
     if(archivo == null || archivo.isEmpty()) {
       redirect.addFlashAttribute("error", "Selecciona un archivo CSV");
       return "redirect:/admin/importarCSV";
@@ -86,12 +103,15 @@ public class AdminController {
       redirect.addFlashAttribute("mensaje", "No se pudo importar el CSV: " + e.getMessage());
       redirect.addFlashAttribute("tipoMensaje", "error");
     }
+    //para pruebas
+    System.out.println("llego CSV: " + archivo.getOriginalFilename());
 
     return "redirect:/admin/importarCSV";
   }
 
 
   @PostMapping("coleccion/{handle}/eliminar")
+  @PreAuthorize("hasAnyRole('ADMIN')")
   public String eliminarColeccion(@PathVariable String handle,
                                   @ModelAttribute("coleccion") ColeccionDTO coleccionDTO,
                                   BindingResult bindingResult,

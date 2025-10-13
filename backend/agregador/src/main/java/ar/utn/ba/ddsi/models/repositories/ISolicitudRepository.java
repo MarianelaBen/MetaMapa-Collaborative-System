@@ -10,4 +10,5 @@ public interface ISolicitudRepository extends JpaRepository<SolicitudDeEliminaci
   //public List<SolicitudDeEliminacion> findAll();
   //public List<SolicitudDeEliminacion> findByEstado(EstadoSolicitud estado);
   //public SolicitudDeEliminacion findById(Long id);
+  public Long countByEstado(EstadoSolicitud estado);
 }

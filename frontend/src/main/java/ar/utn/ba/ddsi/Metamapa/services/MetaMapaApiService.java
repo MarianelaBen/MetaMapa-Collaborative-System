@@ -2,7 +2,7 @@
 
 import ar.utn.ba.ddsi.Metamapa.models.dtos.AuthResponseDTO;
 
-import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.ResumenDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.RegisterRequestDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.RolesPermisosDTO;
 import org.slf4j.Logger;
@@ -23,14 +23,17 @@ public class MetaMapaApiService {
     private final WebClient webClient;
     private final WebApiCallerService webApiCallerService;
     private final String authServiceUrl;
+    private final String baseAdminUrl;
 
     @Autowired
     public MetaMapaApiService(
             WebApiCallerService webApiCallerService,
-            @Value("${auth.service.url}") String authServiceUrl) {
+            @Value("${auth.service.url}") String authServiceUrl,
+            @Value("${backend.api.base-url}") String baseAdminUrl) {
         this.webClient = WebClient.builder().build();
         this.webApiCallerService = webApiCallerService;
         this.authServiceUrl = authServiceUrl;
+        this.baseAdminUrl = baseAdminUrl;
     }
 
     public AuthResponseDTO login(String username, String password) {
@@ -81,6 +84,15 @@ public class MetaMapaApiService {
             log.error(e.getMessage());
             throw new RuntimeException("Error al obtener roles y permisos: " + e.getMessage(), e);
         }
+    }
+
+    public ResumenDTO getPanelDeControl() {
+        String accesToken = webApiCallerService.getAccessTokenFromSession();
+        return webApiCallerService.getWithAuth(
+            baseAdminUrl + "/resumen", //el metodo que voy a agregar al back
+            accesToken,
+            ResumenDTO.class
+        );
     }
 
    // ESTO ES DE CHAT GPT:

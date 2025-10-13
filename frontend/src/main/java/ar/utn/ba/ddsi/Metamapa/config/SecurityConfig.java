@@ -24,7 +24,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("al security config llega!!!");
+
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -41,7 +41,8 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .permitAll()
-                        .defaultSuccessUrl("/inicio", true)
+                        .defaultSuccessUrl("/inicio?login=ok", true)
+                      //.defaultSuccessUrl("/inicio", true)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")  //ruta para cerrar sesion
