@@ -34,10 +34,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -115,7 +112,7 @@ public class ColeccionService implements IColeccionService {
   }
 
   @Transactional
-  public HechoOutputDTO actualizarHecho(Long id, HechoInputDTO input, MultipartFile[] multimedia, boolean replaceMedia) {
+  public HechoOutputDTO actualizarHecho(Long id, HechoInputDTO input, MultipartFile[] multimedia, boolean replaceMedia, List<String> deleteExisting) {
     Hecho h = hechoRepository.findById(id)
         .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado"));
 
@@ -148,6 +145,24 @@ public class ColeccionService implements IColeccionService {
     // Multimedia
     List<String> pathsActuales = h.getPathMultimedia() == null ? new ArrayList<>() : new ArrayList<>(h.getPathMultimedia());
     if (replaceMedia) pathsActuales.clear();
+
+    if (replaceMedia) {
+      for (String p : pathsActuales) deletePhysical(p);
+      pathsActuales.clear();
+    }
+
+    if (!replaceMedia && deleteExisting != null && !deleteExisting.isEmpty()) {
+      Set<String> aBorrar = deleteExisting.stream()
+          .filter(Objects::nonNull)
+          .map(this::filenameOf)
+          .collect(java.util.stream.Collectors.toSet());
+
+      // quitamos del modelo
+      pathsActuales.removeIf(stored -> aBorrar.contains(filenameOf(stored)));
+
+      // OPCIONAL: borrar del disco por filename
+      for (String s : aBorrar) deletePhysicalByFilename(s);
+    }
 
     if (multimedia != null && multimedia.length > 0) {
       for (MultipartFile file : multimedia) {
@@ -273,6 +288,28 @@ public class ColeccionService implements IColeccionService {
       Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
     }
     return "/uploads/" + nombre;
+  }
+
+  private String filenameOf(String pathOrUrl) {
+    if (pathOrUrl == null) return null;
+    int i = pathOrUrl.lastIndexOf('/');
+    return (i >= 0) ? pathOrUrl.substring(i + 1) : pathOrUrl;
+  }
+
+  private void deletePhysical(String pathOrUrl) {
+    deletePhysicalByFilename(filenameOf(pathOrUrl));
+  }
+
+  private void deletePhysicalByFilename(String filename) {
+    if (filename == null || filename.isBlank()) return;
+    try {
+      Path target = UPLOAD_DIR.resolve(filename).normalize();
+      if (target.startsWith(UPLOAD_DIR)) {
+        java.nio.file.Files.deleteIfExists(target);
+      }
+    } catch (IOException ignore) {
+      // opcional: log.warn("No se pudo borrar {}", filename, ignore);
+    }
   }
 }
 

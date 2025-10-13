@@ -122,10 +122,11 @@ public class AgregadorController {
       @PathVariable Long id,
       @RequestPart("hecho") HechoInputDTO hechoInput,
       @RequestPart(value = "multimedia", required = false) MultipartFile[] multimedia,
-      @RequestParam(name = "replaceMedia", defaultValue = "false") boolean replaceMedia) {
+      @RequestParam(name = "replaceMedia", defaultValue = "false") boolean replaceMedia,
+      @RequestParam(value = "deleteExisting", required = false) List<String> deleteExisting) {
 
     try {
-      HechoOutputDTO actualizado = coleccionService.actualizarHecho(id, hechoInput, multimedia, replaceMedia);
+      HechoOutputDTO actualizado = coleccionService.actualizarHecho(id, hechoInput, multimedia, replaceMedia, deleteExisting == null ? List.of() : deleteExisting);
       return ResponseEntity.ok(actualizado);
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hecho no encontrado");
