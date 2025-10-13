@@ -5,11 +5,16 @@ import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.ResumenDTO;
 import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
+import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
+import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
+import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAdminService;
+import ar.utn.ba.ddsi.services.ISolicitudService;
 import ar.utn.ba.ddsi.services.impl.ColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,11 +29,17 @@ public class AdminController {
 
   private final IAdminService servicio;
   private final ColeccionService coleccionService;
+  private final IHechoRepository hechoRepository; //TODO esta mal que un controller conozca a un repo?
+  private final ISolicitudService solicitudService;
+  private final IFuenteRepository fuenteRepository;
 
 
-  public AdminController(IAdminService servicio, ColeccionService coleccionService, ICategoriaRepository categoriaRepository) {
+  public AdminController(IAdminService servicio, ColeccionService coleccionService, ICategoriaRepository categoriaRepository, IHechoRepository hechoRepository, ISolicitudService solicitudService, IFuenteRepository fuenteRepository) {
     this.servicio = servicio;
     this.coleccionService = coleccionService;
+    this.hechoRepository = hechoRepository;
+    this.solicitudService = solicitudService;
+    this.fuenteRepository = fuenteRepository;
   }
 
   //Obtener la lista completa de colecciones
@@ -201,6 +212,20 @@ public class AdminController {
           .body(Map.of("error", "Error al buscar la coleccion", "mensaje", e.getMessage()));
     }
 
+  }
+
+  @GetMapping
+  public ResponseEntity<?> getResumen(){
+    try {
+      ResumenDTO dto = new ResumenDTO();
+      dto.totalFuentes = this.fuenteRepository.count();
+      dto.solicituesPendientes = this.solicitudService.contarPorEstado(EstadoSolicitud.PENDIENTE);
+      dto.totalHechos = this.hechoRepository.count();
+      return ResponseEntity.ok(dto);
+    }catch (Exception e){
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error","Error al obtener el resumen","mensaje", e.getMessage()));
+    }
   }
 
 
