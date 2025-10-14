@@ -272,7 +272,7 @@
   `;
 
             const btnIr = document.getElementById('btnIrADetalle');
-            if (btnIr) btnIr.href = h.detalleUrl || '#';
+            if (btnIr) btnIr.href = h.detalleUrl || '/hechos/'+h.id;
 
             const modalEl = document.getElementById('detalleModal');
             const modal = new bootstrap.Modal(modalEl);
