@@ -220,7 +220,7 @@ public class AgregadorController {
 
     @GetMapping("/hechos-destacados")
     public ResponseEntity<List<HechoOutputDTO>> getTopHechos() {
-        List<HechoOutputDTO> top = this.agregadorService.top4Hechos();
+        List<HechoOutputDTO> top = this.agregadorService.top3Hechos();
         return ResponseEntity.ok(top);
     }
 

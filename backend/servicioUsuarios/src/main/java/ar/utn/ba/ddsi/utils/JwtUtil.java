@@ -5,7 +5,9 @@ import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class JwtUtil {
     @Getter
@@ -13,14 +15,25 @@ public class JwtUtil {
     private static final long ACCESS_TOKEN_VALIDITY = 15 * 60 * 1000; // 15 min
     private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000; // 7 días
 
+     /*
+    public static String generarAccessToken(String username, Long userId, Collection<String> roles, Collection<String> permisos) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuer("servicioUsuario")
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
+                .claim("uid", userId)
+                .claim("roles", roles != null ? roles : List.of())
+                .claim("permisos", permisos != null ? permisos : List.of())
+                .signWith(key)
+                .compact();
+    } */
 
-    //TODO el profe solo setea el user en el token, se puede meter el id o otras cosas
     public static String generarAccessToken(String username) {
         return Jwts.builder()
-                .setSubject(username) //para que lo podeamos recuperar despues
+                .setSubject(username)
                 .setIssuer("servicioUsuario")
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY)) //cuando expira
-                .signWith(key) //le ponemos algoritmo de cifrado
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
+                .signWith(key)
                 .compact();
     }
 
@@ -31,7 +44,6 @@ public class JwtUtil {
                 .setIssuer("servicioUsuario")
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
                 .claim("type", "refresh") // diferenciamos refresh del access
-                // .claim  + lo que queramos setear  -> para despues recuperarlo
                 .signWith(key)
                 .compact();
     }
@@ -44,4 +56,5 @@ public class JwtUtil {
                 .getBody()
                 .getSubject();
     }
+
 }

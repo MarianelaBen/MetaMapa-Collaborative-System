@@ -39,8 +39,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = header.substring(7);
             try {
                 String username = JwtUtil.validarToken(token);  //trata de validar tu token y devuelve el username
+
                 Usuario user = usuarioRepo.findByNombreDeUsuario(username)
                         .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
                 Rol rolUsuario = user.getRol();
                 var auth = new UsernamePasswordAuthenticationToken( //crea un objeto de autenticacion
                         username,

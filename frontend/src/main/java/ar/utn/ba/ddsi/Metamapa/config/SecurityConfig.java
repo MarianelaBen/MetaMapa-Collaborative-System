@@ -30,8 +30,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/login/**", "/signup/**",
                                 "/inicio/**", "/landing/**",
-                                "/css/**", "/js/**", "/images/**", "/webjars/**",
-                                "/colecciones",
+                                "/css/**", "/js/**", "/img/**", "/webjars/**",
+                                "/colecciones/**",
                                 "/hechos/**",
                                 "/hechos/nuevo/**",
                                 "/privacidad/**", "/error/**", "/403/**"

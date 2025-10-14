@@ -249,7 +249,7 @@ public class AdminService implements IAdminService {
     long tiempo0 = System.currentTimeMillis();
 
     final String nombreOriginal = (file.getOriginalFilename() != null) ? file.getOriginalFilename() : "archivo.csv";
-    final Path destino = guardarArchivo(file); // staging: ./data/imports/UUID.csv
+    final Path destino = guardarArchivo(file);
 
     long total = 0;
     List<Hecho> hechos = new ArrayList<>(10_000);

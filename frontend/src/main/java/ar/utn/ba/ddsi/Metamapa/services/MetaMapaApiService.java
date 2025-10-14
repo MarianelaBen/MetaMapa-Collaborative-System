@@ -168,6 +168,33 @@ public class MetaMapaApiService {
 
         );
     }
+
+    public HechoDTO getHechoPorId(Long id){
+        String accessToken = webApiCallerService.getAccessTokenFromSession();
+        return webApiCallerService.getWithAuth(
+                basePublicUrl +"/hechos/"+ id,
+                accessToken,
+                HechoDTO.class
+        );
+    }
+
+    public List<CategoriaDTO> getCategorias() {
+
+        String accessToken = webApiCallerService.getAccessTokenFromSession();
+
+        // Pedimos un array de DTOs y lo convertimos a List
+        CategoriaDTO[] arr = webApiCallerService.getWithAuth(
+                basePublicUrl + "/categorias",
+                accessToken,
+                CategoriaDTO[].class
+        );
+        if (arr == null || arr.length == 0) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(arr);
+    }
+
+
 }
 
 

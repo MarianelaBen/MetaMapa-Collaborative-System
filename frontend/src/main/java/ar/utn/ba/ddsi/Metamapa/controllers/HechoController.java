@@ -1,10 +1,12 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
 import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
+import ar.utn.ba.ddsi.Metamapa.services.MetaMapaApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,6 +34,7 @@ public class HechoController {
   @Value("${backend.origin}")
   private String backendOrigin;
   private final HechoService hechoService;
+    private final MetaMapaApiService metaMapaApiService;
 
   @GetMapping("/{id}")
   public String verDetalleHecho(@PathVariable Long id,
@@ -143,8 +146,8 @@ public class HechoController {
   public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
     try {
 
-      HechoDTO hecho = hechoService.getHechoPorId(id);
-      List<String> categorias = hechoService.getCategorias();
+      HechoDTO hecho = this.metaMapaApiService.getHechoPorId(id);
+      List<CategoriaDTO> categorias = this.metaMapaApiService.getCategorias();
 
       List<String> nombresMultimedia =
           hecho.getIdContenidoMultimedia() == null ? List.of()

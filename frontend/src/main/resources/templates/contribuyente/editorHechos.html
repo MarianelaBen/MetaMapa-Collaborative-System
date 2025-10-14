@@ -42,8 +42,8 @@
 
                         <select class="fact-category" th:field="*{categoria}" required>
                             <option th:each="cat : ${categorias}"
-                                    th:value="${cat}"
-                                    th:text="${cat}">
+                                    th:value="${cat.nombre}"
+                                    th:text="${cat.nombre}">
                             </option>
                         </select>
 

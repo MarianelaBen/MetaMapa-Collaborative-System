@@ -118,8 +118,8 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
         hechoRepository.save(h);
     }
 
-    public List<HechoOutputDTO> top4Hechos() {
-        List<Hecho> hechos = this.hechoRepository.findTop4ByFueEliminadoFalseOrderByCantVistasDesc();
+    public List<HechoOutputDTO> top3Hechos() {
+        List<Hecho> hechos = this.hechoRepository.findTop3ByFueEliminadoFalseOrderByCantVistasDesc();
         return hechos.stream().map(this::hechoOutputDTO).collect(Collectors.toList());
     }
 
