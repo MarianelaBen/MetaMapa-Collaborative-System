@@ -3,7 +3,6 @@ package ar.utn.ba.ddsi.models.dtos.output;
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
-import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,19 +46,6 @@ public class HechoOutputDTO {
 
   }
 
-  //Pasar de DTO a entidad
-  public Hecho toHecho() {
-    return new Hecho(
-        this.titulo,
-        this.descripcion,
-        new Categoria(this.categoria),
-        new Ubicacion(this.latitud, this.longitud),
-        this.fechaYHoraAcontecimiento,
-        this.fechaCarga,
-        Origen.PROVISTO_POR_CONTRIBUYENTE, //porque viene de dinamica
-        this.fuenteExterna
-        );
-  }
 
   //Pasar de entidad a DTO
   public static HechoOutputDTO fromEntity(Hecho hecho) {
