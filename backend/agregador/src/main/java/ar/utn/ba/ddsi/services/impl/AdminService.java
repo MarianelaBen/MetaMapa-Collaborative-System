@@ -37,44 +37,44 @@ import java.util.stream.Collectors;
 @Service
 public class AdminService implements IAdminService {
 
-  private final IColeccionRepository coleccionRepo;
-  private final IFuenteRepository fuenteRepo;
-  private final ISolicitudRepository solicitudRepo;
-  private final IColeccionService coleccionService;
-  private final IHechoRepository hechoRepo;
-  private final ICategoriaRepository categoriaRepo;
+    private final IColeccionRepository coleccionRepo;
+    private final IFuenteRepository fuenteRepo;
+    private final ISolicitudRepository solicitudRepo;
+    private final IColeccionService coleccionService;
+    private final IHechoRepository hechoRepo;
+    private final ICategoriaRepository categoriaRepo;
 
-  public AdminService(IColeccionRepository coleccionRepo,
-                      IFuenteRepository fuenteRepo,
-                      //ConsensoRepository consensoRepo,
-                      ISolicitudRepository solicitudRepo,
-                      IColeccionService coleccionService,
-                      IHechoRepository hechoRepo,
-                      ICategoriaRepository categoriaRepo) {
-    this.coleccionRepo = coleccionRepo;
-   // this.consensoRepo = consensoRepo;
-    this.solicitudRepo = solicitudRepo;
-    this.coleccionService = coleccionService;
-    this.fuenteRepo = fuenteRepo;
-    this.hechoRepo = hechoRepo;
-    this.categoriaRepo = categoriaRepo;
-  }
+    public AdminService(IColeccionRepository coleccionRepo,
+                        IFuenteRepository fuenteRepo,
+                        //ConsensoRepository consensoRepo,
+                        ISolicitudRepository solicitudRepo,
+                        IColeccionService coleccionService,
+                        IHechoRepository hechoRepo,
+                        ICategoriaRepository categoriaRepo) {
+        this.coleccionRepo = coleccionRepo;
+        // this.consensoRepo = consensoRepo;
+        this.solicitudRepo = solicitudRepo;
+        this.coleccionService = coleccionService;
+        this.fuenteRepo = fuenteRepo;
+        this.hechoRepo = hechoRepo;
+        this.categoriaRepo = categoriaRepo;
+    }
 
-  private static final DateTimeFormatter FECHA_CSV = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-  private static final List<String> HEADER_ESPERADO = List.of(
-      "Título","Descripción","Categoría","Latitud","Longitud","Fecha del hecho"
-  );
+    private static final DateTimeFormatter FECHA_CSV = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final List<String> HEADER_ESPERADO = List.of(
+            "Título","Descripción","Categoría","Latitud","Longitud","Fecha del hecho"
+    );
 
-  //API ADMINISTRATIVA
+    //API ADMINISTRATIVA
 
-  //OPERACIONES CRUD
-  //Devuelve las colecciones
-  @Override
-  public List<ColeccionOutputDTO> getColecciones() {
-    return coleccionRepo.findAll().stream()
-        .map(ColeccionOutputDTO::fromEntity) //Convertimos cada entidad a DTO
-        .collect(Collectors.toList());
-  }
+    //OPERACIONES CRUD
+    //Devuelve las colecciones
+    @Override
+    public List<ColeccionOutputDTO> getColecciones() {
+        return coleccionRepo.findAll().stream()
+                .map(ColeccionOutputDTO::fromEntity) //Convertimos cada entidad a DTO
+                .collect(Collectors.toList());
+    }
     @Override
     public ColeccionOutputDTO getColeccionByHandle(String handle) {
         var coleccion = coleccionRepo.findByHandle(handle)
@@ -84,22 +84,22 @@ public class AdminService implements IAdminService {
 
 
     @Override
-  public ColeccionOutputDTO modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id) {
-    Coleccion coleccion = coleccionRepo.findById(id)
-        .orElseThrow(() -> new NoSuchElementException("No se puede modificar el Algoritmo de Consenso. Coleccion no encontrada con ID: " + id));
-    coleccion.setAlgoritmoDeConsenso(tipoAlgoritmo);
-    return ColeccionOutputDTO.fromEntity(coleccionRepo.save(coleccion));
-  }
+    public ColeccionOutputDTO modificarTipoAlgoritmoConsenso(TipoAlgoritmoDeConsenso tipoAlgoritmo, String id) {
+        Coleccion coleccion = coleccionRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No se puede modificar el Algoritmo de Consenso. Coleccion no encontrada con ID: " + id));
+        coleccion.setAlgoritmoDeConsenso(tipoAlgoritmo);
+        return ColeccionOutputDTO.fromEntity(coleccionRepo.save(coleccion));
+    }
 
-  //Actualiza una coleccion si la encuentra por ID
-  @Override
-  public ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO dto) {
-    Coleccion existing = coleccionRepo.findById(id)
-        .orElseThrow(() -> new NoSuchElementException("Coleccion no encontrada: " + id));
-    existing.setTitulo(dto.getTitulo());
-    existing.setDescripcion(dto.getDescripcion());
-    return ColeccionOutputDTO.fromEntity(coleccionRepo.save(existing));
-  }
+    //Actualiza una coleccion si la encuentra por ID
+    @Override
+    public ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO dto) {
+        Coleccion existing = coleccionRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Coleccion no encontrada: " + id));
+        existing.setTitulo(dto.getTitulo());
+        existing.setDescripcion(dto.getDescripcion());
+        return ColeccionOutputDTO.fromEntity(coleccionRepo.save(existing));
+    }
 
 
     @Override
@@ -125,238 +125,243 @@ public class AdminService implements IAdminService {
     }
 
 
-  //Obtención de todos los hechos de una colección
-  //Sirve para pruebas sin meterse en modos
-  @Override
-  public List<HechoOutputDTO> getHechos(String coleccionId) {
-      // opcional: validar que la colección exista
-      if (!coleccionRepo.existsById(coleccionId)) {
-          throw new RuntimeException("Coleccion no encontrada con id: " + coleccionId);
-      }
+    //Obtención de todos los hechos de una colección
+    //Sirve para pruebas sin meterse en modos
+    @Override
+    public List<HechoOutputDTO> getHechos(String coleccionId) {
+        // opcional: validar que la colección exista
+        if (!coleccionRepo.existsById(coleccionId)) {
+            throw new RuntimeException("Coleccion no encontrada con id: " + coleccionId);
+        }
 
-      List<Hecho> hechos = hechoRepo.findByColeccionHandle(coleccionId);
+        List<Hecho> hechos = hechoRepo.findByColeccionHandle(coleccionId);
 
-      return hechos.stream()
-              .map(this::hechoOutputDTO)   // usás tu mapeador existente
-              .collect(Collectors.toList());
-  }
-
-
-  public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
-    HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
-    hechoOutputDTO.setId(hecho.getId());
-    hechoOutputDTO.setTitulo(hecho.getTitulo());
-    hechoOutputDTO.setDescripcion(hecho.getDescripcion());
-    hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
-    hechoOutputDTO.setLatitud(hecho.getUbicacion().getLatitud());
-    hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
-    hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
-    hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
-    hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
-    hechoOutputDTO.setCantVistas(hecho.getCantVistas());
-    if(hecho.getEtiquetas() != null){
-      hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
-    }
-    if(hecho.getPathMultimedia() != null){
-      hechoOutputDTO.setIdContenidoMultimedia(new ArrayList<>(hecho.getPathMultimedia()));
-    }
-    if(hecho.getContribuyente() != null){
-      hechoOutputDTO.setContribuyente(hecho.getContribuyente());
-    }
-    if(hecho.getFuenteExterna() != null){
-      hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+        return hechos.stream()
+                .map(this::hechoOutputDTO)   // usás tu mapeador existente
+                .collect(Collectors.toList());
     }
 
-    return hechoOutputDTO;
-  }
 
-  //Agregar fuentes de hechos de una colección
-  @Override
-  public FuenteOutputDTO agregarFuente(String coleccionId, FuenteInputDTO dto) {
-    Coleccion coleccion = coleccionRepo.findById(coleccionId)
-        .orElseThrow(() -> new NoSuchElementException("No se encontró la coleccion " + coleccionId));
+    public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
+        HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
+        hechoOutputDTO.setId(hecho.getId());
+        hechoOutputDTO.setTitulo(hecho.getTitulo());
+        hechoOutputDTO.setDescripcion(hecho.getDescripcion());
+        hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
+        hechoOutputDTO.setLatitud(hecho.getUbicacion().getLatitud());
+        hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
+        hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
+        hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
+        hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+        hechoOutputDTO.setCantVistas(hecho.getCantVistas());
+        if(hecho.getEtiquetas() != null){
+            hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
+        }
+        if(hecho.getPathMultimedia() != null){
+            hechoOutputDTO.setIdContenidoMultimedia(new ArrayList<>(hecho.getPathMultimedia()));
+        }
+        if(hecho.getContribuyente() != null){
+            ContribuyenteDTO contrDto = new ContribuyenteDTO();
+            contrDto.setId(hecho.getContribuyente().getId());
+            contrDto.setNombre(hecho.getContribuyente().getNombre());
+            contrDto.setApellido(hecho.getContribuyente().getApellido());
+            contrDto.setFechaDeNacimiento(hecho.getContribuyente().getFechaDeNacimiento());
+            hechoOutputDTO.setContribuyente(contrDto);
+        }
+        if(hecho.getFuenteExterna() != null){
+            hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+        }
 
-    Fuente fuente = new Fuente(dto.getUrl(), dto.getTipo());
-    // Guardar la fuente primero (recomendado) para que tenga id y se mantenga referencialmente consistente
-    if (fuenteRepo != null) {
-      fuente = fuenteRepo.save(fuente);
+        return hechoOutputDTO;
     }
 
-    fuenteRepo.save(fuente);
-    coleccion.agregarFuentes(fuente);            // Asociamos la fuente desde la colección
-    coleccionRepo.save(coleccion);               // Guardamos la colección con la nueva fuente
+    //Agregar fuentes de hechos de una colección
+    @Override
+    public FuenteOutputDTO agregarFuente(String coleccionId, FuenteInputDTO dto) {
+        Coleccion coleccion = coleccionRepo.findById(coleccionId)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró la coleccion " + coleccionId));
 
-    return FuenteOutputDTO.fromEntity(fuente);    // Devolvemos la fuente recién agregada
-  }
+        Fuente fuente = new Fuente(dto.getUrl(), dto.getTipo());
+        // Guardar la fuente primero (recomendado) para que tenga id y se mantenga referencialmente consistente
+        if (fuenteRepo != null) {
+            fuente = fuenteRepo.save(fuente);
+        }
 
-  //Quitar fuentes de hechos de una colección
-  @Override
-  public boolean eliminarFuenteDeColeccion(String coleccionId, Long fuenteId) {
-    Coleccion coleccion = coleccionRepo.findById(coleccionId)
-        .orElseThrow(() -> new NoSuchElementException("No se encontró la coleccion " + coleccionId));
+        fuenteRepo.save(fuente);
+        coleccion.agregarFuentes(fuente);            // Asociamos la fuente desde la colección
+        coleccionRepo.save(coleccion);               // Guardamos la colección con la nueva fuente
 
-    if (coleccion == null) {
-      throw new NoSuchElementException("No se encontró la coleccion " + coleccionId); // No existe la colección
+        return FuenteOutputDTO.fromEntity(fuente);    // Devolvemos la fuente recién agregada
     }
-    //Intentamos eliminar la fuente con ese id
-    boolean removed = coleccion.getFuentes().removeIf(f -> {
-      Long id = f.getId();
-      return id != null && id.equals(fuenteId);
-    });
 
-    if (removed) {
-      coleccionRepo.save(coleccion);
-      // opcional: fuenteRepo.deleteById(fuenteId);
+    //Quitar fuentes de hechos de una colección
+    @Override
+    public boolean eliminarFuenteDeColeccion(String coleccionId, Long fuenteId) {
+        Coleccion coleccion = coleccionRepo.findById(coleccionId)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró la coleccion " + coleccionId));
+
+        if (coleccion == null) {
+            throw new NoSuchElementException("No se encontró la coleccion " + coleccionId); // No existe la colección
+        }
+        //Intentamos eliminar la fuente con ese id
+        boolean removed = coleccion.getFuentes().removeIf(f -> {
+            Long id = f.getId();
+            return id != null && id.equals(fuenteId);
+        });
+
+        if (removed) {
+            coleccionRepo.save(coleccion);
+            // opcional: fuenteRepo.deleteById(fuenteId);
+        }
+        return removed;
     }
-    return removed;
-  }
 
 
-  //Aprobar una solicitud de eliminación de un hecho.
-  @Override
-  public SolicitudOutputDTO aprobarSolicitud(Long id) {
-    SolicitudDeEliminacion s = solicitudRepo.findById(id)
-        .orElseThrow(() -> new NoSuchElementException("No se encontró la solicitud " + id));
-    Long hechoId = s.getHecho().getId();
+    //Aprobar una solicitud de eliminación de un hecho.
+    @Override
+    public SolicitudOutputDTO aprobarSolicitud(Long id) {
+        SolicitudDeEliminacion s = solicitudRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró la solicitud " + id));
+        Long hechoId = s.getHecho().getId();
         Hecho h = hechoRepo.findById(hechoId)
                 .orElseThrow(() -> new NoSuchElementException("No se encontró el hecho " + hechoId));
         h.setFueEliminado(true);
-    s.setEstado(EstadoSolicitud.ACEPTADA);
-    s.setFechaAtencion(LocalDateTime.now());
-    hechoRepo.save(h);
-    return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
-  }
-
-  //Denegar una solicitud de eliminación de un hecho.
-  @Override
-  public SolicitudOutputDTO denegarSolicitud(Long id) {
-    SolicitudDeEliminacion s = solicitudRepo.findById(id)
-        .orElseThrow(() -> new NoSuchElementException("No se encontró la solicitud " + id));
-    s.setEstado(EstadoSolicitud.RECHAZADA);
-      s.setFechaAtencion(LocalDateTime.now());
-    return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
-  }
-
-  @Override
-  public SolicitudOutputDTO getSolicitud(Long id){
-    SolicitudDeEliminacion s = solicitudRepo.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("No se encontró la solicitud " + id));
-    return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
-  }
-
-  @Override
-  public InformeDeResultados procesarCsv(MultipartFile file) {
-    long tiempo0 = System.currentTimeMillis();
-
-    final String nombreOriginal = (file.getOriginalFilename() != null) ? file.getOriginalFilename() : "archivo.csv";
-    final Path destino = guardarArchivo(file);
-
-    long total = 0;
-    List<Hecho> hechos = new ArrayList<>(10_000);
-
-    try (BufferedReader br = Files.newBufferedReader(destino, StandardCharsets.UTF_8);
-         CSVReader reader = new CSVReaderBuilder(br).build()) {
-
-      String[] header = reader.readNext();
-
-      String[] fila;
-      while ((fila = reader.readNext()) != null) {
-        total++;
-        Hecho h = leerArchivo(fila);
-        hechos.add(h);
-      }
-    } catch (IOException | CsvValidationException e) {
-      throw new IllegalStateException("No se pudo leer el CSV: " + e.getMessage(), e);
+        s.setEstado(EstadoSolicitud.ACEPTADA);
+        s.setFechaAtencion(LocalDateTime.now());
+        hechoRepo.save(h);
+        return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
     }
 
-
-    hechoRepo.saveAll(hechos);
-
-    long tiempo = System.currentTimeMillis() - tiempo0;
-
-    return InformeDeResultados.builder()
-        .nombreOriginal(nombreOriginal)
-        .guardadoComo(destino.toString().replace('\\','/'))
-        .hechosTotales(total)
-        .guardadosTotales(hechos.size())
-        .tiempoTardado(tiempo)
-        .build();
-  }
-
-  private Path guardarArchivo(MultipartFile file) {
-    try {
-      Path dir = Paths.get("agregador/src/main/java/ar/utn/ba/ddsi/imports");
-      Files.createDirectories(dir);
-
-      String nombre = UUID.randomUUID() + ".csv";
-      Path destino = dir.resolve(nombre);
-
-      try (InputStream in = file.getInputStream()) {
-        Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
-      }
-      return destino;
-    } catch (IOException e) {
-      throw new IllegalStateException("No pude guardar el archivo en la carpeta de imports", e);
-    }
-  }
-
-  private Hecho leerArchivo(String[] fila) {
-    if (fila == null || fila.length < 6) {
-      throw new IllegalArgumentException("Fila inválida: se esperaban 6 columnas");
+    //Denegar una solicitud de eliminación de un hecho.
+    @Override
+    public SolicitudOutputDTO denegarSolicitud(Long id) {
+        SolicitudDeEliminacion s = solicitudRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró la solicitud " + id));
+        s.setEstado(EstadoSolicitud.RECHAZADA);
+        s.setFechaAtencion(LocalDateTime.now());
+        return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
     }
 
-    String titulo           = safeTrim(fila[0]);
-    String descripcion      = safeTrim(fila[1]);
-    String categoriaNombre  = safeTrim(fila[2]);
-    String latStr           = safeTrim(fila[3]);
-    String lonStr           = safeTrim(fila[4]);
-    String fechaStr         = safeTrim(fila[5]);
-
-    if (isBlank(titulo) || isBlank(descripcion) || isBlank(categoriaNombre)
-        || isBlank(latStr) || isBlank(lonStr) || isBlank(fechaStr)) {
-      throw new IllegalArgumentException("Fila con campos requeridos vacíos");
+    @Override
+    public SolicitudOutputDTO getSolicitud(Long id){
+        SolicitudDeEliminacion s = solicitudRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró la solicitud " + id));
+        return SolicitudOutputDTO.fromEntity(solicitudRepo.save(s));
     }
 
-    final double latitud;
-    final double longitud;
-    final LocalDateTime fechaAcontecimiento;
+    @Override
+    public InformeDeResultados procesarCsv(MultipartFile file) {
+        long tiempo0 = System.currentTimeMillis();
 
-    try {
-      latitud = Double.parseDouble(latStr);
-      longitud = Double.parseDouble(lonStr);
-    } catch (NumberFormatException nfe) {
-      throw new IllegalArgumentException("Coordenadas inválidas (no numéricas)");
+        final String nombreOriginal = (file.getOriginalFilename() != null) ? file.getOriginalFilename() : "archivo.csv";
+        final Path destino = guardarArchivo(file);
+
+        long total = 0;
+        List<Hecho> hechos = new ArrayList<>(10_000);
+
+        try (BufferedReader br = Files.newBufferedReader(destino, StandardCharsets.UTF_8);
+             CSVReader reader = new CSVReaderBuilder(br).build()) {
+
+            String[] header = reader.readNext();
+
+            String[] fila;
+            while ((fila = reader.readNext()) != null) {
+                total++;
+                Hecho h = leerArchivo(fila);
+                hechos.add(h);
+            }
+        } catch (IOException | CsvValidationException e) {
+            throw new IllegalStateException("No se pudo leer el CSV: " + e.getMessage(), e);
+        }
+
+
+        hechoRepo.saveAll(hechos);
+
+        long tiempo = System.currentTimeMillis() - tiempo0;
+
+        return InformeDeResultados.builder()
+                .nombreOriginal(nombreOriginal)
+                .guardadoComo(destino.toString().replace('\\','/'))
+                .hechosTotales(total)
+                .guardadosTotales(hechos.size())
+                .tiempoTardado(tiempo)
+                .build();
     }
 
-    try {
-      LocalDate fecha = LocalDate.parse(fechaStr, FECHA_CSV);
-      fechaAcontecimiento = fecha.atStartOfDay();
-    } catch (Exception pe) {
-      throw new IllegalArgumentException("Fecha inválida (formato esperado dd/MM/yyyy)");
+    private Path guardarArchivo(MultipartFile file) {
+        try {
+            Path dir = Paths.get("agregador/src/main/java/ar/utn/ba/ddsi/imports");
+            Files.createDirectories(dir);
+
+            String nombre = UUID.randomUUID() + ".csv";
+            Path destino = dir.resolve(nombre);
+
+            try (InputStream in = file.getInputStream()) {
+                Files.copy(in, destino, StandardCopyOption.REPLACE_EXISTING);
+            }
+            return destino;
+        } catch (IOException e) {
+            throw new IllegalStateException("No pude guardar el archivo en la carpeta de imports", e);
+        }
     }
 
-    Categoria categoria = categoriaRepo
-        .findByNombreIgnoreCase(categoriaNombre)
-        .orElseGet(() -> categoriaRepo.save(new Categoria(categoriaNombre)));
+    private Hecho leerArchivo(String[] fila) {
+        if (fila == null || fila.length < 6) {
+            throw new IllegalArgumentException("Fila inválida: se esperaban 6 columnas");
+        }
 
-    Ubicacion ubicacion = new Ubicacion(latitud, longitud);
+        String titulo           = safeTrim(fila[0]);
+        String descripcion      = safeTrim(fila[1]);
+        String categoriaNombre  = safeTrim(fila[2]);
+        String latStr           = safeTrim(fila[3]);
+        String lonStr           = safeTrim(fila[4]);
+        String fechaStr         = safeTrim(fila[5]);
 
-    return new Hecho(
-        titulo,
-        descripcion,
-        categoria,
-        ubicacion,
-        fechaAcontecimiento,
-        LocalDate.now(),
-        Origen.PROVENIENTE_DE_DATASET,
-        null
-    );
-  }
+        if (isBlank(titulo) || isBlank(descripcion) || isBlank(categoriaNombre)
+                || isBlank(latStr) || isBlank(lonStr) || isBlank(fechaStr)) {
+            throw new IllegalArgumentException("Fila con campos requeridos vacíos");
+        }
 
-  private static String safeTrim(String s) {
-    return (s == null) ? null : s.replace('\u00A0',' ').trim();
-  }
-  private static boolean isBlank(String s) {
-    return s == null || s.trim().isEmpty();
-  }
+        final double latitud;
+        final double longitud;
+        final LocalDateTime fechaAcontecimiento;
+
+        try {
+            latitud = Double.parseDouble(latStr);
+            longitud = Double.parseDouble(lonStr);
+        } catch (NumberFormatException nfe) {
+            throw new IllegalArgumentException("Coordenadas inválidas (no numéricas)");
+        }
+
+        try {
+            LocalDate fecha = LocalDate.parse(fechaStr, FECHA_CSV);
+            fechaAcontecimiento = fecha.atStartOfDay();
+        } catch (Exception pe) {
+            throw new IllegalArgumentException("Fecha inválida (formato esperado dd/MM/yyyy)");
+        }
+
+        Categoria categoria = categoriaRepo
+                .findByNombreIgnoreCase(categoriaNombre)
+                .orElseGet(() -> categoriaRepo.save(new Categoria(categoriaNombre)));
+
+        Ubicacion ubicacion = new Ubicacion(latitud, longitud);
+
+        return new Hecho(
+                titulo,
+                descripcion,
+                categoria,
+                ubicacion,
+                fechaAcontecimiento,
+                LocalDate.now(),
+                Origen.PROVENIENTE_DE_DATASET,
+                null
+        );
+    }
+
+    private static String safeTrim(String s) {
+        return (s == null) ? null : s.replace('\u00A0',' ').trim();
+    }
+    private static boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
+    }
 }

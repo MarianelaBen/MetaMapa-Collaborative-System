@@ -14,6 +14,8 @@ import ar.utn.ba.ddsi.services.IHechoService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
@@ -32,6 +34,7 @@ import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 import java.time.temporal.ChronoUnit;
 
 import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class HechoService implements IHechoService {
@@ -50,7 +53,11 @@ public class HechoService implements IHechoService {
   @Autowired
   private ISolicitudService solicitudService;
 
+  @PersistenceContext
+  private EntityManager em; //TODO ESTO ES SOLO PARA PRUEBAS, PORQUE NO HAY REPO DE CONTR TDV
+
   @Override
+  @Transactional //TODO ESTO ES SOLO PARA PRUEBAS, PORQUE NO HAY REPO DE CONTR TDV
   public HechoOutputDTO crear(HechoInputDTO hechoInputDTO) {
     try {
       Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
@@ -70,7 +77,16 @@ public class HechoService implements IHechoService {
 
       // hecho.agregarEtiqueta(new Etiqueta("prueba"));  Mas adelante cambiar por DTO
       if(hechoInputDTO.getContribuyente() != null) {
-        hecho.setContribuyente(hechoInputDTO.getContribuyente());
+        //hecho.setContribuyente(hechoInputDTO.getContribuyente());
+        var contrDto = hechoInputDTO.getContribuyente(); //TODO ESTO ES SOLO PARA PRUEBAS, PORQUE NO HAY REPO DE CONTR TDV
+        Contribuyente contr = new Contribuyente();
+        contr.setIdContribuyente(null);
+        contr.setNombre(contrDto.getNombre());
+        contr.setApellido(contrDto.getApellido());
+        contr.setFechaDeNacimiento(contrDto.getFechaDeNacimiento());
+
+        em.persist(contr);
+        hecho.setContribuyente(contr);
       }
 
       this.hechoRepository.save(hecho);

@@ -15,10 +15,11 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,22 +35,36 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
 
   @Override
   public void leerHechos(Long idRuta) {
-    Ruta ruta = rutasRepository.findById(idRuta).orElseGet(null);
+    Ruta ruta = rutasRepository.findById(idRuta).orElseThrow(() -> new IllegalArgumentException("Ruta no encontrada: " + idRuta));
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
-    try (CSVReader reader = new CSVReader(new FileReader(ruta.getPath()))) {
+
+    try (CSVReader reader = new CSVReader(
+        new BufferedReader(new InputStreamReader(new FileInputStream(ruta.getPath()), StandardCharsets.UTF_8)))) {
+
       String[] fila;
-      reader.readNext(); //lee la primer fila y la saltea
+      reader.readNext(); // header
 
       while ((fila = reader.readNext()) != null) {
-        System.out.println("La direccion esta bien");
-        String titulo = fila[0];
-        String descripcion = fila[1];
-        Categoria categoria = new Categoria(fila[2]);
-        Ubicacion ubicacion = new Ubicacion(Double.parseDouble(fila[3]), Double.parseDouble(fila[4]));
-        LocalDate fechaAcontecimiento = LocalDate.parse(fila[5], formatter);
+        if (fila.length < 6) {
+          System.err.println("Fila con columnas insuficientes: " + Arrays.toString(fila));
+          continue;
+        }
 
+        String titulo      = normalizarString(fila[0]);
+        String descripcion = normalizarString(fila[1]);
+        String catNombre   = normalizarString(fila[2]);
+        String latStr      = normalizarNumero(fila[3]);
+        String lonStr      = normalizarNumero(fila[4]);
+        String fechaStr    = normalizarString(fila[5]);
+
+        double lat = Double.parseDouble(latStr);
+        double lon = Double.parseDouble(lonStr);
+        LocalDate fechaAcontecimiento = LocalDate.parse(fechaStr, formatter);
+
+        Categoria categoria = new Categoria(catNombre);
         categoriaRepository.save(categoria);
+        Ubicacion ubicacion = new Ubicacion(lat, lon);
 
         Hecho hechoACargar = new Hecho(
             titulo, descripcion, categoria, ubicacion, fechaAcontecimiento,
@@ -57,11 +72,21 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
         );
 
         hechoACargar.setRuta(ruta);
-        this.hechoRepository.save(hechoACargar);
+        hechoRepository.save(hechoACargar);
       }
+
     } catch (IOException | CsvValidationException e) {
-      throw new RuntimeException("No se pudo leer el archivo CSV");
+      throw new RuntimeException("No se pudo leer el CSV (" + ruta.getPath() + "): " + e.getMessage(), e);
     }
+  }
+
+  private static String normalizarString(String s) {
+    return s == null ? null : s.replace('\u00A0',' ').trim();
+  }
+
+  private static String normalizarNumero(String s) {
+    if (s == null) return null;
+    return s.replace('\u2212', '-').replace('\u00A0',' ').trim();
   }
 
   @Override
@@ -93,7 +118,7 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
     dto.setDescripcion(hecho.getDescripcion());
     dto.setCategoria(hecho.getCategoria().getNombre());
     dto.setUbicacion(ubicacionOutputDTO(hecho.getUbicacion()));
-    dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
+    dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento().atStartOfDay());
     dto.setFechaCarga(hecho.getFechaCarga());
 
     ObjectMapper mapper = new ObjectMapper();

@@ -28,7 +28,7 @@ public class HechoOutputDTO {
   private Set<Long> idEtiquetas;
   private List<String> idContenidoMultimedia;
   private String fuenteExterna;
-  private Contribuyente contribuyente;
+  private ContribuyenteDTO contribuyente;
   private Boolean fueEliminado;
   private Integer cantVistas;
   //private boolean editable;    // 7 días desde fechaCarga

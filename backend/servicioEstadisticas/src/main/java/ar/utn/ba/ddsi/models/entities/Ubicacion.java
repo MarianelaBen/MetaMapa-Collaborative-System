@@ -5,11 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor
-public class Coleccion {
-  private String handle;
-  private String titulo;
-  private String descripcion;
+public class Ubicacion {
+  private Double latitud;
+  private Double longitud;
+  private String provincia;
 }
-
-
-

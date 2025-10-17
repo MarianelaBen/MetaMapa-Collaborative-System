@@ -134,12 +134,12 @@ public class Hecho {
       return false;
     }
 
-    return Objects.equals(this.titulo, otroHecho.titulo) &&
-        Objects.equals(this.descripcion, otroHecho.descripcion) &&
-        Objects.equals(this.categoria.getNombre(), otroHecho.categoria.getNombre()) &&
+    return Objects.equals(this.titulo.trim(), otroHecho.titulo.trim()) &&
+        Objects.equals(this.descripcion.trim(), otroHecho.descripcion.trim()) &&
+        Objects.equals(this.categoria.getNombre().trim().toUpperCase(), otroHecho.categoria.getNombre().trim().toUpperCase()) &&
         Objects.equals(this.ubicacion.getLatitud(), otroHecho.ubicacion.getLatitud()) &&
         Objects.equals(this.ubicacion.getLongitud(), otroHecho.ubicacion.getLongitud()) &&
-        Objects.equals(this.fechaAcontecimiento, otroHecho.fechaAcontecimiento);
+        Objects.equals(this.fechaAcontecimiento.toLocalDate(), otroHecho.fechaAcontecimiento.toLocalDate());
   }
 
   public boolean esConsensuado(TipoAlgoritmoDeConsenso algoritmo) { //esta basico dsp hay que agregar q si no hay algoritmo sea true o algo asi

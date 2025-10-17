@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.models.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;

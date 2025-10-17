@@ -1,3 +1,4 @@
+// ar/utn/ba/ddsi/models/entities/Categoria.java
 package ar.utn.ba.ddsi.models.entities;
 
 import jakarta.persistence.Column;
@@ -27,3 +28,4 @@ public class Categoria {
     this.nombre = nombre;
   }
 }
+

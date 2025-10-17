@@ -58,7 +58,7 @@ public class AdapterFuenteEstatica {
     if (p != null) {
       String rutaNombre = textOrNull(p, "rutaNombre");
       if (rutaNombre != null && !rutaNombre.isBlank()) {
-        hecho.setRutaNombre(rutaNombre);  // suponiendo que agregaste campo String rutaNombre en Hecho
+        hecho.setRutaNombre(rutaNombre);
       }
     }
 

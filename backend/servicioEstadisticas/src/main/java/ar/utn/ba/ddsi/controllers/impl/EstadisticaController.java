@@ -16,81 +16,222 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/estadisticas")
 public class EstadisticaController implements IEstadisticaController {
+
   private final IEstadisticaService estadisticasService;
-  private final IEstadisticaRepository estadisticaRepository;
+  private final IEstadisticaRepository repo;
 
   @Autowired
   public EstadisticaController(IEstadisticaService estadisticasService,
-                               IEstadisticaRepository estadisticaRepository) {
+                               IEstadisticaRepository repo) {
     this.estadisticasService = estadisticasService;
-    this.estadisticaRepository = estadisticaRepository;
+    this.repo = repo;
   }
 
+  // General
   @GetMapping
-  public ResponseEntity<List<Estadistica>> obtenerEstadisticas() {
-    return ResponseEntity.ok(estadisticaRepository.findAll());
+  public ResponseEntity<List<Estadistica>> obtenerTodas() {
+    return ResponseEntity.ok(repo.findAll());
   }
 
-
-  @GetMapping("/pregunta-id/{id}")
-  public ResponseEntity<List<Estadistica>> obtenerEstadisticasPorPregunta(@PathVariable Long id) {
+  // Hechos por provincia en colección
+  @GetMapping("/hechos-por-provincia/coleccion/{handle}")
+  public ResponseEntity<List<Estadistica>> hechosPorProvinciaEnColeccion(@PathVariable String handle) {
     return ResponseEntity.ok(
-        estadisticaRepository.findAllByPreguntaIdOrderByFechaDeCalculoDesc(id) //te devuelve las mas recientes primero
-    );
+        repo.findAllByHechosPorProvinciaEnColeccion_ColeccionHandleOrderByFechaDeCalculoDesc(handle));
   }
 
-  @GetMapping("/pregunta-id/{id}/ultima")
-  public ResponseEntity<Estadistica> obtenerUltimaEstadisticaPorPregunta(@PathVariable Long id) {
-    return estadisticaRepository.findTopByPreguntaIdOrderByFechaDeCalculoDesc(id)
-        .map(ResponseEntity::ok)
-        .orElseGet(() -> ResponseEntity.notFound().build());
+  @GetMapping("/hechos-por-provincia/coleccion/{handle}/ultima")
+  public ResponseEntity<Estadistica> hechosPorProvinciaEnColeccionUltima(@PathVariable String handle) {
+    return repo.findTopByHechosPorProvinciaEnColeccion_ColeccionHandleOrderByFechaDeCalculoDesc(handle)
+        .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
   }
 
-  @GetMapping("/preguntaid/{id}/coleccion/{handle}")
-  public ResponseEntity<List<Estadistica>> obtenerEstadisticasPorPreguntaYColeccion(@PathVariable Long id,
-                                                                 @PathVariable String handle) {
+  // Provincia top por categoría
+  @GetMapping("/provincia-top-por-categoria/{categoriaId}")
+  public ResponseEntity<List<Estadistica>> provinciaTopPorCategoria(@PathVariable Long categoriaId) {
     return ResponseEntity.ok(
-        estadisticaRepository.findAllByPreguntaIdAndColeccionHandleOrderByFechaDeCalculoDesc(id, handle)
-    );
+        repo.findAllByProvinciaTopPorCategoria_CategoriaOrderByFechaDeCalculoDesc(categoriaId));
   }
 
-  @GetMapping(value = "/export", produces = "text/csv") //produce le dice a Spring que la respuesta es CSV
-  public void exportarCSV(HttpServletResponse respuesta) throws IOException { //escribe en directo en la respuesta HTTP
-    respuesta.setHeader("Content-Disposition", "attachment; filename=estadisticas.csv"); //lo pone en un header para que el navegador descargue un archivo
+  @GetMapping("/provincia-top-por-categoria/{categoriaId}/ultima")
+  public ResponseEntity<Estadistica> provinciaTopPorCategoriaUltima(@PathVariable Long categoriaId) {
+    return repo.findTopByProvinciaTopPorCategoria_CategoriaOrderByFechaDeCalculoDesc(categoriaId)
+        .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+  }
 
-    //Traemos los datos
-    List<Estadistica> estadisticas = estadisticaRepository.findAll();
+  // Horario pico por categoría
+  @GetMapping("/horario-pico-por-categoria/{categoriaId}")
+  public ResponseEntity<List<Estadistica>> horarioPicoPorCategoria(@PathVariable Long categoriaId) {
+    return ResponseEntity.ok(
+        repo.findAllByHorarioPicoPorCategoria_CategoriaOrderByFechaDeCalculoDesc(categoriaId));
+  }
 
-    try (PrintWriter w = respuesta.getWriter()) { //pide un writer para escribir texto en la respuesta
-      w.println("id,pregunta,coleccion_handle,categoria_id,provincia,hora_del_dia,valor,fecha_de_calculo"); //encabezado del csv
-      for (Estadistica e : estadisticas) {
-        String pregunta = e.getPregunta() != null ? e.getPregunta().getPregunta() : ""; //si la pregunta existe usa su texto, si no cadena vacia
-        w.printf("%d,%s,%s,%s,%s,%s,%d,%s%n", //una fila + 8 columnas. Al final con %n agrega salto de línea
-            e.getId(),
-            revisar(pregunta),
-            revisar(e.getColeccionHandle()),
-            e.getCategoriaId() == null ? "" : e.getCategoriaId().toString(),// si es null que quede vacio
-            revisar(e.getProvincia()),
-            e.getHoraDelDia() == null ? "" : e.getHoraDelDia().toString(),//si es null que quede vacio
-            e.getValor(),
-            e.getFechaDeCalculo()
-        );
+  @GetMapping("/horario-pico-por-categoria/{categoriaId}/ultima")
+  public ResponseEntity<Estadistica> horarioPicoPorCategoriaUltima(@PathVariable Long categoriaId) {
+    return repo.findTopByHorarioPicoPorCategoria_CategoriaOrderByFechaDeCalculoDesc(categoriaId)
+        .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+  }
+
+  // Top categoría global (entre todos los hechos)
+  @GetMapping("/top-categoria-global/ultima")
+  public ResponseEntity<Estadistica> topCategoriaGlobalUltima() {
+    return repo.findTopByTopCategoriaGlobal_CategoriaGanadoraIsNotNullOrderByFechaDeCalculoDesc()
+        .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+  }
+
+  // Solicitudes de eliminación (spam/total)
+  @GetMapping("/solicitudes-eliminacion/ultima")
+  public ResponseEntity<Estadistica> solicitudesEliminacionUltima() {
+    return repo.findTopBySolicitudesEliminacionResumen_TotalIsNotNullOrderByFechaDeCalculoDesc()
+        .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+  }
+
+  @GetMapping(value = "/export", produces = "text/csv")
+  public void exportarCSV(HttpServletResponse resp) throws IOException {
+    resp.setHeader("Content-Disposition", "attachment; filename=estadisticas.csv");
+
+    List<Estadistica> todas = repo.findAll();
+
+    try (PrintWriter w = resp.getWriter()) {
+      // Encabezado "tall/narrow"
+      w.println("id_estadistica,fecha_calculo,tipo,coleccion,categoria,hora,ganador,cantidad_ganadora,breakdown");
+
+      for (Estadistica e : todas) {
+        // 1) Hechos por provincia en una colección
+        var hp = e.getHechosPorProvinciaEnColeccion();
+        if (hp != null) {
+          escribirFila(w, e,
+              "HECHOS_POR_PROVINCIA_COLECCION",
+              hp.getColeccionHandle(),
+              null,
+              null,
+              hp.getProvinciaGanadora(),
+              hp.getCantidadGanadora(),
+              mapALinea(hp.getCantidadPorProvincia())
+          );
+        }
+
+        // 2) Provincia top por categoría
+        var pt = e.getProvinciaTopPorCategoria();
+        if (pt != null) {
+          escribirFila(w, e,
+              "PROVINCIA_TOP_POR_CATEGORIA",
+              null,
+              nvl(pt.getCategoria()),
+              null,
+              pt.getProvinciaGanadora(),
+              pt.getCantidadGanadora(),
+              mapALinea(pt.getCantidadPorProvincia())
+          );
+        }
+
+        // 3) Horario pico por categoría
+        var hpico = e.getHorarioPicoPorCategoria();
+        if (hpico != null) {
+          Integer hora = hpico.getHoraGanadora();
+          escribirFila(w, e,
+              "HORARIO_PICO_POR_CATEGORIA",
+              null,
+              nvl(hpico.getCategoria()),
+              hora,
+              hora == null ? "" : hora.toString(),
+              hpico.getCantidadGanadora(),
+              mapHorasALinea(hpico.getCantidadPorHora())
+          );
+        }
+
+        // 4) Top categoría global
+        var top = e.getCategoriaTopGlobal();
+        if (top != null) {
+          escribirFila(w, e,
+              "TOP_CATEGORIA_GLOBAL",
+              null,
+              null,
+              null,
+              nvl(top.getCategoriaGanadora()),
+              top.getCantidadGanadora(),
+              mapALinea(top.getCantidadPorCategoria())
+          );
+        }
+
+        // 5)solicitudes de eliminación (dos filas: total y spam)
+        var sol = e.getSolicitudesEliminacionSpam();
+        if (sol != null) {
+          escribirFila(w, e,
+              "SOLICITUDES_ELIMINACION_TOTAL",
+              null, null, null,
+              "total",
+              nvl(sol.getTotal()),
+              null
+          );
+          escribirFila(w, e,
+              "SOLICITUDES_ELIMINACION_SPAM",
+              null, null, null,
+              "spam",
+              nvl(sol.getSpam()),
+              null
+          );
+        }
       }
     }
   }
 
-  //este metodo sirve para que no piense que si hay una coma
-  private String revisar(String s) { //por si tiene comas o comillas
-    if (s == null) return "";
-    boolean necesitaComillas = s.contains(",") || s.contains("\"") || s.contains("\n"); //si tiene coma, comillas o salto de linea
-    return necesitaComillas ? "\"" + s.replace("\"", "\"\"") + "\"" : s; // ahi envuelve entre comillas para que no piense que son columnas separadas
+  /* helpers para armar el csv */
+
+  private void escribirFila(PrintWriter w,
+                            Estadistica e,
+                            String tipo,
+                            String coleccion,
+                            String categoria,
+                            Integer hora,
+                            String ganador,
+                            Long cantidadGanadora,
+                            String breakdown) {
+    w.printf("%d,%s,%s,%s,%s,%s,%s,%s,%s%n",
+        e.getId(),
+        e.getFechaDeCalculo(),
+        csv(tipo),
+        csv(nvl(coleccion)),
+        csv(nvl(categoria)),
+        hora == null ? "" : hora.toString(),
+        csv(nvl(ganador)),
+        cantidadGanadora == null ? "" : cantidadGanadora.toString(),
+        csv(nvl(breakdown))
+    );
   }
 
+  private String nvl(String s) { return s == null ? "" : s; }
+  private Long   nvl(Long v)   { return v == null ? 0L : v; }
 
+  // Escapa comillas y comas para CSV
+  private String csv(String s) {
+    if (s == null || s.isEmpty()) return "";
+    boolean quote = s.contains(",") || s.contains("\"") || s.contains("\n");
+    if (!quote) return s;
+    return "\"" + s.replace("\"", "\"\"") + "\"";
+  }
+
+  // "provincia=cant;provincia=cant"
+  private String mapALinea(Map<String, Long> m) {
+    if (m == null || m.isEmpty()) return "";
+    return m.entrySet().stream()
+        .map(e -> (e.getKey() == null ? "" : e.getKey()) + "=" + (e.getValue() == null ? 0 : e.getValue()))
+        .collect(Collectors.joining(";"));
+  }
+
+  // "hora=cant;hora=cant"
+  private String mapHorasALinea(Map<Integer, Long> m) {
+    if (m == null || m.isEmpty()) return "";
+    return m.entrySet().stream()
+        .map(e -> (e.getKey() == null ? "" : e.getKey().toString()) + "=" + (e.getValue() == null ? 0 : e.getValue()))
+        .collect(Collectors.joining(";"));
+  }
 }
 
