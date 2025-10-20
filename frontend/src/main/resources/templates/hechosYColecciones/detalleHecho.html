@@ -1,7 +1,7 @@
 <html th:replace="~{layout/base :: layout}" xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="css">
-    <link rel="stylesheet" th:href="@{/css/detalleHecho.css(v=${#dates.createNow().time})}" />
+    <link rel="stylesheet" th:href="@{/css/detalleHecho.css(v=${#dates.createNow().time})}"/>
 </div>
 
 <div class="container page-detalle" th:fragment="contenido">
@@ -74,7 +74,7 @@
                    th:href="@{/solicitud/{hechoId}(hechoId=${hecho.id})}">
                     Solicitar Eliminación
                 </a>
-        </div>
+            </div>
         </div>
 
         <div class="fact-sidebar">
@@ -83,11 +83,14 @@
                 <table class="metadata-table">
                     <tr>
                         <td>Fecha del acontecimiento:</td>
-                        <td><strong th:text="${#temporals.format(hecho.fechaAcontecimiento, 'dd/MM/yyyy')}">12/08/2025</strong></td>
+                        <td><strong
+                                th:text="${#temporals.format(hecho.fechaAcontecimiento, 'dd/MM/yyyy')}">12/08/2025</strong>
+                        </td>
                     </tr>
                     <tr>
                         <td>Hora del acontecimiento:</td>
-                        <td><strong th:text="${#temporals.format(hecho.fechaAcontecimiento, 'HH:mm')}">09:15</strong></td>
+                        <td><strong th:text="${#temporals.format(hecho.fechaAcontecimiento, 'HH:mm')}">09:15</strong>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -101,12 +104,11 @@
                     </div>
                 </div>
 
-                <div class="location-map">
-                    <div>
-                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🗺️</div>
-                        <p>Mapa interactivo<br/>de la ubicación</p>
-                    </div>
+
+                <div class="mapa-interactivo container">
+                    <div id="map"></div>
                 </div>
+
 
                 <a class="btn btn-mapa" th:href="@{/mapa}">Ver en Mapa Completo</a>
             </div>
@@ -116,7 +118,65 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const hecho = /*[[${hecho}]]*/ {};
+        /*]]>*/
 
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) return;
+
+
+            if (hecho && hecho.latitud && hecho.longitud) {
+                const lat = Number(hecho.latitud);
+                const lng = Number(hecho.longitud);
+
+
+                if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                    const map = L.map('map', { zoomControl: true }).setView([lat, lng], 10);
+
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(map);
+
+
+                    const marker = L.marker([lat, lng]).addTo(map);
+                    marker.bindPopup(`
+<div>
+<strong>${hecho.titulo || 'Hecho'}</strong><br/>
+${hecho.provincia || ''}<br/>
+${hecho.fechaAcontecimiento || ''}
+</div>
+`).openPopup();
+
+
+// Forzar recalculo visual después de renderizar
+                    setTimeout(() => map.invalidateSize(), 300);
+                } else {
+                    mapContainer.innerHTML = '<p style="text-align:center; color:#666;">Sin coordenadas válidas para mostrar el mapa.</p>';
+                }
+            } else {
+                mapContainer.innerHTML = '<p style="text-align:center; color:#666;">No hay datos geográficos disponibles.</p>';
+            }
+        });
+    </script>
+
+
+    <style>
+        #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            margin-top: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            z-index: 1; /* asegura que no quede debajo de otros elementos */
+        }
+    </style>
 </div>
 </html>
 

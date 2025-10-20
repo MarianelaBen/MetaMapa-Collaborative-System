@@ -1,4 +1,5 @@
-<html th:replace="~{layout/base :: html}" xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{layout/base :: html}" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <div th:fragment="css">
     <link rel="stylesheet" th:href="@{/css/landing.css}" />
@@ -15,8 +16,8 @@
         <h5 class="landing-subtitle">MetaMapa le permite organizar, analizar y visualizar <br>
             información geoespacial como nunca antes.</h5>
         <div class="call-to-action-buttons">
-            <button class="btn-signup" th:onclick="|window.location.href='@{/signup}'|">Registrarse</button>
-            <button class="btn-login"  th:onclick="|window.location.href='@{/login}'|">Iniciar sesión</button>
+            <button class="btn-signup" th:onclick="|window.location.href='@{/signup}'|" sec:authorize="!isAuthenticated()">Registrarse</button>
+            <button class="btn-login"  th:onclick="|window.location.href='@{/login}'|" sec:authorize="!isAuthenticated()">Iniciar sesión</button>
             <a th:href="@{/colecciones}" class="btn-explorar">Explorar Colecciones</a>
         </div>
     </div>
