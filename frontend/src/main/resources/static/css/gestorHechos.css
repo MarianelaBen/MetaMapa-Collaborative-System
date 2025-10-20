@@ -9,10 +9,24 @@ body {
     color: #333;
 }
 
-div.container{
-    margin: 0 auto;   /* opcional */
+
+
+div.container {
+    margin: 0 auto; /* Centra el contenido */
+    display: block; /* Evita que se comporte como un flex innecesario */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    max-width: 1400px; /* (Opcional) limita el ancho máximo si querés */
+    padding: 0 2rem; /* Agrega un poco de margen lateral */
+    box-sizing: border-box; /* Evita desbordes por padding */
+}
+
+
+/* Si usás admin-shell o main-content dentro, asegurate de que también expandan correctamente */
+
+
+.admin-shell, .main-content {
+    flex: 1;
     width: 100%;
-    padding: 0;
 }
 
 
@@ -93,13 +107,6 @@ header .logo {
     padding: 1.3rem;
 }
 
-.admin-shell{
-    display: flex;
-    
-    min-height: calc(100vh - 72px);  /* alto aprox restando header */
-    margin: 0 !important;
-    min-width: fit-content;
-}
 
 .sidebar-nav ul {
     list-style: none;
