@@ -5,6 +5,7 @@ import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
+import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
 import ar.utn.ba.ddsi.Metamapa.services.MetaMapaApiService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class HechoController {
   private String backendOrigin;
   private final HechoService hechoService;
     private final MetaMapaApiService metaMapaApiService;
+    private final ColeccionService coleccionService;
 
   @GetMapping("/{id}")
   public String verDetalleHecho(@PathVariable Long id,
@@ -62,6 +64,7 @@ public class HechoController {
 
   @GetMapping("/nuevo")
   public String verFormulario(Model model) {
+      List<CategoriaDTO> categorias = this.coleccionService.getCategorias();
     model.addAttribute("titulo", "Subir hecho");
     model.addAttribute("hecho", new HechoDTO(
         null,
@@ -70,8 +73,7 @@ public class HechoController {
         null,
         null, null
     ));
-    model.addAttribute("categorias", List.of("Incendio forestal", "Accidente vial", "Inundación"));
-    model.addAttribute("localidades", List.of("CABA", "La Plata", "Rosario"));
+    model.addAttribute("categorias", categorias);
 
     return "hechosYColecciones/formularioHecho";
   }

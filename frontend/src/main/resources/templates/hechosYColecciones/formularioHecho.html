@@ -27,7 +27,7 @@
                 <label for="categoria">Categoría <span style="color:red">*</span></label>
                 <select id="categoria" th:field="*{categoria}" required>
                     <option value="">Seleccione una categoría</option>
-                    <option th:each="categoria : ${categorias}" th:value="${categoria}" th:text="${categoria}"></option>
+                    <option th:each="categoria : ${categorias}" th:value="${categoria.nombre}" th:text="${categoria.nombre}"></option>
                 </select>
             </div>
         </div>
