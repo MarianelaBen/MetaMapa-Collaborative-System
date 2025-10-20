@@ -78,7 +78,7 @@
                     <tr th:each="solicitud : ${solicitudes}"
                         th:attr="data-status=${solicitud.estado}, data-id=${solicitud.id}">
                         <td th:text="${solicitud.id}">DR001</td>
-                        <td th:text="${solicitud.fechaEntrada}">2023-10-26</td>
+                        <td th:text="${solicitud.fechaEntrada.toLocalDate()}">2023-10-26</td>
                         <td><small style="color: #6c757d;" th:text="${solicitud.hechoId}">ID: F1234</small></td>
                         <td th:text="${solicitud.justificacion.length() > 100} ? ${solicitud.justificacion.substring(0,100)} + '...' : ${solicitud.justificacion}">
                             Información desactualizada

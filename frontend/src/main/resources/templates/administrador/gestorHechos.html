@@ -78,7 +78,7 @@
                     </div>
                         <tr th:if="${hechos.size() >= 1}" data-status="pending" data-user="alice@example.com" data-id="DR001" th:each="hecho : ${hechos}">
                             <td th:text="${hecho.id}">DR001</td>
-                            <td th:text="${hecho.fechaAcontecimiento}">2023-10-26</td>
+                            <td th:text="${hecho.fechaAcontecimiento.toLocalDate()}">2023-10-26</td>
                             <td th:text="${hecho.titulo}">Incendio forestal activo en Parque Nacional Los Glaciares</td>
                             <td th:text="${hecho.provincia}">Santa Cruz, Argentina</td>
                             <td>
