@@ -110,7 +110,7 @@
                 </div>
 
 
-                <a class="btn btn-mapa" th:href="@{/mapa}">Ver en Mapa Completo</a>
+                <a class="btn btn-mapa" th:href="@{/inicio#map-section}">Ver en Mapa Completo</a>
             </div>
         </div>
         <div class="return-bar">
@@ -162,6 +162,15 @@ ${hecho.fechaAcontecimiento || ''}
                 }
             } else {
                 mapContainer.innerHTML = '<p style="text-align:center; color:#666;">No hay datos geográficos disponibles.</p>';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.location.hash === '#map-section') {
+                const mapSection = document.getElementById('map-section');
+                if (mapSection) {
+                    mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             }
         });
     </script>

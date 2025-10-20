@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.Metamapa.services;
 
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.CriterioDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
@@ -48,6 +49,21 @@ public class ColeccionService {
         }
 
         return colecciones;
+    }
+
+    public List<CategoriaDTO> getCategorias(){
+        List<CategoriaDTO> categorias = webClientPublic.get()
+                .uri("/categorias")
+                .retrieve()
+                .bodyToFlux(CategoriaDTO.class)
+                .collectList()
+                .block();
+
+        if (categorias == null || categorias.isEmpty()) {
+            return List.of();
+        }
+
+        return categorias;
     }
 
     public ColeccionDTO getColeccionByHandle(String handle) {

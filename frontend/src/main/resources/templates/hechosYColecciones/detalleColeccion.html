@@ -50,10 +50,7 @@
                     <div class="control-group">
                         <label for="categoria-filter">Categoría</label>
                         <select id="categoria-filter">
-                            <option value="">Todas las categorías</option>
-                            <option value="incendio-forestal" selected>Incendio forestal</option>
-                            <option value="incendio-urbano">Incendio urbano</option>
-                            <option value="quema-controlada">Quema controlada</option>
+                            <option value="quema-controlada" th:each="categoria : ${categorias}" th:text="${categoria.nombre}"></option>
                         </select>
                     </div>
 
@@ -193,6 +190,8 @@
                         });
                     });
                 });
+
+
             </script>
         </div>
 </html>

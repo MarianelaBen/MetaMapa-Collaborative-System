@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
 import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
@@ -50,9 +51,11 @@ public class ColeccionController {
   public String verDetalleColeccion(Model model, @PathVariable String handle, RedirectAttributes redirectAttributes){
     try{
       ColeccionDTO coleccion = this.coleccionService.getColeccionByHandle(handle);
+      List<CategoriaDTO> categorias = this.coleccionService.getCategorias();
       List<HechoDTO> hechosDeColeccion = this.coleccionService.getHechosDeColeccion(handle);
       model.addAttribute("coleccion", coleccion);
       model.addAttribute("hechos", hechosDeColeccion);
+        model.addAttribute("categorias", categorias);
       model.addAttribute("titulo", "Coleccion " + coleccion.getHandle());
       return "hechosYColecciones/detalleColeccion";
 
