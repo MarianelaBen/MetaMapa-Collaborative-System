@@ -2,11 +2,7 @@ package ar.utn.ba.ddsi.Metamapa.controllers;
 
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.InformeDeResultadosDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.ResumenDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.SolicitudDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.*;
 import ar.utn.ba.ddsi.Metamapa.services.AdminService;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
@@ -68,14 +64,38 @@ public class AdminController {
         return "administrador/gestorSolicitudes";
     }
 
-    @GetMapping("/gestor-hechos")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public String mostrarGestorHechos(Model model, RedirectAttributes redirectAttributes) {
-        List<HechoDTO> hechos = this.metamapaApiService.getHechos();
-        model.addAttribute("titulo", "Gestor de Hechos");
-        model.addAttribute("hechos", hechos);
-        return "administrador/gestorHechos";
-    }
+  @GetMapping("/gestor-hechos")
+  @PreAuthorize("hasAnyRole('ADMIN')")
+  public String mostrarGestorHechos(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "50") int size,
+      Model model
+  ) {
+    PaginaDTO<HechoDTO> resp = adminService.obtenerHechosPaginado(page, size);
+
+    long from = resp.number * (long) resp.size + (resp.numberOfElements > 0 ? 1 : 0);
+    long to   = resp.number * (long) resp.size + resp.numberOfElements;
+    boolean hasPrev = resp.number > 0;
+    boolean hasNext = (resp.number + 1) < resp.totalPages;
+
+    model.addAttribute("titulo", "Gestor de Hechos");
+    model.addAttribute("hechos", resp.content);
+
+    // paginación
+    model.addAttribute("page", resp.number);
+    model.addAttribute("size", resp.size);
+    model.addAttribute("totalPages", resp.totalPages);
+    model.addAttribute("totalElements", resp.totalElements);
+    model.addAttribute("numberOfElements", resp.numberOfElements);
+    model.addAttribute("hasPrev", hasPrev);
+    model.addAttribute("hasNext", hasNext);
+    model.addAttribute("prevPage", resp.number - 1);
+    model.addAttribute("nextPage", resp.number + 1);
+    model.addAttribute("from", from);
+    model.addAttribute("to", to);
+
+    return "administrador/gestorHechos";
+  }
 
   @GetMapping("/importarCSV")
   @PreAuthorize("hasAnyRole('ADMIN')")

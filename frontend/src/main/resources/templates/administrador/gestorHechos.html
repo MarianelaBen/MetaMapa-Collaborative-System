@@ -1,5 +1,4 @@
 <html th:replace="~{layout/base :: html}" xmlns:th="http://www.thymeleaf.org">
-
 <div th:fragment="css">
     <link rel="stylesheet" th:href="@{/css/gestorHechos.css}" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -7,159 +6,159 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </div>
 
-    <div class="container" th:fragment="contenido">
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Hechos</h1>
-                    <p class="page-subtitle">Gestiona los hechos recibidos de las distintas fuentes
-                    </p>
-                </div>
-                <button class="btn-add-new" onclick="location.href='/admin/importarCSV'">
-                    <i class="fas fa-file-upload"></i>
-                    Nueva Importación CSV
-                </button>
+<div class="container" th:fragment="contenido">
+    <div class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Hechos</h1>
+                <p class="page-subtitle">Gestiona los hechos recibidos de las distintas fuentes</p>
             </div>
+            <button class="btn-add-new" onclick="location.href='/admin/importarCSV'">
+                <i class="fas fa-file-upload"></i>
+                Nueva Importación CSV
+            </button>
+        </div>
 
-
-            <!-- Filters -->
-            <div class="filters-section">
-                <div class="filters-grid">
-                    <div class="filter-group">
-                        <label class="filter-label">Filtrar por Estado</label>
-                        <select class="filter-select" id="statusFilter" onchange="filterRequests()">
-                            <option value="">Seleccionar Estado</option>
-                            <option value="pending">Pendiente</option>
-                            <option value="approved">Aprobado</option>
-                            <option value="rejected">Rechazado</option>
-                            <option value="in-progress">En Progreso</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Filtrar por Ubicación</label>
-                        <input type="text" class="filter-input" placeholder="Ubicación del hecho" id="idFilterUbi"
-                            onkeyup="filterRequests()">
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Buscar por ID</label>
-                        <input type="text" class="filter-input" placeholder="ID de Solicitud" id="idFilter"
-                            onkeyup="filterRequests()">
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Rango de Fechas</label>
-                        <input type="date" class="filter-input" id="dateFilter" onchange="filterRequests()">
-                    </div>
-                    <button class="btn btn-reset" onclick="resetFilters()">Resetear Filtros</button>
+        <!-- Filters (sin cambios funcionales) -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Filtrar por Estado</label>
+                    <select class="filter-select" id="statusFilter" onchange="filterRequests()">
+                        <option value="">Seleccionar Estado</option>
+                        <option value="pending">Pendiente</option>
+                        <option value="approved">Aprobado</option>
+                        <option value="rejected">Rechazado</option>
+                        <option value="in-progress">En Progreso</option>
+                    </select>
                 </div>
+                <div class="filter-group">
+                    <label class="filter-label">Filtrar por Ubicación</label>
+                    <input type="text" class="filter-input" placeholder="Ubicación del hecho" id="idFilterUbi" onkeyup="filterRequests()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Buscar por ID</label>
+                    <input type="text" class="filter-input" placeholder="ID de Solicitud" id="idFilter" onkeyup="filterRequests()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Rango de Fechas</label>
+                    <input type="date" class="filter-input" id="dateFilter" onchange="filterRequests()">
+                </div>
+                <button class="btn btn-reset" onclick="resetFilters()">Resetear Filtros</button>
             </div>
+        </div>
 
-            <!-- Table -->
+        <!-- Tabla -->
+        <div class="table-container" th:if="${hechos != null}">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID Hecho</th>
+                    <th>Fecha del hecho</th>
+                    <th>Título</th>
+                    <th>Ubicación</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="requestsTable">
+                <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
+                <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
 
-            <div th:if="${hechos.size() >= 1}" class="table-container">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>ID Hecho</th>
-                            <th>Fecha del hecho</th>
-                            <th>Título</th>
-                            <th>Ubicación</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
+                <tr th:if="${#lists.isEmpty(hechos)}">
+                    <td colspan="6" style="text-align:center; padding:24px;">No hay hechos registrados</td>
+                </tr>
 
-                    </thead>
-                    <tbody id="requestsTable">
-                    <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
-                    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
-                    <div th:if="${hechos.isEmpty()}" class="text-center py-5">
-                        <i class="fa-regular fa-folder-open fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">No hay hechos registrados</h5>
-                    </div>
-                        <tr th:if="${hechos.size() >= 1}" data-status="pending" data-user="alice@example.com" data-id="DR001" th:each="hecho : ${hechos}">
-                            <td th:text="${hecho.id}">DR001</td>
-                            <td th:text="${hecho.fechaAcontecimiento.toLocalDate()}">2023-10-26</td>
-                            <td th:text="${hecho.titulo}">Incendio forestal activo en Parque Nacional Los Glaciares</td>
-                            <td th:text="${hecho.provincia}">Santa Cruz, Argentina</td>
-                            <td>
+                <tr th:each="hecho : ${hechos}">
+                    <td th:text="${hecho.id}">ID</td>
+                    <td th:text="${hecho.fechaAcontecimiento != null ? hecho.fechaAcontecimiento.toLocalDate() : ''}">2025-01-01</td>
+                    <td th:text="${hecho.titulo}">Título</td>
+                    <td th:text="${hecho.provincia}">Provincia</td>
+                    <td>
+            <span th:classappend="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'status-badge status-approved' : 'status-badge status-rejected'"
+                  th:text="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'APROBADO' : 'ELIMINADO'"></span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a class="btn-action view" title="Ver" th:href="@{/hechos/{id}(id=${hecho.id})}">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button type="button"
+                                    class="btn-action delete"
+                                    title="Eliminar"
+                                    th:attr="data-handle=${hecho.id}"
+                                    onclick="confirmDelete(this.dataset.handle)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
 
-      <span th:classappend="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'status-badge status-approved' : 'status-badge status-rejected'"
-            th:text="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'APROBADO' : 'ELIMINADO'">
-      </span>
-                            </td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a class="btn-action view" title="Ver" th:href="@{/hechos/{id}(id=${hecho.id})}">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <button type="button"
-                                            class="btn-action delete"
-                                            title="Eliminar"
-                                            th:attr="data-handle=${hecho.id}"
-                                            onclick="confirmDelete(this.dataset.handle)">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                </tbody>
+            </table>
 
-                    </tbody>
-                </table>
-                <div class="table-footer">
-                    <div class="showing-text">Mostrando 5 de 12 hechos.</div>
-                    <div class="pagination">
-                        <button class="pagination-btn">«</button>
-                        <button class="pagination-btn">‹</button>
-                        <button class="pagination-btn active">1</button>
-                        <button class="pagination-btn">2</button>
-                        <button class="pagination-btn">3</button>
-                        <button class="pagination-btn">›</button>
-                        <button class="pagination-btn">»</button>
-                    </div>
+            <!-- Footer con paginación -->
+            <div class="table-footer" th:if="${totalPages > 0}">
+                <div class="showing-text">
+                    Mostrando <span th:text="${from}">1</span>–<span th:text="${to}">50</span>
+                    de <span th:text="${totalElements}">0</span> hechos.
+                </div>
+
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <a class="pagination-btn"
+                       th:classappend="${page == 0} ? ' disabled'"
+                       th:href="@{|/admin/gestor-hechos?page=0&size=${size}|}">«</a>
+
+                    <a class="pagination-btn"
+                       th:classappend="${!hasPrev} ? ' disabled'"
+                       th:href="@{|/admin/gestor-hechos?page=${prevPage}&size=${size}|}">‹</a>
+
+                    <span class="pagination-btn active"
+                          th:text="${page + 1}">1</span>
+
+                    <a class="pagination-btn"
+                       th:classappend="${!hasNext} ? ' disabled'"
+                       th:href="@{|/admin/gestor-hechos?page=${nextPage}&size=${size}|}">›</a>
+
+                    <a class="pagination-btn"
+                       th:classappend="${page + 1 == totalPages} ? ' disabled'"
+                       th:href="@{|/admin/gestor-hechos?page=${totalPages - 1}&size=${size}|}">»</a>
                 </div>
             </div>
         </div>
-        <!-- Formulario oculto único -->
-        <form id="deleteForm" th:method="post" style="display:none;">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-        </form>
-
-        <script>
-            function confirmDelete(handle) {
-                if (!handle) {
-                    console.warn('confirmDelete: handle vacío');
-                    return;
-                }
-
-                const doConfirm = () => {
-                    const form = document.getElementById('deleteForm');
-                    form.action = `/admin/hecho/${encodeURIComponent(handle)}/eliminar`;
-                    form.submit();
-                };
-
-                if (window.Swal) {
-                    Swal.fire({
-                        title: '¿Eliminar hecho?',
-                        text: 'Esta acción no se puede deshacer',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Sí, eliminar',
-                        cancelButtonText: 'Cancelar',
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6'
-                    }).then(result => {
-                        if (result.isConfirmed) doConfirm();
-                    }).catch(err => {
-                        console.error('Swal error:', err);
-                    });
-                } else {
-                    if (window.confirm('¿Eliminar hecho? Esta acción no se puede deshacer')) {
-                        doConfirm();
-                    }
-                }
-            }
-        </script>
     </div>
 
+    <!-- Formulario oculto para eliminar -->
+    <form id="deleteForm" th:method="post" style="display:none;">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    </form>
 
+    <script>
+        function confirmDelete(handle) {
+            if (!handle) return;
+            const doConfirm = () => {
+                const form = document.getElementById('deleteForm');
+                form.action = `/admin/hecho/${encodeURIComponent(handle)}/eliminar`;
+                form.submit();
+            };
+            if (window.Swal) {
+                Swal.fire({
+                    title: '¿Eliminar hecho?',
+                    text: 'Esta acción no se puede deshacer',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6'
+                }).then(r => { if (r.isConfirmed) doConfirm(); });
+            } else {
+                if (confirm('¿Eliminar hecho? Esta acción no se puede deshacer')) doConfirm();
+            }
+        }
+
+        function filterRequests(){ /* (placeholder, tu lógica actual) */ }
+        function resetFilters(){ /* (placeholder, tu lógica actual) */ }
+    </script>
+</div>
 </html>

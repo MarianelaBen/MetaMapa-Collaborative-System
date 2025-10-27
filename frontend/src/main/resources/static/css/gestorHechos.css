@@ -526,3 +526,29 @@ header .logo {
     .footer-container{ grid-template-columns:1fr; }
     .socials a{ margin-bottom:8px; }
 }
+
+.pagination-btn.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.pagination-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    padding: 0 8px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.table td:nth-child(3) {
+    max-width: 520px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

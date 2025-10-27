@@ -867,3 +867,44 @@
         font-size: 1.5rem;
       }
     }
+
+    .file-preview-list {
+        margin-top: 1rem;
+        text-align: left;
+    }
+
+    .file-preview-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: #f9fafb;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        transition: background 0.3s;
+    }
+
+    .file-preview-item:hover {
+        background: #eef6ff;
+    }
+
+    .file-icon {
+        font-size: 1.8rem;
+        color: #004080;
+    }
+
+    .file-info-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .file-size {
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
