@@ -18,6 +18,8 @@ import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IColeccionService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,6 +97,11 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
                 .map(this::hechoOutputDTO)
                 .collect(Collectors.toList());
     }
+
+  @Override
+  public Page<HechoOutputDTO> obtenerHechosConPaginacion(Pageable pageable) {
+    return hechoRepository.findAll(pageable).map(this::hechoOutputDTO);
+  }
 
     @Override
     public void sumarVistaColeccion(String handle){

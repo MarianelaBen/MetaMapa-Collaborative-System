@@ -24,7 +24,7 @@ public class LoginService {
     }
 
     public Usuario autenticarUsuario(String username, String password) {
-        Optional<Usuario> usuarioOpt = usuariosRepository.findByNombreDeUsuario(username);
+        Optional<Usuario> usuarioOpt = usuariosRepository.findBymail(username);
 
         if (usuarioOpt.isEmpty()) {
             throw new NotFoundException("Usuario", username);
@@ -49,7 +49,7 @@ public class LoginService {
     }
 
     public UserRolesPermissionsDTO obtenerRolesYPermisosUsuario(String username) {
-        Optional<Usuario> usuarioOpt = usuariosRepository.findByNombreDeUsuario(username);
+        Optional<Usuario> usuarioOpt = usuariosRepository.findBymail(username);
 
         if (usuarioOpt.isEmpty()) {
             throw new NotFoundException("Usuario", username);

@@ -22,7 +22,7 @@ public class UsuarioService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var usuario = repo.findByNombreDeUsuario(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        var usuario = repo.findBymail(username).orElseThrow(() -> new UsernameNotFoundException(username));
         List<GrantedAuthority> authorities = new ArrayList<>();
         usuario.getPermisos().forEach(permiso -> {
             authorities.add(new SimpleGrantedAuthority(permiso.name()));

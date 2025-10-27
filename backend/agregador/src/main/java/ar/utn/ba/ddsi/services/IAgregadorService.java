@@ -7,6 +7,8 @@ import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuente;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Set;
@@ -23,4 +25,5 @@ public interface IAgregadorService {
     public void sumarVistaHecho(Long id);
     List<HechoOutputDTO> top3Hechos();
     List<ColeccionOutputDTO> top4Colecciones();
+    Page<HechoOutputDTO> obtenerHechosConPaginacion(Pageable pageable);
 }

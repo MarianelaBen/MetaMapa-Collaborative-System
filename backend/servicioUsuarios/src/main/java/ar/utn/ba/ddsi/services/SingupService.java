@@ -27,7 +27,7 @@ public class SingupService {
     // email como username
     String username = dto.getEmail();
 
-    if (usuariosRepository.findByNombreDeUsuario(username).isPresent()) {
+    if (usuariosRepository.findBymail(username).isPresent()) {
       throw new IllegalArgumentException("Ya existe un usuario con ese email");
     }
 

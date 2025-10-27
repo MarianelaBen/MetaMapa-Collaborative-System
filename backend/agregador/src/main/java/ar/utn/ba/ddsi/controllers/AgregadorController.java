@@ -21,6 +21,10 @@ import ar.utn.ba.ddsi.services.IConsensoService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
 import ar.utn.ba.ddsi.services.impl.ColeccionService;
 import ar.utn.ba.ddsi.services.impl.SolicitudService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -89,6 +93,25 @@ public class AgregadorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
         }
+    }
+
+    @GetMapping("/paginado")
+    public ResponseEntity<Page<HechoOutputDTO>> getHechosPaginado(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "50") int size,
+        @RequestParam(defaultValue = "fechaAcontecimiento,desc") String sort
+    ) {
+      Sort sortObj;
+      String[] parts = sort.split(",", 2);
+      if (parts.length == 2) {
+        sortObj = "desc".equalsIgnoreCase(parts[1]) ? Sort.by(parts[0]).descending() : Sort.by(parts[0]).ascending();
+      } else {
+        sortObj = Sort.by(sort);
+      }
+
+      Pageable pageable = PageRequest.of(page, Math.max(1, Math.min(size, 200)), sortObj);
+      Page<HechoOutputDTO> pagina = agregadorService.obtenerHechosConPaginacion(pageable);
+      return ResponseEntity.ok(pagina);
     }
 
     @PostMapping(value = "/hechos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -256,8 +256,14 @@ public class AdminService implements IAdminService {
         final String nombreOriginal = (file.getOriginalFilename() != null) ? file.getOriginalFilename() : "archivo.csv";
         final Path destino = guardarArchivo(file);
 
+        final int BATCH_SIZE = 1000; // <<< ajustá si querés 500/1500
         long total = 0;
-        List<Hecho> hechos = new ArrayList<>(10_000);
+        long guardados = 0;
+
+        Map<String, Categoria> categoriaCache = new HashMap<>();
+        categoriaRepo.findAll().forEach(c -> categoriaCache.put(c.getNombre().trim().toUpperCase(), c));
+
+        List<Hecho> batch = new ArrayList<>(BATCH_SIZE);
 
         try (BufferedReader br = Files.newBufferedReader(destino, StandardCharsets.UTF_8);
              CSVReader reader = new CSVReaderBuilder(br).build()) {
@@ -267,26 +273,38 @@ public class AdminService implements IAdminService {
             String[] fila;
             while ((fila = reader.readNext()) != null) {
                 total++;
-                Hecho h = leerArchivo(fila);
-                hechos.add(h);
+                Hecho h = leerArchivo(fila, categoriaCache);
+                batch.add(h);
+
+                if (batch.size() >= BATCH_SIZE) {
+                    hechoRepo.saveAll(batch);
+                    hechoRepo.flush();
+                    batch.clear();
+                    guardados += BATCH_SIZE;
+
+                }
             }
         } catch (IOException | CsvValidationException e) {
             throw new IllegalStateException("No se pudo leer el CSV: " + e.getMessage(), e);
         }
 
-
-        hechoRepo.saveAll(hechos);
+        if (!batch.isEmpty()) {
+            hechoRepo.saveAll(batch);
+            hechoRepo.flush();
+            guardados += batch.size();
+        }
 
         long tiempo = System.currentTimeMillis() - tiempo0;
 
         return InformeDeResultados.builder()
-                .nombreOriginal(nombreOriginal)
-                .guardadoComo(destino.toString().replace('\\','/'))
-                .hechosTotales(total)
-                .guardadosTotales(hechos.size())
-                .tiempoTardado(tiempo)
-                .build();
+            .nombreOriginal(nombreOriginal)
+            .guardadoComo(destino.toString().replace('\\','/'))
+            .hechosTotales(total)
+            .guardadosTotales(guardados)
+            .tiempoTardado(tiempo)
+            .build();
     }
+
 
     private Path guardarArchivo(MultipartFile file) {
         try {
@@ -305,7 +323,7 @@ public class AdminService implements IAdminService {
         }
     }
 
-    private Hecho leerArchivo(String[] fila) {
+    private Hecho leerArchivo(String[] fila, Map<String, Categoria> categoriaCache) {
         if (fila == null || fila.length < 6) {
             throw new IllegalArgumentException("Fila inválida: se esperaban 6 columnas");
         }
@@ -340,9 +358,12 @@ public class AdminService implements IAdminService {
             throw new IllegalArgumentException("Fecha inválida (formato esperado dd/MM/yyyy)");
         }
 
-        Categoria categoria = categoriaRepo
-                .findByNombreIgnoreCase(categoriaNombre)
-                .orElseGet(() -> categoriaRepo.save(new Categoria(categoriaNombre)));
+        String key = categoriaNombre.trim().toUpperCase();
+        Categoria categoria = categoriaCache.get(key);
+        if (categoria == null) {
+            categoria = categoriaRepo.save(new Categoria(categoriaNombre));
+            categoriaCache.put(key, categoria);
+        }
 
         Ubicacion ubicacion = new Ubicacion(latitud, longitud);
 
