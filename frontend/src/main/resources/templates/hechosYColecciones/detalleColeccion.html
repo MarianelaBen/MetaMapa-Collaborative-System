@@ -110,7 +110,7 @@
                     </div> -->
                     <div class="hecho-card" th:each="hecho : ${hechos}">
                         <h3 class="hecho-title" th:text="${hecho.titulo}"></h3>
-                        <div class="hecho-category" th:text="${hecho.categoria}"></div>
+                        <div class="hecho-category" th:text="${hecho.categoria.nombre}"></div>
                         <p class="hecho-description" th:text="${hecho.descripcion}"></p>
 
                         <div class="hecho-meta">

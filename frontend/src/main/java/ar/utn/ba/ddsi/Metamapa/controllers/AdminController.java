@@ -19,6 +19,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
@@ -68,7 +69,7 @@ public class AdminController {
   @PreAuthorize("hasAnyRole('ADMIN')")
   public String mostrarGestorHechos(
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "20") int size,
+      @RequestParam(defaultValue = "50") int size,
       Model model
   ) {
         List<CategoriaDTO> categorias = adminService.obtenerCategorias();
@@ -245,6 +246,33 @@ public class AdminController {
         }
     }
 
+    @DeleteMapping("/categorias/{id}/eliminar")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String eliminarCategoria(@PathVariable Long id,
+                                    RedirectAttributes redirectAttributes
+    ) {
+        try {
+            adminService.eliminarCategoria(id);
+            redirectAttributes.addFlashAttribute("mensaje", "Categoria eliminada exitosamente");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "success");
+            // REDIRECT explícito a la ruta del panel
+            return "redirect:/admin/gestor-hechos";
+        } catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/admin/gestor-hechos";
+        } catch (ValidationException e) {
+            redirectAttributes.addFlashAttribute("mensaje", "Error de validación: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/admin/gestor-hechos";
+        } catch (Exception e) {
+
+            redirectAttributes.addFlashAttribute("mensaje", "Error al eliminar la categoria");
+            redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/admin/gestor-hechos";
+        }
+    }
+
   @GetMapping("/coleccion/{handle}/editar")
   @PreAuthorize("hasAnyRole('ADMIN')")
   public String editarColeccionForm(@PathVariable String handle, Model model, RedirectAttributes redirect) {
@@ -310,5 +338,49 @@ public class AdminController {
       return "redirect:/admin/panel-control";
     }
   }
+
+    @PostMapping("/categorias/{id}/editar")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String editarCategoria(@PathVariable Long id,
+                                         @ModelAttribute("categoria") CategoriaDTO form,
+                                         BindingResult binding,
+                                         RedirectAttributes redirect) {
+        if (binding.hasErrors()) {
+            redirect.addFlashAttribute("mensaje", "Revisá los campos del formulario.");
+            redirect.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/admin/gestor-hechos";
+        }
+        try {
+            adminService.actualizarCategoria(id, form);
+
+            redirect.addFlashAttribute("mensaje", "Categoria actualizada correctamente.");
+            redirect.addFlashAttribute("tipoMensaje", "success");
+            return "redirect:/admin/gestor-hechos";
+
+        } catch (ValidationException e) {
+            redirect.addFlashAttribute("mensaje", "Error de validación: " + e.getMessage());
+            redirect.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/admin/categorias/" + id + "/editar";
+
+        } catch (NotFoundException e) {
+            redirect.addFlashAttribute("mensaje", e.getMessage());
+            redirect.addFlashAttribute("tipoMensaje", "error");
+            return "redirect:/admin/gestor-hechos";
+        }
+    }
+
+    @PostMapping("/categorias/nueva")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String crearCategoria(@ModelAttribute("categoria") CategoriaDTO categoria, RedirectAttributes redirect){
+        try {
+
+            CategoriaDTO creada = adminService.crearCategoria(categoria);
+            redirect.addFlashAttribute("mensaje", "Categoria creada: " + creada.getNombre());
+            return "redirect:/admin/gestor-hechos";
+        } catch (Exception e) {
+            redirect.addFlashAttribute("error", "Error al crear la categoria.");
+            return "redirect:/admin/gestor-hechos";
+        }
+    }
 
 }

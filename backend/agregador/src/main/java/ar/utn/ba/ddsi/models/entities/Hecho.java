@@ -46,7 +46,7 @@ public class Hecho {
    private String descripcion;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "categoria_id", nullable = false)
+  @JoinColumn(name = "categoria_id")
    private Categoria categoria;
 
   @Embedded

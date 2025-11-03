@@ -90,11 +90,41 @@ public class AdminController {
           return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                   .body(Map.of("error", "Error al crear categoria", "mensaje", e.getMessage()));
       }
-
   }
 
+    @DeleteMapping("/categorias/{id}")
+    public ResponseEntity<?> eliminarCategoria(@PathVariable Long id) {
+        try {
+            servicio.eliminarCategoria(id);
+            return ResponseEntity.ok(Map.of("mensaje", "Categoria borrada correctamente"));
 
-  //Actualiza coleccion por id
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "Error de integridad de datos", "mensaje", "No se puede eliminar la categoría porque está siendo usada por uno o más hechos."));
+
+        } catch (Exception e) {
+            return ResponseEntity.status((HttpStatus.NOT_FOUND))
+                    .body(Map.of("error", "Error al eliminar la categoria", "mensaje", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/categorias/{id}")
+    public ResponseEntity<?> actualizarCategoria(@PathVariable Long id, @RequestBody CategoriaInputDTO dto) {
+        try{
+            return ResponseEntity.ok(servicio.actualizarCategoria(id, dto));
+        } catch (NoSuchElementException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Categoria no encontrada", "mensaje", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Error al editar la categoria", "mensaje", e.getMessage()));
+
+        }
+    }
+
+
+
+    //Actualiza coleccion por id
   @PutMapping("/colecciones/{id}")
   public ResponseEntity<?> actualizarColeccion(@PathVariable String id, @RequestBody ColeccionInputDTO dto) {
     try{

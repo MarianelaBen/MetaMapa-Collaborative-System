@@ -1,9 +1,6 @@
 package ar.utn.ba.ddsi.Metamapa.services;
 
-import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.InformeDeResultadosDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.PaginaDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 
@@ -54,6 +52,33 @@ public class AdminService {
               .block();
   }
 
+    public void eliminarCategoria(Long id){
+        try {
+            webClientAdmin
+                    .delete()
+                    .uri("/categorias/{id}", id)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        } catch (WebClientResponseException e) {
+            throw new RuntimeException("Error al eliminar categoria: " + e.getResponseBodyAsString(), e);
+        }
+    }
+
+    public CategoriaDTO actualizarCategoria(Long id, CategoriaDTO categoria) {
+        try {
+            return webClientAdmin
+                    .put()
+                    .uri("/categorias/{id}", id)
+                    .bodyValue(categoria)
+                    .retrieve()
+                    .bodyToMono(CategoriaDTO.class)
+                    .block();
+        } catch (WebClientResponseException e) {
+
+            throw new RuntimeException("Error al actualizar categoria: " + e.getResponseBodyAsString(), e);
+        }
+    }
   public InformeDeResultadosDTO importarHechosCsv(MultipartFile archivo) {
     MultipartBodyBuilder body = new MultipartBodyBuilder();
     body.part("archivo", archivo.getResource())
@@ -68,4 +93,14 @@ public class AdminService {
         .bodyToMono(InformeDeResultadosDTO.class)
         .block();
   }
+
+    public CategoriaDTO crearCategoria(CategoriaDTO categoria) {
+        return webClientAdmin
+                .post()
+                .uri("/categorias")
+                .bodyValue(categoria)
+                .retrieve()
+                .bodyToMono(CategoriaDTO.class)
+                .block();
+    }
 }

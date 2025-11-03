@@ -171,8 +171,12 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     hechoOutputDTO.setId(hecho.getId());
     hechoOutputDTO.setTitulo(hecho.getTitulo());
     hechoOutputDTO.setDescripcion(hecho.getDescripcion());
-    hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
-    hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
+      if (hecho.getCategoria() == null) {
+          hechoOutputDTO.setCategoria(null);
+      } else {
+          hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
+      }
+      hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
     hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     hechoOutputDTO.setFueEliminado(hecho.getFueEliminado());
 

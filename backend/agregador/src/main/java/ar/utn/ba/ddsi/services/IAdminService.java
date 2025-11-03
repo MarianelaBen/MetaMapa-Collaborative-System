@@ -42,5 +42,7 @@ public interface IAdminService {
 
   InformeDeResultados procesarCsv(MultipartFile file);
     CategoriaOutputDTO crearCategoria(CategoriaInputDTO dto);
+    void eliminarCategoria(Long id);
+    public CategoriaOutputDTO actualizarCategoria(Long id, CategoriaInputDTO dto);
 
 }

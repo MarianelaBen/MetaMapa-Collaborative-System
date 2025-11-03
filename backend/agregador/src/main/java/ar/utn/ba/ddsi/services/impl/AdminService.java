@@ -396,4 +396,27 @@ public class AdminService implements IAdminService {
             throw new RuntimeException(e);
         }
     }
+
+    @Transactional
+    public void eliminarCategoria(Long id) {
+        Categoria categoria = categoriaRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id: " + id));
+        List<Hecho> hechosAsociados = hechoRepo.findByCategoriaId(id);
+
+        for (Hecho hecho : hechosAsociados) {
+            hecho.setCategoria(null);
+            hechoRepo.save(hecho);
+        }
+
+        categoriaRepo.delete(categoria);
+
+    }
+    @Override
+    public CategoriaOutputDTO actualizarCategoria(Long id, CategoriaInputDTO dto) {
+        Categoria existing = categoriaRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Categoria no encontrada: " + id));
+        existing.setNombre(dto.getNombre());
+        categoriaRepo.save(existing);
+        return new CategoriaOutputDTO(existing.getNombre());
+    }
 }
