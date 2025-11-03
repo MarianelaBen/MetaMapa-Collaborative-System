@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.Metamapa.services;
 
+import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.InformeDeResultadosDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.PaginaDTO;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.List;
 
 @Service
 public class AdminService {
@@ -41,6 +44,14 @@ public class AdminService {
         .retrieve()
         .bodyToMono(new org.springframework.core.ParameterizedTypeReference<PaginaDTO<HechoDTO>>() {})
         .block();
+  }
+
+  public List<CategoriaDTO> obtenerCategorias() {
+      return webClientPublic.get()
+              .uri("/categorias")
+              .retrieve()
+              .bodyToMono(new ParameterizedTypeReference<List<CategoriaDTO>>() {})
+              .block();
   }
 
   public InformeDeResultadosDTO importarHechosCsv(MultipartFile archivo) {

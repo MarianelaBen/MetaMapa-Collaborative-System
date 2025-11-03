@@ -128,6 +128,114 @@
         </div>
     </div>
 
+    <div class="table-section">
+        <div class="section-header">
+            <h3>Gestión de Categorías</h3>
+            <div class="section-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchCategorias" placeholder="Buscar categorías..." />
+                </div>
+                <button class="btn-refresh-table" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                    Actualizar
+                </button>
+                <button class="btn-add-new" onclick="mostrarModalCategoria()">
+                    <i class="fas fa-plus"></i>
+                    Nueva Categoría
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="admin-table">
+                <thead th:if="${categorias.size() >= 1}">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${categorias.isEmpty()}">
+                    <td colspan="4" class="text-center py-5">
+                        <i class="fa-regular fa-folder-open fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No hay categorías registradas</h5>
+                    </td>
+                </tr>
+
+                <tr th:if="${categorias.size() >= 1}" th:each="categoria : ${categorias}">
+                    <td th:text="${categoria.id}">1</td>
+                    <td th:text="${categoria.nombre}">Medio Ambiente</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button type="button"
+                                    class="btn-action edit"
+                                    title="Editar"
+                                    th:attr="data-id=${categoria.id}, data-nombre=${categoria.nombre}"
+                                    onclick="editarCategoria(this.dataset.id, this.dataset.nombre)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button"
+                                    class="btn-action delete"
+                                    title="Eliminar"
+                                    th:attr="data-id=${categoria.id}"
+                                    onclick="confirmarEliminarCategoria(this.dataset.id)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar categoría -->
+    <div id="modalCategoria" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitulo">Nueva Categoría</h3>
+                <button class="modal-close" onclick="cerrarModalCategoria()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="formCategoria" th:action="@{/admin/categorias/guardar}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" id="categoriaId" name="id" />
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="categoriaNombre">Nombre de la Categoría *</label>
+                        <input type="text"
+                               id="categoriaNombre"
+                               name="nombre"
+                               class="form-input"
+                               placeholder="Ej: Medio Ambiente, Educación, Salud..."
+                               required
+                               maxlength="100" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalCategoria()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Formulario oculto para eliminar categoría -->
+    <form id="deleteCategoriaForm" th:method="post" style="display:none;">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    </form>
+
+
     <!-- Formulario oculto para eliminar -->
     <form id="deleteForm" th:method="post" style="display:none;">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -159,6 +267,82 @@
 
         function filterRequests(){ /* (placeholder, tu lógica actual) */ }
         function resetFilters(){ /* (placeholder, tu lógica actual) */ }
+
+        // Mostrar modal para nueva categoría
+        function mostrarModalCategoria() {
+            document.getElementById('modalTitulo').textContent = 'Nueva Categoría';
+            document.getElementById('formCategoria').reset();
+            document.getElementById('categoriaId').value = '';
+            document.getElementById('modalCategoria').style.display = 'flex';
+        }
+
+        // Cerrar modal
+        function cerrarModalCategoria() {
+            document.getElementById('modalCategoria').style.display = 'none';
+        }
+
+        // Editar categoría
+        function editarCategoria(id, nombre) {
+            document.getElementById('modalTitulo').textContent = 'Editar Categoría';
+            document.getElementById('categoriaId').value = id;
+            document.getElementById('categoriaNombre').value = nombre;
+            document.getElementById('modalCategoria').style.display = 'flex';
+        }
+
+        // Confirmar eliminación
+        function confirmarEliminarCategoria(id) {
+            if (!id) {
+                console.warn('confirmarEliminarCategoria: id vacío');
+                return;
+            }
+
+            const doDelete = () => {
+                const form = document.getElementById('deleteCategoriaForm');
+                form.action = `/admin/categorias/${encodeURIComponent(id)}/eliminar`;
+                form.submit();
+            };
+
+            if (window.Swal) {
+                Swal.fire({
+                    title: '¿Eliminar categoría?',
+                    text: 'Esta acción no se puede deshacer',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6'
+                }).then(result => {
+                    if (result.isConfirmed) doDelete();
+                }).catch(err => {
+                    console.error('Swal error:', err);
+                });
+            } else {
+                if (window.confirm('¿Eliminar categoría? Esta acción no se puede deshacer')) {
+                    doDelete();
+                }
+            }
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modalCategoria')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarModalCategoria();
+            }
+        });
+
+        // Búsqueda en tiempo real
+        document.getElementById('searchCategorias')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.admin-table tbody tr');
+
+            rows.forEach(row => {
+                if (row.cells.length > 1) {
+                    const nombre = row.cells[1].textContent.toLowerCase();
+                    row.style.display = nombre.includes(searchTerm) ? '' : 'none';
+                }
+            });
+        });
     </script>
 </div>
 </html>

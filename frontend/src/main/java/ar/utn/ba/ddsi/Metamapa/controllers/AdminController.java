@@ -68,9 +68,10 @@ public class AdminController {
   @PreAuthorize("hasAnyRole('ADMIN')")
   public String mostrarGestorHechos(
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "50") int size,
+      @RequestParam(defaultValue = "20") int size,
       Model model
   ) {
+        List<CategoriaDTO> categorias = adminService.obtenerCategorias();
     PaginaDTO<HechoDTO> resp = adminService.obtenerHechosPaginado(page, size);
 
     long from = resp.number * (long) resp.size + (resp.numberOfElements > 0 ? 1 : 0);
@@ -80,6 +81,7 @@ public class AdminController {
 
     model.addAttribute("titulo", "Gestor de Hechos");
     model.addAttribute("hechos", resp.content);
+    model.addAttribute("categorias", categorias);
 
     // paginación
     model.addAttribute("page", resp.number);
