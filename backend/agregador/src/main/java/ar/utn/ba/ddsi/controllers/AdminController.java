@@ -1,12 +1,10 @@
 package ar.utn.ba.ddsi.controllers;
 
+import ar.utn.ba.ddsi.models.dtos.input.CategoriaInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.ResumenDTO;
-import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
@@ -80,6 +78,18 @@ public class AdminController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(Map.of("error", "Error al crear coleccion", "mensaje", e.getMessage()));
     }
+
+  }
+
+  @PostMapping("/categorias")
+  public ResponseEntity<?> crearCategoria(@RequestBody CategoriaInputDTO dto) {
+      try{
+          CategoriaOutputDTO categoriaCreada = servicio.crearCategoria(dto);
+          return ResponseEntity.status(HttpStatus.CREATED).body(categoriaCreada);
+      }catch(Exception e){
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                  .body(Map.of("error", "Error al crear categoria", "mensaje", e.getMessage()));
+      }
 
   }
 

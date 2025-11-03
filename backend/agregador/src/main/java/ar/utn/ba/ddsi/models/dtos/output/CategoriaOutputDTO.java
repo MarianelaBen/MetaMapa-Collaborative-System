@@ -8,7 +8,7 @@ import lombok.Setter;
 public class CategoriaOutputDTO {
   private String nombre;
 
-  public CategoriaOutputDTO(String nombre, Long cantidad){
+  public CategoriaOutputDTO(String nombre){
     this.nombre = nombre;
   }
 

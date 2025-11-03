@@ -385,4 +385,15 @@ public class AdminService implements IAdminService {
     private static boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
     }
+
+    @Override
+    public CategoriaOutputDTO crearCategoria(CategoriaInputDTO dto){
+        try{
+            Categoria categoria = new Categoria(dto.getNombre());
+            categoriaRepo.save(categoria);
+            return new CategoriaOutputDTO(dto.getNombre());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

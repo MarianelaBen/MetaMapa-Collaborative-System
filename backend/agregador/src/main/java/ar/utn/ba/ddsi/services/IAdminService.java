@@ -1,12 +1,10 @@
 package ar.utn.ba.ddsi.services;
 
+import ar.utn.ba.ddsi.models.dtos.input.CategoriaInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
 
-import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.FuenteOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.*;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
@@ -43,4 +41,6 @@ public interface IAdminService {
     SolicitudOutputDTO getSolicitud(Long id);
 
   InformeDeResultados procesarCsv(MultipartFile file);
+    CategoriaOutputDTO crearCategoria(CategoriaInputDTO dto);
+
 }
