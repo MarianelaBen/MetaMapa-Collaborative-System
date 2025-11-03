@@ -43,6 +43,7 @@ public class AdminService implements IAdminService {
     private final IColeccionService coleccionService;
     private final IHechoRepository hechoRepo;
     private final ICategoriaRepository categoriaRepo;
+    private static final String DEFAULT_CATEGORY_NAME = "Sin Categoria";
 
     public AdminService(IColeccionRepository coleccionRepo,
                         IFuenteRepository fuenteRepo,
@@ -399,18 +400,39 @@ public class AdminService implements IAdminService {
 
     @Transactional
     public void eliminarCategoria(Long id) {
-        Categoria categoria = categoriaRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id: " + id));
-        List<Hecho> hechosAsociados = hechoRepo.findByCategoriaId(id);
 
-        for (Hecho hecho : hechosAsociados) {
-            hecho.setCategoria(null);
-            hechoRepo.save(hecho);
+        Categoria categoriaParaEliminar = categoriaRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id: " + id));
+
+        if (DEFAULT_CATEGORY_NAME.equalsIgnoreCase(categoriaParaEliminar.getNombre())) {
+            throw new RuntimeException("Error: No se puede eliminar la categoría por defecto '" + DEFAULT_CATEGORY_NAME + "'.");
         }
 
-        categoriaRepo.delete(categoria);
+        Optional<Categoria> defaultCategoriaOpt = categoriaRepo.findByNombreIgnoreCase(DEFAULT_CATEGORY_NAME);
 
+        Categoria defaultCategoria;
+        if (defaultCategoriaOpt.isPresent()) {
+            defaultCategoria = defaultCategoriaOpt.get();
+        } else {
+            defaultCategoria = new Categoria();
+            defaultCategoria.setNombre(DEFAULT_CATEGORY_NAME);
+            defaultCategoria = categoriaRepo.save(defaultCategoria);
+        }
+
+
+        List<Hecho> hechosAsociados = hechoRepo.findByCategoria(categoriaParaEliminar);
+
+
+        if (!hechosAsociados.isEmpty()) {
+            for (Hecho hecho : hechosAsociados) {
+                hecho.setCategoria(defaultCategoria);
+                hechoRepo.save(hecho);
+            }
+        }
+
+        categoriaRepo.delete(categoriaParaEliminar);
     }
+
     @Override
     public CategoriaOutputDTO actualizarCategoria(Long id, CategoriaInputDTO dto) {
         Categoria existing = categoriaRepo.findById(id)

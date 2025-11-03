@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.models.repositories;
 
+import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +19,7 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
     List<Hecho> findByColeccionHandle(@Param("coleccionHandle") String coleccionHandle);
     List<Hecho> findTop3ByFueEliminadoFalseOrderByCantVistasDesc();
     List<Hecho> findByCategoriaId(Long categoriaId);
+    List<Hecho> findByCategoria(Categoria categoria);
 
     //List<Hecho> findByContribuyente_IdAndFueEliminadoFalseOrderByFechaCargaDesc(Long contribuyenteId);
     //List<Hecho> findAllByContribuyenteWithJoins(@Param("contribuyenteId") Long contribuyenteId);
