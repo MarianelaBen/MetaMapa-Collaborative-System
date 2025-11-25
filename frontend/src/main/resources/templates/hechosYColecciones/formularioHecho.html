@@ -25,10 +25,13 @@
             </div>
             <div class="col">
                 <label for="categoria">Categoría <span style="color:red">*</span></label>
-                <select id="categoria" th:field="*{categoria}" required>
-                    <option value="">Seleccione una categoría</option>
-                    <option th:each="categoria : ${categorias}" th:value="${categoria.nombre}" th:text="${categoria.nombre}"></option>
-                </select>
+                <input list="lista-categorias" id="categoria" th:field="*{categoria}"
+                       placeholder="Escriba o seleccione una categoría" required>
+
+                <datalist id="lista-categorias">
+                    <option th:each="categoria : ${categorias}"
+                            th:value="${categoria.nombre}"></option>
+                </datalist>
             </div>
         </div>
 

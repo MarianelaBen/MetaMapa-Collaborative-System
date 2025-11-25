@@ -8,9 +8,12 @@ import ar.utn.ba.ddsi.services.IHechoService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +26,7 @@ public class FuenteDinamicaController {
   @Autowired
   private ISolicitudService solicitudService;
 
-  @PostMapping
+  /*@PostMapping
   public ResponseEntity<?> crearHecho(@RequestBody HechoInputDTO hechoInputDTO) {
     try {
       HechoOutputDTO hechoCreado = hechoService.crear(hechoInputDTO);
@@ -33,6 +36,21 @@ public class FuenteDinamicaController {
           .body(Map.of("error", "Error al crear hecho", "mensaje", e.getMessage()));
 
       // return error("Error al crear hecho", e);
+    }
+  }*///TODO BORRAR AL APLICAR BIEN EL NUEVO CREAR HECHOS
+
+  @PostMapping(value = "/hechos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<?> crearHecho(
+      @RequestPart("hecho") HechoInputDTO hechoInput,
+      @RequestPart(value = "multimedia", required = false) MultipartFile[] multimedia) {
+    try {
+      HechoOutputDTO creado = hechoService.crear(hechoInput, multimedia);
+      return ResponseEntity.ok(creado);
+    } catch (IllegalArgumentException ex) {
+      return ResponseEntity.badRequest().body(ex.getMessage());
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      return ResponseEntity.status(500).body("Error creando hecho: " + ex.getMessage());
     }
   }
 

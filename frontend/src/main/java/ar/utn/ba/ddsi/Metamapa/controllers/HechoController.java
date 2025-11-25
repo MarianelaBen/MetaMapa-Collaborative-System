@@ -34,6 +34,8 @@ import java.util.List;
 public class HechoController {
   @Value("${backend.origin}")
   private String backendOrigin;
+  @Value("${backend.dinamica}")
+  private String backendDinamica;
   private final HechoService hechoService;
     private final MetaMapaApiService metaMapaApiService;
     private final ColeccionService coleccionService;
@@ -135,8 +137,9 @@ public class HechoController {
     }
 
     HechoDTO creado = this.hechoService.subirHecho(hecho, multimedia);
-    redirect.addFlashAttribute("mensaje", "Se envio correctamente el Hecho");
-    redirect.addFlashAttribute("tipoMensaje", "success"); //mensaje de que esta ok
+    redirect.addFlashAttribute("mensaje",
+        "Tu hecho ha sido creado correctamente. Podrás verlo en la próxima actualización del mapa.");
+    redirect.addFlashAttribute("tipoMensaje", "success");
 
     return "redirect:/hechos/nuevo";
 

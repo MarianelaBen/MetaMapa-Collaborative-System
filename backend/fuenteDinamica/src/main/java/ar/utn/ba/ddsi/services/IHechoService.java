@@ -7,12 +7,14 @@ import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Contribuyente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
+import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IHechoService {
-  HechoOutputDTO crear(HechoInputDTO hechoInputDTO);
+  //HechoOutputDTO crear(HechoInputDTO hechoInputDTO);
+  HechoOutputDTO crear(HechoInputDTO hechoInputDTO , MultipartFile[] multimedia);
   HechoOutputDTO hechoOutputDTO(Hecho hecho);
   void eliminar(Long id);
   boolean puedeEditar(Long id1 , Long id2, LocalDate fecha);

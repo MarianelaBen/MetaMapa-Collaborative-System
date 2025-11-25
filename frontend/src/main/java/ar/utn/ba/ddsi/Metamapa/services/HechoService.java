@@ -19,20 +19,20 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 public class HechoService {
 
     private final WebClient webClientPublic;
     private final WebClient webClientAdmin;
+    private final WebClient webClientDin;
     private final ObjectMapper objectMapper;
 
     public HechoService(WebClient.Builder webClientBuilder,
                             @Value("${backend.api.base-url-agregador}") String baseUrl,
                             @Value("${backend.api.base-url}") String baseUrlAdmin,
+                            @Value("${backend.api.base-url-dinamica}") String baseDin,
                             ObjectMapper objectMapper) {
         this.webClientPublic = webClientBuilder
                 .baseUrl(baseUrl)
@@ -40,6 +40,9 @@ public class HechoService {
         this.webClientAdmin = webClientBuilder
                 .baseUrl(baseUrlAdmin)
                 .build();
+        this.webClientDin = webClientBuilder
+            .baseUrl(baseDin)
+            .build();
         this.objectMapper = objectMapper;
     }
 
@@ -74,7 +77,7 @@ public class HechoService {
         }
     }
 
-    public HechoDTO subirHecho(HechoDTO dto, MultipartFile[] multimedia) {
+    /*public HechoDTO subirHecho(HechoDTO dto, MultipartFile[] multimedia) {
         try {
             // Construimos multipart
             MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
@@ -112,7 +115,7 @@ public class HechoService {
             }
 
             // Hacemos la petición
-            return webClientPublic.post()
+            return webClientDin.post()
                     .uri("/hechos")
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(BodyInserters.fromMultipartData(parts))
@@ -123,7 +126,93 @@ public class HechoService {
         } catch (IOException e) {
             throw new RuntimeException("Error serializando archivos para envío: " + e.getMessage(), e);
         }
+    }*/
+
+    public HechoDTO subirHecho(HechoDTO dto, MultipartFile[] multimedia) {
+        try {
+            // Construimos multipart
+            MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+
+            // ==========================
+            // PARTE JSON (hecho)
+            // ==========================
+            // Armamos a mano el JSON con la estructura que espera fuenteDinámica
+            Map<String, Object> hechoJson = new HashMap<>();
+
+            // Campos simples
+            hechoJson.put("titulo", dto.getTitulo());
+            hechoJson.put("descripcion", dto.getDescripcion());
+            hechoJson.put("fechaAcontecimiento", dto.getFechaAcontecimiento());
+
+            // categoria: objeto { id, nombre }
+            Map<String, Object> categoriaJson = new HashMap<>();
+            categoriaJson.put("id", null);                       // dejamos id null
+            categoriaJson.put("nombre", dto.getCategoria());     // antes era un String plano
+            hechoJson.put("categoria", categoriaJson);
+
+            // ciudad: objeto { latitud, longitud, provincia }
+            Map<String, Object> ciudadJson = new HashMap<>();
+            ciudadJson.put("latitud", dto.getLatitud());
+            ciudadJson.put("longitud", dto.getLongitud());
+            ciudadJson.put("provincia", dto.getProvincia());
+            hechoJson.put("ciudad", ciudadJson);
+
+            // pathsMultimedia: lista vacía; Dinámica lo completa después con MinIO
+            hechoJson.put("pathsMultimedia", List.of());
+
+            // Serializamos ese Map a JSON
+            String json = objectMapper.writeValueAsString(hechoJson);
+
+            HttpHeaders jsonHeaders = new HttpHeaders();
+            jsonHeaders.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> hechoPart = new HttpEntity<>(json, jsonHeaders);
+            parts.add("hecho", hechoPart);
+
+            // ==========================
+            // PARTE FILES (multimedia)
+            // ==========================
+
+            // Solo añadir archivos si realmente hay alguno no vacío
+            boolean hayArchivos = multimedia != null && Arrays.stream(multimedia)
+                .anyMatch(f -> f != null && !f.isEmpty());
+
+            if (hayArchivos) {
+                for (MultipartFile file : multimedia) {
+                    if (file != null && !file.isEmpty()) {
+                        ByteArrayResource resource = new ByteArrayResource(file.getBytes()) {
+                            @Override
+                            public String getFilename() {
+                                return file.getOriginalFilename();
+                            }
+                        };
+
+                        HttpHeaders fileHeaders = new HttpHeaders();
+                        fileHeaders.setContentDispositionFormData("multimedia", file.getOriginalFilename());
+                        String contentType = file.getContentType() != null
+                            ? file.getContentType()
+                            : "application/octet-stream";
+                        fileHeaders.setContentType(MediaType.parseMediaType(contentType));
+
+                        HttpEntity<ByteArrayResource> filePart = new HttpEntity<>(resource, fileHeaders);
+                        parts.add("multimedia", filePart);
+                    }
+                }
+            }
+
+            // Hacemos la petición a fuenteDinámica
+            return webClientDin.post()
+                .uri("/hechos") // con base-url-dinamica = http://localhost:8084/api → queda /api/hechos
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(parts))
+                .retrieve()
+                .bodyToMono(HechoDTO.class)
+                .block();
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error serializando archivos para envío: " + e.getMessage(), e);
+        }
     }
+
 
     public HechoDTO obtenerHechoPorId(Long id) {
         HechoDTO hecho = webClientPublic.get()

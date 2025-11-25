@@ -20,7 +20,7 @@ public class CategoriaService implements ICategoriaService {
   @Autowired
   private ICategoriaRepository categoriaRepository;
 
-  @Override
+  /*@Override
   public Categoria findCategory(CategoriaInputDTO categoriaInputDTO){
     if (categoriaInputDTO.getId() == null){
       Categoria categoria = new Categoria(categoriaInputDTO.getNombre().toUpperCase());
@@ -32,6 +32,17 @@ public class CategoriaService implements ICategoriaService {
       }
     return categoriaRepository.findById(categoriaInputDTO.getId()).orElse(null);
     }
+  }*/
+
+  @Override
+  public Categoria findCategory(CategoriaInputDTO categoriaInputDTO){
+    Categoria categoria = categoriaRepository.findByNombreIgnoreCase(categoriaInputDTO.getNombre())
+        .orElseGet(() -> {
+          Categoria c = new Categoria();
+          c.setNombre(categoriaInputDTO.getNombre());
+          return categoriaRepository.save(c);
+        });
+    return categoria;
   }
 
   public Categoria crear (Categoria categoria){

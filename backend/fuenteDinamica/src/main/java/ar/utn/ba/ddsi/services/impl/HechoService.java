@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
@@ -35,6 +32,7 @@ import java.time.temporal.ChronoUnit;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class HechoService implements IHechoService {
@@ -52,16 +50,34 @@ public class HechoService implements IHechoService {
   @Lazy
   @Autowired
   private ISolicitudService solicitudService;
+  @Autowired
+  private MinioService minioService;
 
   @PersistenceContext
   private EntityManager em; //TODO ESTO ES SOLO PARA PRUEBAS, PORQUE NO HAY REPO DE CONTR TDV
 
   @Override
   @Transactional //TODO ESTO ES SOLO PARA PRUEBAS, PORQUE NO HAY REPO DE CONTR TDV
-  public HechoOutputDTO crear(HechoInputDTO hechoInputDTO) {
+  public HechoOutputDTO crear(HechoInputDTO hechoInputDTO , MultipartFile[] multimedia) {
+    // validaciones básicas
+    if (hechoInputDTO.getTitulo() == null || hechoInputDTO.getTitulo().isBlank()) {
+      throw new IllegalArgumentException("Título obligatorio");
+    }
+    if (hechoInputDTO.getDescripcion() == null || hechoInputDTO.getDescripcion().isBlank()) {
+      throw new IllegalArgumentException("Descripción obligatoria");
+    }
+    if (hechoInputDTO.getCategoria() == null || hechoInputDTO.getCategoria().getNombre().isBlank()) {
+      throw new IllegalArgumentException("Categoría obligatoria");
+    }
+    if (hechoInputDTO.getFechaAcontecimiento() == null) {
+      throw new IllegalArgumentException("Fecha/hora del acontecimiento obligatoria");
+    }
     try {
       Categoria categoria = this.categoriaService.findCategory(hechoInputDTO.getCategoria());
-      Ubicacion ubicacion = hechoInputDTO.getCiudad();
+      Ubicacion ubicacion = new Ubicacion();
+      ubicacion.setProvincia(hechoInputDTO.getCiudad().getProvincia());
+      ubicacion.setLatitud(hechoInputDTO.getCiudad().getLatitud());
+      ubicacion.setLongitud(hechoInputDTO.getCiudad().getLongitud());
 
       Hecho hecho = new Hecho(
           hechoInputDTO.getTitulo(),
@@ -71,9 +87,22 @@ public class HechoService implements IHechoService {
           hechoInputDTO.getFechaAcontecimiento(),
           Origen.CARGA_MANUAL);
 
-      if(hechoInputDTO.getPathsMultimedia() != null) {
-        List<ContenidoMultimedia> contenidosMultimedia = mapearMultimedia(hechoInputDTO.getPathsMultimedia());
-        hecho.setContenidosMultimedia(contenidosMultimedia);}
+
+      if (multimedia != null && multimedia.length > 0) {
+
+        List<String> urls = new ArrayList<>();
+        for (MultipartFile file : multimedia) {
+          if (file != null && !file.isEmpty()) {
+            String url = minioService.upload(file);
+            urls.add(url);
+          }
+        }
+
+        List<ContenidoMultimedia> contenidos =
+            mapearMultimedia(urls);
+
+        hecho.setContenidosMultimedia(contenidos);
+      }
 
       // hecho.agregarEtiqueta(new Etiqueta("prueba"));  Mas adelante cambiar por DTO
       if(hechoInputDTO.getContribuyente() != null) {
