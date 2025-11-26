@@ -328,6 +328,17 @@ public class HechoService {
         }
     }
 
+    public List<HechoDTO> getMisHechos(Long usuarioId) {
+        return webClientPublic.get()
+            .uri(uriBuilder -> uriBuilder
+                .path("/hechos/mis-hechos")
+                .queryParam("usuarioId", usuarioId)
+                .build())
+            .retrieve()
+            .bodyToFlux(HechoDTO.class)
+            .collectList()
+            .block();
+    }
 
 }
 

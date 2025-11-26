@@ -13,6 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -193,6 +197,39 @@ public class MetaMapaApiService {
         }
         return Arrays.asList(arr);
     }
+
+    /*Devuelve el id de usuario (uid) guardado en el accessToken JWT,
+     o null si no se puede decodificar. */
+    public Long getUsuarioIdFromAccessToken() {
+        String token = webApiCallerService.getAccessTokenFromSession();
+        if (token == null || token.isBlank()) {
+            return null;
+        }
+        try {
+            // JWT = header.payload.signature
+            String[] partes = token.split("\\.");
+            if (partes.length < 2) return null;
+
+            String payload = partes[1];
+
+            // Base64 URL-safe decode
+            byte[] decodedBytes = Base64.getUrlDecoder().decode(payload);
+            String json = new String(decodedBytes, StandardCharsets.UTF_8);
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(json);
+
+            JsonNode uidNode = node.get("uid");
+            if (uidNode != null && !uidNode.isNull()) {
+                return uidNode.asLong();
+            }
+            return null;
+        } catch (Exception e) {
+            // log.error("Error al decodificar uid del token", e);
+            return null;
+        }
+    }
+
 
 
 }

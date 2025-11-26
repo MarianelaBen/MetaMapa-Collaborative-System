@@ -26,7 +26,10 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/hechos")
@@ -37,8 +40,8 @@ public class HechoController {
   @Value("${backend.dinamica}")
   private String backendDinamica;
   private final HechoService hechoService;
-    private final MetaMapaApiService metaMapaApiService;
-    private final ColeccionService coleccionService;
+  private final MetaMapaApiService metaMapaApiService;
+  private final ColeccionService coleccionService;
 
   @GetMapping("/{id}")
   public String verDetalleHecho(@PathVariable Long id,
@@ -66,7 +69,7 @@ public class HechoController {
 
   @GetMapping("/nuevo")
   public String verFormulario(Model model) {
-      List<CategoriaDTO> categorias = this.coleccionService.getCategorias();
+    List<CategoriaDTO> categorias = this.coleccionService.getCategorias();
     model.addAttribute("titulo", "Subir hecho");
     model.addAttribute("hecho", new HechoDTO(
         null,
@@ -274,46 +277,77 @@ public class HechoController {
     }
   }
 
-  /*
-  // Si usás Spring Security, mapeá tu user/principal a contribuyenteId.
   @GetMapping("/mis-hechos")
-  public String verMisHechos(Model model
-                             //,@AuthenticationPrincipal UsuarioActual usuario
-  ) {
-    // Fallback de desarrollo: si no hay login, usar un ID fijo (ajusta a tu esquema)
-    Long contribuyenteId = (usuario != null) ? usuario.getId() : 100L;
+  public String verMisHechos(
+      @RequestParam(required = false) String titulo,
+      @RequestParam(required = false) String categoria,
+      @RequestParam(required = false) String estado,
+      Model model) {
 
-    List<HechoDTO> hechos = hechoService.listarHechosDeContribuyente(contribuyenteId);
+    Long usuarioId = metaMapaApiService.getUsuarioIdFromAccessToken();
+
+    // Por ahora, como el agregador NO tiene endpoint para filtrar por usuario,
+    // usamos todos los hechos. Más adelante se cambia a:
+    // List<HechoDTO> hechos = hechoService.getMisHechos(usuarioId);
+    List<HechoDTO> hechos = hechoService.getHechos();
+
+    // Calculamos editable + días restantes
+    for (HechoDTO h : hechos) {
+      if (h.getFechaCarga() != null) {
+        long dias = ChronoUnit.DAYS.between(h.getFechaCarga(), LocalDate.now());
+        boolean editable = dias < 7;
+        h.setEditable(editable);
+        h.setDiasRestantes(editable ? (int) (7 - dias) : 0);
+      } else {
+        h.setEditable(false);
+        h.setDiasRestantes(0);
+      }
+    }
+
+    // Aplico filtros
+
+    if (titulo != null && !titulo.isBlank()) {
+      hechos = hechos.stream()
+          .filter(h -> h.getTitulo() != null &&
+              h.getTitulo().toLowerCase().contains(titulo.toLowerCase()))
+          .toList();
+    }
+
+    if (categoria != null && !categoria.isBlank()) {
+      hechos = hechos.stream()
+          .filter(h -> h.getCategoria() != null &&
+              h.getCategoria().equalsIgnoreCase(categoria))
+          .toList();
+    }
+
+    if ("editable".equalsIgnoreCase(estado)) {
+      hechos = hechos.stream()
+          .filter(HechoDTO::isEditable)
+          .toList();
+    }
+
+    if ("expirado".equalsIgnoreCase(estado)) {
+      hechos = hechos.stream()
+          .filter(h -> !h.isEditable())
+          .toList();
+    }
+
+    List<CategoriaDTO> categorias = coleccionService.getCategorias();
+
     model.addAttribute("hechos", hechos);
-    model.addAttribute("categorias", categoriaService.listarCategorias());
+    model.addAttribute("categorias", categorias);
     model.addAttribute("titulo", "Mis Hechos");
-    model.addAttribute("descripcion", "Gestiona los hechos que has reportado. Puedes editarlos durante los primeros 7 días luego de su publicación.");
+    model.addAttribute("descripcion",
+        "Gestiona los hechos que has reportado. (uid token: " + usuarioId + ")");
+
+    // Para mantener filtros en la vista
+    Map<String, String> param = new HashMap<>();
+    param.put("titulo", titulo);
+    param.put("categoria", categoria);
+    param.put("estado", estado);
+
+    model.addAttribute("param", param);
 
     return "contribuyente/misHechos";
-
-
-  }*/
-}
-
-
-  /*
-  public static List<HechoDTO> generarHechoEjemplo(){
-    return Arrays.asList(
-    new HechoDTO(
-        "Incendio forestal activo en Parque Nacional Los Glaciares",
-        "Incendio de gran magnitud detectado en el sector norte del parque. Las llamas avanzan sobre zona de bosque nativo y requieren coordinación de brigadas aéreas y terrestres.",
-        "Incendio forestal",
-        LocalDateTime.of(2025, 8, 12, 9, 15),
-        "Santa Cruz"
-      ),
-        new HechoDTO(
-            "Accidente múltiple en Ruta Nacional 9",
-            "Colisión múltiple involucrando cuatro vehículos en el km 847, con varios heridos y corte parcial de la calzada. Brigadas de emergencia en el lugar.",
-            "Accidente vial",
-            LocalDateTime.of(2025, 8, 15, 16, 40),
-            "Santa Fe"
-        )
-    );
   }
 }
-*/
