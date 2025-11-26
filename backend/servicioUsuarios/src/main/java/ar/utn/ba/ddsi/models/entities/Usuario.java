@@ -36,11 +36,8 @@ public class Usuario {
     @CollectionTable(name = "permisos_usuario", joinColumns = @JoinColumn(name = "usuario_id"))
     @Column(name = "permiso")
     private List<Permiso> permisos = new ArrayList<>();
-
-
     public void agregarPermiso(Permiso p) {
         this.permisos.add(p);
     }
-
 
 }

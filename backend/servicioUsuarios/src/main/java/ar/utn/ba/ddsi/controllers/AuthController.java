@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.models.dtos.RefreshRequest;
 import ar.utn.ba.ddsi.models.dtos.SingupDTO;
 import ar.utn.ba.ddsi.models.dtos.TokenResponse;
 import ar.utn.ba.ddsi.models.dtos.UserRolesPermissionsDTO;
+import ar.utn.ba.ddsi.models.entities.Usuario;
 import ar.utn.ba.ddsi.services.LoginService;
 import ar.utn.ba.ddsi.services.SingupService;
 import ar.utn.ba.ddsi.utils.JwtUtil;
@@ -45,10 +46,9 @@ public class AuthController {
             }
 
             // Autenticar usuario usando el LoginService
-            loginService.autenticarUsuario(username, password); //aca se fija si lo encuentra en el repositorio
-
+            Usuario usuario = loginService.autenticarUsuario(username, password);
             // Generar tokens
-            String accessToken = loginService.generarAccessToken(username);
+            String accessToken = loginService.generarAccessToken(usuario);   // usa uid
             String refreshToken = loginService.generarRefreshToken(username);
 
             AuthResponseDTO response = AuthResponseDTO.builder() //generamos la respuesta
@@ -83,7 +83,8 @@ public class AuthController {
                 return ResponseEntity.badRequest().build();
             }
 
-            String newAccessToken = JwtUtil.generarAccessToken(username);
+            Usuario usuario = loginService.obtenerUsuarioPorMail(username);
+            String newAccessToken = loginService.generarAccessToken(usuario);
             TokenResponse response = new TokenResponse(newAccessToken, request.getRefreshToken());
 
             return ResponseEntity.ok(response);
@@ -91,7 +92,6 @@ public class AuthController {
             return ResponseEntity.badRequest().build();
         }
     }
-
 
     //este lo hizo mas particular (mas simple) pero se puede hacer con los claimns recuperando la request igual que los anteriores
     @GetMapping("/user/roles-permisos")
@@ -115,7 +115,9 @@ public class AuthController {
             singupService.registrarUsuario(dto);
 
             String username = dto.getEmail();
-            String access = loginService.generarAccessToken(username);
+
+            Usuario usuario = loginService.obtenerUsuarioPorMail(username);
+            String access = loginService.generarAccessToken(usuario);
             String refresh = loginService.generarRefreshToken(username);
 
             return ResponseEntity.ok(
