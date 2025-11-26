@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -328,18 +329,27 @@ public class HechoService {
         }
     }
 
-    public List<HechoDTO> getMisHechos(Long usuarioId) {
+    public List<HechoDTO> getMisHechos(Long usuarioId, String titulo, String categoria, String estado) {
+        UriComponentsBuilder builder = UriComponentsBuilder
+            .fromPath("/hechos/mis")
+            .queryParam("contribuyenteId", usuarioId);
+
+        if (titulo != null && !titulo.isBlank()) {
+            builder.queryParam("titulo", titulo);
+        }
+        if (categoria != null && !categoria.isBlank()) {
+            builder.queryParam("categoria", categoria);
+        }
+        if (estado != null && !estado.isBlank()) {
+            builder.queryParam("estado", estado);
+        }
         return webClientPublic.get()
-            .uri(uriBuilder -> uriBuilder
-                .path("/hechos/mis-hechos")
-                .queryParam("usuarioId", usuarioId)
-                .build())
+            .uri(builder.build().toString())
             .retrieve()
             .bodyToFlux(HechoDTO.class)
             .collectList()
             .block();
     }
-
 }
 
 
