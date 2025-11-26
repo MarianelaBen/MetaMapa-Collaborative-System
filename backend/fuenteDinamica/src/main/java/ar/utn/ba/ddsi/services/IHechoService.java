@@ -26,4 +26,5 @@ public interface IHechoService {
   void actualizarHecho(Hecho hecho, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento);
   UbicacionOutputDTO ubicacionOutputDTO(Ubicacion ubicacion);
   ContribuyenteOutputDTO contribuyenteOutputDTO(Contribuyente contribuyente);
+  List<Hecho> buscarFiltrado(Long contribuyenteId, String titulo, String categoria, Object o);
 }
