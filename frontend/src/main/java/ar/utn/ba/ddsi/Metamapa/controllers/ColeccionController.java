@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.Metamapa.controllers;
 import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.FuenteDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
@@ -11,16 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/colecciones")
@@ -68,22 +64,47 @@ public class ColeccionController {
 @GetMapping("/nueva")
 @PreAuthorize("hasAnyRole('ADMIN')")
 public String verFormulario(Model model) {
-    model.addAttribute("titulo", "Crear nueva Coleccion");
-    model.addAttribute("coleccion", new ColeccionDTO(null,null,null));
+  List<FuenteDTO> fuentes = metaMapaApiService.getFuentes();
+
+  Map<String, Long> mapTipoId = fuentes.stream()
+      .collect(Collectors.toMap(
+          f -> f.getTipo().toUpperCase(),
+          FuenteDTO::getId
+      ));
+
+  model.addAttribute("fuentesTipoId", mapTipoId);
+  model.addAttribute("coleccion", new ColeccionDTO(null,null,null));
+  model.addAttribute("titulo", "Crear nueva Coleccion");
     model.addAttribute("algoritmos", List.of("Absoluta", "Mayoria Simple", "Multiples Menciones"));
     return "administrador/crearColeccion";
 }
 
 @PostMapping("/nueva")
 @PreAuthorize("hasAnyRole('ADMIN')")
-public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion, RedirectAttributes redirect){
+public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion, @RequestParam(required = false) String fuenteTipos, RedirectAttributes redirect){
   try {
 
     //agregado ahora por el error
     if (coleccion.getHandle() == null || coleccion.getHandle().isBlank()) {
       coleccion.setHandle(makeHandle(coleccion.getTitulo()));
   }
-    if (coleccion.getFuenteIds() == null) coleccion.setFuenteIds(Set.of());
+    List<FuenteDTO> fuentes = metaMapaApiService.getFuentes();
+    Map<String, Long> mapTipoId = fuentes.stream()
+        .collect(Collectors.toMap(
+            f -> f.getTipo().toUpperCase(),
+            FuenteDTO::getId
+        ));
+
+    Set<Long> fuenteIds = new HashSet<>();
+
+    if (fuenteTipos != null && !fuenteTipos.isBlank()) {
+      for (String tipo : fuenteTipos.split(",")) {
+        Long id = mapTipoId.get(tipo.toUpperCase());
+        if (id != null) fuenteIds.add(id);
+      }
+    }
+
+    coleccion.setFuenteIds(fuenteIds);
     if (coleccion.getCriterioIds() == null) coleccion.setCriterioIds(Set.of());
 
     ColeccionDTO creada = metaMapaApiService.crearColeccion(coleccion);
@@ -135,5 +156,18 @@ public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion
         }
     }
 
+  @PostMapping("/actualizar-todas")
+  public String actualizarTodasLasColecciones(RedirectAttributes ra) {
+    try {
+      // Llama al service del front, que a su vez llama al back
+      coleccionService.actualizarTodasLasColecciones();
 
+      ra.addFlashAttribute("mensaje", "Colecciones actualizadas correctamente.");
+    } catch (Exception e) {
+      ra.addFlashAttribute("error", "No se pudieron actualizar las colecciones: " + e.getMessage());
+    }
+
+    // Volvés a la pantalla donde está la tabla
+    return "redirect:/colecciones";
+  }
 }

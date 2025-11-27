@@ -24,7 +24,7 @@
                     </div>
 
                     <label for="username">Nombre de usuario <span style="color:red">*</span></label>
-                    <input type="text" id="username" placeholder="Nombre de usuario" required>
+                    <input type="text" id="username" th:field="*{username}" placeholder="Nombre de usuario" required>
 
                     <label for="nombre">Fecha de nacimiento <span style="color:red">*</span></label>
                     <input type="date" id="fechaDeNacimiento" th:field="*{fechaNacimiento}" required>

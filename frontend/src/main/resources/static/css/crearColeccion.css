@@ -839,3 +839,29 @@ header .logo {
 ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
+
+.btn-fuente-toggle {
+    padding: 0.6rem 1.2rem;
+    border: 1px solid #d1d5db;
+    background: #f8fafc;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+    transition: all 0.25s ease;
+}
+
+.btn-fuente-toggle:hover {
+    background: #e5f2ff;
+    border-color: #93c5fd;
+    color: #1e3a8a;
+}
+
+.btn-fuente-toggle.active {
+    background-color: #004080;
+    color: #ffffff;
+    border-color: #003366;
+    box-shadow: 0 3px 6px rgba(0, 64, 128, 0.25);
+}
+

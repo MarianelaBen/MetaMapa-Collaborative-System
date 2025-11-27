@@ -61,7 +61,6 @@ public class AdapterFuenteDinamica {
     if (dto.getEtiquetas() != null) {
       for (String nombre : dto.getEtiquetas()) {hecho.agregarEtiqueta(new Etiqueta(nombre));}}
 
-
     JsonNode particulares = dto.getParticulares();
       if (particulares != null) {
         JsonNode contribuyenteARecuperar = particulares.path("contribuyente");

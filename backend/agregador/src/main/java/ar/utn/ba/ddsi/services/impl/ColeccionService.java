@@ -60,7 +60,10 @@ public class ColeccionService implements IColeccionService {
   public Coleccion crearColeccion(Coleccion coleccion){
     if (!coleccion.getFuentes().isEmpty()){ this.filtrarHechos(coleccion); }
 
-    return coleccionRepository.save(coleccion);
+      System.out.println("Fuentes en coleccion: " + coleccion.getFuentes().size());
+      coleccion.getFuentes().forEach(f -> System.out.println("Fuente ID: " + f.getId()));
+
+      return coleccionRepository.save(coleccion);
   }
 
   @Override

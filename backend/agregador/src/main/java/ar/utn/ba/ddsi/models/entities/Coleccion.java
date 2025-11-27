@@ -36,8 +36,9 @@ public class Coleccion {
      private String descripcion;
 
 
-  @ManyToMany
-  @JoinTable(name = "coleccion_fuente",
+  @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @JoinTable(
+      name = "coleccion_fuente",
       joinColumns = @JoinColumn(name = "coleccion_handle", referencedColumnName = "handle"),
       inverseJoinColumns = @JoinColumn(name = "fuente_id", referencedColumnName = "id")
   )
@@ -69,7 +70,7 @@ public class Coleccion {
   public Coleccion(String titulo, String descripcion, Set<Fuente> fuentes) {
     this.titulo = titulo;
     this.descripcion = descripcion;
-    this.fuentes = fuentes;
+    this.fuentes = (fuentes != null ? fuentes : new HashSet<>());
     this.criterios = new HashSet<>();
     this.hechos = new ArrayList<>();
     this.algoritmoDeConsenso = null;

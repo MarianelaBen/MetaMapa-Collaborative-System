@@ -230,6 +230,17 @@ public class MetaMapaApiService {
         }
     }
 
+    public List<FuenteDTO> getFuentes() {
+        String accessToken = webApiCallerService.getAccessTokenFromSession();
+
+        FuenteDTO[] arr = webApiCallerService.getWithAuth(
+            basePublicUrl + "/fuentes",
+            accessToken,
+            FuenteDTO[].class
+        );
+
+        return arr != null ? Arrays.asList(arr) : List.of();
+    }
 
 
 }

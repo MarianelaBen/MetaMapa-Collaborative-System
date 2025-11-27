@@ -15,5 +15,5 @@ public class ColeccionInputDTO {
   private TipoAlgoritmoDeConsenso algoritmoDeConsenso;
   private Set<Long> fuenteIds;
   private Set<Long> criterioIds;
-    private Integer cantVistas;
+  private Integer cantVistas;
 }

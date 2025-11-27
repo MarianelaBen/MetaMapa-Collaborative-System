@@ -163,4 +163,16 @@ public class ColeccionService {
         }
     }
 
+    public ColeccionDTO actualizarTodasLasColecciones() {
+        try {
+            return webClient.put()
+                .uri("/colecciones/actualizar")
+                .retrieve()
+                .bodyToMono(ColeccionDTO.class)
+                .block();
+        } catch (WebClientResponseException e) {
+            throw new RuntimeException("Error al actualizar las colecciónes");
+        }
+    }
+
 }

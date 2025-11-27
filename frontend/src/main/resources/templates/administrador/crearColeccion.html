@@ -50,23 +50,34 @@
           <h2 class="section-title">Fuentes y Criterios</h2>
 
           <div class="subsection">
-            <h3 class="subsection-title">Fuentes</h3>
-            <div id="fuentes-container">
-              <!-- fila de fuente -->
-              <div class="dynamic-field">
-                <div class="form-row fuentes-row">
-                  <div class="form-group">
-                    <select class="form-select fact-category" type="button" name="tipoFuente[]">
-                      <option selected>ESTÁTICA</option>
-                      <option value="DINAMICA">DINÁMICA</option>
-                      <option value="PROXY">PROXY</option>
-                    </select>
-                  </div>
+            <h3 class="subsection-title">Seleccionar fuentes</h3>
 
-                </div>
-              </div>
+            <div id="fuentes-toggle" class="fuentes-toggle" style="display:flex; gap:1rem;">
+
+              <button
+                      type="button"
+                      class="btn-fuente-toggle"
+                      data-tipo="DINAMICA">
+                <i class="fas fa-bolt"></i> Dinámica
+              </button>
+
+              <button
+                      type="button"
+                      class="btn-fuente-toggle"
+                      data-tipo="ESTATICA">
+                <i class="fas fa-database"></i> Estática
+              </button>
+
+              <button
+                      type="button"
+                      class="btn-fuente-toggle"
+                      data-tipo="PROXY">
+                <i class="fas fa-random"></i> Proxy
+              </button>
             </div>
 
+            <!-- Campo oculto REAL que va al controller -->
+            <input type="hidden" id="fuenteTipos" name="fuenteTipos">
           </div>
 
           <div class="subsection">
@@ -145,5 +156,38 @@
       </form>
     </div>
   </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      console.log(">>> SCRIPT DE FUENTES INICIADO <<<");
+
+      const botones = document.querySelectorAll(".btn-fuente-toggle");
+      const hidden = document.getElementById("fuenteTipos");
+
+      console.log("Botones encontrados:", botones.length);
+      console.log("Hidden encontrado:", hidden);
+
+      botones.forEach(boton => {
+        console.log("Asignando listener a:", boton.dataset.tipo);
+
+        boton.addEventListener("click", () => {
+
+          console.log("CLICK en:", boton.dataset.tipo);
+
+          boton.classList.toggle("active");
+          console.log("Estado active:", boton.classList.contains("active"));
+
+          const seleccionados = [...document.querySelectorAll(".btn-fuente-toggle.active")]
+                  .map(b => b.dataset.tipo);
+
+          console.log("Seleccionados ahora:", seleccionados);
+
+          hidden.value = seleccionados.join(",");
+          console.log("Valor del hidden ahora:", hidden.value);
+        });
+      });
+    });
+  </script>
      </div>
 </html>

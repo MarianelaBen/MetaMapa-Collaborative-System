@@ -18,6 +18,7 @@ import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IColeccionService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +53,9 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
   this.solicitudesRepo = solicitudesRepo;
   this.coleccionRepo = coleccionRepo;
 }
+
+  @Value("${minio.public-url}")
+  private String minioPublicUrl;
 
     @Override
     public List<SolicitudOutputDTO> getSolicitudes() {
@@ -189,9 +193,26 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     if(hecho.getEtiquetas() != null){
       hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
     }
-    if(hecho.getPathMultimedia() != null){
-      hechoOutputDTO.setIdContenidoMultimedia(new ArrayList<>(hecho.getPathMultimedia()));
+
+    hechoOutputDTO.setIdContenidoMultimedia(
+        hecho.getPathMultimedia() != null ? hecho.getPathMultimedia() : List.of()
+    );
+
+    if (hechoOutputDTO.getIdContenidoMultimedia() != null) {
+      hechoOutputDTO.setIdContenidoMultimedia(
+          hechoOutputDTO.getIdContenidoMultimedia().stream()
+              .filter(Objects::nonNull)
+              .map(name -> {
+                if (name.startsWith("http")) {
+                  return name;
+                }
+                String base = minioPublicUrl.endsWith("/") ? minioPublicUrl : minioPublicUrl + "/";
+                return base + name;
+              })
+              .toList()
+      );
     }
+
     if(hecho.getContribuyente() != null){
       ContribuyenteDTO contrDto = new ContribuyenteDTO();
       contrDto.setId(hecho.getContribuyente().getId());

@@ -25,16 +25,17 @@ public class SingupService {
 
   public Usuario registrarUsuario(SingupDTO dto) {
     // email como username
-    String username = dto.getEmail();
+    String mail = dto.getEmail();
 
-    if (usuariosRepository.findBymail(username).isPresent()) {
+    if (usuariosRepository.findBymail(mail).isPresent()) {
       throw new IllegalArgumentException("Ya existe un usuario con ese email");
     }
 
     Usuario usuario = new Usuario();
-    usuario.setNombre(username);
-    usuario.setNombreDeUsuario(username);
-    usuario.setMail(dto.getEmail());
+    usuario.setNombre(dto.getNombre());
+    usuario.setApellido(dto.getApellido());
+    usuario.setNombreDeUsuario(dto.getUsername());
+    usuario.setMail(mail);
     usuario.setContrasenia(passwordEncoder.encode(dto.getContrasenia()));
     usuario.setRol(Rol.CONTRIBUYENTE);
 

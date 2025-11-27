@@ -271,7 +271,7 @@ public class AdminController {
   }
 
 
-  @PostMapping("/actualizar") //TODO PARA PRUEBAS BORRAR
+  @PostMapping("/actualizar")
   public ResponseEntity<?> actualizarColecciones() {
     coleccionService.actualizarColecciones();
     return ResponseEntity.ok("ok");
