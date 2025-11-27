@@ -31,8 +31,8 @@ public class HechoOutputDTO {
   private ContribuyenteDTO contribuyente;
   private Boolean fueEliminado;
   private Integer cantVistas;
-  private boolean editable;      // calculado en base a fechaCarga
-  private int diasRestantes;
+  //private boolean editable;    // 7 días desde fechaCarga
+  //private int diasRestantesEdicion;
 
   public static HechoOutputDTO fromEntity(Hecho h) {
     HechoOutputDTO dto = new HechoOutputDTO();

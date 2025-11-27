@@ -28,19 +28,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.security.Principal;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/public")
@@ -335,86 +330,4 @@ public class AgregadorController {
           .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
     }
   }
-
-  // Filtrado de los hechos del contribuyente
-  @GetMapping("/hechos/mis")
-  public ResponseEntity<?> getMisHechos(
-      @RequestParam Long contribuyenteId,
-      @RequestParam(required = false) String titulo,
-      @RequestParam(required = false) String categoria,
-      @RequestParam(required = false) String estado
-  ) {
-    try {
-      List<HechoOutputDTO> hechos = agregadorService.obtenerHechos();
-
-      // Filtro por contribuyente
-      Stream<HechoOutputDTO> stream = hechos.stream()
-          .filter(h -> h.getContribuyente() != null &&
-              Objects.equals(h.getContribuyente().getId(), contribuyenteId));
-
-      // Filtro por título
-      if (titulo != null && !titulo.isBlank()) {
-        String t = titulo.toLowerCase();
-        stream = stream.filter(h -> h.getTitulo() != null &&
-            h.getTitulo().toLowerCase().contains(t));
-      }
-      // Filtro por categoría
-      if (categoria != null && !categoria.isBlank()) {
-        stream = stream.filter(h -> categoria.equalsIgnoreCase(h.getCategoria()));
-      }
-      // Calcular editable + días restantes
-      LocalDate hoy = LocalDate.now();
-
-      List<HechoOutputDTO> finalList = stream
-          .peek(h -> {
-            LocalDate fc = h.getFechaCarga();
-            if (fc != null) {
-              long dias = ChronoUnit.DAYS.between(fc, hoy);
-              boolean editable = dias < 7;
-              h.setEditable(editable);
-              h.setDiasRestantes(editable ? (int) (7 - dias) : 0);
-            } else {
-              h.setEditable(false);
-              h.setDiasRestantes(0);
-            }
-          })
-          .collect(Collectors.toList());
-
-      // Filtro estado (editable / expirado)
-      if ("editable".equalsIgnoreCase(estado)) {
-        finalList = finalList.stream().filter(HechoOutputDTO::isEditable).toList();
-      }
-
-      if ("expirado".equalsIgnoreCase(estado)) {
-        finalList = finalList.stream().filter(h -> !h.isEditable()).toList();
-      }
-
-      return ResponseEntity.ok(finalList);
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      return ResponseEntity.status(500)
-          .body(Map.of("error", "Error obteniendo mis hechos", "mensaje", e.getMessage()));
-    }
-  }
-
-  @GetMapping("/hechos/mis")
-  public String verMisHechos(
-      @RequestParam(required = false) String titulo,
-      @RequestParam(required = false) String categoria,
-      @RequestParam(required = false) String estado,
-      Model model,
-      Principal principal
-  ){
-    Long contribuyenteId = usuarioService.getIdDe(principal.getName());
-
-    List<HechoDTO> hechos = hechoService.getMisHechos(
-        contribuyenteId, titulo, categoria, estado
-    );
-
-    model.addAttribute("hechos", hechos);
-    return "hechos/mis-hechos";
-  }
-
-
 }

@@ -294,9 +294,4 @@ public class HechoService implements IHechoService {
     hecho.setFechaAcontecimiento(fechaAcontecimiento);
     hecho.setFechaActualizacion(LocalDate.now());
   }
-
-  public List<Hecho> buscarFiltrado(Long contribuyenteId, String titulo, String categoria, String estado) {
-    return hechoRepository.buscarFiltrado(contribuyenteId, titulo, categoria);
-  }
-
 }

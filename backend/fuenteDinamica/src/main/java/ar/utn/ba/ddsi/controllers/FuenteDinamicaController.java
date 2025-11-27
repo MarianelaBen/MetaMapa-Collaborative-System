@@ -131,27 +131,4 @@ public class FuenteDinamicaController {
     }
   }
 
-  @GetMapping("/filtrados")
-  public ResponseEntity<?> buscarHechosFiltrados(
-      @RequestParam(required = false) Long contribuyenteId,
-      @RequestParam(required = false) String titulo,
-      @RequestParam(required = false) String categoria
-  ) {
-    try {
-      List<Hecho> hechos = hechoService.buscarFiltrado(contribuyenteId, titulo, categoria, null);
-
-      List<HechoOutputDTO> dtos = hechos.stream()
-          .map(hechoService::hechoOutputDTO)
-          .toList();
-
-      return ResponseEntity.ok(dtos);
-    } catch (Exception e) {
-      return ResponseEntity.status(500).body(
-          Map.of("error", "Error buscando hechos", "detalle", e.getMessage())
-      );
-    }
-  }
-
-
-
 }
