@@ -285,19 +285,68 @@ public class HechoController {
       Model model) {
 
     Long usuarioId = metaMapaApiService.getUsuarioIdFromAccessToken();
-    List<HechoDTO> hechos = hechoService.getMisHechos(usuarioId, titulo, categoria, estado);
+
+    // Por ahora, como el agregador NO tiene endpoint para filtrar por usuario,
+    // usamos todos los hechos. Más adelante se cambia a:
+    // List<HechoDTO> hechos = hechoService.getMisHechos(usuarioId);
+    List<HechoDTO> hechos = hechoService.getHechos();
+
+    // Calculamos editable + días restantes
+    for (HechoDTO h : hechos) {
+      if (h.getFechaCarga() != null) {
+        long dias = ChronoUnit.DAYS.between(h.getFechaCarga(), LocalDate.now());
+        boolean editable = dias < 7;
+        h.setEditable(editable);
+        h.setDiasRestantes(editable ? (int) (7 - dias) : 0);
+      } else {
+        h.setEditable(false);
+        h.setDiasRestantes(0);
+      }
+    }
+
+    // Aplico filtros
+
+    if (titulo != null && !titulo.isBlank()) {
+      hechos = hechos.stream()
+          .filter(h -> h.getTitulo() != null &&
+              h.getTitulo().toLowerCase().contains(titulo.toLowerCase()))
+          .toList();
+    }
+
+    if (categoria != null && !categoria.isBlank()) {
+      hechos = hechos.stream()
+          .filter(h -> h.getCategoria() != null &&
+              h.getCategoria().equalsIgnoreCase(categoria))
+          .toList();
+    }
+
+    if ("editable".equalsIgnoreCase(estado)) {
+      hechos = hechos.stream()
+          .filter(HechoDTO::isEditable)
+          .toList();
+    }
+
+    if ("expirado".equalsIgnoreCase(estado)) {
+      hechos = hechos.stream()
+          .filter(h -> !h.isEditable())
+          .toList();
+    }
+
     List<CategoriaDTO> categorias = coleccionService.getCategorias();
 
     model.addAttribute("hechos", hechos);
     model.addAttribute("categorias", categorias);
     model.addAttribute("titulo", "Mis Hechos");
-    model.addAttribute("descripcion", "Hechos reportados por el usuario");
+    model.addAttribute("descripcion",
+        "Gestiona los hechos que has reportado. (uid token: " + usuarioId + ")");
 
-    Map<String, Object> params = new HashMap<>();
-    params.put("titulo", titulo);
-    params.put("categoria", categoria);
-    params.put("estado", estado);
-    model.addAttribute("param", params);
+    // Para mantener filtros en la vista
+    Map<String, String> param = new HashMap<>();
+    param.put("titulo", titulo);
+    param.put("categoria", categoria);
+    param.put("estado", estado);
+
+    model.addAttribute("param", param);
 
     return "contribuyente/misHechos";
   }
