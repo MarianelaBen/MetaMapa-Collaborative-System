@@ -28,14 +28,13 @@ public class JwtUtil {
                 .compact();
     } */
 
-    public static String generarAccessToken(String username, Long userId) {
+    public static String generarAccessToken(String username) {
         return Jwts.builder()
-            .setSubject(username) // el mail
-            .setIssuer("servicioUsuario")
-            .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
-            .claim("uid", userId)  // aca guardamos el id de Usuario
-            .signWith(key)
-            .compact();
+                .setSubject(username)
+                .setIssuer("servicioUsuario")
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
+                .signWith(key)
+                .compact();
     }
 
 

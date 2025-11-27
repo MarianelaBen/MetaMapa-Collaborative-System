@@ -40,25 +40,12 @@ public class LoginService {
         return usuario;
     }
 
-    /*
     public String generarAccessToken(String username) {
         return JwtUtil.generarAccessToken(username);
-    } */
-
-    public String generarAccessToken(Usuario usuario) {
-        return JwtUtil.generarAccessToken(
-            usuario.getMail(),       // subject (username)
-            usuario.getId()          // uid en el claim
-        );
     }
 
     public String generarRefreshToken(String username) {
         return JwtUtil.generarRefreshToken(username);
-    }
-
-    public Usuario obtenerUsuarioPorMail(String username) {
-        return usuariosRepository.findBymail(username)
-            .orElseThrow(() -> new NotFoundException("Usuario", username));
     }
 
     public UserRolesPermissionsDTO obtenerRolesYPermisosUsuario(String username) {
@@ -69,6 +56,7 @@ public class LoginService {
         }
 
         Usuario usuario = usuarioOpt.get();
+//TODO
         return UserRolesPermissionsDTO.builder()
                 .username(usuario.getNombreDeUsuario())
                 .rol(usuario.getRol())
