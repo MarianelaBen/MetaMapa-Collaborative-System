@@ -76,4 +76,69 @@ public class GeoService {
     JsonNode c = (n != null) ? n.get(child) : null;
     return (c != null && c.has(field) && !c.get(field).isNull()) ? c.get(field).asText() : null;
   }
+
+  public GeoSugerenciaDTO reverseGeocoding(double lat, double lon) {
+    try {
+      String url = "/ubicacion?lat=" + lat + "&lon=" + lon;
+
+      JsonNode root = georefWebClient.get()
+          .uri(url)
+          .retrieve()
+          .bodyToMono(JsonNode.class)
+          .block();
+
+      if (root == null || root.isEmpty()) {
+        return new GeoSugerenciaDTO("[Ubicación no encontrada]", lat, lon, null, null, null, null, null);
+      }
+
+      String provinciaNombre = nodePath(root, "provincia", "nombre");
+      String provinciaId = nodePath(root, "provincia", "id");
+
+      String departamento = nodePath(root, "departamento", "nombre");
+      String localidad = nodePath(root, "localidad", "nombre");
+      String calle = nodePath(root, "calle", "nombre");
+      String altura = nodePath(root, "altura", "valor");
+
+      // Armar label final:
+      StringBuilder label = new StringBuilder();
+
+      if (calle != null) {
+        label.append(calle);
+        if (altura != null) label.append(" ").append(altura);
+        label.append(", ");
+      }
+
+      if (localidad != null) {
+        label.append(localidad).append(", ");
+      } else if (departamento != null) {
+        label.append(departamento).append(", ");
+      }
+
+      if (provinciaNombre != null) {
+        label.append(provinciaNombre);
+      }
+
+      String labelFinal = label.length() > 0 ? label.toString() : provinciaNombre;
+
+      return new GeoSugerenciaDTO(
+          labelFinal,
+          lat,
+          lon,
+          provinciaId,
+          provinciaNombre,
+          calle,
+          altura,
+          localidad
+      );
+
+    } catch (Exception e) {
+      return new GeoSugerenciaDTO("[Ubicación no encontrada]", lat, lon, null, null, null, null, null);
+    }
+  }
+
+
+
+
+
+
 }

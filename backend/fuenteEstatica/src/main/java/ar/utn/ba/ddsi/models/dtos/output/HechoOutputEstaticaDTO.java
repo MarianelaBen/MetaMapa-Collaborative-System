@@ -12,6 +12,8 @@ import java.util.Set;
 @Data
 public class HechoOutputEstaticaDTO {
   @NotNull
+  private Long id;
+  @NotNull
   private String titulo;
   @NotNull
   private String descripcion;

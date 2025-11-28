@@ -162,10 +162,18 @@ public class HechoController {
               : hecho.getIdContenidoMultimedia().stream()
               .map(p -> {
                 if (p == null) return null;
-                if (p.contains(":") || p.contains("\\")) { // legacy absoluto
-                  return "/uploads/" + Paths.get(p).getFileName().toString();
+
+                if (p.startsWith("http://") || p.startsWith("https://")) {
+                  return p;
                 }
-                if (p.startsWith("/uploads/") || p.startsWith("http")) return p;
+
+                if (p.contains("\\") || p.contains(":")) {
+                  String fileName = p.substring(p.replace("\\","/").lastIndexOf("/") + 1);
+                  return "/uploads/" + fileName;
+                }
+
+                if (p.startsWith("/uploads/")) return p;
+
                 return "/uploads/" + p;
               })
               .toList();
@@ -187,7 +195,7 @@ public class HechoController {
     }
   }
 
-  @PostMapping("/{id}/editar")
+  /*@PostMapping("/{id}/editar")
   @PreAuthorize("hasAnyRole('CONTRIBUYENTE') and hasAnyAuthority('EDITAR_HECHO_PROPIO')")
   public String procesarEdicion(@PathVariable Long id,
                                 @ModelAttribute("hecho") HechoDTO hecho,
@@ -242,7 +250,66 @@ public class HechoController {
     redirect.addFlashAttribute("mensaje", "Hecho actualizado correctamente");
     redirect.addFlashAttribute("tipoMensaje", "success");
     return "redirect:/hechos/" + id;
+  }*/ //TODO borrar cuando la nueva edicion funcione
+
+  @PostMapping("/{id}/editar")
+  @PreAuthorize("hasAnyRole('CONTRIBUYENTE') and hasAnyAuthority('EDITAR_HECHO_PROPIO')")
+  public String procesarEdicion(
+      @PathVariable Long id, @ModelAttribute("hecho") HechoDTO hecho, @RequestParam("fecha") String fecha, @RequestParam("hora") String hora,
+      @RequestParam(name = "multimedia", required = false) MultipartFile[] multimedia, @RequestParam(name = "replaceMedia", defaultValue = "false") boolean replaceMedia,
+      @RequestParam(value = "deleteExisting", required = false) List<String> deleteExisting,
+      RedirectAttributes redirect, Model model) {
+    boolean error = false;
+
+    if (hecho.getTitulo() == null || hecho.getTitulo().isBlank()) error = true;
+    if (hecho.getCategoria() == null || hecho.getCategoria().isBlank()) error = true;
+    if (hecho.getDescripcion() == null || hecho.getDescripcion().isBlank()) error = true;
+    if (hecho.getProvincia() == null || hecho.getProvincia().isBlank()) error = true;
+    if (fecha == null || fecha.isBlank() || hora == null || hora.isBlank()) error = true;
+
+    try {
+      if (!error) {
+        LocalDate d = LocalDate.parse(fecha);
+        LocalTime t = LocalTime.parse(hora);
+        hecho.setFechaAcontecimiento(LocalDateTime.of(d, t));
+      }
+    } catch (Exception e) {
+      error = true;
+    }
+
+    if (error) {
+      model.addAttribute("categorias", hechoService.getCategorias());
+      model.addAttribute("hechoId", id);
+      model.addAttribute("titulo", "Editar Hecho");
+      model.addAttribute("errorMsg", "Hay campos obligatorios sin completar.");
+      return "contribuyente/editorHechos";
+    }
+
+    hecho.setId(id);
+    Long usuarioId = metaMapaApiService.getUsuarioIdFromAccessToken();
+
+    try {
+      hechoService.actualizarHecho(
+          hecho.getIdDeFuente(),
+          hecho,
+          multimedia,
+          replaceMedia,
+          deleteExisting == null ? List.of() : deleteExisting,
+          usuarioId
+      );
+    } catch (Exception e) {
+      redirect.addFlashAttribute("mensaje", "Ocurrió un error enviando la edición: " + e.getMessage());
+      redirect.addFlashAttribute("tipoMensaje", "danger");
+      return "redirect:/hechos/" + id;
+    }
+
+    redirect.addFlashAttribute("mensaje", "Su hecho fue editado con éxito. "
+        + "Los cambios serán visibles una vez aprobados.");
+    redirect.addFlashAttribute("tipoMensaje", "success");
+
+    return "redirect:/hechos/" + id;
   }
+
 
   // metodo usado en editorHechos (para el contenido multimedia)
   private static String filenameFromPath(String p) {

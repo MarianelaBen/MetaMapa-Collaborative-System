@@ -5,6 +5,7 @@
 
 <div th:fragment="css">
     <link rel="stylesheet" th:href="@{/css/editorHechos.css}" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </div>
 
 <div class="container" th:fragment="contenido">
@@ -26,28 +27,37 @@
 
         <input type="hidden" name="replaceMedia" value="false"/>
 
+        <!-- ====== CAMPOS HIDDEN DE GEO ====== -->
+        <input type="hidden" th:field="*{latitud}"   id="latitud">
+        <input type="hidden" th:field="*{longitud}"  id="longitud">
+        <input type="hidden" th:field="*{provincia}" id="provincia">
+
         <div class="fact-container">
             <div class="fact-main">
                 <div class="fact-header">
                     <div class="editable-line">
                         <textarea class="fact-title-input"
-                           th:field="*{titulo}"
-                           rows="2"
-                           placeholder="Título del hecho"
+                                  th:field="*{titulo}"
+                                  rows="2"
+                                  placeholder="Título del hecho"
                                   required></textarea>
                         <button class="btn-editar" type="button" title="Editar">
                             <i class="fa-solid fa-pen"></i>
                         </button>
                     </div>
 
-                        <select class="fact-category" th:field="*{categoria}" required>
-                            <option th:each="cat : ${categorias}"
-                                    th:value="${cat.nombre}"
-                                    th:text="${cat.nombre}">
-                            </option>
-                        </select>
+                    <!-- ===== CATEGORÍA (input/datalist) ===== -->
+                    <input list="listaCategorias"
+                           class="fact-category"
+                           th:field="*{categoria}"
+                           placeholder="Categoría"
+                           required/>
 
-                    <!-- Estado visual (opcional, solo decorativo por ahora) -->
+                    <datalist id="listaCategorias">
+                        <option th:each="cat : ${categorias}"
+                                th:value="${cat.nombre}">
+                    </datalist>
+
                     <div class="fact-status" style="margin-top: .75rem;">
                         <div class="consensus-indicator">
                             <div class="consensus-dot consensus-verified"></div>
@@ -68,15 +78,14 @@
                         <textarea class="fact-description"
                                   th:field="*{descripcion}"
                                   rows="6"
-                                  placeholder="Describe el hecho con el mayor detalle posible..."
+                                  placeholder="Describe el hecho..."
                                   required></textarea>
                     </section>
 
-                    <!-- Multimedia -->
+                    <!-- ===== MULTIMEDIA (ORIGINAL RESTAURADO) ===== -->
                     <section class="multimedia-section">
                         <h3 class="multimedia-title">Contenido Multimedia</h3>
 
-                        <!-- EXISTENTES -->
                         <div class="multimedia-grid"
                              th:if="${nombresMultimedia != null and !#lists.isEmpty(nombresMultimedia)}"
                              id="existing-media">
@@ -84,25 +93,22 @@
                             <div class="multimedia-item"
                                  th:each="name : ${nombresMultimedia}"
                                  th:with="ext=${#strings.toLowerCase(#strings.substring(name, name.lastIndexOf('.') + 1))},
-                                            isImg=${#lists.contains(extensionesImagen, ext)},
-                                               fullUrl=${#strings.startsWith(name,'http') ? name : backendOrigin + name},
-                                               fileOnly=${#strings.substring(name, name.lastIndexOf('/') + 1)}"
+                                          isImg=${#lists.contains(extensionesImagen, ext)},
+                                          fullUrl=${#strings.startsWith(name,'http') ? name : backendOrigin + name},
+                                          fileOnly=${#strings.substring(name, name.lastIndexOf('/') + 1)}"
                                  th:attr="data-name=${name}">
 
-                                <img th:if="${isImg}" th:src="${fullUrl}" class="multimedia-thumb" alt="Imagen multimedia"/>
+                                <img th:if="${isImg}" th:src="${fullUrl}" class="multimedia-thumb"/>
                                 <div th:unless="${isImg}" class="multimedia-placeholder" th:text="${fileOnly}"></div>
 
-                                <button type="button" class="remove-btn remove-existing" aria-label="Eliminar existente">×</button>
+                                <button type="button" class="remove-btn remove-existing">×</button>
                                 <span class="filename" th:text="${fileOnly}"></span>
                             </div>
 
                         </div>
 
-
-                        <!-- inputs ocultos con lo que el usuario decide borrar -->
                         <div id="existing-to-delete"></div>
 
-                        <!-- NUEVOS -->
                         <div style="margin-top:.75rem;">
                             <input type="file" id="multimediaInput" name="multimedia" multiple />
                             <small class="text-muted" style="display:block;margin-top:.25rem;">
@@ -110,11 +116,9 @@
                             </small>
                         </div>
 
-                        <!-- previsualización de los nuevos -->
-                        <div id="new-media-preview" class="multimedia-grid" aria-live="polite"></div>
+                        <div id="new-media-preview" class="multimedia-grid"></div>
                     </section>
 
-                    <!-- Acciones -->
                     <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
                         <button type="submit" class="btn btn-success">Guardar Cambios</button>
                         <a th:href="@{/hechos/{id}(id=${hechoId})}" class="btn btn-secondary">Cancelar</a>
@@ -122,9 +126,8 @@
                 </div>
             </div>
 
-            <!-- Sidebar -->
+            <!-- SIDEBAR -->
             <div class="fact-sidebar">
-                <!-- Info básica -->
                 <div class="info-card">
                     <h3>Información Básica</h3>
 
@@ -138,161 +141,241 @@
                                        ? #temporals.format(hecho.fechaAcontecimiento,'yyyy-MM-dd')
                                        : ''}"
                                        required/>
-                                <button class="btn-editar" type="button" title="Editar">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
+                                <button class="btn-editar" type="button"><i class="fa-solid fa-pen"></i></button>
                             </td>
                         </tr>
                         <tr>
-                        <tr>
-                            <td>Hora del acontecimiento:</td>
+                            <td>Hora:</td>
                             <td class="editable-cell">
                                 <input type="time"
                                        name="hora"
-                                       th:value="${hecho.fechaAcontecimiento != null ? #temporals.format(hecho.fechaAcontecimiento,'HH:mm') : ''}"
+                                       th:value="${hecho.fechaAcontecimiento != null
+                                       ? #temporals.format(hecho.fechaAcontecimiento,'HH:mm')
+                                       : ''}"
                                        required/>
-                                <button class="btn-editar" type="button" title="Editar">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
+                                <button class="btn-editar" type="button"><i class="fa-solid fa-pen"></i></button>
                             </td>
                         </tr>
                     </table>
                 </div>
 
-                <!-- Ubicación -->
+                <!-- ===== UBICACIÓN (AUTOCOMPLETE + MAPA) ===== -->
                 <div class="info-card">
                     <h3>Ubicación</h3>
+
                     <div class="info-grid">
                         <div class="info-item">
-                            <span class="info-label">Provincia</span>
-                            <div class="editable-line">
-                                <input class="info-value" th:field="*{provincia}" placeholder="Provincia"
-                                       required/>
-                                <button class="btn-editar" type="button" title="Editar">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                    <div class="location-map">
-                        <div>
-                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🗺️</div>
-                            <p>Mapa de referencia<br/> (pendiente de integrar)</p>
+                            <label for="buscador-geo">Ubicación</label>
+                            <input type="text"
+                                   id="buscador-geo"
+                                   placeholder="Nueva ubicación (opcional)"
+                                   style="width:100%">
+                            <ul id="sugerencias-geo" class="sugerencias-geo"></ul>
                         </div>
                     </div>
+
+                    <div class="location-map">
+                        <div id="map-editar"></div>
+                    </div>
                 </div>
+
             </div>
-        </div>
         </div>
     </form>
 
-    // codigo JS para contenido multimedia
+    <!-- ======================= -->
+    <!-- JS MULTIMEDIA (ORIGINAL) -->
+    <!-- ======================= -->
+    <script>
+        (function(){
+            const existingContainer = document.getElementById('existing-media');
+            const hiddenDeletes = document.getElementById('existing-to-delete');
 
-        <script>
-            (function(){
-                // ---------- EXISTENTES: marcar para borrar ----------
-                const existingContainer = document.getElementById('existing-media');
-                const hiddenDeletes = document.getElementById('existing-to-delete');
+            if (existingContainer) {
+                existingContainer.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.remove-existing');
+                    if (!btn) return;
 
-                if (existingContainer) {
-                    existingContainer.addEventListener('click', (e) => {
-                        const btn = e.target.closest('.remove-existing');
-                        if (!btn) return;
+                    const item = btn.closest('.multimedia-item');
+                    const name = item?.dataset?.name;
+                    if (!name) return;
 
-                        const item = btn.closest('.multimedia-item');
-                        const name = item?.dataset?.name;
-                        if (!name) return;
+                    const existingInput = Array.from(hiddenDeletes.querySelectorAll('input[name="deleteExisting"]'))
+                        .find(i => i.value === name);
 
-                        // Busco si ya hay un hidden con ese value
-                        const existingInput = Array.from(hiddenDeletes.querySelectorAll('input[name="deleteExisting"]'))
-                            .find(i => i.value === name);
+                    if (existingInput) {
+                        existingInput.remove();
+                        item.classList.remove('removed');
+                    } else {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'deleteExisting';
+                        input.value = name;
+                        hiddenDeletes.appendChild(input);
+                        item.classList.add('removed');
+                    }
+                });
+            }
 
-                        if (existingInput) {
-                            // desmarcar
-                            existingInput.remove();
-                            item.classList.remove('removed');
+            const input = document.getElementById('multimediaInput');
+            const preview = document.getElementById('new-media-preview');
+
+            if (input && preview) {
+                let dt = new DataTransfer();
+
+                input.addEventListener('change', () => {
+                    const incoming = Array.from(input.files);
+                    const keys = new Set(Array.from(dt.files).map(k));
+                    for (const f of incoming) {
+                        const key = k(f);
+                        if (!keys.has(key)) dt.items.add(f);
+                    }
+                    input.files = dt.files;
+                    renderPreview();
+                });
+
+                function renderPreview(){
+                    preview.innerHTML = '';
+                    Array.from(dt.files).forEach((file, idx) => {
+                        const item = document.createElement('div');
+                        item.className = 'multimedia-item';
+
+                        if (file.type.startsWith('image/')) {
+                            const img = document.createElement('img');
+                            img.className = 'multimedia-thumb';
+                            img.src = URL.createObjectURL(file);
+                            item.appendChild(img);
                         } else {
-                            const input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = 'deleteExisting';
-                            input.value = name;
-                            hiddenDeletes.appendChild(input);
-                            item.classList.add('removed');
+                            const ph = document.createElement('div');
+                            ph.className = 'multimedia-placeholder';
+                            ph.textContent = file.name;
+                            item.appendChild(ph);
                         }
+
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'remove-btn';
+                        btn.textContent = '×';
+                        btn.addEventListener('click', () => removeAt(idx));
+
+                        const name = document.createElement('span');
+                        name.className = 'filename';
+                        name.textContent = file.name;
+
+                        item.appendChild(btn);
+                        item.appendChild(name);
+                        preview.appendChild(item);
                     });
                 }
 
-                const input = document.getElementById('multimediaInput');
-                const preview = document.getElementById('new-media-preview');
-
-                if (input && preview) {
-                    let dt = new DataTransfer(); // lista editable
-
-                    input.addEventListener('change', () => {
-                        const incoming = Array.from(input.files);
-                        const keys = new Set(Array.from(dt.files).map(k));
-                        for (const f of incoming) {
-                            const key = k(f);
-                            if (!keys.has(key)) dt.items.add(f);
-                        }
-                        input.files = dt.files;
-                        renderPreview();
-                    });
-
-                    function renderPreview(){
-                        preview.innerHTML = '';
-                        Array.from(dt.files).forEach((file, idx) => {
-                            const item = document.createElement('div');
-                            item.className = 'multimedia-item';
-
-                            if (file.type.startsWith('image/')) {
-                                const img = document.createElement('img');
-                                img.className = 'multimedia-thumb';
-                                img.src = URL.createObjectURL(file);
-                                img.alt = file.name;
-                                item.appendChild(img);
-                            } else {
-                                const ph = document.createElement('div');
-                                ph.className = 'multimedia-placeholder';
-                                ph.textContent = file.name;
-                                item.appendChild(ph);
-                            }
-
-                            const btn = document.createElement('button');
-                            btn.type = 'button';
-                            btn.className = 'remove-btn';
-                            btn.setAttribute('aria-label', `Quitar ${file.name}`);
-                            btn.textContent = '×';
-                            btn.addEventListener('click', () => removeAt(idx));
-
-                            const name = document.createElement('span');
-                            name.className = 'filename';
-                            name.textContent = file.name;
-
-                            item.appendChild(btn);
-                            item.appendChild(name);
-                            preview.appendChild(item);
-                        });
-                    }
-
-                    function removeAt(index){
-                        const files = Array.from(dt.files);
-                        dt = new DataTransfer();
-                        files.forEach((f,i) => { if (i !== index) dt.items.add(f); });
-                        input.files = dt.files;
-                        renderPreview();
-                    }
-
-                    function k(f){ return `${f.name}|${f.size}|${f.lastModified}`; }
+                function removeAt(index){
+                    const files = Array.from(dt.files);
+                    dt = new DataTransfer();
+                    files.forEach((f,i) => { if (i !== index) dt.items.add(f); });
+                    input.files = dt.files;
+                    renderPreview();
                 }
-            })();
-        </script>
 
+                function k(f){ return `${f.name}|${f.size}|${f.lastModified}`; }
+            }
+
+        })();
+    </script>
+
+    <!-- ======================= -->
+    <!-- LEAFLET MAP EDITAR -->
+    <!-- ======================= -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script th:inline="javascript">
+        const latActual = Number(/*[[${hecho.latitud}]]*/ 0);
+        const lonActual = Number(/*[[${hecho.longitud}]]*/ 0);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!latActual || !lonActual) return;
+
+            const map = L.map('map-editar', { zoomControl: true })
+                .setView([latActual, lonActual], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            L.marker([latActual, lonActual]).addTo(map);
+
+            setTimeout(() => map.invalidateSize(), 300);
+        });
+    </script>
+
+    <!-- ======================= -->
+    <!-- SCRIPT GEO AUTOCOMPLETE -->
+    <!-- ======================= -->
+    <script>
+        (function () {
+            const $buscador = document.getElementById('buscador-geo');
+            const $sugs = document.getElementById('sugerencias-geo');
+            const $lat = document.getElementById('latitud');
+            const $lon = document.getElementById('longitud');
+            const $prov = document.getElementById('provincia');
+
+            let timer = null;
+
+            function limpiar() {
+                $sugs.innerHTML = '';
+                $sugs.style.display = 'none';
+            }
+
+            function render(items) {
+                if (!items || items.length === 0) return limpiar();
+                $sugs.innerHTML = '';
+                items.forEach(it => {
+                    const li = document.createElement('li');
+                    li.textContent = it.label;
+                    li.addEventListener('click', () => select(it));
+                    $sugs.appendChild(li);
+                });
+                $sugs.style.display = 'block';
+            }
+
+            function select(it) {
+                $lat.value = it.latitud;
+                $lon.value = it.longitud;
+                $prov.value = it.provinciaNombre;
+                $buscador.value = it.label;
+                limpiar();
+            }
+
+            async function buscar(q) {
+                try {
+                    const url = `http://localhost:8083/api/geo/sugerencias?query=${encodeURIComponent(q)}&max=8`;
+                    const res = await fetch(url);
+                    if (!res.ok) return limpiar();
+                    const data = await res.json();
+                    render(data);
+                } catch {
+                    limpiar();
+                }
+            }
+
+            if ($buscador) {
+                $buscador.addEventListener('input', () => {
+                    const q = $buscador.value.trim();
+                    if (timer) clearTimeout(timer);
+                    if (q.length < 3) return limpiar();
+                    timer = setTimeout(() => buscar(q), 250);
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!(e.target === $buscador || $sugs.contains(e.target))) limpiar();
+                });
+            }
+        })();
+    </script>
 
     <div class="return-bar">
         <a th:href="@{/misHechos}" class="return-link">← Volver a Mis Hechos</a>
     </div>
 
-
 </div>
 </html>
+

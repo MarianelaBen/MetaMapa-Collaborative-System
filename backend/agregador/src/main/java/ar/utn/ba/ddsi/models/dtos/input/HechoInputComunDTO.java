@@ -16,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HechoInputComunDTO {
-    private Long id;
+  private Long id;
   private String titulo;
   private String descripcion;
   private String categoria;
@@ -25,6 +25,7 @@ public class HechoInputComunDTO {
   private LocalDate fechaCarga;
   private String fuente;
   private Boolean fueEliminado;
+  private Long idEnFuente;
 
   // opcionales comunes
   private Set<String> etiquetas;

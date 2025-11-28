@@ -224,7 +224,7 @@ public class HechoService {
         return hecho;
     }
 
-    public HechoDTO actualizarHecho(Long id, HechoDTO dto, MultipartFile[] multimedia, boolean replaceMedia, List<String> deleteExisting) {
+    /*public HechoDTO actualizarHecho(Long id, HechoDTO dto, MultipartFile[] multimedia, boolean replaceMedia, List<String> deleteExisting) {
         try {
             MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
 
@@ -274,7 +274,83 @@ public class HechoService {
         } catch (IOException e) {
             throw new RuntimeException("Error serializando archivos para envío: " + e.getMessage(), e);
         }
+    }*/ //TODO borrar cuando funcione el otro actualizar
+
+    public HechoDTO actualizarHecho(Long id, HechoDTO dto, MultipartFile[] multimedia, boolean replaceMedia, List<String> deleteExisting, Long usuarioId) {
+        try {
+            MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+
+            Map<String, Object> hechoJson = new HashMap<>();
+
+            hechoJson.put("titulo", dto.getTitulo());
+            hechoJson.put("descripcion", dto.getDescripcion());
+            hechoJson.put("fechaAcontecimiento", dto.getFechaAcontecimiento());
+
+            Map<String, Object> categoriaJson = new HashMap<>();
+            categoriaJson.put("id", null);
+            categoriaJson.put("nombre", dto.getCategoria());
+            hechoJson.put("categoria", categoriaJson);
+
+            Map<String, Object> ciudadJson = new HashMap<>();
+            ciudadJson.put("latitud", dto.getLatitud());
+            ciudadJson.put("longitud", dto.getLongitud());
+            ciudadJson.put("provincia", dto.getProvincia());
+            hechoJson.put("ciudad", ciudadJson);
+
+            hechoJson.put("pathsMultimedia", List.of());
+
+            String json = objectMapper.writeValueAsString(hechoJson);
+
+            HttpHeaders jsonHeaders = new HttpHeaders();
+            jsonHeaders.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> hechoPart = new HttpEntity<>(json, jsonHeaders);
+            parts.add("hecho", hechoPart);
+
+            boolean hayArchivos = multimedia != null &&
+                Arrays.stream(multimedia).anyMatch(f -> f != null && !f.isEmpty());
+
+            if (hayArchivos) {
+                for (MultipartFile file : multimedia) {
+                    if (file != null && !file.isEmpty()) {
+
+                        ByteArrayResource resource = new ByteArrayResource(file.getBytes()) {
+                            @Override
+                            public String getFilename() { return file.getOriginalFilename(); }
+                        };
+
+                        HttpHeaders fileHeaders = new HttpHeaders();
+                        fileHeaders.setContentDispositionFormData("multimedia", file.getOriginalFilename());
+                        fileHeaders.setContentType(MediaType.parseMediaType(
+                            file.getContentType() != null ? file.getContentType() : "application/octet-stream"
+                        ));
+
+                        parts.add("multimedia", new HttpEntity<>(resource, fileHeaders));
+                    }
+                }
+            }
+
+            if (deleteExisting != null) {
+                for (String path : deleteExisting) {
+                    parts.add("deleteExisting", path);
+                }
+            }
+
+            return webClientDin.put()
+                .uri(uriBuilder -> uriBuilder
+                    .path("/hechos/{id}/editar/{idEditor}")
+                    .queryParam("replaceMedia", replaceMedia)
+                    .build(id, usuarioId))
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(parts))
+                .retrieve()
+                .bodyToMono(HechoDTO.class)
+                .block();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error enviando edición a Fuente Dinámica: " + e.getMessage(), e);
+        }
     }
+
 
     public List<String> getCategorias() {
         List<CategoriaDTO> categorias = webClientPublic.get()

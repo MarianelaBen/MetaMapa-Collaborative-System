@@ -114,6 +114,7 @@ public class FuenteEstaticaService implements IFuenteEstaticaService {
   @Override
   public HechoOutputEstaticaDTO hechoOutputEstaticaDTO(Hecho hecho) {
     HechoOutputEstaticaDTO dto = new HechoOutputEstaticaDTO();
+    dto.setId(hecho.getId());
     dto.setTitulo(hecho.getTitulo());
     dto.setDescripcion(hecho.getDescripcion());
     dto.setCategoria(hecho.getCategoria().getNombre());

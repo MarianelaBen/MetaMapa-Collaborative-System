@@ -88,6 +88,7 @@ public class AdapterFuenteDinamica {
 
       System.out.println(hecho.getCategoria().getNombre());
       System.out.println(hecho.getDescripcion());
+      hecho.setIdEnFuente(dto.getIdEnFuente());
 
       return hecho;
     }

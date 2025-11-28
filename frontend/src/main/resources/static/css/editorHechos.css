@@ -291,3 +291,16 @@ select.fact-category:focus{
     padding-left: 0;
 }
 .alert-list li { list-style: disc; }
+
+.info-card .info-grid .info-item {
+    margin-bottom: 24px !important;
+}
+
+#map-editar {
+    width: 100%;
+    height: 250px;
+    border-radius: 8px;
+    margin-top: 20px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+

@@ -131,6 +131,7 @@ public class HechoService implements IHechoService {
   @Override
   public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
     HechoOutputDTO dto = new HechoOutputDTO();
+    dto.setId(hecho.getId());
     dto.setTitulo(hecho.getTitulo());
     dto.setDescripcion(hecho.getDescripcion());
     dto.setCategoria(hecho.getCategoria().getNombre());
@@ -209,7 +210,7 @@ public class HechoService implements IHechoService {
     }
   }
 
-  @Override
+  /*@Override
   public HechoOutputDTO edicion(Long idEditor, HechoInputDTO hechoInputDTO, Long idHecho) {
     Hecho hecho = this.hechoRepository.findById(idHecho).orElse(null);
     HechoEstadoPrevio estadoPrevio = new HechoEstadoPrevio(hecho);
@@ -230,7 +231,34 @@ public class HechoService implements IHechoService {
     this.hechoRepository.save(hecho);
 
     return this.hechoOutputDTO(hecho);
+  }*/ //TODO borrar cuando funcione el nuevo editar
+
+  @Override
+  public HechoOutputDTO edicion(Long idEditor, HechoInputDTO dto, Long idHecho, MultipartFile[] multimedia, boolean replaceMedia, List<String> deleteExisting) {
+    Hecho hecho = hechoRepository.findById(idHecho).orElseThrow(() -> new RuntimeException("Hecho no encontrado"));
+    HechoEstadoPrevio estadoPrevio = new HechoEstadoPrevio(hecho);
+    Categoria categoria = categoriaService.findCategory(dto.getCategoria());
+
+    actualizarHecho(
+        hecho,
+        dto.getTitulo(),
+        dto.getDescripcion(),
+        categoria,
+        dto.getCiudad(),
+        dto.getFechaAcontecimiento()
+    );
+
+    actualizarMultimedia(hecho, multimedia, replaceMedia, deleteExisting);
+
+    hecho.setEstadoPrevio(estadoPrevio);
+
+    solicitudService.create(hecho, TipoSolicitud.EDICION);
+
+    hechoRepository.save(hecho);
+
+    return hechoOutputDTO(hecho);
   }
+
 
   @Override
   public void creacionRechazada(Hecho hecho){
@@ -294,4 +322,54 @@ public class HechoService implements IHechoService {
     hecho.setFechaAcontecimiento(fechaAcontecimiento);
     hecho.setFechaActualizacion(LocalDate.now());
   }
+
+  private void actualizarMultimedia(
+      Hecho hecho,
+      MultipartFile[] multimedia,
+      boolean replaceMedia,
+      List<String> deleteExisting
+  ) {
+
+    List<ContenidoMultimedia> actuales =
+        hecho.getContenidosMultimedia() != null
+            ? new ArrayList<>(hecho.getContenidosMultimedia())
+            : new ArrayList<>();
+
+    if (replaceMedia) {
+      actuales.forEach(c -> contenidoMultimediaRepository.delete(c));
+      actuales.clear();
+    }
+
+    if (!replaceMedia && deleteExisting != null && !deleteExisting.isEmpty()) {
+
+      Set<String> pathsAEliminar = new HashSet<>(deleteExisting);
+
+      actuales.removeIf(c -> {
+        boolean borrar = pathsAEliminar.contains(c.getPath());
+        if (borrar) contenidoMultimediaRepository.delete(c);
+        return borrar;
+      });
+    }
+
+    if (multimedia != null && multimedia.length > 0) {
+
+      List<String> nuevasUrls = new ArrayList<>();
+
+      for (MultipartFile file : multimedia) {
+        if (file != null && !file.isEmpty()) {
+          String path = minioService.upload(file);  // ⭐ devuelve URL/Path final
+          nuevasUrls.add(path);
+        }
+      }
+
+      List<ContenidoMultimedia> nuevos = mapearMultimedia(nuevasUrls);
+
+      actuales.addAll(nuevos);
+    }
+
+    hecho.setContenidosMultimedia(actuales);
+  }
+
+
+
 }

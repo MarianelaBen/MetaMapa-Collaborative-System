@@ -19,7 +19,8 @@ public interface IHechoService {
   void eliminar(Long id);
   boolean puedeEditar(Long id1 , Long id2, LocalDate fecha);
   HechoOutputDTO permisoDeEdicion(Long idEditor, Long idHecho);
-  HechoOutputDTO edicion(Long idEditor, HechoInputDTO hechoInputDTO, Long idHecho);
+  //HechoOutputDTO edicion(Long idEditor, HechoInputDTO hechoInputDTO, Long idHecho);
+  HechoOutputDTO edicion(Long idEditor, HechoInputDTO hechoInputDTO, Long idHecho, MultipartFile[] multimedia, boolean replaceMedia, List<String> deleteExisting);
   void creacionRechazada(Hecho hecho);
   void edicionRechazada(Hecho hecho);
   List<HechoOutputDTO> buscarTodos();

@@ -24,4 +24,12 @@ public class GeoController {
   ) {
     return geoService.buscarSugerencias(query, provinciaId, Math.max(1, Math.min(max, 10)));
   }
+
+  @GetMapping("/reverse")
+  public GeoSugerenciaDTO reverseGeo(
+      @RequestParam("lat") double latitud,
+      @RequestParam("lon") double longitud
+  ) {
+    return geoService.reverseGeocoding(latitud, longitud);
+  }
 }

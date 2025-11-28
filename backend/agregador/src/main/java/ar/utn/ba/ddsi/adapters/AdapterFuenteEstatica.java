@@ -61,6 +61,7 @@ public class AdapterFuenteEstatica {
         hecho.setRutaNombre(rutaNombre);
       }
     }
+    hecho.setIdEnFuente(dto.getIdEnFuente());
 
     return hecho;
   }

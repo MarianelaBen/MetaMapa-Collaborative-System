@@ -101,6 +101,9 @@ public class Hecho {
   @Column(name = "cantidad_vistas")
   private Integer cantVistas;
 
+  @Column(name = "idEnFuente")
+  private Long idEnFuente;
+
   //@Column(name = "editable" )
   //private boolean editable;
 
@@ -123,6 +126,7 @@ public class Hecho {
     this.etiquetas = new HashSet<>();
     this.fuenteExterna = fuenteExterna;
     this.consensoPorAlgoritmo = new HashMap<>();
+    this.idEnFuente = null;
   }
 
   public void agregarEtiqueta(Etiqueta etiqueta) {

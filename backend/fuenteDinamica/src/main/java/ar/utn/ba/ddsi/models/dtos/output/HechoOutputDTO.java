@@ -18,6 +18,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HechoOutputDTO {
   @NotNull
+  private Long id;
+  @NotNull
   private String titulo;
   @NotNull
   private String descripcion;

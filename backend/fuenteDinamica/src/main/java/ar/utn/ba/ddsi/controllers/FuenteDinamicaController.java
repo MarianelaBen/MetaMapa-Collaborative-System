@@ -85,7 +85,7 @@ public class FuenteDinamicaController {
     }
   }
 
-  @PutMapping("/{idHecho}/editar/{idEditor}")
+  /*@PutMapping("/{idHecho}/editar/{idEditor}")
   public ResponseEntity<?> editarHecho(
       @PathVariable Long idHecho,
       @PathVariable Long idEditor,
@@ -97,7 +97,27 @@ public class FuenteDinamicaController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(Map.of("error", "Error al editar hecho", "mensaje", e.getMessage()));
     }
+  }*/ //TODO borrar cuando funcione el nuevo editar
+
+  @PutMapping(
+      value = "/{idHecho}/editar/{idEditor}",
+      consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+  )
+  public ResponseEntity<?> editarHecho(@PathVariable Long idHecho, @PathVariable Long idEditor, @RequestPart("hecho") HechoInputDTO hechoInputDTO,
+      @RequestPart(value = "multimedia", required = false) MultipartFile[] multimedia,
+      @RequestParam(name = "replaceMedia", defaultValue = "false") boolean replaceMedia,
+      @RequestParam(value = "deleteExisting", required = false) List<String> deleteExisting
+  ) {
+    try {
+      HechoOutputDTO hechoEditado =
+          hechoService.edicion(idEditor, hechoInputDTO, idHecho, multimedia, replaceMedia, deleteExisting);
+      return ResponseEntity.ok(hechoEditado);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error", "Error al editar hecho", "mensaje", e.getMessage()));
+    }
   }
+
 
   @PostMapping("/{idHecho}/rechazar-creacion")
   public ResponseEntity<?> rechazarCreacion(@PathVariable Long idSolicitud, String comentario, Long idAdministrador) {
