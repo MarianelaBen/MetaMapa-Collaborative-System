@@ -2,16 +2,7 @@ package ar.utn.ba.ddsi.models.entities;
 
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoSolicitud;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,7 +24,7 @@ public class Solicitud {
   @Column(name = "tipo_solicitud")
   private TipoSolicitud tipoSolicitud;
 
-  @OneToOne
+  @ManyToOne
   @JoinColumn(name = "hecho_id", nullable = false)
   private Hecho hecho;
 

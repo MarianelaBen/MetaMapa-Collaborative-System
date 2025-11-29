@@ -31,6 +31,7 @@ public class HechoOutputDTO {
   private ContribuyenteDTO contribuyente;
   private Boolean fueEliminado;
   private Integer cantVistas;
+  private Long idEnFuente;
   //private boolean editable;    // 7 días desde fechaCarga
   //private int diasRestantesEdicion;
 
@@ -40,6 +41,7 @@ public class HechoOutputDTO {
     dto.setTitulo(h.getTitulo());
     dto.setDescripcion(h.getDescripcion());
     dto.setFueEliminado(h.getFueEliminado());
+    dto.setIdEnFuente(h.getIdEnFuente());
     dto.setCategoria(h.getCategoria() != null ? h.getCategoria().getNombre() : null);
     if (h.getUbicacion() != null) {
       dto.setLatitud(h.getUbicacion().getLatitud());

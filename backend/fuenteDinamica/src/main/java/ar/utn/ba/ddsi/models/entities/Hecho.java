@@ -81,7 +81,7 @@ public class Hecho {
   @JoinColumn(name = "contenido_multimedia_id")
   private List<ContenidoMultimedia> contenidosMultimedia;
 
-  @OneToOne(mappedBy = "hecho", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @OneToOne(mappedBy = "hecho", cascade = CascadeType.ALL, orphanRemoval = true)
   private HechoEstadoPrevio estadoPrevio;
 
   @Column(name = "fecha_actualizacion")

@@ -178,7 +178,7 @@ public class HechoController {
               })
               .toList();
 
-
+      System.out.println("ID DE FUENTE RECIBIDO EN EL FORM: " + hecho.getIdEnFuente());
       model.addAttribute("nombresMultimedia", nombresMultimedia);
       model.addAttribute("hecho", hecho);
       model.addAttribute("categorias", categorias);
@@ -253,44 +253,30 @@ public class HechoController {
   }*/ //TODO borrar cuando la nueva edicion funcione
 
   @PostMapping("/{id}/editar")
-  @PreAuthorize("hasAnyRole('CONTRIBUYENTE') and hasAnyAuthority('EDITAR_HECHO_PROPIO')")
+  @PreAuthorize("hasAnyRole('CONTRIBUYENTE')") //TODO borre esta parte  and hasAnyAuthority('EDITAR_HECHO_PROPIO') porque no se no sirve por ahora
   public String procesarEdicion(
       @PathVariable Long id, @ModelAttribute("hecho") HechoDTO hecho, @RequestParam("fecha") String fecha, @RequestParam("hora") String hora,
       @RequestParam(name = "multimedia", required = false) MultipartFile[] multimedia, @RequestParam(name = "replaceMedia", defaultValue = "false") boolean replaceMedia,
       @RequestParam(value = "deleteExisting", required = false) List<String> deleteExisting,
       RedirectAttributes redirect, Model model) {
-    boolean error = false;
-
-    if (hecho.getTitulo() == null || hecho.getTitulo().isBlank()) error = true;
-    if (hecho.getCategoria() == null || hecho.getCategoria().isBlank()) error = true;
-    if (hecho.getDescripcion() == null || hecho.getDescripcion().isBlank()) error = true;
-    if (hecho.getProvincia() == null || hecho.getProvincia().isBlank()) error = true;
-    if (fecha == null || fecha.isBlank() || hora == null || hora.isBlank()) error = true;
-
-    try {
-      if (!error) {
-        LocalDate d = LocalDate.parse(fecha);
-        LocalTime t = LocalTime.parse(hora);
-        hecho.setFechaAcontecimiento(LocalDateTime.of(d, t));
-      }
-    } catch (Exception e) {
-      error = true;
-    }
-
-    if (error) {
-      model.addAttribute("categorias", hechoService.getCategorias());
-      model.addAttribute("hechoId", id);
-      model.addAttribute("titulo", "Editar Hecho");
-      model.addAttribute("errorMsg", "Hay campos obligatorios sin completar.");
-      return "contribuyente/editorHechos";
-    }
-
     hecho.setId(id);
     Long usuarioId = metaMapaApiService.getUsuarioIdFromAccessToken();
 
+    if (fecha != null && !fecha.isBlank() && hora != null && !hora.isBlank()) {
+      try {
+        LocalDate d = LocalDate.parse(fecha);
+        LocalTime t = LocalTime.parse(hora);
+        hecho.setFechaAcontecimiento(LocalDateTime.of(d, t));
+      } catch (Exception e) {
+        redirect.addFlashAttribute("mensaje", "La fecha u hora ingresada no es válida.");
+        redirect.addFlashAttribute("tipoMensaje", "danger");
+        return "redirect:/hechos/" + id;
+      }
+    }
+
     try {
       hechoService.actualizarHecho(
-          hecho.getIdDeFuente(),
+          hecho.getIdEnFuente(),
           hecho,
           multimedia,
           replaceMedia,

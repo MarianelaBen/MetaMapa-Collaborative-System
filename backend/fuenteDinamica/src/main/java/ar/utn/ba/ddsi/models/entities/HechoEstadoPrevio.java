@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "hechoEstadoPrevio")
+@Table(name = "hecho_estado_previo")
 @Setter
 @Getter
 @NoArgsConstructor
@@ -22,14 +22,14 @@ public class HechoEstadoPrevio {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id")
+  @OneToOne
+  @JoinColumn(name = "hecho_id", nullable = false)
   private Hecho hecho;
 
-  @Column(name = "titulo", nullable = false)
+  @Column(nullable = false)
   private String titulo;
 
-  @Column(name = "descripcion", nullable = false)
+  @Column(nullable = false)
   private String descripcion;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -42,20 +42,31 @@ public class HechoEstadoPrevio {
   @Column(name = "fecha_acontecimiento", nullable = false)
   private LocalDateTime fechaAcontecimiento;
 
-  @Column(name = "fecha_edicion", nullable = false )
+  @Column(name = "fecha_edicion", nullable = false)
   private LocalDateTime fechaEdicion;
 
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-  @JoinColumn(name = "hecho_id")
-  private List<ContenidoMultimedia> contenidosMultimedia;
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "hecho_estado_previo_id")
+  private List<ContenidoMultimedia> contenidosMultimedia = new ArrayList<>();
+
 
   public HechoEstadoPrevio(Hecho hecho) {
+    this.hecho = hecho;
     this.titulo = hecho.getTitulo();
     this.descripcion = hecho.getDescripcion();
     this.categoria = hecho.getCategoria();
     this.ubicacion = hecho.getUbicacion();
     this.fechaAcontecimiento = hecho.getFechaAcontecimiento();
-    this.contenidosMultimedia = new ArrayList<>(hecho.getContenidosMultimedia());
+    this.fechaEdicion = LocalDateTime.now();
+
+    if (hecho.getContenidosMultimedia() != null) {
+      for (ContenidoMultimedia c : hecho.getContenidosMultimedia()) {
+        ContenidoMultimedia copia = new ContenidoMultimedia();
+        copia.setPath(c.getPath());
+        this.contenidosMultimedia.add(copia);
+      }
+    }
   }
 }
+
 

@@ -29,7 +29,7 @@ public class HechoDTO {
   private Integer cantVistas;
   private boolean editable;    // 7 días desde fechaCarga
   private int diasRestantes;
-  private Long idDeFuente;
+  private Long idEnFuente;
 
 
   public HechoDTO(String titulo, String descripcion, String categoria, LocalDateTime fechaAcontecimiento, String provincia, Long id) {

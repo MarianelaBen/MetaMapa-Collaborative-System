@@ -25,7 +25,6 @@ public class HechoInputComunDTO {
   private LocalDate fechaCarga;
   private String fuente;
   private Boolean fueEliminado;
-  private Long idEnFuente;
 
   // opcionales comunes
   private Set<String> etiquetas;

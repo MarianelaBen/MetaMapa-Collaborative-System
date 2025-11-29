@@ -19,7 +19,6 @@
         <strong>Atención:</strong> <span th:text="${errorMsg}">Hay campos obligatorios sin completar.</span>
     </div>
 
-    <!-- Formulario de edición -->
     <form th:action="@{/hechos/{id}/editar(id=${hechoId})}"
           th:object="${hecho}"
           method="post"
@@ -27,10 +26,11 @@
 
         <input type="hidden" name="replaceMedia" value="false"/>
 
-        <!-- ====== CAMPOS HIDDEN DE GEO ====== -->
         <input type="hidden" th:field="*{latitud}"   id="latitud">
         <input type="hidden" th:field="*{longitud}"  id="longitud">
         <input type="hidden" th:field="*{provincia}" id="provincia">
+
+        <input type="hidden" name="idEnFuente" th:value="${hecho.idEnFuente}">
 
         <div class="fact-container">
             <div class="fact-main">
@@ -40,22 +40,23 @@
                                   th:field="*{titulo}"
                                   rows="2"
                                   placeholder="Título del hecho"
-                                  required></textarea>
+                                  ></textarea>
                         <button class="btn-editar" type="button" title="Editar">
                             <i class="fa-solid fa-pen"></i>
                         </button>
                     </div>
 
-                    <!-- ===== CATEGORÍA (input/datalist) ===== -->
                     <input list="listaCategorias"
                            class="fact-category"
                            th:field="*{categoria}"
                            placeholder="Categoría"
-                           required/>
+                           />
 
                     <datalist id="listaCategorias">
                         <option th:each="cat : ${categorias}"
-                                th:value="${cat.nombre}">
+                                th:value="${cat.nombre}"
+                                th:text="${cat.nombre}">
+                        </option>
                     </datalist>
 
                     <div class="fact-status" style="margin-top: .75rem;">
@@ -79,10 +80,9 @@
                                   th:field="*{descripcion}"
                                   rows="6"
                                   placeholder="Describe el hecho..."
-                                  required></textarea>
+                                  ></textarea>
                     </section>
 
-                    <!-- ===== MULTIMEDIA (ORIGINAL RESTAURADO) ===== -->
                     <section class="multimedia-section">
                         <h3 class="multimedia-title">Contenido Multimedia</h3>
 
@@ -140,7 +140,7 @@
                                        th:value="${hecho.fechaAcontecimiento != null
                                        ? #temporals.format(hecho.fechaAcontecimiento,'yyyy-MM-dd')
                                        : ''}"
-                                       required/>
+                                       />
                                 <button class="btn-editar" type="button"><i class="fa-solid fa-pen"></i></button>
                             </td>
                         </tr>
@@ -152,14 +152,13 @@
                                        th:value="${hecho.fechaAcontecimiento != null
                                        ? #temporals.format(hecho.fechaAcontecimiento,'HH:mm')
                                        : ''}"
-                                       required/>
+                                       />
                                 <button class="btn-editar" type="button"><i class="fa-solid fa-pen"></i></button>
                             </td>
                         </tr>
                     </table>
                 </div>
 
-                <!-- ===== UBICACIÓN (AUTOCOMPLETE + MAPA) ===== -->
                 <div class="info-card">
                     <h3>Ubicación</h3>
 
@@ -183,9 +182,6 @@
         </div>
     </form>
 
-    <!-- ======================= -->
-    <!-- JS MULTIMEDIA (ORIGINAL) -->
-    <!-- ======================= -->
     <script>
         (function(){
             const existingContainer = document.getElementById('existing-media');
@@ -282,9 +278,6 @@
         })();
     </script>
 
-    <!-- ======================= -->
-    <!-- LEAFLET MAP EDITAR -->
-    <!-- ======================= -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script th:inline="javascript">
         const latActual = Number(/*[[${hecho.latitud}]]*/ 0);
@@ -307,9 +300,6 @@
         });
     </script>
 
-    <!-- ======================= -->
-    <!-- SCRIPT GEO AUTOCOMPLETE -->
-    <!-- ======================= -->
     <script>
         (function () {
             const $buscador = document.getElementById('buscador-geo');

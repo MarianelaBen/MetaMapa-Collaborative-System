@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.Exceptions.HechoCreacionException;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.models.dtos.input.HechoInputEdicionDTO;
 import ar.utn.ba.ddsi.models.dtos.output.ContribuyenteOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.UbicacionOutputDTO;
 import ar.utn.ba.ddsi.models.entities.*;
@@ -234,7 +235,7 @@ public class HechoService implements IHechoService {
   }*/ //TODO borrar cuando funcione el nuevo editar
 
   @Override
-  public HechoOutputDTO edicion(Long idEditor, HechoInputDTO dto, Long idHecho, MultipartFile[] multimedia, boolean replaceMedia, List<String> deleteExisting) {
+  public HechoOutputDTO edicion(Long idEditor, HechoInputEdicionDTO dto, Long idHecho, MultipartFile[] multimedia, boolean replaceMedia, List<String> deleteExisting) {
     Hecho hecho = hechoRepository.findById(idHecho).orElseThrow(() -> new RuntimeException("Hecho no encontrado"));
     HechoEstadoPrevio estadoPrevio = new HechoEstadoPrevio(hecho);
     Categoria categoria = categoriaService.findCategory(dto.getCategoria());
@@ -314,12 +315,29 @@ public class HechoService implements IHechoService {
   }
 
   @Override
-  public void actualizarHecho(Hecho hecho, String titulo, String descripcion, Categoria categoria, Ubicacion ubicacion, LocalDateTime fechaAcontecimiento) {
-    hecho.setTitulo(titulo);
-    hecho.setDescripcion(descripcion);
-    hecho.setCategoria(categoria);
-    hecho.setUbicacion(ubicacion);
-    hecho.setFechaAcontecimiento(fechaAcontecimiento);
+  public void actualizarHecho(Hecho hecho,
+                              String titulo,
+                              String descripcion,
+                              Categoria categoria,
+                              Ubicacion ubicacion,
+                              LocalDateTime fechaAcontecimiento) {
+
+    if (titulo != null && !titulo.isBlank()) {
+      hecho.setTitulo(titulo);
+    }
+    if (descripcion != null && !descripcion.isBlank()) {
+      hecho.setDescripcion(descripcion);
+    }
+    if (categoria != null) {            // si viene null, no la toco
+      hecho.setCategoria(categoria);
+    }
+    if (ubicacion != null) {           // idem
+      hecho.setUbicacion(ubicacion);
+    }
+    if (fechaAcontecimiento != null) { // idem
+      hecho.setFechaAcontecimiento(fechaAcontecimiento);
+    }
+
     hecho.setFechaActualizacion(LocalDate.now());
   }
 
@@ -344,11 +362,7 @@ public class HechoService implements IHechoService {
 
       Set<String> pathsAEliminar = new HashSet<>(deleteExisting);
 
-      actuales.removeIf(c -> {
-        boolean borrar = pathsAEliminar.contains(c.getPath());
-        if (borrar) contenidoMultimediaRepository.delete(c);
-        return borrar;
-      });
+      actuales.removeIf(c -> pathsAEliminar.contains(c.getPath()));
     }
 
     if (multimedia != null && multimedia.length > 0) {

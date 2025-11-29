@@ -130,13 +130,8 @@ public class HechoService {
 
     public HechoDTO subirHecho(HechoDTO dto, MultipartFile[] multimedia) {
         try {
-            // Construimos multipart
             MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
 
-            // ==========================
-            // PARTE JSON (hecho)
-            // ==========================
-            // Armamos a mano el JSON con la estructura que espera fuenteDinámica
             Map<String, Object> hechoJson = new HashMap<>();
 
             // Campos simples
@@ -144,23 +139,19 @@ public class HechoService {
             hechoJson.put("descripcion", dto.getDescripcion());
             hechoJson.put("fechaAcontecimiento", dto.getFechaAcontecimiento());
 
-            // categoria: objeto { id, nombre }
             Map<String, Object> categoriaJson = new HashMap<>();
-            categoriaJson.put("id", null);                       // dejamos id null
-            categoriaJson.put("nombre", dto.getCategoria());     // antes era un String plano
+            categoriaJson.put("id", null);
+            categoriaJson.put("nombre", dto.getCategoria());
             hechoJson.put("categoria", categoriaJson);
 
-            // ciudad: objeto { latitud, longitud, provincia }
             Map<String, Object> ciudadJson = new HashMap<>();
             ciudadJson.put("latitud", dto.getLatitud());
             ciudadJson.put("longitud", dto.getLongitud());
             ciudadJson.put("provincia", dto.getProvincia());
             hechoJson.put("ciudad", ciudadJson);
 
-            // pathsMultimedia: lista vacía; Dinámica lo completa después con MinIO
             hechoJson.put("pathsMultimedia", List.of());
 
-            // Serializamos ese Map a JSON
             String json = objectMapper.writeValueAsString(hechoJson);
 
             HttpHeaders jsonHeaders = new HttpHeaders();
@@ -168,11 +159,6 @@ public class HechoService {
             HttpEntity<String> hechoPart = new HttpEntity<>(json, jsonHeaders);
             parts.add("hecho", hechoPart);
 
-            // ==========================
-            // PARTE FILES (multimedia)
-            // ==========================
-
-            // Solo añadir archivos si realmente hay alguno no vacío
             boolean hayArchivos = multimedia != null && Arrays.stream(multimedia)
                 .anyMatch(f -> f != null && !f.isEmpty());
 
@@ -199,9 +185,8 @@ public class HechoService {
                 }
             }
 
-            // Hacemos la petición a fuenteDinámica
             return webClientDin.post()
-                .uri("/hechos") // con base-url-dinamica = http://localhost:8084/api → queda /api/hechos
+                .uri("/hechos")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(parts))
                 .retrieve()
@@ -337,12 +322,15 @@ public class HechoService {
 
             return webClientDin.put()
                 .uri(uriBuilder -> uriBuilder
-                    .path("/hechos/{id}/editar/{idEditor}")
+                    .path("/{id}/editar/{idEditor}")
                     .queryParam("replaceMedia", replaceMedia)
                     .build(id, usuarioId))
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(parts))
                 .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                    resp -> resp.bodyToMono(String.class)
+                        .map(body -> new RuntimeException("Error dinamica: " + body)))
                 .bodyToMono(HechoDTO.class)
                 .block();
 

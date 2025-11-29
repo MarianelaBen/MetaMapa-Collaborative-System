@@ -1,6 +1,7 @@
 package ar.utn.ba.ddsi.controllers;
 
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
+import ar.utn.ba.ddsi.models.dtos.input.HechoInputEdicionDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
@@ -103,16 +104,19 @@ public class FuenteDinamicaController {
       value = "/{idHecho}/editar/{idEditor}",
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE
   )
-  public ResponseEntity<?> editarHecho(@PathVariable Long idHecho, @PathVariable Long idEditor, @RequestPart("hecho") HechoInputDTO hechoInputDTO,
+  public ResponseEntity<?> editarHecho(@PathVariable Long idHecho, @PathVariable Long idEditor, @RequestPart("hecho") HechoInputEdicionDTO hechoInputDTO,
       @RequestPart(value = "multimedia", required = false) MultipartFile[] multimedia,
       @RequestParam(name = "replaceMedia", defaultValue = "false") boolean replaceMedia,
       @RequestParam(value = "deleteExisting", required = false) List<String> deleteExisting
   ) {
+    System.out.println("=== RECIBI EN EDICION ===");
+    System.out.println(hechoInputDTO);
     try {
       HechoOutputDTO hechoEditado =
           hechoService.edicion(idEditor, hechoInputDTO, idHecho, multimedia, replaceMedia, deleteExisting);
       return ResponseEntity.ok(hechoEditado);
     } catch (Exception e) {
+      e.printStackTrace();
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(Map.of("error", "Error al editar hecho", "mensaje", e.getMessage()));
     }
