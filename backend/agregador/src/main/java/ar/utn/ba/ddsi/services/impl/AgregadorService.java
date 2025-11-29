@@ -269,7 +269,13 @@ public class AgregadorService implements IAgregadorService {
         return hechos.stream()
                 .filter(hecho -> cumpleFiltros(hecho, categoria, fuente, ubicacion, keyword, fechaDesde, fechaHasta))
                 .map(hecho -> mapearConConsenso(hecho, algoritmoActual))
-                .toList();
+                .filter(dto -> {
+
+                    if (TipoDeModoNavegacion.CURADO.equals(modo)) {
+                        return Boolean.TRUE.equals(dto.getConsensuado());
+                    }
+                    return true;
+                }).toList();
     }
 
     private HechoOutputDTO mapearConConsenso(Hecho hecho, TipoAlgoritmoDeConsenso algoritmo) {

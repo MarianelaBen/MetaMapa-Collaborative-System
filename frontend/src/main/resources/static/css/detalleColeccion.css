@@ -419,6 +419,29 @@ main {
     margin-right:8px;
     transition:transform .15s ease, background .2s ease;
 }
+
+   .consensus-indicator {
+       display: flex;
+       align-items: center;
+       gap: 0.5rem;
+       font-size: 0.85rem;
+   }
+
+.consensus-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.consensus-verified {
+    background-color: #27ae60; /* Verde */
+}
+
+.consensus-unverified {
+    background-color: #f39c12; /* Naranja */
+}
+
 .socials a:hover{
     background:#e8eefc;
     transform:translateY(-2px);

@@ -127,6 +127,14 @@
                     </div> -->
                     <div class="hecho-card" th:each="hecho : ${hechos}">
                         <h3 class="hecho-title" th:text="${hecho.titulo}"></h3>
+                        <div class="consensus-indicator" style="margin-bottom: 0.5rem;">
+        <span class="consensus-dot"
+              th:classappend="${hecho.consensuado} ? 'consensus-verified' : 'consensus-unverified'">
+        </span>
+                            <span th:text="${hecho.consensuado} ? 'Verificado' : 'Sin verificar'"
+                                  style="margin-left: 5px; font-size: 0.8rem; color: #666;">
+        </span>
+                        </div>
                         <div class="hecho-category" th:text="${hecho.categoria}"></div>
                         <p class="hecho-description" th:text="${hecho.descripcion}"></p>
 
