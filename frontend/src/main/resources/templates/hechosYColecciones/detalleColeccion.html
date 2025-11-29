@@ -71,9 +71,26 @@
                             <label for="fuente-filter">Fuente</label>
                             <select id="fuente-filter" name="fuente">
                                 <option value="">Todas las fuentes</option>
-                                <option value="DATASET" th:selected="${param.fuente != null and param.fuente[0] == 'DATASET'}">Dataset oficial</option>
-                                <option value="CIUDADANOS" th:selected="${param.fuente != null and param.fuente[0] == 'CIUDADANOS'}">Reportes ciudadanos</option>
-                                <option value="PROXY" th:selected="${param.fuente != null and param.fuente[0] == 'PROXY'}">Fuentes Externas</option>
+
+                                <option value="PROVENIENTE_DE_DATASET"
+                                        th:selected="${param.fuente != null and param.fuente[0] == 'PROVENIENTE_DE_DATASET'}">
+                                    Dataset oficial
+                                </option>
+
+                                <option value="PROVISTO_POR_CONTRIBUYENTE"
+                                        th:selected="${param.fuente != null and param.fuente[0] == 'PROVISTO_POR_CONTRIBUYENTE'}">
+                                    Reportes ciudadanos
+                                </option>
+
+                                <option value="PROXY"
+                                        th:selected="${param.fuente != null and param.fuente[0] == 'PROXY'}">
+                                    Fuentes Externas (Proxy)
+                                </option>
+
+                                <option value="CARGA_MANUAL"
+                                        th:selected="${param.fuente != null and param.fuente[0] == 'CARGA_MANUAL'}">
+                                    Carga Manual (Admin)
+                                </option>
                             </select>
                         </div>
 
