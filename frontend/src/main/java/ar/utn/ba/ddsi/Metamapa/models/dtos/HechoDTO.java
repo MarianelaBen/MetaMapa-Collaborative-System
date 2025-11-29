@@ -30,6 +30,7 @@ public class HechoDTO {
   private boolean editable;    // 7 días desde fechaCarga
   private int diasRestantes;
   private Long idEnFuente;
+  private Boolean consensuado;
 
 
   public HechoDTO(String titulo, String descripcion, String categoria, LocalDateTime fechaAcontecimiento, String provincia, Long id) {

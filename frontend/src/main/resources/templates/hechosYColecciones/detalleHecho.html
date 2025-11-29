@@ -23,8 +23,14 @@
                 <div class="fact-category" th:text="${hecho.categoria}">Categoría</div>
                 <div class="fact-status">
                     <div class="consensus-indicator">
-                        <div class="consensus-dot consensus-verified"></div>
-                        <span><strong>Estado:</strong> Verificado por consenso</span>
+                        <div class="consensus-dot"
+                             th:classappend="${hecho.consensuado} ? 'consensus-verified' : 'consensus-unverified'">
+                        </div>
+
+                        <span>
+            <strong>Estado:</strong>
+            <span th:text="${hecho.consensuado} ? 'Verificado por consenso' : 'Sin verificar'"></span>
+        </span>
                     </div>
                 </div>
             </div>

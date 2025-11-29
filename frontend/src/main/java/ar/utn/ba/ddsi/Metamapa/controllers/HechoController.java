@@ -43,29 +43,42 @@ public class HechoController {
   private final MetaMapaApiService metaMapaApiService;
   private final ColeccionService coleccionService;
 
-  @GetMapping("/{id}")
-  public String verDetalleHecho(@PathVariable Long id,
-                                Model model, RedirectAttributes redirectAttributes) {
-    try {
-      // HechoDTO hecho = mockHecho(id);
-      HechoDTO hecho = hechoService.getHechoPorId(id);
+// En HechoController.java
 
-      List<String> nombresMultimedia = (hecho.getIdContenidoMultimedia() == null)
-          ? List.of()
-          : hecho.getIdContenidoMultimedia();
+    @GetMapping("/{id}")
+    public String verDetalleHecho(
+            @PathVariable Long id,
+            @RequestParam(required = false) String handle, // <--- NUEVO PARÁMETRO
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            HechoDTO hecho;
 
-      model.addAttribute("hecho", hecho);
-      model.addAttribute("nombresMultimedia", nombresMultimedia);
-      model.addAttribute("extensionesImagen", List.of("jpg", "jpeg", "png", "gif", "webp"));
-      model.addAttribute("backendOrigin", backendOrigin);
-      model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
+            if (handle != null && !handle.isBlank()) {
+                hecho = hechoService.getHechoDeColeccion(handle, id);
 
-      return "hechosYColecciones/detalleHecho";
-    } catch (NotFoundException ex) {
-      redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
-      return "redirect:/404";
+                model.addAttribute("coleccionHandle", handle);
+                model.addAttribute("coleccionTitulo", "Volver a la colección");
+            } else {
+                hecho = hechoService.getHechoPorId(id);
+            }
+
+            List<String> nombresMultimedia = (hecho.getIdContenidoMultimedia() == null)
+                    ? List.of()
+                    : hecho.getIdContenidoMultimedia();
+
+            model.addAttribute("hecho", hecho);
+            model.addAttribute("nombresMultimedia", nombresMultimedia);
+            model.addAttribute("extensionesImagen", List.of("jpg", "jpeg", "png", "gif", "webp"));
+            model.addAttribute("backendOrigin", backendOrigin);
+            model.addAttribute("titulo", "Hecho " + hecho.getTitulo());
+
+            return "hechosYColecciones/detalleHecho";
+        } catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            return "redirect:/404";
+        }
     }
-  }
 
   @GetMapping("/nuevo")
   public String verFormulario(Model model) {

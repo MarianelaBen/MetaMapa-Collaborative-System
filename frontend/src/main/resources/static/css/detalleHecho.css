@@ -102,26 +102,35 @@ main {
 .return-link:hover{
     text-decoration:underline;
 }
-
+/* Indicadores de consenso */
 .consensus-indicator {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     font-size: 0.95rem;
+    color: #555;
+    background-color: #f8f9fa; /* Un fondo suave para resaltar el estado */
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid #e9ecef;
+    width: fit-content; /* Para que no ocupe todo el ancho */
 }
 
 .consensus-dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
+    flex-shrink: 0; /* Evita que se deforme */
 }
 
 .consensus-verified {
-    background-color: #27ae60;
+    background-color: #27ae60; /* Verde */
+    box-shadow: 0 0 4px rgba(39, 174, 96, 0.4);
 }
 
 .consensus-unverified {
-    background-color: #f39c12;
+    background-color: #f39c12; /* Naranja */
+    box-shadow: 0 0 4px rgba(243, 156, 18, 0.4);
 }
 
 .fact-content {

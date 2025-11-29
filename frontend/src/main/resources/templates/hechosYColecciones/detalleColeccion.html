@@ -17,7 +17,7 @@
                 <div class="collection-stats">
                     <div class="stat">
                         <span class="stat-label">Total de hechos</span>
-                        <span class="stat-value" th:text="${coleccion.hechoIds.size()}"></span>
+                        <span class="stat-value" th:text="${hechos.size()}"></span>
                     </div>
                     <div class="stat">
                         <span class="stat-label">Algoritmo de consenso</span>
@@ -146,7 +146,7 @@
 
                         <div class="hecho-actions">
                             <a class="btn btn-principal btn-verDetalleHecho"
-                               th:href="@{/hechos/{id}(id=${hecho.id})}"
+                               th:href="@{/hechos/{id}(id=${hecho.id}, handle=${coleccion.handle})}"
                                th:attr="data-handle=${hecho.id}">
                                 Ver Detalles
                             </a>

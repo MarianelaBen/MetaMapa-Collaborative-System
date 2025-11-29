@@ -1,4 +1,5 @@
 package ar.utn.ba.ddsi.Metamapa.services;
+import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
@@ -402,6 +403,21 @@ public class HechoService {
             .bodyToFlux(HechoDTO.class)
             .collectList()
             .block();
+    }
+
+    public HechoDTO getHechoDeColeccion(String handle, Long hechoId) {
+        try {
+
+            return webClientPublic.get()
+                    .uri("/colecciones/{handle}/hechos/{id}", handle, hechoId)
+                    .retrieve()
+                    .bodyToMono(HechoDTO.class)
+                    .block();
+        } catch (WebClientResponseException.NotFound ex) {
+            throw new NotFoundException("Hecho no encontrado en la colección: " + handle);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener detalle del hecho con contexto", e);
+        }
     }
 
 }
