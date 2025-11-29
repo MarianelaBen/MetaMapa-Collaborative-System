@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class ColeccionesScheduler {
   private final IColeccionService coleccionService;
   private final long unaHoraEnMs = 3600000;
+    private final long intervaloPrueba = 300000;
 
   public ColeccionesScheduler(IColeccionService coleccionService){
     this.coleccionService = coleccionService;
@@ -16,9 +17,11 @@ public class ColeccionesScheduler {
 
   //el fixedRate cada ese tiempo toma un hilo
 
-  @Scheduled( fixedDelay = unaHoraEnMs )
+  @Scheduled( fixedDelay = intervaloPrueba )
   public void actualizarHechosColecciones() {
-    coleccionService.actualizarColecciones();
+      System.out.println("⏰ SCHEDULER: Iniciando actualización de colecciones...");
+      coleccionService.actualizarColecciones();
+      System.out.println("✅ SCHEDULER: Actualización finalizada.");
   }
 
 }

@@ -17,9 +17,9 @@ public class CriterioDescripcion extends Criterio{
     this.descripcion = descripcion;
   }
 
-  @Override
-  public boolean cumpleCriterio(Hecho hecho){
-
-    return descripcion.equalsIgnoreCase(hecho.getDescripcion());
-  }
+    @Override
+    public boolean cumpleCriterio(Hecho hecho){
+        if (hecho.getDescripcion() == null) return false;
+        return hecho.getDescripcion().toLowerCase().contains(descripcion.toLowerCase());
+    }
 }

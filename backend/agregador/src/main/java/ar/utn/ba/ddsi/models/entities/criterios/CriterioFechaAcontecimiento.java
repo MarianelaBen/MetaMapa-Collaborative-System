@@ -26,9 +26,15 @@ public class CriterioFechaAcontecimiento extends Criterio{
     this.hasta = hasta;
   }
 
-  @Override
-  public boolean cumpleCriterio(Hecho hecho) {
+    @Override
+    public boolean cumpleCriterio(Hecho hecho) {
+        if (hecho.getFechaAcontecimiento() == null) return false;
 
-    return hecho.getFechaAcontecimiento().isAfter(desde) && hecho.getFechaAcontecimiento().isBefore(hasta);
-  }
+        LocalDateTime fecha = hecho.getFechaAcontecimiento();
+
+        boolean pasoInicio = !fecha.isBefore(desde);
+        boolean pasoFin = !fecha.isAfter(hasta);
+
+        return pasoInicio && pasoFin;
+    }
 }

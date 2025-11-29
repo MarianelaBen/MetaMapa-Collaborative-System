@@ -106,6 +106,7 @@ public class ColeccionService implements IColeccionService {
   }
 
   @Override
+  @Transactional
   public void actualizarColecciones(){
     List<Coleccion> coleccionesExistentes = new ArrayList<>(coleccionRepository.findAll());
     for (Coleccion coleccion : coleccionesExistentes) {

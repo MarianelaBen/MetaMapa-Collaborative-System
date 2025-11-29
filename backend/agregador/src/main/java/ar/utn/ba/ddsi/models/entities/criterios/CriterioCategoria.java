@@ -22,10 +22,12 @@ public class CriterioCategoria extends Criterio{
     this.categoria = categoria;
   }
 
-  @Override
-  public boolean cumpleCriterio(Hecho hecho) {
-
-    return categoria.getNombre().equalsIgnoreCase(hecho.getCategoria().getNombre());
-  }
+    @Override
+    public boolean cumpleCriterio(Hecho hecho) {
+        if (hecho.getCategoria() == null || hecho.getCategoria().getNombre() == null) {
+            return false;
+        }
+        return categoria.getNombre().equalsIgnoreCase(hecho.getCategoria().getNombre());
+    }
 
 }

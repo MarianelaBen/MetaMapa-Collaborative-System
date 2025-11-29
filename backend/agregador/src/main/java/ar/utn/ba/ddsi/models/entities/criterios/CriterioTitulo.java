@@ -14,8 +14,9 @@ public class CriterioTitulo extends Criterio{
   private String titulo;
 
 
-  @Override
-  public boolean cumpleCriterio(Hecho hecho){
-    return titulo.equalsIgnoreCase(hecho.getTitulo());
-  }
+    @Override
+    public boolean cumpleCriterio(Hecho hecho){
+        if (hecho.getTitulo() == null) return false;
+        return hecho.getTitulo().toLowerCase().contains(titulo.toLowerCase());
+    }
 }
