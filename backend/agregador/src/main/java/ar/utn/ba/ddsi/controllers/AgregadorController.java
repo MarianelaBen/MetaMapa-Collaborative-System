@@ -211,6 +211,24 @@ public class AgregadorController {
         }
     }
 
+    @GetMapping("/colecciones/{handle}/hechos/{hechoId}")
+    public ResponseEntity<?> getHechoDetalle(
+            @PathVariable String handle,
+            @PathVariable Long hechoId) {
+        try {
+            HechoOutputDTO hecho = agregadorService.obtenerDetalleHecho(handle, hechoId);
+            return ResponseEntity.ok(hecho);
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Recurso no encontrado", "mensaje", e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error interno", "mensaje", e.getMessage()));
+        }
+    }
+
 
     @PostMapping("/solicitudes")
     public ResponseEntity<SolicitudOutputDTO> crearSolicitudDeEliminacion(@RequestBody SolicitudInputDTO dto) {

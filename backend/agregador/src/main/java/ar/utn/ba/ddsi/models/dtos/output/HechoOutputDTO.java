@@ -32,6 +32,7 @@ public class HechoOutputDTO {
   private Boolean fueEliminado;
   private Integer cantVistas;
   private Long idEnFuente;
+  private Boolean consensuado;
   //private boolean editable;    // 7 días desde fechaCarga
   //private int diasRestantesEdicion;
 

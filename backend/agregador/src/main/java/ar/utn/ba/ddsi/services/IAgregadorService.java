@@ -24,6 +24,7 @@ public interface IAgregadorService {
             LocalDate fechaDesde,
             LocalDate fechaHasta
     );
+    HechoOutputDTO obtenerDetalleHecho(String handle, Long hechoId);
   public List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente);
   public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes);
   public HechoOutputDTO hechoOutputDTO(Hecho hecho);

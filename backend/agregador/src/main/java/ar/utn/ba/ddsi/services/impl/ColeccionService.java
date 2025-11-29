@@ -314,5 +314,10 @@ public class ColeccionService implements IColeccionService {
       // opcional: log.warn("No se pudo borrar {}", filename, ignore);
     }
   }
+
+
+    public Hecho obtenerHechoPorId(Long id) {
+        return hechoRepository.findById(id).orElse(null);
+    }
 }
 

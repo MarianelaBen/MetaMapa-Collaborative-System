@@ -9,6 +9,7 @@ import ar.utn.ba.ddsi.models.dtos.output.ContribuyenteDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.*;
+import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
@@ -256,6 +257,9 @@ public class AgregadorService implements IAgregadorService {
             LocalDate fechaHasta
     ) {
 
+        Coleccion coleccionInfo = coleccionService.findById(handle);
+        TipoAlgoritmoDeConsenso algoritmoActual = coleccionInfo.getAlgoritmoDeConsenso();
+
         List<Hecho> hechos = coleccionService.obtenerHechosPorColeccion(handle, modo);
 
         if (hechos == null) {
@@ -264,30 +268,43 @@ public class AgregadorService implements IAgregadorService {
 
         return hechos.stream()
                 .filter(hecho -> cumpleFiltros(hecho, categoria, fuente, ubicacion, keyword, fechaDesde, fechaHasta))
-                .map(this::hechoOutputDTO)
+                .map(hecho -> mapearConConsenso(hecho, algoritmoActual))
                 .toList();
+    }
+
+    private HechoOutputDTO mapearConConsenso(Hecho hecho, TipoAlgoritmoDeConsenso algoritmo) {
+        HechoOutputDTO dto = this.hechoOutputDTO(hecho);
+
+        if (algoritmo == null) {
+            dto.setConsensuado(true);
+        } else {
+            Boolean estaAprobado = hecho.getConsensoPorAlgoritmo().get(algoritmo);
+            dto.setConsensuado(Boolean.TRUE.equals(estaAprobado));
+        }
+
+        return dto;
     }
 
     private boolean cumpleFiltros(Hecho hecho, String categoria, String fuente, String ubicacion,
                                   String keyword, LocalDate fechaDesde, LocalDate fechaHasta) {
 
-        // 1. Filtro Categoría
         if (categoria != null && !categoria.isBlank()) {
-            if (hecho.getCategoria() == null || !hecho.getCategoria().getNombre().equalsIgnoreCase(categoria)) {
+            if (hecho.getCategoria() == null ||
+                    hecho.getCategoria().getNombre() == null ||
+                    !hecho.getCategoria().getNombre().equalsIgnoreCase(categoria)) {
                 return false;
             }
         }
 
         if (fuente != null && !fuente.isBlank()) {
-            if (hecho.getOrigen() == null || !hecho.getOrigen().name().equalsIgnoreCase(fuente)) {
+            if (hecho.getOrigen() == null ||
+                    !hecho.getOrigen().name().equalsIgnoreCase(fuente)) {
                 return false;
             }
         }
 
-// 1. Filtro Ubicación (Revisión de lógica)
         if (ubicacion != null && !ubicacion.isBlank()) {
             if (hecho.getUbicacion() == null || hecho.getUbicacion().getProvincia() == null) {
-                // System.out.println("RECHAZADO: Ubicación del hecho es nula");
                 return false;
             }
 
@@ -295,20 +312,16 @@ public class AgregadorService implements IAgregadorService {
             String filtro = ubicacion.toLowerCase();
 
             if (!prov.contains(filtro)) {
-                // System.out.println("RECHAZADO: " + prov + " no contiene " + filtro);
                 return false;
             }
         }
 
-        // 2. Filtro Keyword (Revisión: Busca en Título O Descripción)
         if (keyword != null && !keyword.isBlank()) {
             String k = keyword.toLowerCase();
             String titulo = (hecho.getTitulo() != null) ? hecho.getTitulo().toLowerCase() : "";
             String desc = (hecho.getDescripcion() != null) ? hecho.getDescripcion().toLowerCase() : "";
 
-            // ¡OJO! Es un AND global. Si filtraste por Ubicación Y Keyword, debe cumplir AMBOS.
             if (!titulo.contains(k) && !desc.contains(k)) {
-                // System.out.println("RECHAZADO: Keyword no encontrada");
                 return false;
             }
         }
@@ -330,4 +343,22 @@ public class AgregadorService implements IAgregadorService {
         return true;
     }
 
+    @Override
+    public HechoOutputDTO obtenerDetalleHecho(String handle, Long hechoId) {
+
+        // 1. Buscamos la colección para obtener su algoritmo de consenso
+        Coleccion coleccionInfo = coleccionService.findById(handle);
+        TipoAlgoritmoDeConsenso algoritmoActual = coleccionInfo.getAlgoritmoDeConsenso();
+
+        // 2. Buscamos el hecho crudo (Entidad de dominio)
+        // Nota: Necesitas un método en tu ColeccionService (o repositorio) que busque por ID.
+        Hecho hecho = coleccionService.obtenerHechoPorId(hechoId);
+
+        if (hecho == null) {
+            throw new NoSuchElementException("El hecho con id " + hechoId + " no existe.");
+        }
+
+        // 3. Reutilizamos el mapeo inteligente que ya calcula el booleano 'consensuado'
+        return mapearConConsenso(hecho, algoritmoActual);
+    }
 }
