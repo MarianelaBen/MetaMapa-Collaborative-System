@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -162,45 +164,53 @@ public class AgregadorController {
   }
 
 
-  @GetMapping("/colecciones/{coleccionId}/hechos")
-  public ResponseEntity<?> getHechosPorColeccion(@PathVariable String coleccionId, @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr) { //valor predeterminado IRRESTRICTA por si no se especifica nada de cuial se quiere usar
-    try{
-      System.out.println("Valores enum: " + Arrays.toString(TipoDeModoNavegacion.values()));
-      String modoLimpio = modoStr.trim();
+    @GetMapping("/colecciones/{handle}/hechos")
+    public ResponseEntity<?> getHechosPorColeccion(
+            @PathVariable String handle,
+            @RequestParam(value = "modo", defaultValue = "IRRESTRICTA") String modoStr,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String fuente,
+            @RequestParam(required = false) String ubicacion,
+            @RequestParam(value = "q", required = false) String keyword,
 
-      TipoDeModoNavegacion modo = Arrays.stream(TipoDeModoNavegacion.values())
-          .filter(m -> m.name().equalsIgnoreCase(modoLimpio))
-          .findFirst()
-          .orElseThrow(() -> new IllegalArgumentException("Modo inválido: " + modoLimpio));
+            @RequestParam(value = "fecha_acontecimiento_desde", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesde,
 
-      return ResponseEntity.ok(agregadorService.obtenerHechosPorColeccion(coleccionId, modo));
-    } catch (NoSuchElementException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(Map.of("error","Coleccion no encontrada","mensaje", e.getMessage()));
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error","Error al obtener los hechos","mensaje", e.getMessage()));
+            @RequestParam(value = "fecha_acontecimiento_hasta", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta
+    ) {
+        try {
+            System.out.println("Valores enum: " + Arrays.toString(TipoDeModoNavegacion.values()));
+            String modoLimpio = modoStr.trim();
+
+            TipoDeModoNavegacion modo = Arrays.stream(TipoDeModoNavegacion.values())
+                    .filter(m -> m.name().equalsIgnoreCase(modoLimpio))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Modo inválido: " + modoLimpio));
+
+            return ResponseEntity.ok(
+                    agregadorService.obtenerHechosPorColeccion(
+                            handle,
+                            modo,
+                            categoria,
+                            fuente,
+                            ubicacion,
+                            keyword,
+                            fechaDesde,
+                            fechaHasta
+                    )
+            );
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error","Coleccion no encontrada","mensaje", e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace(); // Útil para depurar en desarrollo
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error","Error al obtener los hechos","mensaje", e.getMessage()));
+        }
     }
-  }
 
-  //navegacion filtrada sobre una coleccion
-  @GetMapping("/colecciones/{coleccionId}/filtrados")
-  public ResponseEntity<?> getHechosFiltrados(@PathVariable String coleccionId,
-                                                 @RequestParam(required = false) String categoria,
-                                                 @RequestParam(required = false) String fechaDesde,
-                                                 @RequestParam(required = false) String fechaHasta) {
-    try {
-      return ResponseEntity.ok(
-          agregadorService.obtenerHechosFiltrados(coleccionId, categoria, fechaDesde, fechaHasta)
-      );
-    } catch (NoSuchElementException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(Map.of("error","Coleccion no encontrada","mensaje", e.getMessage()));
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error","Error al filtrar hechos","mensaje", e.getMessage()));
-    }
-  }
 
     @PostMapping("/solicitudes")
     public ResponseEntity<SolicitudOutputDTO> crearSolicitudDeEliminacion(@RequestBody SolicitudInputDTO dto) {

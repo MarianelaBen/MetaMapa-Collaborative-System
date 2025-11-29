@@ -32,30 +32,30 @@ import java.util.stream.Collectors;
 
 @Service
 public class AgregadorService implements IAgregadorService {
-  @Autowired
-  IColeccionService coleccionService;
-private final AdapterFuenteDinamica adapterFuenteDinamica;
-private final AdapterFuenteEstatica adapterFuenteEstatica;
-private final AdapterFuenteProxy adapterFuenteProxy;
-private  final NormalizadorService normalizadorService;
-private final IHechoRepository hechoRepository;
-private final ICategoriaRepository categoriaRepository; //TODO BORRAR CUANDO SE ARREGLE NORMALIZADOR
+    @Autowired
+    IColeccionService coleccionService;
+    private final AdapterFuenteDinamica adapterFuenteDinamica;
+    private final AdapterFuenteEstatica adapterFuenteEstatica;
+    private final AdapterFuenteProxy adapterFuenteProxy;
+    private final NormalizadorService normalizadorService;
+    private final IHechoRepository hechoRepository;
+    private final ICategoriaRepository categoriaRepository; //TODO BORRAR CUANDO SE ARREGLE NORMALIZADOR
     private final ISolicitudRepository solicitudesRepo;
     private final IColeccionRepository coleccionRepo;
 
-public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuenteEstatica adapterFuenteEstatica, AdapterFuenteProxy adapterFuenteProxy, NormalizadorService normalizadorService, IHechoRepository hechoRepository, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudesRepo, IColeccionRepository coleccionRepo) {
-  this.adapterFuenteDinamica = adapterFuenteDinamica;
-  this.adapterFuenteEstatica = adapterFuenteEstatica;
-  this.adapterFuenteProxy = adapterFuenteProxy;
-  this.normalizadorService = normalizadorService;
-  this.hechoRepository = hechoRepository;
-  this.categoriaRepository = categoriaRepository;
-  this.solicitudesRepo = solicitudesRepo;
-  this.coleccionRepo = coleccionRepo;
-}
+    public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuenteEstatica adapterFuenteEstatica, AdapterFuenteProxy adapterFuenteProxy, NormalizadorService normalizadorService, IHechoRepository hechoRepository, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudesRepo, IColeccionRepository coleccionRepo) {
+        this.adapterFuenteDinamica = adapterFuenteDinamica;
+        this.adapterFuenteEstatica = adapterFuenteEstatica;
+        this.adapterFuenteProxy = adapterFuenteProxy;
+        this.normalizadorService = normalizadorService;
+        this.hechoRepository = hechoRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.solicitudesRepo = solicitudesRepo;
+        this.coleccionRepo = coleccionRepo;
+    }
 
-  @Value("${minio.public-url}")
-  private String minioPublicUrl;
+    @Value("${minio.public-url}")
+    private String minioPublicUrl;
 
     @Override
     public List<SolicitudOutputDTO> getSolicitudes() {
@@ -64,36 +64,36 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
                 .collect(Collectors.toList());
     }
 
-  @PersistenceContext
-  private EntityManager em; //TODO PARA PRUEBAS PORQUE NO HAY CONTR REPO TDV
+    @PersistenceContext
+    private EntityManager em; //TODO PARA PRUEBAS PORQUE NO HAY CONTR REPO TDV
 
-  @Override
-  @Transactional //TODO PARA PRUEBAS PORQUE NO HAY CONTR REPO TDV
-  public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes) {
-    if (fuentes == null || fuentes.isEmpty()) {
-      throw new IllegalArgumentException("No se especificaron fuentes.");
-    }
-    List<Hecho> hechos = fuentes.stream()
-        .flatMap( f-> obtenerTodosLosHechosDeFuente(f)
-            .stream())
-            .map(h -> {
-              System.out.println(h);
-              try { //para que si falla la normalizacion de un hecho no falle toda la normalizacion
-                normalizadorService.normalizar(h);
-                return h;
-              } catch (IllegalArgumentException e) {
-                return null;
-              }
-            })
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
-    if (hechos.isEmpty()) {
-      throw new NoSuchElementException("No se encontraron hechos para las fuentes indicadas.");
-    }
+    @Override
+    @Transactional //TODO PARA PRUEBAS PORQUE NO HAY CONTR REPO TDV
+    public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes) {
+        if (fuentes == null || fuentes.isEmpty()) {
+            throw new IllegalArgumentException("No se especificaron fuentes.");
+        }
+        List<Hecho> hechos = fuentes.stream()
+                .flatMap(f -> obtenerTodosLosHechosDeFuente(f)
+                        .stream())
+                .map(h -> {
+                    System.out.println(h);
+                    try { //para que si falla la normalizacion de un hecho no falle toda la normalizacion
+                        normalizadorService.normalizar(h);
+                        return h;
+                    } catch (IllegalArgumentException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (hechos.isEmpty()) {
+            throw new NoSuchElementException("No se encontraron hechos para las fuentes indicadas.");
+        }
 
-    hechoRepository.saveAll(hechos); //TODO COMO EVITAR DUPLICADOS
-    return hechos;
-}
+        hechoRepository.saveAll(hechos); //TODO COMO EVITAR DUPLICADOS
+        return hechos;
+    }
 
     @Override
     public List<HechoOutputDTO> obtenerHechos() {
@@ -102,13 +102,13 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
                 .collect(Collectors.toList());
     }
 
-  @Override
-  public Page<HechoOutputDTO> obtenerHechosConPaginacion(Pageable pageable) {
-    return hechoRepository.findAll(pageable).map(this::hechoOutputDTO);
-  }
+    @Override
+    public Page<HechoOutputDTO> obtenerHechosConPaginacion(Pageable pageable) {
+        return hechoRepository.findAll(pageable).map(this::hechoOutputDTO);
+    }
 
     @Override
-    public void sumarVistaColeccion(String handle){
+    public void sumarVistaColeccion(String handle) {
         Coleccion c = coleccionRepo.findByHandle(handle)
                 .orElseThrow(() -> new NoSuchElementException("Coleccion no encontrada: " + handle));
 
@@ -120,7 +120,7 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     }
 
     @Override
-    public void sumarVistaHecho(Long id){
+    public void sumarVistaHecho(Long id) {
         Hecho h = hechoRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado: " + id));
 
@@ -142,91 +142,91 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
     }
 
 
-  private Categoria ensureCategoria(String nombre) { //todo borrar con normlaizacion ya se arregla
-    return categoriaRepository.findByNombreIgnoreCase(nombre)
-        .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));
-  }
-
-  @Override
-  public List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente) {
-    List<Hecho> hechos = new ArrayList<>();
-    switch (fuente.getTipo()){
-      case ESTATICA:
-        hechos.addAll(adapterFuenteEstatica.obtenerHechos(fuente.getUrl()));
-        break;
-      case PROXY:
-
-        hechos.addAll(adapterFuenteProxy.obtenerHechos(fuente.getUrl()));
-        break;
-      case DINAMICA:
-
-        hechos.addAll(adapterFuenteDinamica.obtenerHechos(fuente.getUrl()));
-        break;
+    private Categoria ensureCategoria(String nombre) { //todo borrar con normlaizacion ya se arregla
+        return categoriaRepository.findByNombreIgnoreCase(nombre)
+                .orElseGet(() -> categoriaRepository.save(new Categoria(nombre)));
     }
 
-    return hechos;
-  }
+    @Override
+    public List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente) {
+        List<Hecho> hechos = new ArrayList<>();
+        switch (fuente.getTipo()) {
+            case ESTATICA:
+                hechos.addAll(adapterFuenteEstatica.obtenerHechos(fuente.getUrl()));
+                break;
+            case PROXY:
 
-  @Override
-  public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
-    HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
+                hechos.addAll(adapterFuenteProxy.obtenerHechos(fuente.getUrl()));
+                break;
+            case DINAMICA:
 
-    hechoOutputDTO.setCantVistas(hecho.getCantVistas());
-    hechoOutputDTO.setId(hecho.getId());
-    hechoOutputDTO.setTitulo(hecho.getTitulo());
-    hechoOutputDTO.setDescripcion(hecho.getDescripcion());
-    hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
-    hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
-    hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
-    hechoOutputDTO.setFueEliminado(hecho.getFueEliminado());
-    hechoOutputDTO.setIdEnFuente(hecho.getIdEnFuente());
+                hechos.addAll(adapterFuenteDinamica.obtenerHechos(fuente.getUrl()));
+                break;
+        }
 
-    if (hecho.getUbicacion() != null) {
-      hechoOutputDTO.setLatitud(hecho.getUbicacion().getLatitud());
-      hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
-      hechoOutputDTO.setProvincia(hecho.getUbicacion().getProvincia());
-    } else {
-      hechoOutputDTO.setLatitud(null);
-      hechoOutputDTO.setLongitud(null);
-      hechoOutputDTO.setProvincia(null);
+        return hechos;
     }
 
-    if(hecho.getEtiquetas() != null){
-      hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
-    }
+    @Override
+    public HechoOutputDTO hechoOutputDTO(Hecho hecho) {
+        HechoOutputDTO hechoOutputDTO = new HechoOutputDTO();
 
-    hechoOutputDTO.setIdContenidoMultimedia(
-        hecho.getPathMultimedia() != null ? hecho.getPathMultimedia() : List.of()
-    );
+        hechoOutputDTO.setCantVistas(hecho.getCantVistas());
+        hechoOutputDTO.setId(hecho.getId());
+        hechoOutputDTO.setTitulo(hecho.getTitulo());
+        hechoOutputDTO.setDescripcion(hecho.getDescripcion());
+        hechoOutputDTO.setCategoria(hecho.getCategoria().getNombre());
+        hechoOutputDTO.setFechaCarga(hecho.getFechaCarga());
+        hechoOutputDTO.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
+        hechoOutputDTO.setFueEliminado(hecho.getFueEliminado());
+        hechoOutputDTO.setIdEnFuente(hecho.getIdEnFuente());
 
-    if (hechoOutputDTO.getIdContenidoMultimedia() != null) {
-      hechoOutputDTO.setIdContenidoMultimedia(
-          hechoOutputDTO.getIdContenidoMultimedia().stream()
-              .filter(Objects::nonNull)
-              .map(name -> {
-                if (name.startsWith("http")) {
-                  return name;
-                }
-                String base = minioPublicUrl.endsWith("/") ? minioPublicUrl : minioPublicUrl + "/";
-                return base + name;
-              })
-              .toList()
-      );
-    }
+        if (hecho.getUbicacion() != null) {
+            hechoOutputDTO.setLatitud(hecho.getUbicacion().getLatitud());
+            hechoOutputDTO.setLongitud(hecho.getUbicacion().getLongitud());
+            hechoOutputDTO.setProvincia(hecho.getUbicacion().getProvincia());
+        } else {
+            hechoOutputDTO.setLatitud(null);
+            hechoOutputDTO.setLongitud(null);
+            hechoOutputDTO.setProvincia(null);
+        }
 
-    if(hecho.getContribuyente() != null){
-      ContribuyenteDTO contrDto = new ContribuyenteDTO();
-      contrDto.setId(hecho.getContribuyente().getId());
-      contrDto.setNombre(hecho.getContribuyente().getNombre());
-      contrDto.setApellido(hecho.getContribuyente().getApellido());
-      contrDto.setFechaDeNacimiento(hecho.getContribuyente().getFechaDeNacimiento());
-      hechoOutputDTO.setContribuyente(contrDto);
-    }
-    if(hecho.getFuenteExterna() != null){
-      hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
-    }
+        if (hecho.getEtiquetas() != null) {
+            hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
+        }
 
-    // Cálculo edición: 7 días desde fechaCarga
+        hechoOutputDTO.setIdContenidoMultimedia(
+                hecho.getPathMultimedia() != null ? hecho.getPathMultimedia() : List.of()
+        );
+
+        if (hechoOutputDTO.getIdContenidoMultimedia() != null) {
+            hechoOutputDTO.setIdContenidoMultimedia(
+                    hechoOutputDTO.getIdContenidoMultimedia().stream()
+                            .filter(Objects::nonNull)
+                            .map(name -> {
+                                if (name.startsWith("http")) {
+                                    return name;
+                                }
+                                String base = minioPublicUrl.endsWith("/") ? minioPublicUrl : minioPublicUrl + "/";
+                                return base + name;
+                            })
+                            .toList()
+            );
+        }
+
+        if (hecho.getContribuyente() != null) {
+            ContribuyenteDTO contrDto = new ContribuyenteDTO();
+            contrDto.setId(hecho.getContribuyente().getId());
+            contrDto.setNombre(hecho.getContribuyente().getNombre());
+            contrDto.setApellido(hecho.getContribuyente().getApellido());
+            contrDto.setFechaDeNacimiento(hecho.getContribuyente().getFechaDeNacimiento());
+            hechoOutputDTO.setContribuyente(contrDto);
+        }
+        if (hecho.getFuenteExterna() != null) {
+            hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
+        }
+
+        // Cálculo edición: 7 días desde fechaCarga
 //    LocalDate fc = hecho.getFechaCarga();
 //    if (fc != null) {
 //      long dias = ChronoUnit.DAYS.between(fc, LocalDate.now());
@@ -238,59 +238,96 @@ public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuen
 //      hechoOutputDTO.setDiasRestantesEdicion(0);
 //    }
 
-    return hechoOutputDTO;
-  }
-
-
-  //API PUBLICA
-
-  //Consulta de hechos dentro de una colección.
-  @Override
-  public List<HechoOutputDTO> obtenerHechosPorColeccion(String coleccionId, TipoDeModoNavegacion modo){
-    List<Hecho> hechos = coleccionService.obtenerHechosPorColeccion(coleccionId, modo);
-    if (hechos == null) {
-      throw new NoSuchElementException("Coleccion no encontrada: " + coleccionId);
-    }
-    return hechos
-        .stream()
-        .map(this::hechoOutputDTO)
-        .toList();
-  }
-
-
-  //Navegación filtrada sobre una colección.
-  @Override
-  public List<HechoOutputDTO> obtenerHechosFiltrados(String coleccionId,String categoria, String fechaDesde, String fechaHasta){
-    List<HechoOutputDTO> hechos = obtenerHechosPorColeccion(coleccionId, TipoDeModoNavegacion.IRRESTRICTA);
-    if (categoria != null ) {
-      hechos = hechos.stream()
-          .filter(h -> h.getCategoria() != null && categoria.trim().equalsIgnoreCase(h.getCategoria().trim()))
-          .collect(Collectors.toList());
+        return hechoOutputDTO;
     }
 
-    // Filtro por fecha acontecimiento
-    if (fechaDesde != null || fechaHasta != null) {
-      hechos = hechos.stream()
-          .filter(h -> {
-            if (h.getFechaAcontecimiento() == null) return false;
 
-            boolean afterDesde = true;
-            boolean beforeHasta = true;
+    //API PUBLICA
 
-            if (fechaDesde != null) {
-              LocalDateTime desde = LocalDateTime.parse(fechaDesde);
-              afterDesde = !h.getFechaAcontecimiento().isBefore(desde);
+    @Override
+    public List<HechoOutputDTO> obtenerHechosPorColeccion(
+            String handle,
+            TipoDeModoNavegacion modo,
+            String categoria,
+            String fuente,
+            String ubicacion,
+            String keyword,
+            LocalDate fechaDesde,
+            LocalDate fechaHasta
+    ) {
+
+        List<Hecho> hechos = coleccionService.obtenerHechosPorColeccion(handle, modo);
+
+        if (hechos == null) {
+            throw new NoSuchElementException("Coleccion no encontrada: " + handle);
+        }
+
+        return hechos.stream()
+                .filter(hecho -> cumpleFiltros(hecho, categoria, fuente, ubicacion, keyword, fechaDesde, fechaHasta))
+                .map(this::hechoOutputDTO)
+                .toList();
+    }
+
+    private boolean cumpleFiltros(Hecho hecho, String categoria, String fuente, String ubicacion,
+                                  String keyword, LocalDate fechaDesde, LocalDate fechaHasta) {
+
+        // 1. Filtro Categoría
+        if (categoria != null && !categoria.isBlank()) {
+            if (hecho.getCategoria() == null || !hecho.getCategoria().getNombre().equalsIgnoreCase(categoria)) {
+                return false;
             }
-            if (fechaHasta != null) {
-              LocalDateTime hasta = LocalDateTime.parse(fechaHasta);
-              beforeHasta = !h.getFechaAcontecimiento().isAfter(hasta);
+        }
+
+        if (fuente != null && !fuente.isBlank()) {
+            if (hecho.getOrigen() == null || !hecho.getOrigen().name().equalsIgnoreCase(fuente)) {
+                return false;
+            }
+        }
+
+// 1. Filtro Ubicación (Revisión de lógica)
+        if (ubicacion != null && !ubicacion.isBlank()) {
+            if (hecho.getUbicacion() == null || hecho.getUbicacion().getProvincia() == null) {
+                // System.out.println("RECHAZADO: Ubicación del hecho es nula");
+                return false;
             }
 
-            return afterDesde && beforeHasta;
-          })
-          .collect(Collectors.toList());
-    }
-    return hechos;
+            String prov = hecho.getUbicacion().getProvincia().toLowerCase();
+            String filtro = ubicacion.toLowerCase();
 
-  }
+            if (!prov.contains(filtro)) {
+                // System.out.println("RECHAZADO: " + prov + " no contiene " + filtro);
+                return false;
+            }
+        }
+
+        // 2. Filtro Keyword (Revisión: Busca en Título O Descripción)
+        if (keyword != null && !keyword.isBlank()) {
+            String k = keyword.toLowerCase();
+            String titulo = (hecho.getTitulo() != null) ? hecho.getTitulo().toLowerCase() : "";
+            String desc = (hecho.getDescripcion() != null) ? hecho.getDescripcion().toLowerCase() : "";
+
+            // ¡OJO! Es un AND global. Si filtraste por Ubicación Y Keyword, debe cumplir AMBOS.
+            if (!titulo.contains(k) && !desc.contains(k)) {
+                // System.out.println("RECHAZADO: Keyword no encontrada");
+                return false;
+            }
+        }
+
+        if (fechaDesde != null) {
+            if (hecho.getFechaAcontecimiento() == null ||
+                    hecho.getFechaAcontecimiento().toLocalDate().isBefore(fechaDesde)) {
+                return false;
+            }
+        }
+
+        if (fechaHasta != null) {
+            if (hecho.getFechaAcontecimiento() == null ||
+                    hecho.getFechaAcontecimiento().toLocalDate().isAfter(fechaHasta)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }
