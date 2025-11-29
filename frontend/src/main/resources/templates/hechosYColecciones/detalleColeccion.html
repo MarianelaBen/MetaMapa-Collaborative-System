@@ -33,60 +33,77 @@
             <div class="controls-section">
                 <h3 class="controls-title">Filtros y configuración</h3>
 
-                <div class="mode-toggle">
-                    <span class="toggle-label">Modo de navegación:</span>
-                    <span style="margin-right: 0.5rem;">Irrestricto</span>
-                    <div class="toggle-switch active">
-                        <div class="toggle-slider"></div>
-                    </div>
-                    <span style="margin-left: 0.5rem;">Curado</span>
-                    <span style="margin-left: 1rem; font-size: 0.85rem; color: #666;">
-                        (Mostrando solo hechos con consenso verificado)
-                    </span>
-                </div>
+                <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}" method="get" id="formFiltros">
 
-                <div class="controls-grid">
-                    <div class="control-group">
-                        <label for="categoria-filter">Categoría</label>
-                        <select id="categoria-filter">
-                            <option value="quema-controlada" th:each="categoria : ${categorias}" th:text="${categoria.nombre}"></option>
-                        </select>
-                    </div>
+                    <div class="mode-toggle">
+                        <span class="toggle-label">Modo de navegación:</span>
+                        <span style="margin-right: 0.5rem;">Irrestricto</span>
 
-                    <div class="control-group">
-                        <label for="fuente-filter">Fuente</label>
-                        <select id="fuente-filter">
-                            <option value="">Todas las fuentes</option>
-                            <option value="dataset-oficial">Dataset oficial SNMF</option>
-                            <option value="reportes-ciudadanos">Reportes ciudadanos</option>
-                            <option value="bomberos-voluntarios">Bomberos voluntarios</option>
-                            <option value="satelital-nasa">Datos satelitales NASA</option>
-                        </select>
+                        <label class="toggle-switch">
+                            <input type="checkbox"
+                                   name="modoCurado"
+                                   th:checked="${modoCurado}"
+                                   onchange="document.getElementById('formFiltros').submit()">
+
+                            <span class="toggle-slider"></span>
+                        </label>
+
+                        <span style="margin-left: 0.5rem;">Curado</span>
+                        <span style="margin-left: 1rem; font-size: 0.85rem; color: #666;">
+        (Solo hechos verificados)
+    </span>
                     </div>
 
-                    <div class="control-group">
-                        <label for="fecha-desde">Fecha desde</label>
-                        <input type="date" id="fecha-desde" value="2025-01-01">
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <label for="categoria-filter">Categoría</label>
+                            <select id="categoria-filter" name="categoria">
+                                <option value="">Todas las categorías</option>
+                                <option th:each="cat : ${categorias}"
+                                        th:value="${cat.nombre}"
+                                        th:text="${cat.nombre}"
+                                        th:selected="${param.categoria != null and param.categoria[0] == cat.nombre}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="fuente-filter">Fuente</label>
+                            <select id="fuente-filter" name="fuente">
+                                <option value="">Todas las fuentes</option>
+                                <option value="DATASET" th:selected="${param.fuente != null and param.fuente[0] == 'DATASET'}">Dataset oficial</option>
+                                <option value="CIUDADANOS" th:selected="${param.fuente != null and param.fuente[0] == 'CIUDADANOS'}">Reportes ciudadanos</option>
+                                <option value="PROXY" th:selected="${param.fuente != null and param.fuente[0] == 'PROXY'}">Fuentes Externas</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="fecha-desde">Fecha desde</label>
+                            <input type="date" id="fecha-desde" name="fechaDesde" th:value="${param.fechaDesde}">
+                        </div>
+
+                        <div class="control-group">
+                            <label for="fecha-hasta">Fecha hasta</label>
+                            <input type="date" id="fecha-hasta" name="fechaHasta" th:value="${param.fechaHasta}">
+                        </div>
+
+                        <div class="control-group">
+                            <label for="ubicacion-filter">Ubicación</label>
+                            <input type="text" id="ubicacion-filter" name="ubicacion"
+                                   placeholder="Provincia, ciudad..." th:value="${param.ubicacion}">
+                        </div>
+
+                        <div class="control-group">
+                            <label for="busqueda-texto">Buscar en título/descripción</label>
+                            <input type="text" id="busqueda-texto" name="keyword"
+                                   placeholder="Palabras clave..." th:value="${param.keyword}">
+                        </div>
                     </div>
 
-                    <div class="control-group">
-                        <label for="fecha-hasta">Fecha hasta</label>
-                        <input type="date" id="fecha-hasta" value="2025-08-15">
-                    </div>
+                    <button type="submit" class="btn btn-principal">Aplicar Filtros</button>
 
-                    <div class="control-group">
-                        <label for="ubicacion-filter">Ubicación</label>
-                        <input type="text" id="ubicacion-filter" placeholder="Provincia, ciudad, coordenadas...">
-                    </div>
-
-                    <div class="control-group">
-                        <label for="busqueda-texto">Buscar en título/descripción</label>
-                        <input type="text" id="busqueda-texto" placeholder="Palabras clave...">
-                    </div>
-                </div>
-
-                <button class="btn btn-principal">Aplicar Filtros</button>
-                <button class="btn btn-secondary">Limpiar</button>
+                    <a th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}" class="btn btn-secondary">Limpiar</a>
+                </form>
             </div>
 
             <div class="hechos-grid">

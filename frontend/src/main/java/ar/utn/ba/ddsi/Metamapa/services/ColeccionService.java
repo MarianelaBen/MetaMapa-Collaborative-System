@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -84,20 +85,59 @@ public class ColeccionService {
         }
     }
 
-    public List<HechoDTO> getHechosDeColeccion(String handle) {
+    public List<HechoDTO> buscarHechos(String handle, String categoria, String fuente,
+                                       String ubicacion, String keyword,
+                                       LocalDate fechaDesde, LocalDate fechaHasta,
+                                       Boolean modoCurado) {
         try {
-            List<HechoDTO> hechos = webClient.get()
-                    .uri("/colecciones/{handle}/hechos", handle)
+            List<HechoDTO> hechos = webClientPublic.get()
+                    .uri(uriBuilder -> {
+                        uriBuilder.path("/colecciones/{handle}/hechos");
+
+                        if (categoria != null && !categoria.isBlank()) {
+                            uriBuilder.queryParam("categoria", categoria);
+                        }
+
+                        if (fuente != null && !fuente.isBlank()) {
+                            uriBuilder.queryParam("fuente", fuente);
+                        }
+
+                        if (ubicacion != null && !ubicacion.isBlank()) {
+                            uriBuilder.queryParam("ubicacion", ubicacion);
+                        }
+
+                        if (keyword != null && !keyword.isBlank()) {
+                            uriBuilder.queryParam("q", keyword);
+                        }
+
+                        if (fechaDesde != null) {
+                            uriBuilder.queryParam("fecha_acontecimiento_desde", fechaDesde.toString());
+                        }
+
+                        if (fechaHasta != null) {
+                            uriBuilder.queryParam("fecha_acontecimiento_hasta", fechaHasta.toString());
+                        }
+
+
+                        if (Boolean.TRUE.equals(modoCurado)) {
+
+                            uriBuilder.queryParam("modo", "CURADO");
+                        }
+
+                        return uriBuilder.build(handle);
+                    })
                     .retrieve()
                     .bodyToFlux(HechoDTO.class)
                     .collectList()
                     .block();
 
             return hechos == null ? new ArrayList<>() : hechos;
+
         } catch (WebClientResponseException.NotFound nf) {
+
             return new ArrayList<>();
         } catch (Exception e) {
-            throw new RuntimeException("Error al obtener hechos de la colección: " + e.getMessage(), e);
+            throw new RuntimeException("Error al buscar hechos filtrados: " + e.getMessage(), e);
         }
     }
 

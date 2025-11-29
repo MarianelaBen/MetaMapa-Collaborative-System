@@ -9,12 +9,14 @@ import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
 import ar.utn.ba.ddsi.Metamapa.services.MetaMapaApiService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,23 +45,49 @@ public class ColeccionController {
     return "hechosYColecciones/exploradorColecciones";
   }
 
-  @GetMapping("/{handle}")
-  public String verDetalleColeccion(Model model, @PathVariable String handle, RedirectAttributes redirectAttributes){
-    try{
-      ColeccionDTO coleccion = this.coleccionService.getColeccionByHandle(handle);
-      List<CategoriaDTO> categorias = this.coleccionService.getCategorias();
-      List<HechoDTO> hechosDeColeccion = this.coleccionService.getHechosDeColeccion(handle);
-      model.addAttribute("coleccion", coleccion);
-      model.addAttribute("hechos", hechosDeColeccion);
-        model.addAttribute("categorias", categorias);
-      model.addAttribute("titulo", "Coleccion " + coleccion.getHandle());
-      return "hechosYColecciones/detalleColeccion";
+    @GetMapping("/{handle}")
+    public String verDetalleColeccion(
+            Model model,
+            @PathVariable String handle,
+            RedirectAttributes redirectAttributes,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String fuente,
+            @RequestParam(required = false) String ubicacion,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta,
+            @RequestParam(required = false, defaultValue = "false") Boolean modoCurado
+    ) {
+        try {
+            ColeccionDTO coleccion = this.coleccionService.getColeccionByHandle(handle);
+            List<CategoriaDTO> categorias = this.coleccionService.getCategorias();
 
-    }catch(NotFoundException ex){
-      redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
-      return "redirect:/404";
+
+            List<HechoDTO> hechosFiltrados = this.coleccionService.buscarHechos(
+                    handle,
+                    categoria,
+                    fuente,
+                    ubicacion,
+                    keyword,
+                    fechaDesde,
+                    fechaHasta,
+                    modoCurado
+            );
+
+            model.addAttribute("coleccion", coleccion);
+            model.addAttribute("hechos", hechosFiltrados); // Pasamos la lista filtrada
+            model.addAttribute("categorias", categorias);
+            model.addAttribute("titulo", "Coleccion " + coleccion.getHandle());
+
+            model.addAttribute("modoCurado", modoCurado);
+
+            return "hechosYColecciones/detalleColeccion";
+
+        } catch (NotFoundException ex) {
+            redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+            return "redirect:/404";
+        }
     }
-  }
 
 @GetMapping("/nueva")
 @PreAuthorize("hasAnyRole('ADMIN')")
