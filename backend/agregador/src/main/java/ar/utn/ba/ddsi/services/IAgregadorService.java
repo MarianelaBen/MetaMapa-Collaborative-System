@@ -28,9 +28,9 @@ public interface IAgregadorService {
 
     );
     HechoOutputDTO obtenerDetalleHecho(String handle, Long hechoId);
-  public List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente);
-  public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes);
-  public HechoOutputDTO hechoOutputDTO(Hecho hecho);
+    List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente);
+    List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes);
+    HechoOutputDTO hechoOutputDTO(Hecho hecho);
     List<SolicitudOutputDTO> getSolicitudes();
     List<HechoOutputDTO> obtenerHechos();
     void sumarVistaColeccion(String handle);
@@ -39,4 +39,7 @@ public interface IAgregadorService {
     List<ColeccionOutputDTO> top4Colecciones();
     Page<HechoOutputDTO> obtenerHechosConPaginacion(Pageable pageable);
     List<HechoOutputDTO> obtenerHechosPorContribuyente(Long contribuyenteId);
+    List<HechoOutputDTO> obtenerHechosPorContribuyenteFiltrado(
+      Long contribuyenteId, String titulo, String categoria, String estado);
+
 }

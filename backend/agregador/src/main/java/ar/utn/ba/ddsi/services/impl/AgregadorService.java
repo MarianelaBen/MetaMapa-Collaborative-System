@@ -106,6 +106,52 @@ public class AgregadorService implements IAgregadorService {
     }
 
     @Override
+    public List<HechoOutputDTO> obtenerHechosPorContribuyenteFiltrado(
+        Long contribuyenteId,
+        String titulo,
+        String categoria,
+        String estado
+    ) {
+        List<Hecho> hechos = hechoRepository.findByContribuyente_Id(contribuyenteId);
+        // Mapeo + filtro
+        return hechos.stream()
+            .map(this::hechoOutputDTO)
+            .filter(dto -> {
+                // FILTRO TITULO
+                if (titulo != null && !titulo.isBlank()) {
+                    if (dto.getTitulo() == null ||
+                        !dto.getTitulo().toLowerCase().contains(titulo.toLowerCase())) {
+                        return false;
+                    }
+                }
+                // FILTRO CATEGORIA
+                if (categoria != null && !categoria.isBlank()) {
+                    if (dto.getCategoria() == null ||
+                        !dto.getCategoria().equalsIgnoreCase(categoria)) {
+                        return false;
+                    }
+                }
+                // FILTRO ESTADO (editable / expirado)
+                if (estado != null && !estado.isBlank()) {
+                    boolean editable = false;
+                    if (dto.getFechaCarga() != null) {
+                        long dias = ChronoUnit.DAYS.between(dto.getFechaCarga(), LocalDate.now());
+                        editable = dias < 7;
+                    }
+                    if ("editable".equalsIgnoreCase(estado) && !editable) {
+                        return false;
+                    }
+                    if ("expirado".equalsIgnoreCase(estado) && editable) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+            .collect(Collectors.toList());
+    }
+
+
+    @Override
     public Page<HechoOutputDTO> obtenerHechosConPaginacion(Pageable pageable) {
         return hechoRepository.findAll(pageable).map(this::hechoOutputDTO);
     }

@@ -105,6 +105,20 @@ public class AgregadorController {
     return ResponseEntity.ok(hechos);
   }
 
+  @GetMapping("/hechos/mis-filtrado")
+  public ResponseEntity<List<HechoOutputDTO>> getHechosDelContribuyenteFiltrado(
+      @RequestParam("contribuyenteId") Long contribuyenteId,
+      @RequestParam(required = false) String titulo,
+      @RequestParam(required = false) String categoria,
+      @RequestParam(required = false) String estado
+  ) {
+    List<HechoOutputDTO> hechos =
+        agregadorService.obtenerHechosPorContribuyenteFiltrado(
+            contribuyenteId, titulo, categoria, estado);
+
+    return ResponseEntity.ok(hechos);
+  }
+
 
   @GetMapping("/paginado")
     public ResponseEntity<Page<HechoOutputDTO>> getHechosPaginado(
