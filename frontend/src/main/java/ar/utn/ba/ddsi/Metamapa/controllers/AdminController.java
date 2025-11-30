@@ -9,6 +9,11 @@ import ar.utn.ba.ddsi.Metamapa.services.HechoService;
 import ar.utn.ba.ddsi.Metamapa.services.MetaMapaApiService;
 import ar.utn.ba.ddsi.Metamapa.services.SolicitudService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -381,6 +388,38 @@ public class AdminController {
             redirect.addFlashAttribute("error", "Error al crear la categoria.");
             return "redirect:/admin/gestor-hechos";
         }
+    }
+
+    @GetMapping("/estadisticas")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String verDashboard(@RequestParam(defaultValue = "anio") String rango, Model model) {
+
+        DashboardDTO stats = adminService.obtenerEstadisticas(rango);
+
+        Map<String, Object> kpis = new HashMap<>();
+        kpis.put("totalHechos", stats.getTotalHechos() != null ? stats.getTotalHechos() : 0);
+        kpis.put("hechosVerificados", stats.getHechosVerificados() != null ? stats.getHechosVerificados() : 0);
+        kpis.put("spamDetectado", stats.getSpamDetectado() != null ? stats.getSpamDetectado() : 0);
+        kpis.put("porcentajeSpam", stats.getPorcentajeSpam() != null ? String.format("%.1f", stats.getPorcentajeSpam()) : "0.0");
+
+        model.addAttribute("titulo", "Panel de Estadísticas");
+        model.addAttribute("kpis", kpis);
+
+        model.addAttribute("datosCategorias", stats.getHechosPorCategoria() != null ? stats.getHechosPorCategoria() : Map.of());
+        model.addAttribute("datosProvincias", stats.getHechosPorProvincia() != null ? stats.getHechosPorProvincia() : Map.of());
+        model.addAttribute("datosHorarios", stats.getHechosPorHora() != null ? stats.getHechosPorHora() : Map.of());
+
+        return "administrador/estadisticas"; // Asegurate que coincida con la carpeta donde guardaste el HTML
+    }
+
+    @GetMapping("/exportar")
+    public ResponseEntity<Resource> exportarDatos() {
+        ByteArrayResource resource = adminService.exportarCsv();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=metamapa_stats.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(resource);
     }
 
 }

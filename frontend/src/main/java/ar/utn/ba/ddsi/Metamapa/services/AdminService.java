@@ -4,6 +4,7 @@ import ar.utn.ba.ddsi.Metamapa.models.dtos.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,12 @@ public class AdminService {
 
   private final WebClient webClientPublic;
   private final WebClient webClientAdmin;
+    private final WebClient webClientEstadisticas;
 
   public AdminService(WebClient.Builder webClientBuilder,
                       @Value("${backend.api.base-url-agregador}") String baseUrl,
                       @Value("${backend.api.base-url}") String baseUrlAdmin,
+                      @Value("${backend.api.base-url-estadisticas}") String baseUrlEstadisticas,
                       ObjectMapper objectMapper) {
     this.webClientPublic = webClientBuilder
         .baseUrl(baseUrl)
@@ -30,6 +33,9 @@ public class AdminService {
     this.webClientAdmin = webClientBuilder
         .baseUrl(baseUrlAdmin)
         .build();
+    this.webClientEstadisticas = webClientBuilder
+            .baseUrl(baseUrlEstadisticas)
+            .build();
   }
 
   public PaginaDTO<HechoDTO> obtenerHechosPaginado(int page, int size) {
@@ -102,5 +108,35 @@ public class AdminService {
                 .retrieve()
                 .bodyToMono(CategoriaDTO.class)
                 .block();
+    }
+
+    public DashboardDTO obtenerEstadisticas(String rango) {
+        try {
+            return webClientEstadisticas.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/estadisticas/dashboard")
+                            .queryParam("rango", rango)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(DashboardDTO.class)
+                    .block();
+        } catch (Exception e) {
+            System.err.println("Error obteniendo estadísticas: " + e.getMessage());
+            return new DashboardDTO(0L, 0L, 0L, 0.0, null, null, null);
+        }
+    }
+
+    public ByteArrayResource exportarCsv() {
+        try {
+            byte[] bytes = webClientEstadisticas.get()
+                    .uri("/estadisticas/exportar")
+                    .retrieve()
+                    .bodyToMono(byte[].class)
+                    .block();
+
+            return new ByteArrayResource(bytes != null ? bytes : new byte[0]);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al descargar CSV: " + e.getMessage());
+        }
     }
 }
