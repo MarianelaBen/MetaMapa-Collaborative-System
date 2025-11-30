@@ -411,18 +411,6 @@ public class HechoService {
         }
     }
 
-    public List<HechoDTO> getMisHechos(Long usuarioId) {
-        return webClientPublic.get()
-            .uri(uriBuilder -> uriBuilder
-                .path("/hechos/mis-hechos")
-                .queryParam("usuarioId", usuarioId)
-                .build())
-            .retrieve()
-            .bodyToFlux(HechoDTO.class)
-            .collectList()
-            .block();
-    }
-
     public HechoDTO getHechoDeColeccion(String handle, Long hechoId) {
         try {
 
@@ -436,6 +424,24 @@ public class HechoService {
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener detalle del hecho con contexto", e);
         }
+    }
+
+    public List<HechoDTO> getMisHechos(Long usuarioId) {
+        List<HechoDTO> hechos = webClientPublic.get()
+            .uri(uriBuilder -> uriBuilder
+                .path("/hechos/mis")
+                .queryParam("contribuyenteId", usuarioId)
+                .build())
+            .retrieve()
+            .bodyToFlux(HechoDTO.class)
+            .collectList()
+            .block();
+
+        if (hechos == null || hechos.isEmpty()) {
+            return List.of();
+        }
+
+        return hechos;
     }
 
 }

@@ -353,10 +353,7 @@ public class HechoController {
 
     Long usuarioId = metaMapaApiService.getUsuarioIdFromAccessToken();
 
-    // Por ahora, como el agregador NO tiene endpoint para filtrar por usuario,
-    // usamos todos los hechos. Más adelante se cambia a:
-    // List<HechoDTO> hechos = hechoService.getMisHechos(usuarioId);
-    List<HechoDTO> hechos = hechoService.getHechos();
+    List<HechoDTO> hechos = hechoService.getMisHechos(usuarioId);
 
     // Calculamos editable + días restantes
     for (HechoDTO h : hechos) {

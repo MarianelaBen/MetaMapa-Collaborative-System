@@ -44,6 +44,9 @@
             <li><a th:href="@{/colecciones}">Colecciones</a></li>
             <li><a th:href="@{/hechos/nuevo}">Contribuir</a></li>
 
+            <li sec:authorize="isAuthenticated()">
+                <a th:href="@{/hechos/mis-hechos}">Mis Hechos</a>
+            </li>
 
             <li sec:authorize="!isAuthenticated()">
                 <a th:href="@{/login}">Iniciar Sesión</a>
