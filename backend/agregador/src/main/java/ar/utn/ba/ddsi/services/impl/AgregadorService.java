@@ -113,9 +113,14 @@ public class AgregadorService implements IAgregadorService {
         String estado
     ) {
         List<Hecho> hechos = hechoRepository.findByContribuyente_Id(contribuyenteId);
-        // Mapeo + filtro
-        return hechos.stream()
+
+        // Primero mapeamos todo (esto ya calcula editable y diasRestantes)
+        List<HechoOutputDTO> dtos = hechos.stream()
             .map(this::hechoOutputDTO)
+            .collect(Collectors.toList());
+
+        // Luego filtramos sobre los DTO
+        return dtos.stream()
             .filter(dto -> {
                 // FILTRO TITULO
                 if (titulo != null && !titulo.isBlank()) {
@@ -124,6 +129,7 @@ public class AgregadorService implements IAgregadorService {
                         return false;
                     }
                 }
+
                 // FILTRO CATEGORIA
                 if (categoria != null && !categoria.isBlank()) {
                     if (dto.getCategoria() == null ||
@@ -131,24 +137,24 @@ public class AgregadorService implements IAgregadorService {
                         return false;
                     }
                 }
+
                 // FILTRO ESTADO (editable / expirado)
                 if (estado != null && !estado.isBlank()) {
-                    boolean editable = false;
-                    if (dto.getFechaCarga() != null) {
-                        long dias = ChronoUnit.DAYS.between(dto.getFechaCarga(), LocalDate.now());
-                        editable = dias < 7;
-                    }
-                    if ("editable".equalsIgnoreCase(estado) && !editable) {
+                    boolean esEditable = dto.isEditable(); // viene ya calculado
+
+                    if ("editable".equalsIgnoreCase(estado) && !esEditable) {
                         return false;
                     }
-                    if ("expirado".equalsIgnoreCase(estado) && editable) {
+                    if ("expirado".equalsIgnoreCase(estado) && esEditable) {
                         return false;
                     }
                 }
+
                 return true;
             })
             .collect(Collectors.toList());
     }
+
 
 
     @Override
@@ -275,17 +281,16 @@ public class AgregadorService implements IAgregadorService {
             hechoOutputDTO.setFuenteExterna(hecho.getFuenteExterna());
         }
 
-        // Cálculo edición: 7 días desde fechaCarga
-//    LocalDate fc = hecho.getFechaCarga();
-//    if (fc != null) {
-//      long dias = ChronoUnit.DAYS.between(fc, LocalDate.now());
-//      boolean editable = dias < 7;
-//      hechoOutputDTO.setEditable(editable);
-//      hechoOutputDTO.setDiasRestantesEdicion(editable ? (int) (7 - dias) : 0);
-//    } else {
-//      hechoOutputDTO.setEditable(false);
-//      hechoOutputDTO.setDiasRestantesEdicion(0);
-//    }
+        LocalDate fc = hecho.getFechaCarga();
+        if (fc != null) {
+            long dias = ChronoUnit.DAYS.between(fc, LocalDate.now());
+            boolean editable = dias < 7;
+            hechoOutputDTO.setEditable(editable);
+            hechoOutputDTO.setDiasRestantes(editable ? (int) (7 - dias) : 0);
+        } else {
+            hechoOutputDTO.setEditable(false);
+            hechoOutputDTO.setDiasRestantes(0);
+        }
 
         return hechoOutputDTO;
     }

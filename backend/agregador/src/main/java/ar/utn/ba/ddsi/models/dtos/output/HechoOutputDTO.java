@@ -33,7 +33,8 @@ public class HechoOutputDTO {
   private Integer cantVistas;
   private Long idEnFuente;
   private Boolean consensuado;
-  //private boolean editable;    // 7 días desde fechaCarga
+  private boolean editable;    // 7 días desde fechaCarga
+  private int diasRestantes;
   //private int diasRestantesEdicion;
 
   public static HechoOutputDTO fromEntity(Hecho h) {
