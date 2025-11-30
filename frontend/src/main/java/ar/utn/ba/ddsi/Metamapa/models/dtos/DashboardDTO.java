@@ -13,7 +13,6 @@ public class DashboardDTO {
     private Long hechosVerificados;
     private Long spamDetectado;
     private Double porcentajeSpam;
-
     private Map<String, Long> hechosPorCategoria;
     private Map<String, Long> hechosPorProvincia;
     private Map<Integer, Long> hechosPorHora;
