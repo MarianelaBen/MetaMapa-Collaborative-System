@@ -83,9 +83,8 @@ public class Hecho {
    @Column(name = "aprobado", nullable = false)
    private Map<TipoAlgoritmoDeConsenso, Boolean> consensoPorAlgoritmo = new EnumMap<>(TipoAlgoritmoDeConsenso.class); //mismo chequeo que arriba
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "contribuyente_id")
-   private Contribuyente contribuyente;
+  @Embedded
+  private Contribuyente contribuyente;
 
   @ElementCollection
   @CollectionTable(name = "path_multimedia", joinColumns = @JoinColumn(name = "hecho_id"))

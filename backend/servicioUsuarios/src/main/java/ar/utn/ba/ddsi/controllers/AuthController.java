@@ -1,14 +1,11 @@
 package ar.utn.ba.ddsi.controllers;
 
 import ar.utn.ba.ddsi.exceptions.NotFoundException;
-import ar.utn.ba.ddsi.models.dtos.AuthResponseDTO;
-import ar.utn.ba.ddsi.models.dtos.RefreshRequest;
-import ar.utn.ba.ddsi.models.dtos.SingupDTO;
-import ar.utn.ba.ddsi.models.dtos.TokenResponse;
-import ar.utn.ba.ddsi.models.dtos.UserRolesPermissionsDTO;
+import ar.utn.ba.ddsi.models.dtos.*;
 import ar.utn.ba.ddsi.models.entities.Usuario;
 import ar.utn.ba.ddsi.services.LoginService;
 import ar.utn.ba.ddsi.services.SingupService;
+import ar.utn.ba.ddsi.services.UsuarioService;
 import ar.utn.ba.ddsi.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -32,6 +29,7 @@ public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final LoginService loginService;
     private final SingupService singupService;
+    private final UsuarioService usuarioService;
 
     @PostMapping
     public ResponseEntity<AuthResponseDTO> loginApi(@RequestBody Map<String, String> credentials) {
@@ -133,4 +131,15 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/public/user/{id}")
+    public ResponseEntity<ContribuyenteDTO> getUser(@PathVariable("id") Long id) {
+        try {
+            Usuario userEncontrado = usuarioService.findUser(id);
+            ContribuyenteDTO response = new ContribuyenteDTO(userEncontrado);
+            return ResponseEntity.ok(response);
+        } catch (NotFoundException e) {
+            log.error("Usuario no encontrado", e);
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

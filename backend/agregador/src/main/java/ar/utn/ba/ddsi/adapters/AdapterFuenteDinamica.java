@@ -52,10 +52,6 @@ public class AdapterFuenteDinamica {
         Origen.PROVISTO_POR_CONTRIBUYENTE,
          null
     );
-      System.out.println("hola2");
-      System.out.println(dto.getCategoria());
-      System.out.println(hecho.getCategoria().getNombre());
-
     hecho.setFueEliminado(dto.getFueEliminado());
     if (dto.getPathContenidoMultimedia() != null) {hecho.setPathMultimedia(dto.getPathContenidoMultimedia());}
     if (dto.getEtiquetas() != null) {
@@ -66,6 +62,7 @@ public class AdapterFuenteDinamica {
         JsonNode contribuyenteARecuperar = particulares.path("contribuyente");
         if (!contribuyenteARecuperar.isMissingNode()) {
           Contribuyente contribuyente = new Contribuyente(
+              longOrNull(contribuyenteARecuperar, "id"),
               textOrNull(contribuyenteARecuperar, "nombre"),
               dateOrNull(contribuyenteARecuperar, "fechaDeNacimiento"),
               textOrNull(contribuyenteARecuperar, "apellido")
@@ -107,6 +104,12 @@ public class AdapterFuenteDinamica {
     } catch (Exception e) {
       return null;
     }
+  }
+
+  private static Long longOrNull(JsonNode node, String field) {
+    if (node == null) return null;
+    JsonNode v = node.path(field);
+    return (v.isMissingNode() || v.isNull()) ? null : v.asLong();
   }
 }
 

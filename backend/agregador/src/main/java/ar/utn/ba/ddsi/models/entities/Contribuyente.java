@@ -1,11 +1,6 @@
 package ar.utn.ba.ddsi.models.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,21 +9,17 @@ import java.time.Period;
 
 @Getter
 @Setter
-@Entity
+@Embeddable
 @NoArgsConstructor
-@Table(name = "contribuyente")
 public class Contribuyente {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "contribuyente_id")
   private Long id;
-  @Column(name = "nombre")
   private String nombre;
-  @Column(name = "apellido")
   private String apellido;
-  @Column(name = "fecha_nacimiento")
   private LocalDate fechaDeNacimiento;
 
-  public Contribuyente(String nombre, LocalDate fechaDeNacimiento, String apellido) {
+  public Contribuyente(Long id,String nombre, LocalDate fechaDeNacimiento, String apellido) {
+    this.id = id;
     this.nombre = nombre;
     this.fechaDeNacimiento = fechaDeNacimiento;
     this.apellido = apellido;

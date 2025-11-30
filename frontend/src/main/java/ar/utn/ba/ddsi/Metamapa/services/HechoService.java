@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.Metamapa.services;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.ContribuyenteDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,13 +30,15 @@ public class HechoService {
     private final WebClient webClientAdmin;
     private final WebClient webClientDin;
     private final ObjectMapper objectMapper;
+    private final MetaMapaApiService metaMapaApiService;
 
     public HechoService(WebClient.Builder webClientBuilder,
-                            @Value("${backend.api.base-url-agregador}") String baseUrl,
-                            @Value("${backend.api.base-url}") String baseUrlAdmin,
-                            @Value("${backend.api.base-url-dinamica}") String baseDin,
-                            ObjectMapper objectMapper) {
-        this.webClientPublic = webClientBuilder
+                        @Value("${backend.api.base-url-agregador}") String baseUrl,
+                        @Value("${backend.api.base-url}") String baseUrlAdmin,
+                        @Value("${backend.api.base-url-dinamica}") String baseDin,
+                        ObjectMapper objectMapper, MetaMapaApiService metaMapaApiService) {
+      this.metaMapaApiService = metaMapaApiService;
+      this.webClientPublic = webClientBuilder
                 .baseUrl(baseUrl)
                 .build();
         this.webClientAdmin = webClientBuilder
@@ -129,7 +132,8 @@ public class HechoService {
         }
     }*/
 
-    public HechoDTO subirHecho(HechoDTO dto, MultipartFile[] multimedia) {
+    public HechoDTO subirHecho(HechoDTO dto, MultipartFile[] multimedia, Long usuarioId) {
+        ContribuyenteDTO contribuyente = metaMapaApiService.getContribuyente(usuarioId);
         try {
             MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
 
@@ -151,6 +155,13 @@ public class HechoService {
             ciudadJson.put("provincia", dto.getProvincia());
             hechoJson.put("ciudad", ciudadJson);
 
+            Map<String, Object> contribuyenteJson = new HashMap<>();
+            contribuyenteJson.put("idContribuyente", contribuyente.getId());
+            contribuyenteJson.put("nombre", contribuyente.getNombre());
+            contribuyenteJson.put("apellido", contribuyente.getApellido());
+            hechoJson.put("contribuyente", contribuyenteJson);
+            System.out.println(contribuyente.getId());
+            System.out.println(usuarioId);
             hechoJson.put("pathsMultimedia", List.of());
 
             String json = objectMapper.writeValueAsString(hechoJson);
@@ -263,6 +274,7 @@ public class HechoService {
     }*/ //TODO borrar cuando funcione el otro actualizar
 
     public HechoDTO actualizarHecho(Long id, HechoDTO dto, MultipartFile[] multimedia, boolean replaceMedia, List<String> deleteExisting, Long usuarioId) {
+        ContribuyenteDTO contribuyente = metaMapaApiService.getContribuyente(usuarioId);
         try {
             MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
 
@@ -282,6 +294,12 @@ public class HechoService {
             ciudadJson.put("longitud", dto.getLongitud());
             ciudadJson.put("provincia", dto.getProvincia());
             hechoJson.put("ciudad", ciudadJson);
+
+            Map<String, Object> contribuyenteJson = new HashMap<>();
+            contribuyenteJson.put("id", contribuyente.getId());
+            contribuyenteJson.put("nombre", contribuyente.getNombre());
+            contribuyenteJson.put("apellido", contribuyente.getApellido());
+            hechoJson.put("contribuyente", contribuyenteJson);
 
             hechoJson.put("pathsMultimedia", List.of());
 

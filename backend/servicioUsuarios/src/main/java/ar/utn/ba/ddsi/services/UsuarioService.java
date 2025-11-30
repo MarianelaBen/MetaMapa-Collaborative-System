@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.services;
 
+import ar.utn.ba.ddsi.models.entities.Usuario;
 import ar.utn.ba.ddsi.models.repositories.IUsuariosRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,6 +33,10 @@ public class UsuarioService implements UserDetailsService {
                 .password(usuario.getContrasenia())
                 .authorities(authorities)
                 .build();
+    }
+
+    public Usuario findUser(Long idUsuario){
+        return repo.findById(idUsuario).orElseThrow(() -> new UsernameNotFoundException(idUsuario + ""));
     }
 
     @Bean

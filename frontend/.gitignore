@@ -33,3 +33,4 @@ build/
 .vscode/
 backend/fuenteDinamica/minio-data/
 minio-data/
+**/minio-data/

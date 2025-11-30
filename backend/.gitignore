@@ -35,3 +35,4 @@ build/
 backend/fuenteDinamica/minio-data/
 
 minio-data/
+**/minio-data/

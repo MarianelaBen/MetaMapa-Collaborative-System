@@ -242,7 +242,17 @@ public class MetaMapaApiService {
         return arr != null ? Arrays.asList(arr) : List.of();
     }
 
+    public ContribuyenteDTO getContribuyente(Long id) {
+        String token = webApiCallerService.getAccessTokenFromSession();
+        String url = authServiceUrl + "/auth/public/user/" + id;
 
+        return webClient.get()
+            .uri(url)
+            .header("Authorization", "Bearer " + token)
+            .retrieve()
+            .bodyToMono(ContribuyenteDTO.class)
+            .block();
+    }
 }
 
 

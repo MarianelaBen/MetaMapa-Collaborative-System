@@ -152,7 +152,8 @@ public class HechoController {
       }
     }
 
-    HechoDTO creado = this.hechoService.subirHecho(hecho, multimedia);
+    Long usuarioId = metaMapaApiService.getUsuarioIdFromAccessToken();
+    HechoDTO creado = this.hechoService.subirHecho(hecho, multimedia, usuarioId);
     redirect.addFlashAttribute("mensaje",
         "Tu hecho ha sido creado correctamente. Podrás verlo en la próxima actualización del mapa.");
     redirect.addFlashAttribute("tipoMensaje", "success");

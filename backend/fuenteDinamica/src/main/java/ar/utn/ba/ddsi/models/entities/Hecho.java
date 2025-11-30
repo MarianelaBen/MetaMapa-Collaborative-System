@@ -73,8 +73,7 @@ public class Hecho {
   )
   private Set<Etiqueta> etiquetas = new HashSet<>();;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "contribuyente_id")
+  @Embedded
   private Contribuyente contribuyente;
 
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

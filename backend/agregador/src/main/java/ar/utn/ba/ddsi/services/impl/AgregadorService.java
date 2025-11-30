@@ -62,11 +62,7 @@ public class AgregadorService implements IAgregadorService {
                 .collect(Collectors.toList());
     }
 
-    @PersistenceContext
-    private EntityManager em; //TODO PARA PRUEBAS PORQUE NO HAY CONTR REPO TDV
-
     @Override
-    @Transactional //TODO PARA PRUEBAS PORQUE NO HAY CONTR REPO TDV
     public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes) {
         if (fuentes == null || fuentes.isEmpty()) {
             throw new IllegalArgumentException("No se especificaron fuentes.");

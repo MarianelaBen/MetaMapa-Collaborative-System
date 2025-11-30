@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ContribuyenteOutputDTO {
+  private Long id;
   private String nombre;
   private String apellido;
   private LocalDate fechaDeNacimiento;

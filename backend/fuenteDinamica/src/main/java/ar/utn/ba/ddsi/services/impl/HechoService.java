@@ -54,11 +54,7 @@ public class HechoService implements IHechoService {
   @Autowired
   private MinioService minioService;
 
-  @PersistenceContext
-  private EntityManager em; //TODO ESTO ES SOLO PARA PRUEBAS, PORQUE NO HAY REPO DE CONTR TDV
-
   @Override
-  @Transactional //TODO ESTO ES SOLO PARA PRUEBAS, PORQUE NO HAY REPO DE CONTR TDV
   public HechoOutputDTO crear(HechoInputDTO hechoInputDTO , MultipartFile[] multimedia) {
     // validaciones básicas
     if (hechoInputDTO.getTitulo() == null || hechoInputDTO.getTitulo().isBlank()) {
@@ -105,18 +101,16 @@ public class HechoService implements IHechoService {
         hecho.setContenidosMultimedia(contenidos);
       }
 
-      // hecho.agregarEtiqueta(new Etiqueta("prueba"));  Mas adelante cambiar por DTO
       if(hechoInputDTO.getContribuyente() != null) {
-        //hecho.setContribuyente(hechoInputDTO.getContribuyente());
-        var contrDto = hechoInputDTO.getContribuyente(); //TODO ESTO ES SOLO PARA PRUEBAS, PORQUE NO HAY REPO DE CONTR TDV
-        Contribuyente contr = new Contribuyente();
-        contr.setIdContribuyente(null);
-        contr.setNombre(contrDto.getNombre());
-        contr.setApellido(contrDto.getApellido());
-        contr.setFechaDeNacimiento(contrDto.getFechaDeNacimiento());
+          var contrDto = hechoInputDTO.getContribuyente();
 
-        em.persist(contr);
-        hecho.setContribuyente(contr);
+          Contribuyente contr = new Contribuyente();
+          contr.setIdContribuyente(contrDto.getIdContribuyente());
+          contr.setNombre(contrDto.getNombre());
+          contr.setApellido(contrDto.getApellido());
+          contr.setFechaDeNacimiento(contrDto.getFechaDeNacimiento());
+
+          hecho.setContribuyente(contr);
       }
 
       this.hechoRepository.save(hecho);
@@ -151,6 +145,7 @@ public class HechoService implements IHechoService {
 
     if (hecho.getContribuyente() != null) {
       ObjectNode c = mapper.createObjectNode();
+      c.put("id", hecho.getContribuyente().getIdContribuyente());
       c.put("nombre", hecho.getContribuyente().getNombre());
       c.put("apellido", hecho.getContribuyente().getApellido());
       if (hecho.getContribuyente().getFechaDeNacimiento() != null) {
@@ -176,6 +171,7 @@ public class HechoService implements IHechoService {
   @Override
   public ContribuyenteOutputDTO contribuyenteOutputDTO(Contribuyente contribuyente) {
     ContribuyenteOutputDTO dto = new ContribuyenteOutputDTO();
+    dto.setId(contribuyente.getIdContribuyente());
     dto.setNombre(contribuyente.getNombre());
     dto.setApellido(contribuyente.getApellido());
     dto.setFechaDeNacimiento(contribuyente.getFechaDeNacimiento());
