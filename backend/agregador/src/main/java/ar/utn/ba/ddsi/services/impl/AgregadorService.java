@@ -4,10 +4,7 @@ import ar.utn.ba.ddsi.adapters.AdapterFuenteDinamica;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteEstatica;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteProxy;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.ContribuyenteDTO;
-import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.*;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
@@ -245,8 +242,10 @@ public class AgregadorService implements IAgregadorService {
 
     //API PUBLICA
 
+// En AgregadorService.java
+
     @Override
-    public List<HechoOutputDTO> obtenerHechosPorColeccion(
+    public PaginaDTO<HechoOutputDTO> obtenerHechosPorColeccion(
             String handle,
             TipoDeModoNavegacion modo,
             String categoria,
@@ -254,29 +253,53 @@ public class AgregadorService implements IAgregadorService {
             String ubicacion,
             String keyword,
             LocalDate fechaDesde,
-            LocalDate fechaHasta
+            LocalDate fechaHasta,
+            int page, int size
     ) {
 
         Coleccion coleccionInfo = coleccionService.findById(handle);
         TipoAlgoritmoDeConsenso algoritmoActual = coleccionInfo.getAlgoritmoDeConsenso();
 
         List<Hecho> hechos = coleccionService.obtenerHechosPorColeccion(handle, modo);
+        if (hechos == null) throw new NoSuchElementException("Coleccion no encontrada: " + handle);
 
-        if (hechos == null) {
-            throw new NoSuchElementException("Coleccion no encontrada: " + handle);
-        }
-
-        return hechos.stream()
+        List<HechoOutputDTO> listaCompleta = hechos.stream()
                 .filter(hecho -> cumpleFiltros(hecho, categoria, fuente, ubicacion, keyword, fechaDesde, fechaHasta))
                 .map(hecho -> mapearConConsenso(hecho, algoritmoActual))
                 .filter(dto -> {
-
                     if (TipoDeModoNavegacion.CURADO.equals(modo)) {
                         return Boolean.TRUE.equals(dto.getConsensuado());
                     }
                     return true;
-                }).toList();
+                })
+                .toList();
+
+        long totalElements = listaCompleta.size();
+        int start = page * size;
+        int end = Math.min(start + size, (int) totalElements);
+
+        List<HechoOutputDTO> content;
+        if (start >= totalElements) {
+            content = new ArrayList<>();
+        } else {
+            content = listaCompleta.subList(start, end);
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        PaginaDTO<HechoOutputDTO> paginaDTO = new PaginaDTO<>();
+        paginaDTO.setContent(content);
+        paginaDTO.setNumber(page);
+        paginaDTO.setSize(size);
+        paginaDTO.setTotalElements(totalElements);
+        paginaDTO.setTotalPages(totalPages);
+        paginaDTO.setNumberOfElements(content.size());
+        paginaDTO.setFirst(page == 0);
+        paginaDTO.setLast(page >= totalPages - 1);
+
+        return paginaDTO;
     }
+
 
     private HechoOutputDTO mapearConConsenso(Hecho hecho, TipoAlgoritmoDeConsenso algoritmo) {
         HechoOutputDTO dto = this.hechoOutputDTO(hecho);

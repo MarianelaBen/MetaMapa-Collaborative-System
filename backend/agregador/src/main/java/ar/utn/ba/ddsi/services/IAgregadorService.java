@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.services;
 
 import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.PaginaDTO;
 import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface IAgregadorService {
-    List<HechoOutputDTO> obtenerHechosPorColeccion(
+    PaginaDTO<HechoOutputDTO> obtenerHechosPorColeccion(
             String handle,
             TipoDeModoNavegacion modo,
             String categoria,
@@ -22,7 +23,9 @@ public interface IAgregadorService {
             String ubicacion,
             String keyword,
             LocalDate fechaDesde,
-            LocalDate fechaHasta
+            LocalDate fechaHasta,
+            int page, int size
+
     );
     HechoOutputDTO obtenerDetalleHecho(String handle, Long hechoId);
   public List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente);

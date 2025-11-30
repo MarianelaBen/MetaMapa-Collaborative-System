@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CriterioLugar extends Criterio {
 
-  @Column(name = "ubicacion", nullable = false)
+  @Column(name = "ubicacion", nullable = true)
   private Ubicacion ubicacion;
 
-  @Column(name = "rango_maximo", nullable = false)
+  @Column(name = "rango_maximo", nullable = true)
   private int rangoMaximo; // num de tolerancia maxima
 
   public CriterioLugar(Ubicacion ubicacion, int rangoMaximo) {

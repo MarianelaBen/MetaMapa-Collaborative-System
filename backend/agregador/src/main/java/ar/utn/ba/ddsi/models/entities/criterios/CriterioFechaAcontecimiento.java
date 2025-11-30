@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CriterioFechaAcontecimiento extends Criterio{
 
-  @Column(name = "fecha_acontecimiento_desde", nullable = false)
+  @Column(name = "fecha_acontecimiento_desde", nullable = true)
   private LocalDateTime desde;
 
-  @Column(name = "fecha_acontecimiento_hasta", nullable = false)
+  @Column(name = "fecha_acontecimiento_hasta", nullable = true)
   private LocalDateTime hasta;
 
   public CriterioFechaAcontecimiento(LocalDateTime desde, LocalDateTime hasta){

@@ -42,7 +42,7 @@ public class Hecho {
   @Column(name = "titulo", nullable = false)
    private String titulo;
 
-  @Column(name = "descripcion", nullable = false)
+  @Column(name = "descripcion", nullable = false, columnDefinition = "TEXT")
    private String descripcion;
 
   @ManyToOne(fetch = FetchType.LAZY)

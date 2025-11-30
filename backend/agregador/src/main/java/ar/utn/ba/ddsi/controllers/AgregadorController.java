@@ -177,7 +177,9 @@ public class AgregadorController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesde,
 
             @RequestParam(value = "fecha_acontecimiento_hasta", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta,
+            @RequestParam(defaultValue = "0") int page, // Página 0 por defecto
+            @RequestParam(defaultValue = "10") int size // 10 elementos por página
     ) {
         try {
             System.out.println("Valores enum: " + Arrays.toString(TipoDeModoNavegacion.values()));
@@ -197,7 +199,9 @@ public class AgregadorController {
                             ubicacion,
                             keyword,
                             fechaDesde,
-                            fechaHasta
+                            fechaHasta,
+                            page,
+                            size
                     )
             );
 

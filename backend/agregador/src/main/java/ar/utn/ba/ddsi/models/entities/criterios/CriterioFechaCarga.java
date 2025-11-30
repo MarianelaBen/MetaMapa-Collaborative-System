@@ -12,10 +12,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class CriterioFechaCarga extends Criterio{
 
-  @Column(name = "fecha_carga_desde", nullable = false)
+  @Column(name = "fecha_carga_desde", nullable = true)
   private LocalDate desde;
 
-  @Column(name = "fecha_carga_hasta", nullable = false)
+  @Column(name = "fecha_carga_hasta", nullable = true)
   private LocalDate hasta;
 
   public CriterioFechaCarga(LocalDate desde, LocalDate hasta) {

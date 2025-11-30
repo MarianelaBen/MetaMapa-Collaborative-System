@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("descripcion")
 @NoArgsConstructor
 public class CriterioDescripcion extends Criterio{
-  @Column(name = "descripcion", nullable = false)
+  @Column(name = "descripcion", nullable = true)
   private String descripcion;
 
   public CriterioDescripcion(String descripcion) {

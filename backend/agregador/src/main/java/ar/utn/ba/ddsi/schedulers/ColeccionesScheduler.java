@@ -19,9 +19,9 @@ public class ColeccionesScheduler {
 
   @Scheduled( fixedDelay = intervaloPrueba )
   public void actualizarHechosColecciones() {
-      System.out.println("⏰ SCHEDULER: Iniciando actualización de colecciones...");
+      System.out.println("SCHEDULER: Iniciando actualización de colecciones...");
       coleccionService.actualizarColecciones();
-      System.out.println("✅ SCHEDULER: Actualización finalizada.");
+      System.out.println("SCHEDULER: Actualización finalizada.");
   }
 
 }

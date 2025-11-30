@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class CriterioCategoria extends Criterio{
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "categoria_id", nullable = false)
+  @JoinColumn(name = "categoria_id", nullable = true)
   private Categoria categoria;
 
   public CriterioCategoria(Categoria categoria){

@@ -2,9 +2,7 @@ package ar.utn.ba.ddsi.models.entities.criterios;
 
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -12,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CriterioOrigen extends Criterio{
 
-  @Column(name = "origen", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "origen", nullable = true)
   private Origen origen;
 
   public CriterioOrigen(Origen origen) {
