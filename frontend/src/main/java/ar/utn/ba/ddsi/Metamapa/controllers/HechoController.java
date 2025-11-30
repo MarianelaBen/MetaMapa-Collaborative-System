@@ -353,48 +353,8 @@ public class HechoController {
 
     Long usuarioId = metaMapaApiService.getUsuarioIdFromAccessToken();
 
-    List<HechoDTO> hechos = hechoService.getMisHechos(usuarioId);
-
-    // Calculamos editable + días restantes
-    for (HechoDTO h : hechos) {
-      if (h.getFechaCarga() != null) {
-        long dias = ChronoUnit.DAYS.between(h.getFechaCarga(), LocalDate.now());
-        boolean editable = dias < 7;
-        h.setEditable(editable);
-        h.setDiasRestantes(editable ? (int) (7 - dias) : 0);
-      } else {
-        h.setEditable(false);
-        h.setDiasRestantes(0);
-      }
-    }
-
-    // Aplico filtros
-
-    if (titulo != null && !titulo.isBlank()) {
-      hechos = hechos.stream()
-          .filter(h -> h.getTitulo() != null &&
-              h.getTitulo().toLowerCase().contains(titulo.toLowerCase()))
-          .toList();
-    }
-
-    if (categoria != null && !categoria.isBlank()) {
-      hechos = hechos.stream()
-          .filter(h -> h.getCategoria() != null &&
-              h.getCategoria().equalsIgnoreCase(categoria))
-          .toList();
-    }
-
-    if ("editable".equalsIgnoreCase(estado)) {
-      hechos = hechos.stream()
-          .filter(HechoDTO::isEditable)
-          .toList();
-    }
-
-    if ("expirado".equalsIgnoreCase(estado)) {
-      hechos = hechos.stream()
-          .filter(h -> !h.isEditable())
-          .toList();
-    }
+    List<HechoDTO> hechos = hechoService.getMisHechosFiltrado(
+        usuarioId, titulo, categoria, estado);
 
     List<CategoriaDTO> categorias = coleccionService.getCategorias();
 
@@ -404,7 +364,6 @@ public class HechoController {
     model.addAttribute("descripcion",
         "Gestiona los hechos que has reportado. (uid token: " + usuarioId + ")");
 
-    // Para mantener filtros en la vista
     Map<String, String> param = new HashMap<>();
     param.put("titulo", titulo);
     param.put("categoria", categoria);
@@ -414,4 +373,5 @@ public class HechoController {
 
     return "contribuyente/misHechos";
   }
+
 }

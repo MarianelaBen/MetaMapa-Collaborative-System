@@ -444,6 +444,33 @@ public class HechoService {
         return hechos;
     }
 
+    public List<HechoDTO> getMisHechosFiltrado(Long usuarioId,
+                                               String titulo,
+                                               String categoria,
+                                               String estado) {
+
+        return webClientPublic.get()
+            .uri(uriBuilder -> {
+                uriBuilder.path("/hechos/mis-filtrado");
+                uriBuilder.queryParam("contribuyenteId", usuarioId);
+
+                if (titulo != null && !titulo.isBlank())
+                    uriBuilder.queryParam("titulo", titulo);
+
+                if (categoria != null && !categoria.isBlank())
+                    uriBuilder.queryParam("categoria", categoria);
+
+                if (estado != null && !estado.isBlank())
+                    uriBuilder.queryParam("estado", estado);
+
+                return uriBuilder.build();
+            })
+            .retrieve()
+            .bodyToFlux(HechoDTO.class)
+            .collectList()
+            .block();
+    }
+
 }
 
 
