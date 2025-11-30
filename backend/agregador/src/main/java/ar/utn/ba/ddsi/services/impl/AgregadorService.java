@@ -109,6 +109,7 @@ public class AgregadorService implements IAgregadorService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<HechoOutputDTO> obtenerHechos() {
         return this.hechoRepository.findAll().stream()
                 .map(this::hechoOutputDTO)

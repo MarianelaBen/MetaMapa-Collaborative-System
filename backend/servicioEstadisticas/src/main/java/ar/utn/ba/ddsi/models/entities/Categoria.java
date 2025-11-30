@@ -8,11 +8,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor
 @Table(name = "categoria")
 @Getter
+@Setter
 public class Categoria {
 
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
