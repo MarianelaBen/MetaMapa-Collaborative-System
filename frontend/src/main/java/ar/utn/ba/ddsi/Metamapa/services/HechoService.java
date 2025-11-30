@@ -133,13 +133,22 @@ public class HechoService {
     }*/
 
     public HechoDTO subirHecho(HechoDTO dto, MultipartFile[] multimedia, Long usuarioId) {
-        ContribuyenteDTO contribuyente = metaMapaApiService.getContribuyente(usuarioId);
+
+        ContribuyenteDTO contribuyente = null;
+        if (usuarioId != null) {
+            try {
+
+                contribuyente = metaMapaApiService.getContribuyente(usuarioId);
+            } catch (Exception e) {
+
+                System.err.println("No se pudo obtener el contribuyente ID " + usuarioId + ". Se subirá como anónimo. Error: " + e.getMessage());
+            }
+        }
+
         try {
             MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
-
             Map<String, Object> hechoJson = new HashMap<>();
 
-            // Campos simples
             hechoJson.put("titulo", dto.getTitulo());
             hechoJson.put("descripcion", dto.getDescripcion());
             hechoJson.put("fechaAcontecimiento", dto.getFechaAcontecimiento());
@@ -155,13 +164,19 @@ public class HechoService {
             ciudadJson.put("provincia", dto.getProvincia());
             hechoJson.put("ciudad", ciudadJson);
 
-            Map<String, Object> contribuyenteJson = new HashMap<>();
-            contribuyenteJson.put("idContribuyente", contribuyente.getId());
-            contribuyenteJson.put("nombre", contribuyente.getNombre());
-            contribuyenteJson.put("apellido", contribuyente.getApellido());
-            hechoJson.put("contribuyente", contribuyenteJson);
-            System.out.println(contribuyente.getId());
-            System.out.println(usuarioId);
+
+            if (contribuyente != null) {
+                Map<String, Object> contribuyenteJson = new HashMap<>();
+
+                contribuyenteJson.put("id", contribuyente.getId());
+                contribuyenteJson.put("nombre", contribuyente.getNombre());
+                contribuyenteJson.put("apellido", contribuyente.getApellido());
+                hechoJson.put("contribuyente", contribuyenteJson);
+            } else {
+
+                hechoJson.put("contribuyente", null);
+            }
+
             hechoJson.put("pathsMultimedia", List.of());
 
             String json = objectMapper.writeValueAsString(hechoJson);
@@ -172,7 +187,7 @@ public class HechoService {
             parts.add("hecho", hechoPart);
 
             boolean hayArchivos = multimedia != null && Arrays.stream(multimedia)
-                .anyMatch(f -> f != null && !f.isEmpty());
+                    .anyMatch(f -> f != null && !f.isEmpty());
 
             if (hayArchivos) {
                 for (MultipartFile file : multimedia) {
@@ -187,8 +202,8 @@ public class HechoService {
                         HttpHeaders fileHeaders = new HttpHeaders();
                         fileHeaders.setContentDispositionFormData("multimedia", file.getOriginalFilename());
                         String contentType = file.getContentType() != null
-                            ? file.getContentType()
-                            : "application/octet-stream";
+                                ? file.getContentType()
+                                : "application/octet-stream";
                         fileHeaders.setContentType(MediaType.parseMediaType(contentType));
 
                         HttpEntity<ByteArrayResource> filePart = new HttpEntity<>(resource, fileHeaders);
@@ -198,12 +213,12 @@ public class HechoService {
             }
 
             return webClientDin.post()
-                .uri("/hechos")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(parts))
-                .retrieve()
-                .bodyToMono(HechoDTO.class)
-                .block();
+                    .uri("/hechos")
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .body(BodyInserters.fromMultipartData(parts))
+                    .retrieve()
+                    .bodyToMono(HechoDTO.class)
+                    .block();
 
         } catch (IOException e) {
             throw new RuntimeException("Error serializando archivos para envío: " + e.getMessage(), e);
