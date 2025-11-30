@@ -1,10 +1,7 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
 import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.CategoriaDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.ColeccionDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.FuenteDTO;
-import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
+import ar.utn.ba.ddsi.Metamapa.models.dtos.*;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.services.ColeccionService;
 import ar.utn.ba.ddsi.Metamapa.services.MetaMapaApiService;
@@ -56,30 +53,25 @@ public class ColeccionController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesde,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta,
-            @RequestParam(required = false, defaultValue = "false") Boolean modoCurado
+            @RequestParam(required = false, defaultValue = "false") Boolean modoCurado,
+            @RequestParam(defaultValue = "0") int page
     ) {
         try {
             ColeccionDTO coleccion = this.coleccionService.getColeccionByHandle(handle);
             List<CategoriaDTO> categorias = this.coleccionService.getCategorias();
 
-
-            List<HechoDTO> hechosFiltrados = this.coleccionService.buscarHechos(
-                    handle,
-                    categoria,
-                    fuente,
-                    ubicacion,
-                    keyword,
-                    fechaDesde,
-                    fechaHasta,
-                    modoCurado
+            PaginaDTO<HechoDTO> pagina = this.coleccionService.buscarHechos(
+                    handle, categoria, fuente, ubicacion, keyword, fechaDesde, fechaHasta, modoCurado, page, 12
             );
 
             model.addAttribute("coleccion", coleccion);
-            model.addAttribute("hechos", hechosFiltrados); // Pasamos la lista filtrada
             model.addAttribute("categorias", categorias);
             model.addAttribute("titulo", "Coleccion " + coleccion.getHandle());
-
             model.addAttribute("modoCurado", modoCurado);
+            model.addAttribute("hechos", pagina.getContent());
+            model.addAttribute("paginaActual", pagina.getNumber());
+            model.addAttribute("totalPaginas", pagina.getTotalPages());
+            model.addAttribute("totalElementos", pagina.getTotalElements());
 
             return "hechosYColecciones/detalleColeccion";
 
@@ -88,6 +80,7 @@ public class ColeccionController {
             return "redirect:/404";
         }
     }
+
 
 @GetMapping("/nueva")
 @PreAuthorize("hasAnyRole('ADMIN')")

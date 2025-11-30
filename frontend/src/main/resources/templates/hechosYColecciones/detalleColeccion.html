@@ -1,238 +1,246 @@
 <html th:replace="~{layout/base :: layout}" xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="css">
-            <link rel="stylesheet" th:href="@{/css/detalleColeccion.css}" />
-            <meta name="_csrf" th:content="${_csrf.token}"/>
-            <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" th:href="@{/css/detalleColeccion.css}" />
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</div>
+
+<div class="container" th:fragment="contenido">
+    <div class="breadcrumb">
+        <a th:href="@{/inicio}"> Inicio </a> ›
+        <a th:href="@{/colecciones}"> Colecciones </a> ›
+        <p th:text="${coleccion.titulo}"></p>
+    </div>
+
+    <div class="collection-header">
+        <h1 class="collection-title" th:text="${coleccion.titulo}"></h1>
+        <p class="collection-description" th:text="${coleccion.descripcion}"></p>
+
+        <div class="collection-stats">
+            <div class="stat">
+                <span class="stat-label">Total de hechos</span>
+                <span class="stat-value" th:text="${totalElementos}"></span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Algoritmo de consenso</span>
+                <span class="stat-value" th:text="${coleccion.algoritmoDeConsenso}"></span>
+            </div>
         </div>
-        <div class="container" th:fragment="contenido">
-            <div class="breadcrumb">
-                <a th:href="@{/inicio}"> Inicio </a> › <a th:href="@{/colecciones}"> Colecciones </a> › <p th:text ="${coleccion.titulo}"></p>
+
+        <div class="collection-actions">
+            <a th:href="@{/hechos/nuevo}" class="btn btn-success">Agregar Hecho</a>
+        </div>
+    </div>
+
+    <div class="controls-section">
+        <h3 class="controls-title">Filtros y configuración</h3>
+
+        <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}" method="get" id="formFiltros">
+
+            <div class="mode-toggle">
+                <span class="toggle-label">Modo de navegación:</span>
+                <span style="margin-right: 0.5rem;">Irrestricto</span>
+
+                <label class="toggle-switch">
+                    <input type="checkbox"
+                           name="modoCurado"
+                           th:checked="${modoCurado}"
+                           onchange="document.getElementById('formFiltros').submit()">
+                    <span class="toggle-slider"></span>
+                </label>
+
+                <span style="margin-left: 0.5rem;">Curado</span>
+                <span style="margin-left: 1rem; font-size: 0.85rem; color: #666;">
+                    (Solo hechos verificados)
+                </span>
             </div>
 
-            <div class="collection-header">
-                <h1 class="collection-title" th:text=" ${coleccion.titulo}"></h1>
-                <p class="collection-description" th:text="${coleccion.descripcion}"></p>
-
-                <div class="collection-stats">
-                    <div class="stat">
-                        <span class="stat-label">Total de hechos</span>
-                        <span class="stat-value" th:text="${hechos.size()}"></span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-label">Algoritmo de consenso</span>
-                        <span class="stat-value" th:text="${coleccion.algoritmoDeConsenso}"></span>
-                    </div>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="categoria-filter">Categoría</label>
+                    <select id="categoria-filter" name="categoria">
+                        <option value="">Todas las categorías</option>
+                        <option th:each="cat : ${categorias}"
+                                th:value="${cat.nombre}"
+                                th:text="${cat.nombre}"
+                                th:selected="${param.categoria != null and param.categoria[0] == cat.nombre}">
+                        </option>
+                    </select>
                 </div>
 
-                <div class="collection-actions">
-                    <a th:href="@{/hechos/nuevo}" class="btn btn-success">Agregar Hecho</a>
+                <div class="control-group">
+                    <label for="fuente-filter">Fuente</label>
+                    <select id="fuente-filter" name="fuente">
+                        <option value="">Todas las fuentes</option>
+                        <option value="PROVENIENTE_DE_DATASET"
+                                th:selected="${param.fuente != null and param.fuente[0] == 'PROVENIENTE_DE_DATASET'}">
+                            Dataset oficial
+                        </option>
+                        <option value="PROVISTO_POR_CONTRIBUYENTE"
+                                th:selected="${param.fuente != null and param.fuente[0] == 'PROVISTO_POR_CONTRIBUYENTE'}">
+                            Reportes ciudadanos
+                        </option>
+                        <option value="PROXY"
+                                th:selected="${param.fuente != null and param.fuente[0] == 'PROXY'}">
+                            Fuentes Externas (Proxy)
+                        </option>
+                        <option value="CARGA_MANUAL"
+                                th:selected="${param.fuente != null and param.fuente[0] == 'CARGA_MANUAL'}">
+                            Carga Manual (Admin)
+                        </option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="fecha-desde">Fecha desde</label>
+                    <input type="date" id="fecha-desde" name="fechaDesde" th:value="${param.fechaDesde}">
+                </div>
+
+                <div class="control-group">
+                    <label for="fecha-hasta">Fecha hasta</label>
+                    <input type="date" id="fecha-hasta" name="fechaHasta" th:value="${param.fechaHasta}">
+                </div>
+
+                <div class="control-group">
+                    <label for="ubicacion-filter">Ubicación</label>
+                    <input type="text" id="ubicacion-filter" name="ubicacion"
+                           placeholder="Provincia, ciudad..." th:value="${param.ubicacion}">
+                </div>
+
+                <div class="control-group">
+                    <label for="busqueda-texto">Buscar en título/descripción</label>
+                    <input type="text" id="busqueda-texto" name="keyword"
+                           placeholder="Palabras clave..." th:value="${param.keyword}">
                 </div>
             </div>
 
-            <div class="controls-section">
-                <h3 class="controls-title">Filtros y configuración</h3>
+            <button type="submit" class="btn btn-principal">Aplicar Filtros</button>
+            <a th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}" class="btn btn-secondary">Limpiar</a>
+        </form>
+    </div>
 
-                <form th:action="@{/colecciones/{handle}(handle=${coleccion.handle})}" method="get" id="formFiltros">
+    <div class="hechos-grid">
+        <div class="hecho-card" th:each="hecho : ${hechos}">
 
-                    <div class="mode-toggle">
-                        <span class="toggle-label">Modo de navegación:</span>
-                        <span style="margin-right: 0.5rem;">Irrestricto</span>
+            <h3 class="hecho-title" th:text="${hecho.titulo}"></h3>
 
-                        <label class="toggle-switch">
-                            <input type="checkbox"
-                                   name="modoCurado"
-                                   th:checked="${modoCurado}"
-                                   onchange="document.getElementById('formFiltros').submit()">
-
-                            <span class="toggle-slider"></span>
-                        </label>
-
-                        <span style="margin-left: 0.5rem;">Curado</span>
-                        <span style="margin-left: 1rem; font-size: 0.85rem; color: #666;">
-        (Solo hechos verificados)
-    </span>
-                    </div>
-
-                    <div class="controls-grid">
-                        <div class="control-group">
-                            <label for="categoria-filter">Categoría</label>
-                            <select id="categoria-filter" name="categoria">
-                                <option value="">Todas las categorías</option>
-                                <option th:each="cat : ${categorias}"
-                                        th:value="${cat.nombre}"
-                                        th:text="${cat.nombre}"
-                                        th:selected="${param.categoria != null and param.categoria[0] == cat.nombre}">
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="control-group">
-                            <label for="fuente-filter">Fuente</label>
-                            <select id="fuente-filter" name="fuente">
-                                <option value="">Todas las fuentes</option>
-
-                                <option value="PROVENIENTE_DE_DATASET"
-                                        th:selected="${param.fuente != null and param.fuente[0] == 'PROVENIENTE_DE_DATASET'}">
-                                    Dataset oficial
-                                </option>
-
-                                <option value="PROVISTO_POR_CONTRIBUYENTE"
-                                        th:selected="${param.fuente != null and param.fuente[0] == 'PROVISTO_POR_CONTRIBUYENTE'}">
-                                    Reportes ciudadanos
-                                </option>
-
-                                <option value="PROXY"
-                                        th:selected="${param.fuente != null and param.fuente[0] == 'PROXY'}">
-                                    Fuentes Externas (Proxy)
-                                </option>
-
-                                <option value="CARGA_MANUAL"
-                                        th:selected="${param.fuente != null and param.fuente[0] == 'CARGA_MANUAL'}">
-                                    Carga Manual (Admin)
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="control-group">
-                            <label for="fecha-desde">Fecha desde</label>
-                            <input type="date" id="fecha-desde" name="fechaDesde" th:value="${param.fechaDesde}">
-                        </div>
-
-                        <div class="control-group">
-                            <label for="fecha-hasta">Fecha hasta</label>
-                            <input type="date" id="fecha-hasta" name="fechaHasta" th:value="${param.fechaHasta}">
-                        </div>
-
-                        <div class="control-group">
-                            <label for="ubicacion-filter">Ubicación</label>
-                            <input type="text" id="ubicacion-filter" name="ubicacion"
-                                   placeholder="Provincia, ciudad..." th:value="${param.ubicacion}">
-                        </div>
-
-                        <div class="control-group">
-                            <label for="busqueda-texto">Buscar en título/descripción</label>
-                            <input type="text" id="busqueda-texto" name="keyword"
-                                   placeholder="Palabras clave..." th:value="${param.keyword}">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-principal">Aplicar Filtros</button>
-
-                    <a th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}" class="btn btn-secondary">Limpiar</a>
-                </form>
+            <div class="consensus-indicator" style="margin-bottom: 0.5rem;">
+                <span class="consensus-dot"
+                      th:classappend="${hecho.consensuado} ? 'consensus-verified' : 'consensus-unverified'">
+                </span>
+                <span th:text="${hecho.consensuado} ? 'Verificado' : 'Sin verificar'"
+                      style="margin-left: 5px; font-size: 0.8rem; color: #666;">
+                </span>
             </div>
 
-            <div class="hechos-grid">
-
-                <!--//TODO CAMBIAR, AHORA ESTA UN METODO PARA ITERAR QUE ENCONTRE CON LOS HECHOS, PERO EN REALIDAD NECESITAMOS UN ID EN HECHO PARA ASOCIAR LA SOLICITUD AL ID, ENTRE OTRAS COSAS-->
-                <!--<div class="hecho-card" th:each="hecho : ${coleccion.hechos}">
-                    <h3 class="hecho-title" th:text="${hecho.titulo}"></h3>
-                    <div class="hecho-category" th:text="${hecho.categoria}"></div>
-                    <p class="hecho-description" th:text="${hecho.descripcion}"></p>
-                    <div class="hecho-meta">
-                        <div th:text="${hecho.fechaAcontecimiento}"><strong>Fecha del hecho:</strong> 12/08/2025</div>
-                        <div th:text="${hecho.fechaCarga}"><strong>Reportado:</strong> 13/08/2025</div>
-                        <div th:text="${hecho.provincia}"><strong>Ubicación:</strong> Santa Cruz, Argentina</div>
-                        <div><strong>Coordenadas:</strong> -50.2938, -73.0138</div>
-                    </div>
+            <div class="hecho-category" th:text="${hecho.categoria}"></div>
 
 
-                    <div class="hecho-actions">
-                        <a class="btn btn-principal" th:href="@{/hechos/1}">Ver Detalles</a>
-                        <button class="btn btn-secondary">Solicitar Eliminación</button>
-                    </div> -->
-                    <div class="hecho-card" th:each="hecho : ${hechos}">
-                        <h3 class="hecho-title" th:text="${hecho.titulo}"></h3>
-                        <div class="consensus-indicator" style="margin-bottom: 0.5rem;">
-        <span class="consensus-dot"
-              th:classappend="${hecho.consensuado} ? 'consensus-verified' : 'consensus-unverified'">
+            <div class="hecho-meta">
+                <div th:text="${hecho.fechaAcontecimiento}">
+                    <strong>Fecha:</strong> 12/08/2025
+                </div>
+                <div th:text="${hecho.fechaCarga}">
+                    <strong>Reportado:</strong> 13/08/2025
+                </div>
+                <div th:text="${hecho.provincia}">
+                    <strong>Ubicación:</strong> Santa Cruz
+                </div>
+                <div>
+                    <strong>Vistas:</strong> <span th:text="${hecho.cantVistas}"></span>
+                </div>
+            </div>
+
+            <div class="hecho-actions">
+                <a class="btn btn-principal btn-verDetalleHecho"
+                   th:href="@{/hechos/{id}(id=${hecho.id}, handle=${coleccion.handle})}"
+                   th:attr="data-handle=${hecho.id}">
+                    Ver Detalles
+                </a>
+                <a class="btn btn-secondary"
+                   th:href="@{/solicitud/{hechoId}(hechoId=${hecho.id})}">
+                    Solicitar Eliminación
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(hechos)}" class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+            <h3>No se encontraron hechos con estos filtros.</h3>
+            <p>Intenta cambiar los criterios de búsqueda o el modo de navegación.</p>
+        </div>
+    </div>
+
+    <div class="pagination" th:if="${totalPaginas > 1}" style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; align-items: center;">
+
+        <a th:if="${paginaActual > 0}"
+           th:href="@{/colecciones/{handle}(handle=${coleccion.handle},
+                      page=${paginaActual - 1},
+                      categoria=${param.categoria},
+                      fuente=${param.fuente},
+                      fechaDesde=${param.fechaDesde},
+                      fechaHasta=${param.fechaHasta},
+                      ubicacion=${param.ubicacion},
+                      keyword=${param.keyword},
+                      modoCurado=${modoCurado})}"
+           class="btn btn-secondary">
+            &laquo; Anterior
+        </a>
+
+        <span class="current-page" style="font-weight: bold;">
+            Página <span th:text="${paginaActual + 1}"></span> de <span th:text="${totalPaginas}"></span>
         </span>
-                            <span th:text="${hecho.consensuado} ? 'Verificado' : 'Sin verificar'"
-                                  style="margin-left: 5px; font-size: 0.8rem; color: #666;">
-        </span>
-                        </div>
-                        <div class="hecho-category" th:text="${hecho.categoria}"></div>
-                        <p class="hecho-description" th:text="${hecho.descripcion}"></p>
 
-                        <div class="hecho-meta">
-                            <div th:text="${hecho.fechaAcontecimiento}">
-                                <strong>Fecha del hecho:</strong> 12/08/2025
-                            </div>
-                            <div th:text="${hecho.fechaCarga}">
-                                <strong>Reportado:</strong> 13/08/2025
-                            </div>
-                            <div th:text="${hecho.provincia}">
-                                <strong>Ubicación:</strong> Santa Cruz, Argentina
-                            </div>
-                            <div><strong>Coordenadas:</strong> -50.2938, -73.0138</div>
-                            <div><strong>Cantidad de vistas:</strong><p th:text="${hecho.cantVistas}"></p></div>
-                        </div>
+        <a th:if="${paginaActual < totalPaginas - 1}"
+           th:href="@{/colecciones/{handle}(handle=${coleccion.handle},
+                      page=${paginaActual + 1},
+                      categoria=${param.categoria},
+                      fuente=${param.fuente},
+                      fechaDesde=${param.fechaDesde},
+                      fechaHasta=${param.fechaHasta},
+                      ubicacion=${param.ubicacion},
+                      keyword=${param.keyword},
+                      modoCurado=${modoCurado})}"
+           class="btn btn-secondary">
+            Siguiente &raquo;
+        </a>
+    </div>
 
-                        <div class="hecho-actions">
-                            <a class="btn btn-principal btn-verDetalleHecho"
-                               th:href="@{/hechos/{id}(id=${hecho.id}, handle=${coleccion.handle})}"
-                               th:attr="data-handle=${hecho.id}">
-                                Ver Detalles
-                            </a>
-                            <a class="btn btn-secondary"
-                               th:href="@{/solicitud/{hechoId}(hechoId=${hecho.id})}">
-                                Solicitar Eliminación
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    const csrfMeta = document.querySelector('meta[name="_csrf"]');
-                    const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
-                    const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : null;
-                    const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.getAttribute('content') : 'X-CSRF-TOKEN';
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const csrfMeta = document.querySelector('meta[name="_csrf"]');
+            const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+            const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : null;
+            const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.getAttribute('content') : 'X-CSRF-TOKEN';
 
-                    document.querySelectorAll('.btn-verDetalleHecho').forEach(anchor => {
-                        anchor.addEventListener('click', (ev) => {
-                            // Evitar navegación inmediata para poder disparar la petición primero
-                            ev.preventDefault();
+            document.querySelectorAll('.btn-verDetalleHecho').forEach(anchor => {
+                anchor.addEventListener('click', (ev) => {
+                    ev.preventDefault();
+                    const handle = anchor.dataset.handle;
+                    const targetHref = anchor.href;
 
-                            const handle = anchor.dataset.handle;
-                            const targetHref = anchor.href;
+                    if (!handle) {
+                        window.location.href = targetHref;
+                        return;
+                    }
 
-                            if (!handle) {
-                                // si no hay handle, navegamos normalmente
-                                window.location.href = targetHref;
-                                return;
-                            }
+                    const postUrl = `/hechos/${encodeURIComponent(handle)}/sumarVista`;
 
-                            // Construimos la URL del POST (ajustala si tu RequestMapping difiere)
-                            const postUrl = `/hechos/${encodeURIComponent(handle)}/sumarVista`;
-
-                            // Payload vacío (el controller solo usa path variable)
-                            const body = ''; // o `coleccionId=...` si necesitas enviar algo
-
-                            // Envío con fetch; keepalive permite que la petición trate de completarse aunque haya navegación
-                            fetch(postUrl, {
-                                method: 'POST',
-                                credentials: 'same-origin',    // mantiene cookies/sesión
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                    ...(csrfToken ? { [csrfHeader]: csrfToken } : {})
-                                },
-                                body: body,
-                                keepalive: true
-                            })
-                                .catch(err => {
-                                    // no queremos bloquear la navegación por un error de la suma de vista
-                                    console.warn('No se pudo registrar vista (no bloquea navegación):', err);
-                                })
-                                .finally(() => {
-                                    // navegamos al href (incluso si el POST aún está en progreso; keepalive ayuda)
-                                    window.location.href = targetHref;
-                                });
-                        });
-                    });
+                    fetch(postUrl, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            ...(csrfToken ? { [csrfHeader]: csrfToken } : {})
+                        },
+                        body: '',
+                        keepalive: true
+                    })
+                        .catch(err => console.warn('No se pudo registrar vista:', err))
+                        .finally(() => window.location.href = targetHref);
                 });
-
-
-            </script>
-        </div>
+            });
+        });
+    </script>
+</div>
 </html>
