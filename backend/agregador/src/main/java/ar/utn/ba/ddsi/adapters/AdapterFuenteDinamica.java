@@ -1,16 +1,15 @@
 package ar.utn.ba.ddsi.adapters;
 
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputComunDTO;
-import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
+import ar.utn.ba.ddsi.models.repositories.IContribuyenteRepository; // <--- IMPORTAR ESTO
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,97 +19,111 @@ import java.util.stream.Collectors;
 public class AdapterFuenteDinamica {
 
     private final WebClient webClient;
+    private final IContribuyenteRepository contribuyenteRepository;
 
     @Autowired
-    public AdapterFuenteDinamica(WebClient.Builder webClientBuilder) {
-      this.webClient = webClientBuilder.build();
+    public AdapterFuenteDinamica(WebClient.Builder webClientBuilder, IContribuyenteRepository contribuyenteRepository) {
+        this.webClient = webClientBuilder.build();
+        this.contribuyenteRepository = contribuyenteRepository;
     }
 
     public List<Hecho> obtenerHechos(String fuenteUrl) {
-      List<HechoInputComunDTO> hechosDTO = webClient.get()
-          .uri(fuenteUrl)
-          .retrieve()
-          .bodyToFlux(HechoInputComunDTO.class)
-          .collectList()
-          .block();
+        List<HechoInputComunDTO> hechosDTO = webClient.get()
+                .uri(fuenteUrl)
+                .retrieve()
+                .bodyToFlux(HechoInputComunDTO.class)
+                .collectList()
+                .block();
 
-      if (hechosDTO == null) {return List.of();}
-      return hechosDTO.stream().map(this::mapToHecho).collect(Collectors.toList());
+        if (hechosDTO == null) {return List.of();}
+        return hechosDTO.stream().map(this::mapToHecho).collect(Collectors.toList());
     }
 
     public Hecho mapToHecho(HechoInputComunDTO dto) {
-    Hecho hecho = new Hecho(
-        dto.getTitulo(),
-        dto.getDescripcion(),
-        new Categoria(dto.getCategoria()),
-        new Ubicacion(
-            dto.getUbicacion() != null ? dto.getUbicacion().getLatitud() : null,
-            dto.getUbicacion() != null ? dto.getUbicacion().getLongitud() : null
-        ),
-        dto.getFechaAcontecimiento(),
-        dto.getFechaCarga(),
-        Origen.PROVISTO_POR_CONTRIBUYENTE,
-         null
-    );
-    hecho.setFueEliminado(dto.getFueEliminado());
-    if (dto.getPathContenidoMultimedia() != null) {hecho.setPathMultimedia(dto.getPathContenidoMultimedia());}
-    if (dto.getEtiquetas() != null) {
-      for (String nombre : dto.getEtiquetas()) {hecho.agregarEtiqueta(new Etiqueta(nombre));}}
+        Ubicacion ubicacion = new Ubicacion(
+                dto.getUbicacion() != null ? dto.getUbicacion().getLatitud() : null,
+                dto.getUbicacion() != null ? dto.getUbicacion().getLongitud() : null
+        );
 
-    JsonNode particulares = dto.getParticulares();
-      if (particulares != null) {
-        JsonNode contribuyenteARecuperar = particulares.path("contribuyente");
-        if (!contribuyenteARecuperar.isMissingNode()) {
-          Contribuyente contribuyente = new Contribuyente(
-              longOrNull(contribuyenteARecuperar, "id"),
-              textOrNull(contribuyenteARecuperar, "nombre"),
-              dateOrNull(contribuyenteARecuperar, "fechaDeNacimiento"),
-              textOrNull(contribuyenteARecuperar, "apellido")
-          );
-          hecho.setContribuyente(contribuyente);
+        Hecho hecho = new Hecho(
+                dto.getTitulo(),
+                dto.getDescripcion(),
+                new Categoria(dto.getCategoria()),
+                ubicacion,
+                dto.getFechaAcontecimiento(),
+                dto.getFechaCarga(),
+                Origen.PROVISTO_POR_CONTRIBUYENTE,
+                null
+        );
+
+        hecho.setFueEliminado(dto.getFueEliminado());
+        if (dto.getPathContenidoMultimedia() != null) {hecho.setPathMultimedia(dto.getPathContenidoMultimedia());}
+        if (dto.getEtiquetas() != null) {
+            for (String nombre : dto.getEtiquetas()) {hecho.agregarEtiqueta(new Etiqueta(nombre));}
         }
 
-        LocalDate fechaActualizacion = dateOrNull(particulares, "fechaActualizacion");
-        if (fechaActualizacion != null) {
-          hecho.setFechaActualizacion(fechaActualizacion);
+        JsonNode particulares = dto.getParticulares();
+        if (particulares != null) {
+
+            JsonNode contribuyenteNode = particulares.path("contribuyente");
+            if (!contribuyenteNode.isMissingNode()) {
+                Long idContribuyente = longOrNull(contribuyenteNode, "id");
+
+                if (idContribuyente != null) {
+
+                    Contribuyente contrib = contribuyenteRepository.findById(idContribuyente)
+                            .orElseGet(() -> {
+
+                                Contribuyente nuevo = new Contribuyente(
+                                        idContribuyente,
+                                        textOrNull(contribuyenteNode, "nombre"),
+                                        dateOrNull(contribuyenteNode, "fechaDeNacimiento"),
+                                        textOrNull(contribuyenteNode, "apellido")
+                                );
+                                return contribuyenteRepository.save(nuevo);
+                            });
+
+                    hecho.setContribuyente(contrib);
+                }
+            }
+
+            LocalDate fechaActualizacion = dateOrNull(particulares, "fechaActualizacion");
+            if (fechaActualizacion != null) {
+                hecho.setFechaActualizacion(fechaActualizacion);
+            }
+
+            JsonNode paths = particulares.path("pathContenidoMultimedia");
+            if (paths.isArray()) {
+                List<String> list = new ArrayList<>();
+                paths.forEach(n -> list.add(n.asText()));
+                hecho.setPathMultimedia(list);
+            }
         }
 
-        JsonNode paths = particulares.path("pathContenidoMultimedia");
-        if (paths.isArray()) {
-          List<String> list = new ArrayList<>();
-          paths.forEach(n -> list.add(n.asText()));
-          hecho.setPathMultimedia(list);
-        }
-      }
+        hecho.setIdEnFuente(dto.getId());
 
-      System.out.println(hecho.getCategoria().getNombre());
-      System.out.println(hecho.getDescripcion());
-      hecho.setIdEnFuente(dto.getId());
-
-      return hecho;
+        return hecho;
     }
 
-  private static String textOrNull(JsonNode node, String field) {
-    if (node == null) return null;
-    JsonNode v = node.path(field);
-    return (v.isMissingNode() || v.isNull()) ? null : v.asText();
-  }
-
-  private static LocalDate dateOrNull(JsonNode node, String field) {
-    String s = textOrNull(node, field);
-    if (s == null) return null;
-    try {
-      return LocalDate.parse(s); // ISO-8601 (YYYY-MM-DD)
-    } catch (Exception e) {
-      return null;
+    private static String textOrNull(JsonNode node, String field) {
+        if (node == null) return null;
+        JsonNode v = node.path(field);
+        return (v.isMissingNode() || v.isNull()) ? null : v.asText();
     }
-  }
 
-  private static Long longOrNull(JsonNode node, String field) {
-    if (node == null) return null;
-    JsonNode v = node.path(field);
-    return (v.isMissingNode() || v.isNull()) ? null : v.asLong();
-  }
+    private static LocalDate dateOrNull(JsonNode node, String field) {
+        String s = textOrNull(node, field);
+        if (s == null) return null;
+        try {
+            return LocalDate.parse(s);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static Long longOrNull(JsonNode node, String field) {
+        if (node == null) return null;
+        JsonNode v = node.path(field);
+        return (v.isMissingNode() || v.isNull()) ? null : v.asLong();
+    }
 }
-
-

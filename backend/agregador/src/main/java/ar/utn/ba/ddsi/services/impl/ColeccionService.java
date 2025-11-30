@@ -92,7 +92,13 @@ public class ColeccionService implements IColeccionService {
   }
 
   public Coleccion filtrarHechos(Coleccion coleccion){
-    coleccion.getHechos().clear();
+      if (coleccion.getFuentes() == null || coleccion.getFuentes().isEmpty()) {
+          System.out.println("La colección '" + coleccion.getTitulo() + "' (ID: " + coleccion.getHandle() + ") no tiene fuentes. Se omite.");
+          return coleccion;
+      }
+
+      coleccion.getHechos().clear();
+
     List<Hecho> hechosFiltrados = agregadorService.obtenerTodosLosHechos(coleccion.getFuentes())
         .stream()
         .filter(hecho -> !hecho.getFueEliminado())

@@ -63,30 +63,49 @@ public class AgregadorService implements IAgregadorService {
     }
 
     @Override
+    @Transactional
     public List<Hecho> obtenerTodosLosHechos(Set<Fuente> fuentes) {
         if (fuentes == null || fuentes.isEmpty()) {
             throw new IllegalArgumentException("No se especificaron fuentes.");
         }
-        List<Hecho> hechos = fuentes.stream()
-                .flatMap(f -> obtenerTodosLosHechosDeFuente(f)
-                        .stream())
+
+        List<Hecho> hechosNuevos = fuentes.stream()
+                .flatMap(f -> obtenerTodosLosHechosDeFuente(f).stream())
                 .map(h -> {
-                    System.out.println(h);
-                    try { //para que si falla la normalizacion de un hecho no falle toda la normalizacion
+                    try {
                         normalizadorService.normalizar(h);
                         return h;
                     } catch (IllegalArgumentException e) {
+                        System.err.println("Error normalizando hecho: " + h.getTitulo());
                         return null;
                     }
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        if (hechos.isEmpty()) {
+
+        if (hechosNuevos.isEmpty()) {
             throw new NoSuchElementException("No se encontraron hechos para las fuentes indicadas.");
         }
 
-        hechoRepository.saveAll(hechos); //TODO COMO EVITAR DUPLICADOS
-        return hechos;
+        List<Hecho> hechosParaGuardar = new ArrayList<>();
+
+        for (Hecho hechoNuevo : hechosNuevos) {
+            Optional<Hecho> hechoExistente = hechoRepository.findByTitulo(hechoNuevo.getTitulo());
+
+            if (hechoExistente.isPresent()) {
+                Hecho existente = hechoExistente.get();
+
+                existente.setFechaCarga(LocalDate.now());
+                existente.setFueEliminado(false);
+
+                hechosParaGuardar.add(existente);
+            } else {
+                hechosParaGuardar.add(hechoNuevo);
+            }
+        }
+        hechoRepository.saveAll(hechosParaGuardar);
+
+        return hechosParaGuardar;
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IHechoRepository extends JpaRepository<Hecho,Long> {
     @Query(value = "" +
@@ -21,7 +22,9 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
     List<Hecho> findByCategoriaId(Long categoriaId);
     List<Hecho> findByCategoria(Categoria categoria);
 
-    List<Hecho> findByContribuyente_Id(Long contribuyenteId);
+    List<Hecho> findByContribuyente_Id(Long id);
+
+    Optional<Hecho> findByTitulo(String titulo);
     //List<Hecho> findByContribuyente_IdAndFueEliminadoFalseOrderByFechaCargaDesc(Long contribuyenteId);
     //List<Hecho> findAllByContribuyenteWithJoins(@Param("contribuyenteId") Long contribuyenteId);
 
