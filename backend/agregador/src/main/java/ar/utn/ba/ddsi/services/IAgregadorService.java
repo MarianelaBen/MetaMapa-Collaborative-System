@@ -38,4 +38,5 @@ public interface IAgregadorService {
     List<HechoOutputDTO> top3Hechos();
     List<ColeccionOutputDTO> top4Colecciones();
     Page<HechoOutputDTO> obtenerHechosConPaginacion(Pageable pageable);
+    List<HechoOutputDTO> obtenerHechosPorContribuyente(Long contribuyenteId);
 }

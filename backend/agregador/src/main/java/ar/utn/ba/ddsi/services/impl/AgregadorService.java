@@ -97,6 +97,15 @@ public class AgregadorService implements IAgregadorService {
     }
 
     @Override
+    public List<HechoOutputDTO> obtenerHechosPorContribuyente(Long contribuyenteId) {
+        List<Hecho> hechos = hechoRepository.findByContribuyente_Id(contribuyenteId);
+
+        return hechos.stream()
+            .map(this::hechoOutputDTO)
+            .collect(Collectors.toList());
+    }
+
+    @Override
     public Page<HechoOutputDTO> obtenerHechosConPaginacion(Pageable pageable) {
         return hechoRepository.findAll(pageable).map(this::hechoOutputDTO);
     }
