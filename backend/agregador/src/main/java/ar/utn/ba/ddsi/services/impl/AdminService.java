@@ -97,8 +97,20 @@ public class AdminService implements IAdminService {
     public ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO dto) {
         Coleccion existing = coleccionRepo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Coleccion no encontrada: " + id));
-        existing.setTitulo(dto.getTitulo());
-        existing.setDescripcion(dto.getDescripcion());
+       // existing.setTitulo(dto.getTitulo());
+       // existing.setDescripcion(dto.getDescripcion());
+
+        //AGREGO PARA CORREGIR ERRORES; CUANDO EDITAMOS COLECCION NO SE ACTUALIZA EL ALGORITMO
+        if (dto.getTitulo()!=null){
+           existing.setTitulo(dto.getTitulo());
+       }
+        if (dto.getDescripcion() != null) {
+            existing.setDescripcion(dto.getDescripcion());
+        }
+        if (dto.getAlgoritmoDeConsenso() != null) {
+            existing.setAlgoritmoDeConsenso(dto.getAlgoritmoDeConsenso());
+        }
+
         return ColeccionOutputDTO.fromEntity(coleccionRepo.save(existing));
     }
 
