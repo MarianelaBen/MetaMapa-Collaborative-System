@@ -64,8 +64,7 @@ public class Hecho {
    @Column(name = "aprobado", nullable = false)
    private Map<TipoAlgoritmoDeConsenso, Boolean> consensoPorAlgoritmo = new EnumMap<>(TipoAlgoritmoDeConsenso.class); //mismo chequeo que arriba
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "contribuyente_id") // Este nombre debe coincidir con tu columna en BD
+    @Embedded
     private Contribuyente contribuyente;
 
   @ElementCollection

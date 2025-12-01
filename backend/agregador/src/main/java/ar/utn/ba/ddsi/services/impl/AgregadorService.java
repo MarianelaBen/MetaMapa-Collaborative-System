@@ -118,7 +118,7 @@ public class AgregadorService implements IAgregadorService {
 
     @Override
     public List<HechoOutputDTO> obtenerHechosPorContribuyente(Long contribuyenteId) {
-        List<Hecho> hechos = hechoRepository.findByContribuyente_Id(contribuyenteId);
+        List<Hecho> hechos = hechoRepository.buscarPorIdContribuyente(contribuyenteId);
 
         return hechos.stream()
             .map(this::hechoOutputDTO)
@@ -132,7 +132,7 @@ public class AgregadorService implements IAgregadorService {
         String categoria,
         String estado
     ) {
-        List<Hecho> hechos = hechoRepository.findByContribuyente_Id(contribuyenteId);
+        List<Hecho> hechos = hechoRepository.buscarPorIdContribuyente(contribuyenteId);
 
         // Primero mapeamos todo (esto ya calcula editable y diasRestantes)
         List<HechoOutputDTO> dtos = hechos.stream()
@@ -291,7 +291,7 @@ public class AgregadorService implements IAgregadorService {
 
         if (hecho.getContribuyente() != null) {
             ContribuyenteDTO contrDto = new ContribuyenteDTO();
-            contrDto.setId(hecho.getContribuyente().getId());
+            contrDto.setId(hecho.getContribuyente().getIdContribuyente());
             contrDto.setNombre(hecho.getContribuyente().getNombre());
             contrDto.setApellido(hecho.getContribuyente().getApellido());
             contrDto.setFechaDeNacimiento(hecho.getContribuyente().getFechaDeNacimiento());

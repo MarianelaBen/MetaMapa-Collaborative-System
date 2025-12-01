@@ -133,20 +133,11 @@ public class HechoService {
     }*/
 
     public HechoDTO subirHecho(HechoDTO dto, MultipartFile[] multimedia, Long usuarioId) {
-
-        ContribuyenteDTO contribuyente = null;
-        if (usuarioId != null) {
-            try {
-
-                contribuyente = metaMapaApiService.getContribuyente(usuarioId);
-            } catch (Exception e) {
-
-                System.err.println("No se pudo obtener el contribuyente ID " + usuarioId + ". Se subirá como anónimo. Error: " + e.getMessage());
-            }
-        }
+        ContribuyenteDTO contribuyente = metaMapaApiService.getContribuyente(usuarioId);
 
         try {
             MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+
             Map<String, Object> hechoJson = new HashMap<>();
 
             hechoJson.put("titulo", dto.getTitulo());
@@ -164,18 +155,11 @@ public class HechoService {
             ciudadJson.put("provincia", dto.getProvincia());
             hechoJson.put("ciudad", ciudadJson);
 
-
-            if (contribuyente != null) {
-                Map<String, Object> contribuyenteJson = new HashMap<>();
-
-                contribuyenteJson.put("id", contribuyente.getId());
-                contribuyenteJson.put("nombre", contribuyente.getNombre());
-                contribuyenteJson.put("apellido", contribuyente.getApellido());
-                hechoJson.put("contribuyente", contribuyenteJson);
-            } else {
-
-                hechoJson.put("contribuyente", null);
-            }
+            Map<String, Object> contribuyenteJson = new HashMap<>();
+            contribuyenteJson.put("idContribuyente", contribuyente.getId());
+            contribuyenteJson.put("nombre", contribuyente.getNombre());
+            contribuyenteJson.put("apellido", contribuyente.getApellido());
+            hechoJson.put("contribuyente", contribuyenteJson);
 
             hechoJson.put("pathsMultimedia", List.of());
 

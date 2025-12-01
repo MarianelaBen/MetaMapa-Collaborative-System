@@ -3,7 +3,6 @@ package ar.utn.ba.ddsi.adapters;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputComunDTO;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
-import ar.utn.ba.ddsi.models.repositories.IContribuyenteRepository; // <--- IMPORTAR ESTO
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +18,10 @@ import java.util.stream.Collectors;
 public class AdapterFuenteDinamica {
 
     private final WebClient webClient;
-    private final IContribuyenteRepository contribuyenteRepository;
 
     @Autowired
-    public AdapterFuenteDinamica(WebClient.Builder webClientBuilder, IContribuyenteRepository contribuyenteRepository) {
+    public AdapterFuenteDinamica(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
-        this.contribuyenteRepository = contribuyenteRepository;
     }
 
     public List<Hecho> obtenerHechos(String fuenteUrl) {
@@ -35,7 +32,7 @@ public class AdapterFuenteDinamica {
                 .collectList()
                 .block();
 
-        if (hechosDTO == null) {return List.of();}
+        if (hechosDTO == null) return List.of();
         return hechosDTO.stream().map(this::mapToHecho).collect(Collectors.toList());
     }
 
@@ -55,11 +52,15 @@ public class AdapterFuenteDinamica {
                 Origen.PROVISTO_POR_CONTRIBUYENTE,
                 null
         );
-
         hecho.setFueEliminado(dto.getFueEliminado());
-        if (dto.getPathContenidoMultimedia() != null) {hecho.setPathMultimedia(dto.getPathContenidoMultimedia());}
+
+        if (dto.getPathContenidoMultimedia() != null) {
+            hecho.setPathMultimedia(dto.getPathContenidoMultimedia());
+        }
         if (dto.getEtiquetas() != null) {
-            for (String nombre : dto.getEtiquetas()) {hecho.agregarEtiqueta(new Etiqueta(nombre));}
+            for (String nombre : dto.getEtiquetas()) {
+                hecho.agregarEtiqueta(new Etiqueta(nombre));
+            }
         }
 
         JsonNode particulares = dto.getParticulares();
@@ -67,30 +68,17 @@ public class AdapterFuenteDinamica {
 
             JsonNode contribuyenteNode = particulares.path("contribuyente");
             if (!contribuyenteNode.isMissingNode()) {
-                Long idContribuyente = longOrNull(contribuyenteNode, "id");
-
-                if (idContribuyente != null) {
-
-                    Contribuyente contrib = contribuyenteRepository.findById(idContribuyente)
-                            .orElseGet(() -> {
-
-                                Contribuyente nuevo = new Contribuyente(
-                                        idContribuyente,
-                                        textOrNull(contribuyenteNode, "nombre"),
-                                        dateOrNull(contribuyenteNode, "fechaDeNacimiento"),
-                                        textOrNull(contribuyenteNode, "apellido")
-                                );
-                                return contribuyenteRepository.save(nuevo);
-                            });
-
-                    hecho.setContribuyente(contrib);
-                }
+                Contribuyente contribuyente = new Contribuyente(
+                        longOrNull(contribuyenteNode, "id"),
+                        textOrNull(contribuyenteNode, "nombre"),
+                        dateOrNull(contribuyenteNode, "fechaDeNacimiento"),
+                        textOrNull(contribuyenteNode, "apellido")
+                );
+                hecho.setContribuyente(contribuyente);
             }
 
             LocalDate fechaActualizacion = dateOrNull(particulares, "fechaActualizacion");
-            if (fechaActualizacion != null) {
-                hecho.setFechaActualizacion(fechaActualizacion);
-            }
+            if (fechaActualizacion != null) hecho.setFechaActualizacion(fechaActualizacion);
 
             JsonNode paths = particulares.path("pathContenidoMultimedia");
             if (paths.isArray()) {
@@ -99,9 +87,7 @@ public class AdapterFuenteDinamica {
                 hecho.setPathMultimedia(list);
             }
         }
-
         hecho.setIdEnFuente(dto.getId());
-
         return hecho;
     }
 
@@ -114,11 +100,7 @@ public class AdapterFuenteDinamica {
     private static LocalDate dateOrNull(JsonNode node, String field) {
         String s = textOrNull(node, field);
         if (s == null) return null;
-        try {
-            return LocalDate.parse(s);
-        } catch (Exception e) {
-            return null;
-        }
+        try { return LocalDate.parse(s); } catch (Exception e) { return null; }
     }
 
     private static Long longOrNull(JsonNode node, String field) {

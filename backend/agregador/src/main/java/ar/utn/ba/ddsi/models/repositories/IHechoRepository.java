@@ -22,7 +22,8 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
     List<Hecho> findByCategoriaId(Long categoriaId);
     List<Hecho> findByCategoria(Categoria categoria);
 
-    List<Hecho> findByContribuyente_Id(Long id);
+    @Query("SELECT h FROM Hecho h WHERE h.contribuyente.idContribuyente = :id")
+    List<Hecho> buscarPorIdContribuyente(@Param("id") Long id);
 
     Optional<Hecho> findByTitulo(String titulo);
     //List<Hecho> findByContribuyente_IdAndFueEliminadoFalseOrderByFechaCargaDesc(Long contribuyenteId);

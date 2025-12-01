@@ -175,7 +175,7 @@ public class AdminService implements IAdminService {
         }
         if(hecho.getContribuyente() != null){
             ContribuyenteDTO contrDto = new ContribuyenteDTO();
-            contrDto.setId(hecho.getContribuyente().getId());
+            contrDto.setId(hecho.getContribuyente().getIdContribuyente());
             contrDto.setNombre(hecho.getContribuyente().getNombre());
             contrDto.setApellido(hecho.getContribuyente().getApellido());
             contrDto.setFechaDeNacimiento(hecho.getContribuyente().getFechaDeNacimiento());
