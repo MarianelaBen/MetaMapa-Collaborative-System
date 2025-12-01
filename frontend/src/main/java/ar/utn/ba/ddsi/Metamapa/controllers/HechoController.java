@@ -80,6 +80,7 @@ public class HechoController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'CONTRIBUYENTE')")
   @GetMapping("/nuevo")
   public String verFormulario(Model model) {
     List<CategoriaDTO> categorias = this.coleccionService.getCategorias();

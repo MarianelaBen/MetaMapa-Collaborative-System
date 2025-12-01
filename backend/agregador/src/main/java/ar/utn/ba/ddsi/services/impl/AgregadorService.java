@@ -70,7 +70,16 @@ public class AgregadorService implements IAgregadorService {
         }
 
         List<Hecho> hechosNuevos = fuentes.stream()
-                .flatMap(f -> obtenerTodosLosHechosDeFuente(f).stream())
+
+                .flatMap(f -> {
+                    try {
+                        return obtenerTodosLosHechosDeFuente(f).stream();
+                    } catch (Exception e) {
+                        System.err.println("⚠️ ALERTA: Falló la fuente " + f.getUrl() + " (" + f.getTipo() + "). Causa: " + e.getMessage());
+                        return java.util.stream.Stream.empty();
+                    }
+                })
+
                 .map(h -> {
                     try {
                         normalizadorService.normalizar(h);
@@ -84,7 +93,8 @@ public class AgregadorService implements IAgregadorService {
                 .collect(Collectors.toList());
 
         if (hechosNuevos.isEmpty()) {
-            throw new NoSuchElementException("No se encontraron hechos para las fuentes indicadas.");
+            System.err.println("No se pudieron obtener hechos nuevos (o todas las fuentes fallaron).");
+            return new ArrayList<>();
         }
 
         List<Hecho> hechosParaGuardar = new ArrayList<>();
@@ -94,20 +104,18 @@ public class AgregadorService implements IAgregadorService {
 
             if (hechoExistente.isPresent()) {
                 Hecho existente = hechoExistente.get();
-
                 existente.setFechaCarga(LocalDate.now());
                 existente.setFueEliminado(false);
-
                 hechosParaGuardar.add(existente);
             } else {
                 hechosParaGuardar.add(hechoNuevo);
             }
         }
+
         hechoRepository.saveAll(hechosParaGuardar);
 
         return hechosParaGuardar;
     }
-
     @Override
     @Transactional(readOnly = true)
     public List<HechoOutputDTO> obtenerHechos() {
