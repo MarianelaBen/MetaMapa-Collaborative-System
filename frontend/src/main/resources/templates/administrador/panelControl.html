@@ -4,8 +4,6 @@
 <div th:fragment="css">
     <link rel="stylesheet" th:href="@{/css/panelControl.css}" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </div>
 
 <div class="admin-layout" th:fragment="contenido" sec:authorize="hasRole('ADMIN')">
@@ -79,10 +77,7 @@
             </tr>
             </thead>
             <tbody>
-            <!--<div th:if="${colecciones.isEmpty()}" class="text-center py-5">
-                <i class="fa-regular fa-folder-open fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No hay colecciones registradas</h5>
-            </div>  LO CAMBIO XQ SINO NO FUNCIONA-->
+
             <tr th:if="${colecciones.isEmpty()}">
               <td colspan="9" class="text-center py-5">
                 <i class="fa-regular fa-folder-open fa-3x text-muted mb-3"></i>
@@ -166,10 +161,6 @@
   </main>
 </div>
 
-<!-- <div class="container py-5" sec:authorize="!hasRole('ADMIN')">
-  <h2>Acceso restringido</h2>
-  <p>No tenés permisos para ver el panel de administración.</p>
-  <a th:href="@{/login}" class="btn btn-primary">Iniciar sesión</a>
-</div> ESTO ESTABA BUENO PERO NO SE SI FUNCIONA-->
+
 
 </html>
