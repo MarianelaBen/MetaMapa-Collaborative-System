@@ -334,8 +334,8 @@ nav a:hover {
     /* Header apilado */
     header.main-header {
         padding: .75rem 1rem;
-        flex-direction: column;   /* logo arriba, nav abajo */
-        align-items: stretch;     /* nav a todo el ancho */
+        flex-direction: column;
+        align-items: stretch;
     }
 
     header .logo {

@@ -14,7 +14,7 @@ body {
 div.container {
     margin: 0 auto; /* Centra el contenido */
     display: block; /* Evita que se comporte como un flex innecesario */
-    width: 100%; /* Ocupa todo el ancho disponible */
+    width: 100%;
     max-width: 1400px; /* (Opcional) limita el ancho máximo si querés */
     padding: 0 2rem; /* Agrega un poco de margen lateral */
     box-sizing: border-box; /* Evita desbordes por padding */

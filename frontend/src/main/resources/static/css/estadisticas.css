@@ -102,7 +102,7 @@
 }
 
 .chart-card.full-width {
-    grid-column: 1 / -1; /* Ocupa todo el ancho */
+    grid-column: 1 / -1;
 }
 
 .chart-header {
