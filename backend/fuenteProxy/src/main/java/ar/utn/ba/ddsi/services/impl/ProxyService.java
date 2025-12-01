@@ -23,10 +23,10 @@ public class ProxyService implements IProxyService {
     dto.setTitulo(hechoInputDTO.getTitulo());
     dto.setDescripcion(hechoInputDTO.getDescripcion());
     dto.setCategoria(hechoInputDTO.getCategoria());
-    dto.setUbicacion(new UbicacionOutputDTO(hechoInputDTO.getLatitud(), hechoInputDTO.getLongitud()));
+    dto.setLatitud(hechoInputDTO.getLatitud());
+    dto.setLongitud(hechoInputDTO.getLongitud());
     dto.setFechaAcontecimiento(hechoInputDTO.getFechaAcontecimiento().toLocalDate());
     dto.setFechaCarga(hechoInputDTO.getFechaCarga().toLocalDate());
-    dto.setFueEliminado(false);
 
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode extras = mapper.createObjectNode();
@@ -35,9 +35,6 @@ public class ProxyService implements IProxyService {
     if (hechoInputDTO.getFuenteExterna() != null) {
       extras.put("fuente", fuenteExterna);
     }
-
-    // Lo asignamos como JsonNode
-    dto.setParticulares(extras);
 
     return dto;
   }

@@ -19,16 +19,9 @@ public class HechoOutputDTO {
   private String titulo;
   private String descripcion;
   private String categoria;
-  private UbicacionOutputDTO ubicacion;
+    private Double latitud;
+    private Double longitud;
   private LocalDate fechaAcontecimiento;
   private LocalDate fechaCarga;
-  //private String fuente;
-  private Boolean fueEliminado;
-
-  // opcionales comunes
-  private Set<String> etiquetas;
-  private List<String> pathContenidoMultimedia;
-
-  // Campos especificos de cada fuente
-  private JsonNode particulares;
+    private String fuenteExterna;
 }

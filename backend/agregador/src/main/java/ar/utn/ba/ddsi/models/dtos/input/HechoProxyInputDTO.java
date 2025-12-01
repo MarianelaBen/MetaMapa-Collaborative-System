@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HechoProxyInputDTO {
-
+    private Long id;
     private String titulo;
     private String descripcion;
     private String categoria;
