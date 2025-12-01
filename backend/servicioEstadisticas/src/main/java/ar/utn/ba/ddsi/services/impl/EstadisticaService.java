@@ -5,7 +5,6 @@ import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.repositories.IEstadisticaRepository;
 import ar.utn.ba.ddsi.services.IEstadisticaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -20,16 +19,12 @@ public class EstadisticaService implements IEstadisticaService {
 
     private final WebClient webClient;
     private final IEstadisticaRepository estadisticaRepository;
-
-    // URLs directas para evitar problemas de URI Builder
-    private String agregadorUrl = "http://localhost:8083/api/public";
-    private String adminUrl     = "http://localhost:8083/api/admin";
+    private final String agregadorUrl = "http://localhost:8083/api/public";
 
     @Autowired
     public EstadisticaService(IEstadisticaRepository estadisticaRepository,
                               WebClient.Builder webClientBuilder) {
         this.estadisticaRepository = estadisticaRepository;
-        // Aumentamos memoria para traer muchos hechos
         ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
                 .build();
@@ -38,270 +33,104 @@ public class EstadisticaService implements IEstadisticaService {
 
     @Override
     public void recalcularEstadisticas() {
-        // 1. IMPORTANTE: Traemos DTOs y convertimos a Entidades para que tengan los datos bien mapeados
-        List<Hecho> todosLosHechos = this.obtenerTodosLosHechos();
-        List<Coleccion> colecciones = this.obtenerColecciones();
-        List<Categoria> categorias = this.obtenerCategorias();
+        System.out.println(">>> INICIANDO CÁLCULO ESTADÍSTICAS (VERSIÓN UNIFICADA)...");
         LocalDateTime ahora = LocalDateTime.now();
 
-        if (todosLosHechos.isEmpty()) {
-            System.out.println("⚠️ No hay hechos para calcular estadísticas.");
-            return;
+        List<Hecho> todosLosHechos = this.obtenerTodosLosHechos();
+        List<SolicitudDeEliminacion> solicitudes = this.obtenerSolicitudes();
+
+        if (todosLosHechos.isEmpty()) return;
+
+        // 1. Crear UN SOLO objeto Snapshot
+        Estadistica snapshot = new Estadistica();
+        snapshot.setFechaDeCalculo(ahora);
+
+        // 2. Totales Generales
+        snapshot.setTotalHechos((long) todosLosHechos.size());
+        snapshot.setHechosVerificados(todosLosHechos.stream()
+                .filter(h -> !Boolean.TRUE.equals(h.getFueEliminado())).count());
+
+        // 3. Spam
+        if (!solicitudes.isEmpty()) {
+            long spam = solicitudes.stream().filter(s -> Boolean.TRUE.equals(s.getEsSpam())).count();
+            SolicitudesEliminacionSpam subSpam = new SolicitudesEliminacionSpam();
+            subSpam.setTotal((long) solicitudes.size());
+            subSpam.setSpam(spam);
+            snapshot.setSolicitudesEliminacionSpam(subSpam);
         }
 
-        // 2. Cálculo: Provincia con mas hechos por coleccion
-        colecciones.forEach(col -> {
-            // Optimizacion: Filtramos en memoria de la lista global en vez de llamar N veces al agregador
-            // (Opcional, si prefieres llamar al endpoint específico descomenta obtenerHechosDeColeccion)
-            // Por simplicidad y coherencia de datos usamos la lista global convertida:
-            List<Hecho> hechosColeccion = obtenerHechosDeColeccion(col.getHandle())
-                    .stream()
-                    .map(this::convertirAEntidad) // Mapeo necesario
-                    .filter(h -> Boolean.FALSE.equals(h.getFueEliminado()))
-                    .filter(h -> h.getUbicacion() != null && h.getUbicacion().getProvincia() != null)
-                    .toList();
+        // 4. Dona de Categorías (Global)
+        Map<String, Long> globalCat = todosLosHechos.stream()
+                .filter(h -> !Boolean.TRUE.equals(h.getFueEliminado()) && h.getCategoria() != null)
+                .collect(Collectors.groupingBy(h -> h.getCategoria().getNombre().trim().toLowerCase(), Collectors.counting()));
 
-            if (hechosColeccion.isEmpty()) return;
+        globalCat.entrySet().stream().max(Map.Entry.comparingByValue()).ifPresent(top -> {
+            CategoriaTopGlobal ctg = new CategoriaTopGlobal();
+            ctg.setCategoriaGanadora(top.getKey());
+            ctg.setCantidadGanadora(top.getValue());
+            ctg.setCantidadPorCategoria(globalCat);
+            snapshot.setCategoriaTopGlobal(ctg);
+        });
 
-            Map<String, Long> conteo = hechosColeccion.stream()
-                    .collect(Collectors.groupingBy(h -> h.getUbicacion().getProvincia(), Collectors.counting()));
+        // 5. Provincias (Global - Usando campo HechosPorProvinciaEnColeccion)
+        Map<String, Long> globalProv = todosLosHechos.stream()
+                .filter(h -> h.getUbicacion() != null && h.getUbicacion().getProvincia() != null)
+                // FILTRO COMENTADO PARA VER TUS DATOS:
+                // .filter(h -> !h.getUbicacion().getProvincia().equalsIgnoreCase("ubicacion externa"))
+                .collect(Collectors.groupingBy(h -> h.getUbicacion().getProvincia(), Collectors.counting()));
 
-            Map.Entry<String, Long> top = conteo.entrySet().stream()
-                    .max(Map.Entry.comparingByValue())
-                    .orElse(null);
-
-            if (top == null) return;
-
+        if (!globalProv.isEmpty()) {
+            Map.Entry<String, Long> top = globalProv.entrySet().stream().max(Map.Entry.comparingByValue()).orElseThrow();
             HechosPorProvinciaEnColeccion sub = new HechosPorProvinciaEnColeccion();
-            sub.setColeccionHandle(col.getHandle());
-            sub.setCantidadPorProvincia(conteo);
+            sub.setColeccionHandle("GLOBAL");
             sub.setProvinciaGanadora(top.getKey());
             sub.setCantidadGanadora(top.getValue());
-
-            Estadistica snap = new Estadistica();
-            snap.setFechaDeCalculo(ahora);
-            snap.setHechosPorProvinciaEnColeccion(sub);
-
-            estadisticaRepository.save(snap);
-        });
-
-        // 3. Categoria Top Global
-        {
-            List<Hecho> activos = todosLosHechos.stream()
-                    .filter(h -> Boolean.FALSE.equals(h.getFueEliminado()))
-                    .filter(h -> h.getCategoria() != null && h.getCategoria().getNombre() != null)
-                    .toList();
-
-            if (!activos.isEmpty()) {
-                Map<String, Long> conteo = activos.stream()
-                        .collect(Collectors.groupingBy(h -> h.getCategoria().getNombre(), Collectors.counting()));
-
-                Map.Entry<String, Long> top = conteo.entrySet().stream()
-                        .max(Map.Entry.comparingByValue()).orElse(null);
-
-                if (top != null) {
-                    CategoriaTopGlobal sub = new CategoriaTopGlobal();
-                    sub.setCantidadPorCategoria(conteo);
-                    sub.setCategoriaGanadora(top.getKey());
-                    sub.setCantidadGanadora(top.getValue());
-
-                    Estadistica snap = new Estadistica();
-                    snap.setFechaDeCalculo(ahora);
-                    snap.setCategoriaTopGlobal(sub); // Asegúrate que tu entidad use este nombre
-
-                    estadisticaRepository.save(snap);
-                }
-            }
+            sub.setCantidadPorProvincia(globalProv);
+            snapshot.setHechosPorProvinciaEnColeccion(sub);
         }
 
-        // 4. Provincia Top por Categoria
-        categorias.forEach(cat -> {
-            String nombreCat = cat.getNombre();
-            if (nombreCat == null) return;
+        // 6. Horarios (Global - Usando campo HorarioPicoPorCategoria)
+        Map<Integer, Long> globalHoras = todosLosHechos.stream()
+                .filter(h -> h.getFechaYHoraAcontecimiento() != null)
+                .collect(Collectors.groupingBy(h -> h.getFechaYHoraAcontecimiento().getHour(), Collectors.counting()));
 
-            List<Hecho> hechosCat = todosLosHechos.stream()
-                    .filter(h -> Boolean.FALSE.equals(h.getFueEliminado()))
-                    .filter(h -> h.getCategoria() != null && h.getCategoria().getNombre() != null)
-                    .filter(h -> h.getCategoria().getNombre().equalsIgnoreCase(nombreCat))
-                    .filter(h -> h.getUbicacion() != null && h.getUbicacion().getProvincia() != null)
-                    .toList();
-
-            if (hechosCat.isEmpty()) return;
-
-            Map<String, Long> conteo = hechosCat.stream()
-                    .collect(Collectors.groupingBy(h -> h.getUbicacion().getProvincia(), Collectors.counting()));
-
-            Map.Entry<String, Long> top = conteo.entrySet().stream()
-                    .max(Map.Entry.comparingByValue()).orElse(null);
-
-            if (top == null) return;
-
-            ProvinciaTopPorCategoria sub = new ProvinciaTopPorCategoria();
-            sub.setCategoria(nombreCat);
-            sub.setCantidadPorProvincia(conteo);
-            sub.setProvinciaGanadora(top.getKey());
-            sub.setCantidadGanadora(top.getValue());
-
-            Estadistica snap = new Estadistica();
-            snap.setFechaDeCalculo(ahora);
-            snap.setProvinciaTopPorCategoria(sub);
-
-            estadisticaRepository.save(snap);
-        });
-
-        // 5. Horario Pico
-        categorias.forEach(cat -> {
-            String nombreCat = cat.getNombre();
-            if (nombreCat == null) return;
-
-            List<Hecho> hechosCat = todosLosHechos.stream()
-                    .filter(h -> Boolean.FALSE.equals(h.getFueEliminado()))
-                    .filter(h -> h.getCategoria() != null && h.getCategoria().getNombre() != null)
-                    .filter(h -> h.getCategoria().getNombre().equalsIgnoreCase(nombreCat))
-                    .filter(h -> h.getFechaYHoraAcontecimiento() != null)
-                    .toList();
-
-            if (hechosCat.isEmpty()) return;
-
-            Map<Integer, Long> conteo = hechosCat.stream()
-                    .collect(Collectors.groupingBy(
-                            h -> h.getFechaYHoraAcontecimiento().getHour(), // 0..23
-                            Collectors.counting()
-                    ));
-
-            Map.Entry<Integer, Long> top = conteo.entrySet().stream()
-                    .max(Map.Entry.comparingByValue()).orElse(null);
-
-            if (top == null) return;
-
+        if (!globalHoras.isEmpty()) {
+            Map.Entry<Integer, Long> top = globalHoras.entrySet().stream().max(Map.Entry.comparingByValue()).orElseThrow();
             HorarioPicoPorCategoria sub = new HorarioPicoPorCategoria();
-            sub.setCategoria(nombreCat);
-            sub.setCantidadPorHora(conteo);
+            sub.setCategoria("GLOBAL");
             sub.setHoraGanadora(top.getKey());
             sub.setCantidadGanadora(top.getValue());
-
-            Estadistica snap = new Estadistica();
-            snap.setFechaDeCalculo(ahora);
-            snap.setHorarioPicoPorCategoria(sub);
-
-            estadisticaRepository.save(snap);
-        });
-
-        // 6. Solicitudes Spam
-        {
-            List<SolicitudDeEliminacion> solicitudes = this.obtenerSolicitudes();
-            long total = solicitudes.size();
-            long spam  = solicitudes.stream()
-                    .filter(s -> Boolean.TRUE.equals(s.getEsSpam()))
-                    .count();
-
-            SolicitudesEliminacionSpam sub = new SolicitudesEliminacionSpam();
-            sub.setTotal(total);
-            sub.setSpam(spam);
-
-            Estadistica snap = new Estadistica();
-            snap.setFechaDeCalculo(ahora);
-            snap.setSolicitudesEliminacionSpam(sub); // Asegúrate que tu entidad use este nombre
-
-            estadisticaRepository.save(snap);
+            sub.setCantidadPorHora(globalHoras);
+            snapshot.setHorarioPicoPorCategoria(sub);
         }
+
+        // 7. GUARDAR UNA SOLA VEZ
+        estadisticaRepository.save(snapshot);
+        System.out.println(">>> SNAPSHOT UNIFICADO GUARDADO.");
     }
 
-
+    // --- Métodos Auxiliares ---
     public List<Hecho> obtenerTodosLosHechos() {
         try {
-            List<HechoOutputDTO> dtos = webClient.get()
-                    .uri(agregadorUrl + "/hechos")
-                    .retrieve()
-                    .bodyToFlux(HechoOutputDTO.class)
-                    .collectList()
-                    .block();
-
-            if (dtos == null) return List.of();
-
-            // Convertimos a Entidad Local
-            return dtos.stream().map(this::convertirAEntidad).collect(Collectors.toList());
-
-        } catch (WebClientResponseException e) {
-            System.err.println("Error obteniendo hechos: " + e.getMessage());
-            return List.of();
-        }
+            List<HechoOutputDTO> dtos = webClient.get().uri(agregadorUrl + "/hechos")
+                    .retrieve().bodyToFlux(HechoOutputDTO.class).collectList().block();
+            return dtos == null ? List.of() : dtos.stream().map(this::convertirAEntidad).collect(Collectors.toList());
+        } catch (Exception e) { return List.of(); }
     }
-
-    // Conversor DTO -> Entidad
+    public List<SolicitudDeEliminacion> obtenerSolicitudes() {
+        try {
+            return webClient.get().uri(agregadorUrl + "/solicitudes")
+                    .retrieve().bodyToFlux(SolicitudDeEliminacion.class).collectList().block();
+        } catch (Exception e) { return List.of(); }
+    }
     private Hecho convertirAEntidad(HechoOutputDTO dto) {
         Hecho h = new Hecho();
         h.setTitulo(dto.getTitulo());
         h.setDescripcion(dto.getDescripcion());
         h.setFechaYHoraAcontecimiento(dto.getFechaAcontecimiento());
         h.setFueEliminado(dto.getFueEliminado());
-
-        if (dto.getCategoria() != null) {
-            Categoria c = new Categoria();
-            c.setNombre(dto.getCategoria());
-            h.setCategoria(c);
-        }
-
-        if (dto.getProvincia() != null) {
-            Ubicacion u = new Ubicacion();
-            u.setProvincia(dto.getProvincia());
-            u.setLatitud(dto.getLatitud());
-            u.setLongitud(dto.getLongitud());
-            h.setUbicacion(u);
-        }
-
+        if(dto.getCategoria() != null) { Categoria c = new Categoria(); c.setNombre(dto.getCategoria()); h.setCategoria(c); }
+        if(dto.getProvincia() != null) { Ubicacion u = new Ubicacion(); u.setProvincia(dto.getProvincia()); h.setUbicacion(u); }
         return h;
-    }
-
-    public List<HechoOutputDTO> obtenerHechosDeColeccion(String handle) {
-        try {
-            return webClient.get()
-                    .uri(agregadorUrl + "/colecciones/" + handle + "/hechos")
-                    .retrieve()
-                    .bodyToFlux(HechoOutputDTO.class)
-                    .collectList()
-                    .block();
-        } catch (WebClientResponseException.NotFound e) {
-            return List.of();
-        }
-    }
-
-    public List<Coleccion> obtenerColecciones() {
-        try {
-            return webClient.get()
-                    .uri(adminUrl + "/colecciones")
-                    .retrieve()
-                    .bodyToFlux(Coleccion.class)
-                    .collectList()
-                    .block();
-        } catch (WebClientResponseException e) {
-            return List.of();
-        }
-    }
-
-    public List<Categoria> obtenerCategorias() {
-        try {
-            return webClient.get()
-                    .uri(agregadorUrl + "/categorias")
-                    .retrieve()
-                    .bodyToFlux(Categoria.class)
-                    .collectList()
-                    .block();
-        } catch (WebClientResponseException.NotFound e) {
-            return List.of();
-        }
-    }
-
-    public List<SolicitudDeEliminacion> obtenerSolicitudes() {
-        try {
-            return webClient.get()
-                    .uri(agregadorUrl + "/solicitudes")
-                    .retrieve()
-                    .bodyToFlux(SolicitudDeEliminacion.class)
-                    .collectList()
-                    .block();
-        } catch (WebClientResponseException.NotFound e) {
-            return List.of();
-        }
     }
 }

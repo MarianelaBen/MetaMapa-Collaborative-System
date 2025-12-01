@@ -40,5 +40,12 @@ public class Estadistica {
 
   @Embedded
   private SolicitudesEliminacionSpam solicitudesEliminacionSpam;
+
+    @Column(name = "total_hechos")
+    private Long totalHechos;
+
+    @Column(name = "hechos_verificados")
+    private Long hechosVerificados;
+
 }
 

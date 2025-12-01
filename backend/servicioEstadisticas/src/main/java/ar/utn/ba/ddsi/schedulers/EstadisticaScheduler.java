@@ -11,7 +11,7 @@ public class EstadisticaScheduler {
     @Autowired
     IEstadisticaService estadisticasService;
 
-    @Scheduled(fixedDelay = 60000, initialDelay = 10000)
+    @Scheduled(fixedDelay = 300000)
     public void runPeriodicRecalculation() {
         System.out.println("SCHEDULER ESTADÍSTICAS: Iniciando cálculo...");
         try {

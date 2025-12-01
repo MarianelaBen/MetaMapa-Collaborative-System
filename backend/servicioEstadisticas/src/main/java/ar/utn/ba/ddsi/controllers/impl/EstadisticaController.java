@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,78 +34,38 @@ public class EstadisticaController implements IEstadisticaController {
     public ResponseEntity<DashboardDTO> obtenerDashboard(@RequestParam(defaultValue = "anio") String rango) {
         DashboardDTO dashboard = new DashboardDTO();
 
-        dashboard.setTotalHechos(1500L);
-        dashboard.setHechosVerificados(1200L);
+        dashboard.setTotalHechos(0L); dashboard.setHechosVerificados(0L);
+        dashboard.setSpamDetectado(0L); dashboard.setPorcentajeSpam(0.0);
+        dashboard.setHechosPorCategoria(new HashMap<>());
+        dashboard.setHechosPorProvincia(new HashMap<>());
+        dashboard.setHechosPorHora(new HashMap<>());
+        dashboard.setDetallesPorCategoria(new ArrayList<>());
 
-        repo.findTopBySolicitudesEliminacionSpam_TotalIsNotNullOrderByFechaDeCalculoDesc()
+
+        repo.findTopByTotalHechosIsNotNullOrderByFechaDeCalculoDesc()
                 .ifPresent(stat -> {
-                    var s = stat.getSolicitudesEliminacionSpam();
-                    dashboard.setSpamDetectado(s.getSpam());
-                    if (s.getTotal() > 0) {
-                        dashboard.setPorcentajeSpam((double) s.getSpam() / s.getTotal() * 100);
-                    } else {
-                        dashboard.setPorcentajeSpam(0.0);
+                    // Mapeo directo y simple
+                    dashboard.setTotalHechos(stat.getTotalHechos());
+                    dashboard.setHechosVerificados(stat.getHechosVerificados());
+
+                    if (stat.getSolicitudesEliminacionSpam() != null) {
+                        var s = stat.getSolicitudesEliminacionSpam();
+                        dashboard.setSpamDetectado(s.getSpam());
+                        dashboard.setPorcentajeSpam(s.getTotal() > 0 ? (double) s.getSpam() / s.getTotal() * 100 : 0.0);
+                    }
+                    if (stat.getCategoriaTopGlobal() != null) {
+                        dashboard.setHechosPorCategoria(stat.getCategoriaTopGlobal().getCantidadPorCategoria());
+                    }
+                    if (stat.getHechosPorProvinciaEnColeccion() != null) {
+                        dashboard.setHechosPorProvincia(stat.getHechosPorProvinciaEnColeccion().getCantidadPorProvincia());
+                    }
+                    if (stat.getHorarioPicoPorCategoria() != null) {
+                        dashboard.setHechosPorHora(stat.getHorarioPicoPorCategoria().getCantidadPorHora());
                     }
                 });
 
-
-        repo.findTopByCategoriaTopGlobal_CategoriaGanadoraIsNotNullOrderByFechaDeCalculoDesc()
-                .ifPresent(stat -> dashboard.setHechosPorCategoria(stat.getCategoriaTopGlobal().getCantidadPorCategoria()));
-
-        repo.findTopByHechosPorProvinciaEnColeccion_ColeccionHandleOrderByFechaDeCalculoDesc("eventos-climaticos")
-                .ifPresent(stat -> dashboard.setHechosPorProvincia(stat.getHechosPorProvinciaEnColeccion().getCantidadPorProvincia()));
-
-        if (dashboard.getHechosPorHora() == null) {
-            dashboard.setHechosPorHora(Map.of(8, 5L, 12, 15L, 18, 10L, 22, 3L));
-        }
-
         return ResponseEntity.ok(dashboard);
     }
-
-    @GetMapping
-    public ResponseEntity<List<Estadistica>> obtenerTodas() {
-        return ResponseEntity.ok(repo.findAll());
-    }
-
-    @GetMapping("/hechos-por-provincia/coleccion/{handle}")
-    public ResponseEntity<List<Estadistica>> hechosPorProvinciaEnColeccion(@PathVariable String handle) {
-        return ResponseEntity.ok(
-                repo.findAllByHechosPorProvinciaEnColeccion_ColeccionHandleOrderByFechaDeCalculoDesc(handle));
-    }
-
-    @GetMapping("/provincia-top-por-categoria/{nombreCategoria}")
-    public ResponseEntity<List<Estadistica>> provinciaTopPorCategoria(@PathVariable String nombreCategoria) {
-        return ResponseEntity.ok(
-                repo.findAllByProvinciaTopPorCategoria_CategoriaOrderByFechaDeCalculoDesc(nombreCategoria));
-    }
-
-    @GetMapping("/provincia-top-por-categoria/{nombreCategoria}/ultima")
-    public ResponseEntity<Estadistica> provinciaTopPorCategoriaUltima(@PathVariable String nombreCategoria) {
-        return repo.findTopByProvinciaTopPorCategoria_CategoriaOrderByFechaDeCalculoDesc(nombreCategoria)
-                .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    // CAMBIO: Recibe nombreCategoria (String)
-    @GetMapping("/horario-pico-por-categoria/{nombreCategoria}")
-    public ResponseEntity<List<Estadistica>> horarioPicoPorCategoria(@PathVariable String nombreCategoria) {
-        return ResponseEntity.ok(
-                repo.findAllByHorarioPicoPorCategoria_CategoriaOrderByFechaDeCalculoDesc(nombreCategoria));
-    }
-
-    @GetMapping("/top-categoria-global/ultima")
-    public ResponseEntity<Estadistica> topCategoriaGlobalUltima() {
-        // Método corregido en el repo
-        return repo.findTopByCategoriaTopGlobal_CategoriaGanadoraIsNotNullOrderByFechaDeCalculoDesc()
-                .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/solicitudes-eliminacion/ultima")
-    public ResponseEntity<Estadistica> solicitudesEliminacionUltima() {
-        // Método corregido en el repo
-        return repo.findTopBySolicitudesEliminacionSpam_TotalIsNotNullOrderByFechaDeCalculoDesc()
-                .map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
 
     @GetMapping(value = "/export", produces = "text/csv")
     public void exportarCSV(HttpServletResponse resp) throws IOException {
