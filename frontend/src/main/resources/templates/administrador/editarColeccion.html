@@ -45,7 +45,10 @@
                     <select id="consenso" class="form-select" th:field="*{algoritmoDeConsenso}">
                         <option value="">-- Seleccionar --</option>
                         <option th:each="a : ${algoritmosDisponibles}"
-                                th:value="${a}" th:text="${a}"></option>
+                                th:value="${a}"
+                                th:text="${a}">
+                        </option>
+
                     </select>
                 </div>
             </section>
