@@ -113,7 +113,7 @@ main {
     padding: 0.5rem 1rem;
     border-radius: 20px;
     border: 1px solid #e9ecef;
-    width: fit-content; /* Para que no ocupe todo el ancho */
+    width: fit-content;
 }
 
 .consensus-dot {
