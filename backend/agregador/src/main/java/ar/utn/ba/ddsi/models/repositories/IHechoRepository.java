@@ -27,5 +27,5 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
     Optional<Hecho> findByTitulo(String titulo);
     //List<Hecho> findByContribuyente_IdAndFueEliminadoFalseOrderByFechaCargaDesc(Long contribuyenteId);
     //List<Hecho> findAllByContribuyenteWithJoins(@Param("contribuyenteId") Long contribuyenteId);
-
+    Optional<Hecho> findByIdEnFuente(Long idEnFuente);
 }

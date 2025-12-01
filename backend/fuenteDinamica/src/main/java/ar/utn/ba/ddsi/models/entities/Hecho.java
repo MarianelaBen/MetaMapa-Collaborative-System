@@ -76,7 +76,7 @@ public class Hecho {
   @Embedded
   private Contribuyente contribuyente;
 
-  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "contenido_multimedia_id")
   private List<ContenidoMultimedia> contenidosMultimedia;
 
@@ -104,8 +104,18 @@ public class Hecho {
     this.etiquetas.add(etiqueta);
   }
 
-  public List<String> getPathsMultimedia(List<ContenidoMultimedia> contenidos){
-    return contenidos.stream().map(ContenidoMultimedia::getPath).collect(Collectors.toList());
+  public void actualizarContenidosMultimedia(List<ContenidoMultimedia> nuevos) {
+    // 1. Limpiamos la colección existente (Hibernate registra esto para borrar huérfanos)
+    this.contenidosMultimedia.clear();
+
+    // 2. Agregamos los nuevos (Hibernate los marcará para insertar)
+    if (nuevos != null) {
+      this.contenidosMultimedia.addAll(nuevos);
+    }
   }
 
+  public List<String> getPathsMultimedia(List<ContenidoMultimedia> contenidos){
+    if (contenidos == null) return new ArrayList<>();
+    return contenidos.stream().map(ContenidoMultimedia::getPath).collect(Collectors.toList());
+  }
 }

@@ -374,4 +374,25 @@ public class HechoController {
     return "contribuyente/misHechos";
   }
 
+  @GetMapping("/vista-previa/{idEnFuente}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public String previsualizarHechoDeFuente(
+      @PathVariable Long idEnFuente,
+      RedirectAttributes redirectAttributes) {
+    try {
+      Long idLocal = metaMapaApiService.getIdLocalPorIdFuente(idEnFuente);
+
+      return "redirect:/hechos/" + idLocal;
+
+    } catch (NotFoundException ex) {
+      redirectAttributes.addFlashAttribute("mensaje", ex.getMessage());
+      redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+      return "redirect:/admin/solicitudes-edicion";
+    } catch (Exception e) {
+      redirectAttributes.addFlashAttribute("mensaje", "Error al intentar previsualizar: " + e.getMessage());
+      redirectAttributes.addFlashAttribute("tipoMensaje", "error");
+      return "redirect:/admin/solicitudes-edicion";
+    }
+  }
+
 }

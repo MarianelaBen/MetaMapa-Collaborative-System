@@ -385,4 +385,12 @@ public class AgregadorController {
           .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
     }
   }
+
+  @GetMapping("/hechos/id-por-fuente/{idEnFuente}")
+  public ResponseEntity<Long> getIdHechoPorIdEnFuente(@PathVariable Long idEnFuente) {
+    return hechoRepository.findByIdEnFuente(idEnFuente)
+        .map(Hecho::getId)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+  }
 }

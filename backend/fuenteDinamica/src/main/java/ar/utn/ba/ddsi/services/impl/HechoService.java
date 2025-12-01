@@ -231,19 +231,15 @@ public class HechoService implements IHechoService {
   }*/ //TODO borrar cuando funcione el nuevo editar
 
   @Override
+  @Transactional
   public HechoOutputDTO edicion(Long idEditor, HechoInputEdicionDTO dto, Long idHecho, MultipartFile[] multimedia, boolean replaceMedia, List<String> deleteExisting) {
     Hecho hecho = hechoRepository.findById(idHecho).orElseThrow(() -> new RuntimeException("Hecho no encontrado"));
+
     HechoEstadoPrevio estadoPrevio = new HechoEstadoPrevio(hecho);
+
     Categoria categoria = categoriaService.findCategory(dto.getCategoria());
 
-    actualizarHecho(
-        hecho,
-        dto.getTitulo(),
-        dto.getDescripcion(),
-        categoria,
-        dto.getCiudad(),
-        dto.getFechaAcontecimiento()
-    );
+    actualizarHecho(hecho, dto.getTitulo(), dto.getDescripcion(), categoria, dto.getCiudad(), dto.getFechaAcontecimiento());
 
     actualizarMultimedia(hecho, multimedia, replaceMedia, deleteExisting);
 
@@ -264,9 +260,9 @@ public class HechoService implements IHechoService {
   }
 
   @Override
+  @Transactional
   public void edicionRechazada(Hecho hecho){
     HechoEstadoPrevio estadoPrevio = hecho.getEstadoPrevio();
-    hecho.setEstadoPrevio(null);
 
     this.actualizarHecho(hecho,
         estadoPrevio.getTitulo(),
@@ -275,24 +271,24 @@ public class HechoService implements IHechoService {
         estadoPrevio.getUbicacion(),
         estadoPrevio.getFechaAcontecimiento());
 
-    reemplazarArchivoMultimedia(hecho, hecho.getPathsMultimedia(hecho.getContenidosMultimedia()));
+    reemplazarArchivoMultimedia(hecho, getPathsFromMultimedia(estadoPrevio.getContenidosMultimedia()));
+
+    hecho.setEstadoPrevio(null);
 
     this.hechoRepository.save(hecho);
+  }
+
+  private List<String> getPathsFromMultimedia(List<ContenidoMultimedia> lista) {
+    if(lista == null) return Collections.emptyList();
+    return lista.stream().map(ContenidoMultimedia::getPath).toList();
   }
 
   private void reemplazarArchivoMultimedia(Hecho hecho, List<String> nuevosPaths) {
     if (nuevosPaths == null) return;
 
-    List<ContenidoMultimedia> nuevoContenidoMultimedia = mapearMultimedia(nuevosPaths);
+    List<ContenidoMultimedia> nuevosObjetos = mapearMultimedia(nuevosPaths);
 
-    if (hecho.getContenidosMultimedia() != null) {
-      hecho.getContenidosMultimedia().forEach(c ->
-          contenidoMultimediaRepository.delete(c)
-      );
-    }
-    if (nuevoContenidoMultimedia != null) {
-      hecho.setContenidosMultimedia(nuevoContenidoMultimedia);
-    }
+    hecho.actualizarContenidosMultimedia(nuevosObjetos);
   }
 
   private List<ContenidoMultimedia> mapearMultimedia(List<String> paths) {
@@ -343,41 +339,30 @@ public class HechoService implements IHechoService {
       boolean replaceMedia,
       List<String> deleteExisting
   ) {
-
-    List<ContenidoMultimedia> actuales =
-        hecho.getContenidosMultimedia() != null
-            ? new ArrayList<>(hecho.getContenidosMultimedia())
-            : new ArrayList<>();
+    List<ContenidoMultimedia> listaCalculada = new ArrayList<>(hecho.getContenidosMultimedia());
 
     if (replaceMedia) {
-      actuales.forEach(c -> contenidoMultimediaRepository.delete(c));
-      actuales.clear();
+      listaCalculada.clear();
     }
 
     if (!replaceMedia && deleteExisting != null && !deleteExisting.isEmpty()) {
-
       Set<String> pathsAEliminar = new HashSet<>(deleteExisting);
-
-      actuales.removeIf(c -> pathsAEliminar.contains(c.getPath()));
+      listaCalculada.removeIf(c -> pathsAEliminar.contains(c.getPath()));
     }
 
     if (multimedia != null && multimedia.length > 0) {
-
       List<String> nuevasUrls = new ArrayList<>();
-
       for (MultipartFile file : multimedia) {
         if (file != null && !file.isEmpty()) {
-          String path = minioService.upload(file);  // ⭐ devuelve URL/Path final
+          String path = minioService.upload(file);
           nuevasUrls.add(path);
         }
       }
-
       List<ContenidoMultimedia> nuevos = mapearMultimedia(nuevasUrls);
-
-      actuales.addAll(nuevos);
+      listaCalculada.addAll(nuevos);
     }
 
-    hecho.setContenidosMultimedia(actuales);
+    hecho.actualizarContenidosMultimedia(listaCalculada);
   }
 
 

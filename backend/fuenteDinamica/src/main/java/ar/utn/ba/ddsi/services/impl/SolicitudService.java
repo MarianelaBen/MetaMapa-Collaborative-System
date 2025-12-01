@@ -1,5 +1,7 @@
 package ar.utn.ba.ddsi.services.impl;
 
+import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Solicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
@@ -10,6 +12,8 @@ import ar.utn.ba.ddsi.services.ISolicitudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SolicitudService implements ISolicitudService {
@@ -56,4 +60,33 @@ public class SolicitudService implements ISolicitudService {
       solicitud.setIdAdministradorQueAtendio(idAdministrador);
       solicitud.setFechaAtencion(LocalDate.now());
     }
+
+  @Override
+  public List<SolicitudOutputDTO> obtenerTodas() {
+    List<Solicitud> solicitudes = solicitudRepository.findAll();
+
+    return solicitudes.stream()
+        .map(this::mapearASolicitudOutput)
+        .collect(Collectors.toList());
+  }
+
+  private SolicitudOutputDTO mapearASolicitudOutput(Solicitud s) {
+    SolicitudOutputDTO dto = new SolicitudOutputDTO();
+    dto.setId(s.getId());
+    dto.setTipoSolicitud(s.getTipoSolicitud());
+    dto.setEstado(s.getEstado());
+    dto.setFechaSolicitud(s.getFechaSolicitud());
+    dto.setComentario(s.getComentario());
+
+    if (s.getHecho() != null) {
+      HechoOutputDTO hDto = hechoService.hechoOutputDTO(s.getHecho());
+      dto.setHecho(hDto);
+
+      if (s.getHecho().getContribuyente() != null) {
+        dto.setNombreContribuyente(s.getHecho().getContribuyente().getNombre() + " " + s.getHecho().getContribuyente().getApellido());
+        dto.setIdContribuyente(s.getHecho().getContribuyente().getIdContribuyente());
+      }
+    }
+    return dto;
+  }
 }

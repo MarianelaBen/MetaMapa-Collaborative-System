@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.controllers;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputEdicionDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.services.IHechoService;
@@ -152,6 +153,49 @@ public class FuenteDinamicaController {
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "Error al buscar los hechos", "detalle", e.getMessage()));
+    }
+  }
+
+  @GetMapping("/solicitudes")
+  public ResponseEntity<?> getTodasSolicitudes() {
+    try {
+      List<SolicitudOutputDTO> todas = solicitudService.obtenerTodas();
+      return ResponseEntity.ok(todas);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("error", "Error al obtener solicitudes", "mensaje", e.getMessage()));
+    }
+  }
+
+  @PostMapping("/solicitudes/{id}/aceptar")
+  public ResponseEntity<?> aceptarSolicitud(
+      @PathVariable("id") Long idSolicitud,
+      @RequestParam(required = false) Long idAdministrador,
+      @RequestParam(required = false) String comentario) {
+    try {
+      Long adminId = (idAdministrador != null) ? idAdministrador : 1L;
+
+      solicitudService.atencionDeSolicitud(idSolicitud, EstadoSolicitud.ACEPTADA, comentario, adminId);
+      return ResponseEntity.ok(Map.of("mensaje", "Solicitud ACEPTADA correctamente"));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error", "Error al aceptar solicitud", "mensaje", e.getMessage()));
+    }
+  }
+
+  @PostMapping("/solicitudes/{id}/rechazar")
+  public ResponseEntity<?> rechazarSolicitud(
+      @PathVariable("id") Long idSolicitud,
+      @RequestParam(required = false) Long idAdministrador,
+      @RequestParam(required = false) String comentario) {
+    try {
+      Long adminId = (idAdministrador != null) ? idAdministrador : 1L;
+
+      solicitudService.atencionDeSolicitud(idSolicitud, EstadoSolicitud.RECHAZADA, comentario, adminId);
+      return ResponseEntity.ok(Map.of("mensaje", "Solicitud RECHAZADA correctamente"));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(Map.of("error", "Error al rechazar solicitud", "mensaje", e.getMessage()));
     }
   }
 

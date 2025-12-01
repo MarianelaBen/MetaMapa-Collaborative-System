@@ -425,4 +425,53 @@ public class AdminController {
                 .body(resource);
     }
 
+  @GetMapping("/solicitudes-edicion")
+  @PreAuthorize("hasAnyRole('ADMIN')")
+  public String verSolicitudesEdicionCreacion(Model model) {
+    try {
+      List<SolicitudEdicionCreacionDTO> solicitudes = solicitudService.getSolicitudesEdicionCreacion();
+
+      model.addAttribute("titulo", "Solicitudes de Creación y Edición");
+      model.addAttribute("solicitudes", solicitudes);
+
+      long pendientesCreacion = solicitudes.stream().filter(s -> "CREACION".equals(s.getTipoSolicitud())).count();
+      long pendientesEdicion = solicitudes.stream().filter(s -> "EDICION".equals(s.getTipoSolicitud())).count();
+
+      model.addAttribute("countCreacion", pendientesCreacion);
+      model.addAttribute("countEdicion", pendientesEdicion);
+
+    } catch (Exception ex) {
+      model.addAttribute("error", "No se pudieron cargar las solicitudes: " + ex.getMessage());
+      model.addAttribute("solicitudes", List.of());
+    }
+    return "administrador/gestorSolicitudesEdicion";
+  }
+
+  @PostMapping("/solicitudes-edicion/{id}/aceptar")
+  @PreAuthorize("hasAnyRole('ADMIN')")
+  public String aceptarSolicitudEdicion(@PathVariable Long id, RedirectAttributes redirect) {
+    try {
+      solicitudService.aceptarSolicitudEdicionCreacion(id);
+      redirect.addFlashAttribute("mensaje", "Solicitud ACEPTADA correctamente.");
+      redirect.addFlashAttribute("tipoMensaje", "success");
+    } catch (Exception e) {
+      redirect.addFlashAttribute("mensaje", "Error al aceptar: " + e.getMessage());
+      redirect.addFlashAttribute("tipoMensaje", "error");
+    }
+    return "redirect:/admin/solicitudes-edicion";
+  }
+
+  @PostMapping("/solicitudes-edicion/{id}/rechazar")
+  @PreAuthorize("hasAnyRole('ADMIN')")
+  public String rechazarSolicitudEdicion(@PathVariable Long id, RedirectAttributes redirect) {
+    try {
+      solicitudService.rechazarSolicitudEdicionCreacion(id);
+      redirect.addFlashAttribute("mensaje", "Solicitud RECHAZADA correctamente.");
+      redirect.addFlashAttribute("tipoMensaje", "success"); // O warning visualmente
+    } catch (Exception e) {
+      redirect.addFlashAttribute("mensaje", "Error al rechazar: " + e.getMessage());
+      redirect.addFlashAttribute("tipoMensaje", "error");
+    }
+    return "redirect:/admin/solicitudes-edicion";
+  }
 }

@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.Metamapa.services;
 
+import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.*;
 
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class MetaMapaApiService {
     private final String authServiceUrl;
     private final String baseAdminUrl;
     private final String basePublicUrl;
+    private final String baseEstaticaUrl;
 
     @Autowired
     public MetaMapaApiService(
@@ -39,12 +41,14 @@ public class MetaMapaApiService {
             WebApiCallerService webApiCallerService,
             @Value("${auth.service.url}") String authServiceUrl,
             @Value("${backend.api.base-url}") String baseAdminUrl,
-            @Value("${backend.api.base-url-agregador}") String basePublicUrl) {
+            @Value("${backend.api.base-url-agregador}") String basePublicUrl,
+            @Value("${backend.api.base-url-estatica}") String baseEstaticaUrl) {
         this.webClient = WebClient.builder().build();
         this.webApiCallerService = webApiCallerService;
         this.authServiceUrl = authServiceUrl;
         this.baseAdminUrl = baseAdminUrl;
         this.basePublicUrl = basePublicUrl;
+        this.baseEstaticaUrl = baseEstaticaUrl;
     }
 
     public AuthResponseDTO login(String username, String password) {
@@ -165,7 +169,7 @@ public class MetaMapaApiService {
                 .contentType(MediaType.parseMediaType("text/csv"));
         final String PART_NAME = "archivo";
         return webApiCallerService.postMultipart(
-                baseAdminUrl + "/import/hechos/csv",
+                baseEstaticaUrl + "/import/hechos/csv",
                 PART_NAME,
                 archivo,
                 InformeDeResultadosDTO.class
@@ -252,6 +256,20 @@ public class MetaMapaApiService {
             .retrieve()
             .bodyToMono(ContribuyenteDTO.class)
             .block();
+    }
+
+    public Long getIdLocalPorIdFuente(Long idEnFuente) {
+        try {
+            return webClient.get()
+                .uri(basePublicUrl + "/hechos/id-por-fuente/{id}", idEnFuente)
+                .retrieve()
+                .bodyToMono(Long.class)
+                .block();
+        } catch (WebClientResponseException.NotFound e) {
+            throw new NotFoundException("El hecho con ID de fuente " + idEnFuente + " no se encuentra sincronizado en el mapa aún.");
+        } catch (Exception e) {
+            throw new RuntimeException("Error al buscar el ID local del hecho", e);
+        }
     }
 }
 
