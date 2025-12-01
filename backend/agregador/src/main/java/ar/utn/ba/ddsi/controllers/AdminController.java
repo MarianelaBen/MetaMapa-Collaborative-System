@@ -29,7 +29,7 @@ public class AdminController {
 
   private final IAdminService servicio;
   private final ColeccionService coleccionService;
-  private final IHechoRepository hechoRepository; //TODO esta mal que un controller conozca a un repo?
+  private final IHechoRepository hechoRepository;
   private final ISolicitudService solicitudService;
   private final IFuenteRepository fuenteRepository;
 
