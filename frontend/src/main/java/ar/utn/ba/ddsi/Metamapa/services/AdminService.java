@@ -110,6 +110,8 @@ public class AdminService {
                 .block();
     }
 
+// En AdminService.java
+
     public DashboardDTO obtenerEstadisticas(String rango) {
         try {
             return webClientEstadisticas.get()
@@ -122,10 +124,24 @@ public class AdminService {
                     .block();
         } catch (Exception e) {
             System.err.println("Error obteniendo estadísticas: " + e.getMessage());
-            return new DashboardDTO(0L, 0L, 0L, 0.0, null, null, null);
+
+            // --- CORRECCIÓN: Fallback seguro ---
+            DashboardDTO fallback = new DashboardDTO();
+            fallback.setTotalHechos(0L);
+            fallback.setHechosVerificados(0L);
+            fallback.setSpamDetectado(0L);
+            fallback.setPorcentajeSpam(0.0);
+
+
+            fallback.setHechosPorCategoria(java.util.Collections.emptyMap());
+            fallback.setHechosPorProvincia(java.util.Collections.emptyMap());
+            fallback.setHechosPorHora(java.util.Collections.emptyMap());
+
+            fallback.setDetallesPorCategoria(java.util.Collections.emptyList());
+
+            return fallback;
         }
     }
-
     public ByteArrayResource exportarCsv() {
         try {
             byte[] bytes = webClientEstadisticas.get()

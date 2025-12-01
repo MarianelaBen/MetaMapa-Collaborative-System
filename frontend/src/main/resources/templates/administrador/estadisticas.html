@@ -16,18 +16,6 @@
                 <p class="page-subtitle">Análisis visual de los datos recolectados por MetaMapa</p>
             </div>
 
-            <div class="header-actions">
-                <select class="filter-select" id="rangoFecha" onchange="actualizarGraficos()">
-                    <option value="mes">Último Mes</option>
-                    <option value="anio" selected>Último Año</option>
-                    <option value="historico">Histórico Completo</option>
-                </select>
-
-                <a th:href="@{/admin/estadisticas/exportar}" class="btn btn-primary">
-                    <i class="fas fa-file-csv"></i>
-                    Exportar Datos (CSV)
-                </a>
-            </div>
         </div>
 
         <div class="stats-grid">

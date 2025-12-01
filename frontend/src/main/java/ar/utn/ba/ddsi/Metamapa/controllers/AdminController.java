@@ -396,6 +396,7 @@ public class AdminController {
 
         DashboardDTO stats = adminService.obtenerEstadisticas(rango);
 
+
         Map<String, Object> kpis = new HashMap<>();
         kpis.put("totalHechos", stats.getTotalHechos() != null ? stats.getTotalHechos() : 0);
         kpis.put("hechosVerificados", stats.getHechosVerificados() != null ? stats.getHechosVerificados() : 0);
@@ -405,11 +406,13 @@ public class AdminController {
         model.addAttribute("titulo", "Panel de Estadísticas");
         model.addAttribute("kpis", kpis);
 
+        model.addAttribute("resumen", stats);
+
         model.addAttribute("datosCategorias", stats.getHechosPorCategoria() != null ? stats.getHechosPorCategoria() : Map.of());
         model.addAttribute("datosProvincias", stats.getHechosPorProvincia() != null ? stats.getHechosPorProvincia() : Map.of());
         model.addAttribute("datosHorarios", stats.getHechosPorHora() != null ? stats.getHechosPorHora() : Map.of());
 
-        return "administrador/estadisticas"; // Asegurate que coincida con la carpeta donde guardaste el HTML
+        return "administrador/estadisticas";
     }
 
     @GetMapping("/exportar")
