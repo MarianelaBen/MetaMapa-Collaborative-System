@@ -38,6 +38,6 @@ public class SignupController {
       return "redirect:/signup";
     }
   }
-  //TODO no se si hay que hacer autologin despues de que te registras
+
 
 }
