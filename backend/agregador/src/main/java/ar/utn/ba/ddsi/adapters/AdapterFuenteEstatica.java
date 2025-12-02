@@ -44,7 +44,7 @@ public class AdapterFuenteEstatica {
         new Categoria(dto.getCategoria()),
         new Ubicacion(
             dto.getUbicacion() != null ? dto.getUbicacion().getLatitud() : null,
-            dto.getUbicacion() != null ? dto.getUbicacion().getLongitud() : null
+            dto.getUbicacion() != null ? dto.getUbicacion().getLongitud() : null, dto.getUbicacion() != null ? dto.getUbicacion().getProvincia() : null
         ),
         dto.getFechaAcontecimiento(),
         dto.getFechaCarga(),

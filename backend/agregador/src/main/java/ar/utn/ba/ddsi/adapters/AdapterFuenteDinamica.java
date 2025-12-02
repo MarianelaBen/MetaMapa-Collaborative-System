@@ -39,7 +39,8 @@ public class AdapterFuenteDinamica {
     public Hecho mapToHecho(HechoInputComunDTO dto) {
         Ubicacion ubicacion = new Ubicacion(
                 dto.getUbicacion() != null ? dto.getUbicacion().getLatitud() : null,
-                dto.getUbicacion() != null ? dto.getUbicacion().getLongitud() : null
+                dto.getUbicacion() != null ? dto.getUbicacion().getLongitud() : null,
+                dto.getUbicacion() != null ? dto.getUbicacion().getProvincia() : null
         );
 
         Hecho hecho = new Hecho(

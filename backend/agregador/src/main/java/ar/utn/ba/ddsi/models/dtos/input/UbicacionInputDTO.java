@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class UbicacionInputDTO {
   private Double latitud;
   private Double longitud;
+  private String provincia;
 }

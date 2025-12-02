@@ -18,4 +18,5 @@ public class CriterioInputDTO {
     private Double latitud;
     private Double longitud;
     private Integer rango;
+    private String provincia;
 }

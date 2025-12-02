@@ -153,11 +153,18 @@ public class ColeccionService implements IColeccionService {
                 );
 
             case "LUGAR":
-                Ubicacion u = new Ubicacion();
-                u.setLatitud(dto.getLatitud());
-                u.setLongitud(dto.getLongitud());
-                // u.setProvincia(...) // Si tuvieras este dato
-                return new CriterioLugar(u, dto.getRango());
+                Ubicacion u = null;
+                if (dto.getLatitud() != null && dto.getLongitud() != null) {
+                    u = new Ubicacion();
+                    u.setLatitud(dto.getLatitud());
+                    u.setLongitud(dto.getLongitud());
+                    u.setProvincia(dto.getProvincia());
+                }
+
+                int rangoSafe = (dto.getRango() != null) ? dto.getRango() : 0;
+                String provSafe = dto.getProvincia();
+
+                return new CriterioLugar(u, rangoSafe, provSafe);
 
             default:
                 return null;

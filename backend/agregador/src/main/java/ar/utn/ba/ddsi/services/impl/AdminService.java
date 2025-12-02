@@ -378,7 +378,9 @@ public class AdminService implements IAdminService {
             categoriaCache.put(key, categoria);
         }
 
-        Ubicacion ubicacion = new Ubicacion(latitud, longitud);
+        Ubicacion ubicacion = new Ubicacion();
+        ubicacion.setLatitud(latitud);
+        ubicacion.setLongitud(longitud);
 
         return new Hecho(
                 titulo,

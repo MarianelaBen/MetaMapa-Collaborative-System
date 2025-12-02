@@ -21,6 +21,8 @@ public class CriterioDTO {
     private Double longitud;
     private Integer rango;
 
+    private String provincia;
+
     public CriterioDTO(String tipo, String valor) {
         this.tipoCriterio = tipo;
         this.valorString = valor;

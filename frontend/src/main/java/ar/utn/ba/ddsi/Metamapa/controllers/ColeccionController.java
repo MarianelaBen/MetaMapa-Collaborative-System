@@ -82,23 +82,34 @@ public class ColeccionController {
     }
 
 
-@GetMapping("/nueva")
-@PreAuthorize("hasAnyRole('ADMIN')")
-public String verFormulario(Model model) {
-  List<FuenteDTO> fuentes = metaMapaApiService.getFuentes();
+    @GetMapping("/nueva")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String verFormulario(Model model) {
 
-  Map<String, Long> mapTipoId = fuentes.stream()
-      .collect(Collectors.toMap(
-          f -> f.getTipo().toUpperCase(),
-          FuenteDTO::getId
-      ));
+        List<FuenteDTO> fuentes = metaMapaApiService.getFuentes();
 
-  model.addAttribute("fuentesTipoId", mapTipoId);
-  model.addAttribute("coleccion", new ColeccionDTO(null,null,null));
-  model.addAttribute("titulo", "Crear nueva Coleccion");
-    model.addAttribute("algoritmos", List.of("Absoluta", "Mayoria Simple", "Multiples Menciones"));
-    return "administrador/crearColeccion";
-}
+        Map<String, Long> mapTipoId = fuentes.stream()
+                .collect(Collectors.toMap(
+                        f -> f.getTipo().toUpperCase(),
+                        FuenteDTO::getId
+                ));
+
+        List<CategoriaDTO> listaCategorias;
+        try {
+            listaCategorias = this.coleccionService.getCategorias();
+        } catch (Exception e) {
+            listaCategorias = List.of();
+            e.printStackTrace();
+        }
+
+        model.addAttribute("fuentesTipoId", mapTipoId);
+        model.addAttribute("listaCategorias", listaCategorias); // <--- ESTO ES LO NUEVO
+        model.addAttribute("coleccion", new ColeccionDTO(null, null, null));
+        model.addAttribute("titulo", "Crear nueva Coleccion");
+        model.addAttribute("algoritmos", List.of("Absoluta", "Mayoria Simple", "Multiples Menciones"));
+
+        return "administrador/crearColeccion";
+    }
 
     @PostMapping("/nueva")
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -128,6 +139,8 @@ public String verFormulario(Model model) {
             @RequestParam(value = "criterioLugarLat[]", required = false) List<Double> lLat,
             @RequestParam(value = "criterioLugarLon[]", required = false) List<Double> lLon,
             @RequestParam(value = "criterioLugarRango[]", required = false) List<Integer> lRango,
+            @RequestParam(value = "criterioLugarProvincia[]", required = false) List<String> lProvincia,
+
 
             RedirectAttributes redirect) {
 
@@ -156,6 +169,19 @@ public String verFormulario(Model model) {
             if (descripciones != null) descripciones.forEach(d -> nuevosCriterios.add(new CriterioDTO("DESCRIPCION", d)));
             if (categorias != null) categorias.forEach(c -> nuevosCriterios.add(new CriterioDTO("CATEGORIA", c)));
             if (origenes != null) origenes.forEach(o -> nuevosCriterios.add(new CriterioDTO("ORIGEN", o)));
+
+            if (categorias != null) {
+                categorias.stream()
+                        // FILTRO DE SEGURIDAD: Ignorar vacíos o nulos
+                        .filter(c -> c != null && !c.trim().isEmpty())
+                        .forEach(c -> nuevosCriterios.add(new CriterioDTO("CATEGORIA", c)));
+            }
+
+            if (titulos != null) {
+                titulos.stream()
+                        .filter(t -> t != null && !t.trim().isEmpty())
+                        .forEach(t -> nuevosCriterios.add(new CriterioDTO("TITULO", t)));
+            }
 
 
 // Criterios de Fecha de Acontecimiento
@@ -201,6 +227,9 @@ public String verFormulario(Model model) {
                     dto.setLatitud(lLat.get(i));
                     if (lLon != null && i < lLon.size()) dto.setLongitud(lLon.get(i));
                     if (lRango != null && i < lRango.size()) dto.setRango(lRango.get(i));
+                    if (lProvincia != null && i < lProvincia.size()) {
+                        dto.setProvincia(lProvincia.get(i));
+                    }
                     nuevosCriterios.add(dto);
                 }
             }
