@@ -100,45 +100,113 @@ public String verFormulario(Model model) {
     return "administrador/crearColeccion";
 }
 
-@PostMapping("/nueva")
-@PreAuthorize("hasAnyRole('ADMIN')")
-public String crearColeccion(@ModelAttribute("coleccion") ColeccionDTO coleccion, @RequestParam(required = false) String fuenteTipos, RedirectAttributes redirect){
-  try {
+    @PostMapping("/nueva")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String crearColeccion(
+            @ModelAttribute("coleccion") ColeccionDTO coleccion,
+            @RequestParam(required = false) String fuenteTipos,
 
-    //agregado ahora por el error
-    if (coleccion.getHandle() == null || coleccion.getHandle().isBlank()) {
-      coleccion.setHandle(makeHandle(coleccion.getTitulo()));
-  }
-    List<FuenteDTO> fuentes = metaMapaApiService.getFuentes();
-    Map<String, Long> mapTipoId = fuentes.stream()
-        .collect(Collectors.toMap(
-            f -> f.getTipo().toUpperCase(),
-            FuenteDTO::getId
-        ));
+            // --- CAPTURA DE PARAMETROS DEL FORMULARIO HTML ---
+            // Arrays de Strings
+            @RequestParam(value = "criterioTitulo[]", required = false) List<String> titulos,
+            @RequestParam(value = "criterioDescripcion[]", required = false) List<String> descripciones,
+            @RequestParam(value = "criterioCategoria[]", required = false) List<String> categorias,
+            @RequestParam(value = "criterioOrigen[]", required = false) List<String> origenes,
 
-    Set<Long> fuenteIds = new HashSet<>();
+            // Fechas (Thymeleaf envía strings yyyy-MM-dd, Spring los convierte a LocalDate)
+            @RequestParam(value = "criterioFechaAcontecimientoDesde[]", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> faDesde,
+            @RequestParam(value = "criterioFechaAcontecimientoHasta[]", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> faHasta,
 
-    if (fuenteTipos != null && !fuenteTipos.isBlank()) {
-      for (String tipo : fuenteTipos.split(",")) {
-        Long id = mapTipoId.get(tipo.toUpperCase());
-        if (id != null) fuenteIds.add(id);
-      }
+            @RequestParam(value = "criterioFechaCargaDesde[]", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> fcDesde,
+            @RequestParam(value = "criterioFechaCargaHasta[]", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> fcHasta,
+
+            // Datos numéricos para Lugar
+            @RequestParam(value = "criterioLugarLat[]", required = false) List<Double> lLat,
+            @RequestParam(value = "criterioLugarLon[]", required = false) List<Double> lLon,
+            @RequestParam(value = "criterioLugarRango[]", required = false) List<Integer> lRango,
+
+            RedirectAttributes redirect) {
+
+        try {
+            if (coleccion.getHandle() == null || coleccion.getHandle().isBlank()) {
+                coleccion.setHandle(makeHandle(coleccion.getTitulo()));
+            }
+
+            List<FuenteDTO> fuentes = metaMapaApiService.getFuentes();
+            Map<String, Long> mapTipoId = fuentes.stream()
+                    .collect(Collectors.toMap(f -> f.getTipo().toUpperCase(), FuenteDTO::getId));
+
+            Set<Long> fuenteIds = new HashSet<>();
+            if (fuenteTipos != null && !fuenteTipos.isBlank()) {
+                for (String tipo : fuenteTipos.split(",")) {
+                    Long id = mapTipoId.get(tipo.toUpperCase());
+                    if (id != null) fuenteIds.add(id);
+                }
+            }
+            coleccion.setFuenteIds(fuenteIds);
+
+            List<CriterioDTO> nuevosCriterios = new ArrayList<>();
+
+
+            if (titulos != null) titulos.forEach(t -> nuevosCriterios.add(new CriterioDTO("TITULO", t)));
+            if (descripciones != null) descripciones.forEach(d -> nuevosCriterios.add(new CriterioDTO("DESCRIPCION", d)));
+            if (categorias != null) categorias.forEach(c -> nuevosCriterios.add(new CriterioDTO("CATEGORIA", c)));
+            if (origenes != null) origenes.forEach(o -> nuevosCriterios.add(new CriterioDTO("ORIGEN", o)));
+
+
+            if (faDesde != null) {
+                for (int i = 0; i < faDesde.size(); i++) {
+                    CriterioDTO dto = new CriterioDTO();
+                    dto.setTipoCriterio("FECHA_ACONTECIMIENTO");
+                    dto.setFechaDesde(faDesde.get(i));
+
+                    if (faHasta != null && i < faHasta.size()) dto.setFechaHasta(faHasta.get(i));
+                    nuevosCriterios.add(dto);
+                }
+            }
+
+            if (fcDesde != null) {
+                for (int i = 0; i < fcDesde.size(); i++) {
+                    CriterioDTO dto = new CriterioDTO();
+                    dto.setTipoCriterio("FECHA_CARGA");
+                    dto.setFechaDesde(fcDesde.get(i));
+                    if (fcHasta != null && i < fcHasta.size()) dto.setFechaHasta(fcHasta.get(i));
+                    nuevosCriterios.add(dto);
+                }
+            }
+
+
+            if (lLat != null) {
+                for (int i = 0; i < lLat.size(); i++) {
+                    CriterioDTO dto = new CriterioDTO();
+                    dto.setTipoCriterio("LUGAR");
+                    dto.setLatitud(lLat.get(i));
+                    if (lLon != null && i < lLon.size()) dto.setLongitud(lLon.get(i));
+                    if (lRango != null && i < lRango.size()) dto.setRango(lRango.get(i));
+                    nuevosCriterios.add(dto);
+                }
+            }
+
+            coleccion.setNuevosCriterios(nuevosCriterios);
+
+            ColeccionDTO creada = metaMapaApiService.crearColeccion(coleccion);
+
+            redirect.addFlashAttribute("mensaje", "Colección creada exitosamente: " + creada.getTitulo());
+            return "redirect:/colecciones";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirect.addFlashAttribute("error", "Error al crear la colección: " + e.getMessage());
+
+            return "redirect:/colecciones/nueva";
+        }
     }
 
-    coleccion.setFuenteIds(fuenteIds);
-    if (coleccion.getCriterioIds() == null) coleccion.setCriterioIds(Set.of());
 
-    ColeccionDTO creada = metaMapaApiService.crearColeccion(coleccion);
-    redirect.addFlashAttribute("mensaje", "Coleccion creada: " + creada.getTitulo());
-    return "redirect:/colecciones";
-  } catch (Exception e) {
-    //agrego esto tmb
-    e.printStackTrace(); // para ver stack en consola
-    redirect.addFlashAttribute("error", "Error al crear la coleccion.");
-    return "redirect:/colecciones/nueva";
-  }
-}
-//Raro
   private String makeHandle(String titulo) {
     if (titulo == null) return null;
     String h = titulo.toLowerCase()

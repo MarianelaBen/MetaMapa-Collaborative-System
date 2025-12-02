@@ -15,6 +15,7 @@ public class ColeccionDTO {
     private String algoritmoDeConsenso;
     private Set<Long> fuenteIds;
     private Set<Long> criterioIds;
+    private List<CriterioDTO> nuevosCriterios = new ArrayList<>();
     private Set<Long> hechoIds;
     private Integer cantVistas;
 
