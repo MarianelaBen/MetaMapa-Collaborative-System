@@ -122,20 +122,34 @@ public class ColeccionService implements IColeccionService {
                 return new CriterioOrigen(Origen.valueOf(dto.getValorString()));
 
             case "FECHA_CARGA":
-                if (dto.getFechaDesde() == null) return null;
+                if (dto.getFechaDesde() == null || dto.getFechaDesde().isBlank()) return null;
 
-                LocalDate hastaCarga = dto.getFechaHasta() != null ? dto.getFechaHasta() : dto.getFechaDesde();
+                LocalDate inicioCarga = LocalDate.parse(dto.getFechaDesde());
+                LocalDate finCarga;
 
-                return new CriterioFechaCarga(dto.getFechaDesde(), hastaCarga);
+                if (dto.getFechaHasta() != null && !dto.getFechaHasta().isBlank()) {
+                    finCarga = LocalDate.parse(dto.getFechaHasta());
+                } else {
+                    finCarga = inicioCarga;
+                }
+
+                return new CriterioFechaCarga(inicioCarga, finCarga);
 
             case "FECHA_ACONTECIMIENTO":
-                if (dto.getFechaDesde() == null) return null;
+                if (dto.getFechaDesde() == null || dto.getFechaDesde().isBlank()) return null;
 
-                LocalDate hastaAcontecimiento = dto.getFechaHasta() != null ? dto.getFechaHasta() : dto.getFechaDesde();
+                LocalDate inicioAcontecimiento = LocalDate.parse(dto.getFechaDesde());
+
+                LocalDate finAcontecimiento;
+                if (dto.getFechaHasta() != null && !dto.getFechaHasta().isBlank()) {
+                    finAcontecimiento = LocalDate.parse(dto.getFechaHasta());
+                } else {
+                    finAcontecimiento = inicioAcontecimiento;
+                }
 
                 return new CriterioFechaAcontecimiento(
-                        dto.getFechaDesde().atStartOfDay(),
-                        hastaAcontecimiento.atTime(23, 59, 59)
+                        inicioAcontecimiento.atStartOfDay(),
+                        finAcontecimiento.atTime(23, 59, 59)
                 );
 
             case "LUGAR":

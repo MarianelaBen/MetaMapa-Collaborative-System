@@ -14,13 +14,8 @@ public class CriterioDTO {
 
     private String valorString;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate fechaDesde;
-
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate fechaHasta;
+    private String fechaDesde;
+    private String fechaHasta;
 
     private Double latitud;
     private Double longitud;

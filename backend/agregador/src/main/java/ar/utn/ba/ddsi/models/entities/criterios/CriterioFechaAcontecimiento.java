@@ -30,10 +30,14 @@ public class CriterioFechaAcontecimiento extends Criterio{
     public boolean cumpleCriterio(Hecho hecho) {
         if (hecho.getFechaAcontecimiento() == null) return false;
 
-        LocalDateTime fecha = hecho.getFechaAcontecimiento();
+        LocalDate fechaHecho = hecho.getFechaAcontecimiento().toLocalDate();
 
-        boolean pasoInicio = !fecha.isBefore(desde);
-        boolean pasoFin = !fecha.isAfter(hasta);
+        LocalDate fechaDesde = this.desde.toLocalDate();
+        LocalDate fechaHasta = this.hasta.toLocalDate();
+
+
+        boolean pasoInicio = !fechaHecho.isBefore(fechaDesde);
+        boolean pasoFin = !fechaHecho.isAfter(fechaHasta);
 
         return pasoInicio && pasoFin;
     }

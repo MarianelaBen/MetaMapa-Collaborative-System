@@ -72,6 +72,7 @@ public class AdminController {
   @PostMapping("/colecciones") //Recibe un DTO con los datos de la coleccion
   public ResponseEntity<?> crearColeccion(@RequestBody ColeccionInputDTO dto) {
     try{
+
       ColeccionOutputDTO coleccionCreada = coleccionService.crearColeccion(dto);
       return ResponseEntity.status(HttpStatus.CREATED).body(coleccionCreada);
     }catch(Exception e){

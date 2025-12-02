@@ -158,23 +158,37 @@ public String verFormulario(Model model) {
             if (origenes != null) origenes.forEach(o -> nuevosCriterios.add(new CriterioDTO("ORIGEN", o)));
 
 
+// Criterios de Fecha de Acontecimiento
             if (faDesde != null) {
                 for (int i = 0; i < faDesde.size(); i++) {
                     CriterioDTO dto = new CriterioDTO();
                     dto.setTipoCriterio("FECHA_ACONTECIMIENTO");
-                    dto.setFechaDesde(faDesde.get(i));
 
-                    if (faHasta != null && i < faHasta.size()) dto.setFechaHasta(faHasta.get(i));
+                    // CONVERSIÓN EXPLICITA A STRING
+                    if (faDesde.get(i) != null) {
+                        dto.setFechaDesde(faDesde.get(i).toString()); // "yyyy-MM-dd"
+                    }
+                    if (faHasta != null && i < faHasta.size() && faHasta.get(i) != null) {
+                        dto.setFechaHasta(faHasta.get(i).toString());
+                    }
+
                     nuevosCriterios.add(dto);
                 }
             }
 
+            // Criterios de Fecha de Carga
             if (fcDesde != null) {
                 for (int i = 0; i < fcDesde.size(); i++) {
                     CriterioDTO dto = new CriterioDTO();
                     dto.setTipoCriterio("FECHA_CARGA");
-                    dto.setFechaDesde(fcDesde.get(i));
-                    if (fcHasta != null && i < fcHasta.size()) dto.setFechaHasta(fcHasta.get(i));
+
+                    if (fcDesde.get(i) != null) {
+                        dto.setFechaDesde(fcDesde.get(i).toString());
+                    }
+
+                    if (fcHasta != null && i < fcHasta.size() && fcHasta.get(i) != null) {
+                        dto.setFechaHasta(fcHasta.get(i).toString());
+                    }
                     nuevosCriterios.add(dto);
                 }
             }

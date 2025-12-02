@@ -12,12 +12,8 @@ public class CriterioInputDTO {
     private String tipoCriterio; // "TITULO", "CATEGORIA", "LUGAR", etc.
     private String valorString;  // Para titulo, descripcion, origen, nombre categoria
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate fechaDesde;
-
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate fechaHasta;
-
+    private String fechaDesde;
+    private String fechaHasta;
     // Lugar
     private Double latitud;
     private Double longitud;
