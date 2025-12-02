@@ -228,8 +228,18 @@
                 <h3 class="subsection-title">Filtrar por Origen</h3>
                 <div class="dynamic-field">
                     <div class="field-group">
-                        <input type="text" name="criterioOrigen[]" class="form-input" placeholder="Ej: DINAMICA">
-                        <button type="button" class="btn-remove-field"><i class="fas fa-times"></i></button>
+
+                        <select name="criterioOrigen[]" class="form-select">
+                            <option value="">-- Seleccione un Origen --</option>
+
+                            <option th:each="origen : ${listaOrigenes}"
+                                    th:value="${origen}"
+                                    th:text="${origen}"></option>
+                        </select>
+
+                        <button type="button" class="btn-remove-field" style="margin-left: 10px; color: #dc3545; background: none; border: none; cursor: pointer;">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>
                 <hr>

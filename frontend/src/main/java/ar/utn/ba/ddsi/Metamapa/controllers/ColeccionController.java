@@ -1,5 +1,6 @@
 package ar.utn.ba.ddsi.Metamapa.controllers;
 
+import ar.utn.ba.ddsi.Metamapa.enums.Origen;
 import ar.utn.ba.ddsi.Metamapa.exceptions.ValidationException;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.*;
 import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException;
@@ -85,7 +86,6 @@ public class ColeccionController {
     @GetMapping("/nueva")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public String verFormulario(Model model) {
-
         List<FuenteDTO> fuentes = metaMapaApiService.getFuentes();
 
         Map<String, Long> mapTipoId = fuentes.stream()
@@ -103,8 +103,13 @@ public class ColeccionController {
         }
 
         model.addAttribute("fuentesTipoId", mapTipoId);
-        model.addAttribute("listaCategorias", listaCategorias); // <--- ESTO ES LO NUEVO
+
+
+        model.addAttribute("listaCategorias", listaCategorias);
+        model.addAttribute("listaOrigenes", Origen.values());
+
         model.addAttribute("coleccion", new ColeccionDTO(null, null, null));
+
         model.addAttribute("titulo", "Crear nueva Coleccion");
         model.addAttribute("algoritmos", List.of("Absoluta", "Mayoria Simple", "Multiples Menciones"));
 
