@@ -33,21 +33,23 @@
         <section class="form-section">
           <h2 class="section-title">Información General</h2>
 
-          <div class="form-group">
-            <label for="titulo" class="form-label">Título de la Colección</label>
+            <div class="criterio-block">
+              <h3 class="subsection-title">Título de la Colección</h3>
+            <label for="titulo" ></label>
             <input type="text" id="titulo" th:field="*{titulo}" class="form-input" placeholder="Título de la Colección" required>
           </div>
 
-          <div class="form-group">
-            <label for="descripcion" class="form-label">Descripción</label>
+          <div class="criterio-block">
+              <h3 class="subsection-title">Descripción</h3>
+            <label for="descripcion" ></label>
             <textarea id="descripcion" th:field="*{descripcion}" class="form-textarea"
                       rows="4" placeholder="Descripción detallada de la colección..."></textarea>
           </div>
         </section>
 
-        <!-- Fuentes y Criterios -->
+        <!-- Fuentes -->
         <section class="form-section">
-          <h2 class="section-title">Fuentes y Criterios</h2>
+          <h2 class="section-title">Fuentes </h2>
 
           <div class="subsection">
             <h3 class="subsection-title">Seleccionar fuentes</h3>
@@ -79,26 +81,133 @@
             <!-- Campo oculto REAL que va al controller -->
             <input type="hidden" id="fuenteTipos" name="fuenteTipos">
           </div>
+        </section>
 
-          <div class="subsection">
-            <h3 class="subsection-title">Criterios</h3>
-            <div id="criterios-container">
-              <div class="dynamic-field">
-                <div class="field-group">
-                  <input type="text" name="criterios[]" class="form-input"
-                         placeholder="Criterios de pertenencia">
-                  <button type="button" class="btn-remove-field">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
+        <!-- Criterios -->
+
+        <section class="form-section">
+          <h2 class="section-title">Criterios</h2>
+
+          <!-- Selector de criterio -->
+          <div class="form-group">
+            <label for="criterioSelect" class="subsection-title">Agregar criterio de pertenencia</label>
+            <select id="criterioSelect" class="form-select">
+              <option value="">+ Seleccionar criterio</option>
+              <option value="categoria">Categoría</option>
+              <option value="descripcion">Descripción</option>
+              <option value="fecha_acontecimiento">Fecha del Acontecimiento</option>
+              <option value="fecha_carga">Fecha de Carga</option>
+              <option value="lugar">Lugar</option>
+              <option value="origen">Origen</option>
+              <option value="titulo">Título</option>
+            </select>
+          </div>
+
+          <!-- Contenedor dinámico donde aparecerán los criterios -->
+          <div id="criterios-container"></div>
+          <input type="hidden" id="categoriasSeleccionadas" name="categoriasSeleccionadas">
+
+        </section>
+
+        <!-- Templates ocultos para cada criterio -->
+        <div id="criterio-templates" style="display:none;">
+
+          <!-- CATEGORÍA -->
+          <div data-template="categoria" class="criterio-block">
+            <h3 class="subsection-title">Filtrar por Categoría</h3>
+            <div class="dynamic-field">
+              <div class="field-group">
+                <input type="text" name="criterioCategoria[]" class="form-input"
+                       placeholder="Ej: Incendio forestal">
+                <button type="button" class="btn-remove-field"><i class="fas fa-times"></i></button>
               </div>
             </div>
-            <button type="button" class="btn-add-field" >
-              <i class="fas fa-plus"></i>
-              Añadir Criterios
-            </button>
+            <hr>
           </div>
-        </section>
+
+          <!-- DESCRIPCIÓN -->
+          <div data-template="descripcion" class="criterio-block">
+            <h3 class="subsection-title">Filtrar por Descripción</h3>
+            <div class="dynamic-field">
+              <div class="field-group">
+                <input type="text" name="criterioDescripcion[]" class="form-input"
+                       placeholder="Ej: Contiene 'incendio'">
+                <button type="button" class="btn-remove-field"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <hr>
+          </div>
+
+          <!-- FECHA ACONTECIMIENTO -->
+          <div data-template="fecha_acontecimiento" class="criterio-block">
+            <h3 class="subsection-title">Filtrar por Fecha del Acontecimiento</h3>
+            <div class="dynamic-field">
+              <div class="field-group" style="flex-wrap: wrap;">
+                <input type="date" name="criterioFechaAcontecimientoDesde[]" class="form-input"
+                       placeholder="Desde">
+                <input type="date" name="criterioFechaAcontecimientoHasta[]" class="form-input"
+                       placeholder="Hasta">
+                <button type="button" class="btn-remove-field"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <hr>
+          </div>
+
+          <!-- FECHA CARGA -->
+          <div data-template="fecha_carga" class="criterio-block">
+            <h3 class="subsection-title">Filtrar por Fecha de Carga</h3>
+            <div class="dynamic-field">
+              <div class="field-group" style="flex-wrap: wrap;">
+                <input type="date" name="criterioFechaCargaDesde[]" class="form-input">
+                <input type="date" name="criterioFechaCargaHasta[]" class="form-input">
+                <button type="button" class="btn-remove-field"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <hr>
+          </div>
+
+          <!-- LUGAR -->
+          <div data-template="lugar" class="criterio-block">
+            <h3 class="subsection-title">Filtrar por Lugar</h3>
+            <div class="dynamic-field">
+              <div class="field-group" style="flex-wrap: wrap;">
+                <input type="text" name="criterioLugarLat[]" class="form-input" placeholder="Latitud">
+                <input type="text" name="criterioLugarLon[]" class="form-input" placeholder="Longitud">
+                <input type="number" name="criterioLugarRango[]" class="form-input" placeholder="Rango">
+                <button type="button" class="btn-remove-field"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <hr>
+          </div>
+
+          <!-- ORIGEN -->
+          <div data-template="origen" class="criterio-block">
+            <h3 class="subsection-title">Filtrar por Origen</h3>
+            <div class="dynamic-field">
+              <div class="field-group">
+                <input type="text" name="criterioOrigen[]" class="form-input"
+                       placeholder="Ej: DINAMICA">
+                <button type="button" class="btn-remove-field"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <hr>
+          </div>
+
+          <!-- TÍTULO -->
+          <div data-template="titulo" class="criterio-block">
+            <h3 class="subsection-title">Filtrar por Título</h3>
+            <div class="dynamic-field">
+              <div class="field-group">
+                <input type="text" name="criterioTitulo[]" class="form-input"
+                       placeholder="Texto en el título">
+                <button type="button" class="btn-remove-field"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <hr>
+          </div>
+
+        </div>
+
 
         <!-- Configuración Adicional -->
         <section class="form-section">
@@ -189,5 +298,43 @@
       });
     });
   </script>
-     </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      const select = document.getElementById("criterioSelect");
+      const container = document.getElementById("criterios-container");
+      const templates = document.querySelectorAll("#criterio-templates [data-template]");
+
+      select.addEventListener("change", () => {
+        const tipo = select.value;
+        if (!tipo) return;
+        const temp = document.querySelector(`#criterio-templates [data-template="${tipo}"]`);
+        if (!temp) return;
+        const clone = temp.cloneNode(true);
+        clone.querySelector(".btn-remove-field").addEventListener("click", () => {
+          clone.remove();
+        });
+        container.appendChild(clone);
+        select.value = "";
+      });
+
+    });
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.querySelector(".collection-form");
+      form.addEventListener("submit", () => {
+        // 1) Tomar todos los campos de categoría que se hayan agregado
+        const categorias = [...document.querySelectorAll('input[name="criterioCategoria[]"]')]
+                .map(input => input.value)
+                .filter(v => v && v.trim() !== "");
+        document.getElementById("categoriasSeleccionadas").value = JSON.stringify(categorias);
+      });
+    });
+  </script>
+
+
+</div>
 </html>
