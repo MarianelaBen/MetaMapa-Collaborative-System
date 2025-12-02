@@ -2,6 +2,7 @@ package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.Exceptions.ColeccionCreacionException;
 import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
+import ar.utn.ba.ddsi.models.dtos.input.CriterioInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.HechoInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
@@ -10,6 +11,8 @@ import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
+import ar.utn.ba.ddsi.models.entities.criterios.*;
+import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
@@ -66,24 +69,86 @@ public class ColeccionService implements IColeccionService {
       return coleccionRepository.save(coleccion);
   }
 
-  @Override
-  public ColeccionOutputDTO crearColeccion(ColeccionInputDTO dto) {
-    try {
-      Set<Fuente> fuentes = dto.getFuenteIds().stream()
-          .map(fuenteId -> fuenteRepo.findById(fuenteId)
-              .orElseThrow(() -> new RuntimeException("Fuente no encontrada con id: " + fuenteId)))
-          .collect(Collectors.toSet());
+    @Override
+    public ColeccionOutputDTO crearColeccion(ColeccionInputDTO dto) {
+        try {
+
+            Set<Fuente> fuentes = dto.getFuenteIds().stream()
+                    .map(fuenteId -> fuenteRepo.findById(fuenteId)
+                            .orElseThrow(() -> new RuntimeException("Fuente no encontrada con id: " + fuenteId)))
+                    .collect(Collectors.toSet());
+
+            Coleccion c = new Coleccion(dto.getTitulo(), dto.getDescripcion(), fuentes);
+            c.setHandle(dto.getHandle());
+            c.setAlgoritmoDeConsenso(dto.getAlgoritmoDeConsenso());
 
 
-      Coleccion c = new Coleccion(dto.getTitulo(), dto.getDescripcion(), fuentes);
-      c.setHandle(dto.getHandle());
-      c.setAlgoritmoDeConsenso(dto.getAlgoritmoDeConsenso());
+            if (dto.getNuevosCriterios() != null && !dto.getNuevosCriterios().isEmpty()) {
+                for (CriterioInputDTO cDto : dto.getNuevosCriterios()) {
+                    Criterio criterioEntity = fabricarCriterio(cDto);
+                    if (criterioEntity != null) {
+                        c.agregarCriterios(criterioEntity);
+                    }
+                }
+            }
 
-      return ColeccionOutputDTO.fromEntity(this.crearColeccion(c));
-    } catch (Exception e) {
-      throw new ColeccionCreacionException("Error al crear la coleccion: " + e.getMessage());
+            return ColeccionOutputDTO.fromEntity(this.crearColeccion(c));
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Útil para debug en consola
+            throw new ColeccionCreacionException("Error al crear la coleccion: " + e.getMessage());
+        }
     }
-  }
+
+
+    private Criterio fabricarCriterio(CriterioInputDTO dto) {
+        if (dto.getTipoCriterio() == null) return null;
+
+        switch (dto.getTipoCriterio().toUpperCase()) {
+            case "TITULO":
+                return new CriterioTitulo(dto.getValorString());
+
+            case "DESCRIPCION":
+                return new CriterioDescripcion(dto.getValorString());
+
+            case "CATEGORIA":
+
+                Categoria cat = categoriaRepository.findByNombreIgnoreCase(dto.getValorString())
+                        .orElseThrow(() -> new RuntimeException("La categoría para el criterio no existe: " + dto.getValorString()));
+                return new CriterioCategoria(cat);
+
+            case "ORIGEN":
+
+                return new CriterioOrigen(Origen.valueOf(dto.getValorString()));
+
+            case "FECHA_CARGA":
+                if (dto.getFechaDesde() == null) return null;
+
+                LocalDate hastaCarga = dto.getFechaHasta() != null ? dto.getFechaHasta() : dto.getFechaDesde();
+
+                return new CriterioFechaCarga(dto.getFechaDesde(), hastaCarga);
+
+            case "FECHA_ACONTECIMIENTO":
+                if (dto.getFechaDesde() == null) return null;
+
+                LocalDate hastaAcontecimiento = dto.getFechaHasta() != null ? dto.getFechaHasta() : dto.getFechaDesde();
+
+                return new CriterioFechaAcontecimiento(
+                        dto.getFechaDesde().atStartOfDay(),
+                        hastaAcontecimiento.atTime(23, 59, 59)
+                );
+
+            case "LUGAR":
+                Ubicacion u = new Ubicacion();
+                u.setLatitud(dto.getLatitud());
+                u.setLongitud(dto.getLongitud());
+                // u.setProvincia(...) // Si tuvieras este dato
+                return new CriterioLugar(u, dto.getRango());
+
+            default:
+                return null;
+        }
+    }
 
 
   public Coleccion findById(String id) {

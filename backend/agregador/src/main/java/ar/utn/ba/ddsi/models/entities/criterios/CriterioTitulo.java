@@ -13,6 +13,9 @@ public class CriterioTitulo extends Criterio{
   @Column(name = "titulo", nullable = true)
   private String titulo;
 
+    public CriterioTitulo(String titulo) {
+        this.titulo = titulo;
+    }
 
     @Override
     public boolean cumpleCriterio(Hecho hecho){
