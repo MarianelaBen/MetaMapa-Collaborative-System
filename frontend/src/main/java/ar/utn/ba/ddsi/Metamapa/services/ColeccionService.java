@@ -48,6 +48,19 @@ public class ColeccionService {
         return colecciones;
     }
 
+
+    public PaginaDTO<ColeccionDTO> getColeccionesPaginadas(int page, int size) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/colecciones/paginado")
+                        .queryParam("page", page)
+                        .queryParam("size", size)
+                        .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<PaginaDTO<ColeccionDTO>>() {})
+                .block();
+    }
+
     public List<CategoriaDTO> getCategorias(){
         List<CategoriaDTO> categorias = webClientPublic.get()
                 .uri("/categorias")

@@ -333,6 +333,14 @@ public class AdminController {
         return ResponseEntity.ok(resultado);
     }
 
+    @GetMapping("/colecciones/paginado")
+    public ResponseEntity<PaginaDTO<ColeccionOutputDTO>> getColeccionesPaginadas(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return ResponseEntity.ok(servicio.obtenerColeccionesPaginadas(page, size));
+    }
+
 }
 
 

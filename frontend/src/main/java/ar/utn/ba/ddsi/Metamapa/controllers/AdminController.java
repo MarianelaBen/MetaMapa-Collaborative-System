@@ -40,24 +40,46 @@ public class AdminController {
 
     @GetMapping("/panel-control")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public String mostrarPanelControl(Model model, RedirectAttributes redirectAttributes) {
+    public String mostrarPanelControl(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        ResumenDTO resumen;
+        try {
 
-      ResumenDTO resumen;
-      try {
-        resumen = metamapaApiService.getPanelDeControl();
-        List<ColeccionDTO> colecciones = this.coleccionService.getColecciones();
-          model.addAttribute("resumen",resumen);
-          model.addAttribute("titulo", "Panel de Control");
-          model.addAttribute("colecciones", colecciones);
-      } catch (Exception ex) {
-        System.err.println("[/admin/panel-control] " + ex.getMessage());
-        resumen = new ResumenDTO(); // fallback
-      }
+            resumen = metamapaApiService.getPanelDeControl();
+
+
+            PaginaDTO<ColeccionDTO> resp = this.coleccionService.getColeccionesPaginadas(page, size);
+
+            long from = resp.getNumber() * (long) resp.getSize() + (resp.getNumberOfElements() > 0 ? 1 : 0);
+            long to   = resp.getNumber() * (long) resp.getSize() + resp.getNumberOfElements();
+
+            model.addAttribute("resumen", resumen);
+            model.addAttribute("titulo", "Panel de Control");
+            model.addAttribute("colecciones", resp.getContent());
+
+            model.addAttribute("page", resp.getNumber());
+            model.addAttribute("size", resp.getSize());
+            model.addAttribute("totalPages", resp.getTotalPages());
+            model.addAttribute("totalElements", resp.getTotalElements());
+            model.addAttribute("hasPrev", !resp.isFirst());
+            model.addAttribute("hasNext", !resp.isLast());
+            model.addAttribute("prevPage", resp.getNumber() - 1);
+            model.addAttribute("nextPage", resp.getNumber() + 1);
+            model.addAttribute("from", from);
+            model.addAttribute("to", to);
+
+        } catch (Exception ex) {
+            System.err.println("[/admin/panel-control] " + ex.getMessage());
+            model.addAttribute("resumen", new ResumenDTO());
+            model.addAttribute("colecciones", List.of());
+        }
 
         return "administrador/panelControl";
     }
-
-// En AdminController.java
 
     @GetMapping("/gestor-solicitudes")
     @PreAuthorize("hasAnyRole('ADMIN')")

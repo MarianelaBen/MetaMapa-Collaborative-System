@@ -665,4 +665,86 @@ header .logo {
     .admin-main {
         padding: 0.5rem;
     }
+
+}
+
+/* =========================================
+   Estilos para la Paginación (Agregar al final)
+   ========================================= */
+
+.table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e8e8e8;
+    background-color: #fff;
+    border-radius: 0 0 12px 12px; /* Bordes redondeados abajo */
+}
+
+.showing-text {
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.pagination {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #475569;
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* Estado Hover (cuando pasas el mouse) */
+.pagination-btn:hover:not(.disabled):not(.active) {
+    background-color: #f1f5f9;
+    color: #004080;
+    border-color: #cbd5e1;
+}
+
+/* Estado Activo (página actual) */
+.pagination-btn.active {
+    background-color: #004080;
+    color: #fff;
+    border-color: #004080;
+    cursor: default;
+}
+
+/* Estado Deshabilitado (flechas cuando no hay más páginas) */
+.pagination-btn.disabled {
+    color: #cbd5e1;
+    background-color: #f8fafc;
+    border-color: #f1f5f9;
+    cursor: not-allowed;
+    pointer-events: none; /* Evita clics */
+}
+
+/* Ajuste Responsive para móviles */
+@media (max-width: 640px) {
+    .table-footer {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .showing-text {
+        text-align: center;
+    }
 }
