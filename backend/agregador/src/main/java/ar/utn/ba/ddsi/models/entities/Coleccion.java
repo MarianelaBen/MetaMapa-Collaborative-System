@@ -44,7 +44,7 @@ public class Coleccion {
   )
     private Set<Fuente> fuentes;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "coleccion_handle", referencedColumnName = "handle", nullable = false)
     private Set<Criterio> criterios = new HashSet<>();
 

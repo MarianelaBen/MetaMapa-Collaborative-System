@@ -5,7 +5,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -13,6 +16,8 @@ import java.time.LocalDateTime;
 @Entity
 @DiscriminatorValue("fecha_acontecimiento")
 @NoArgsConstructor
+@Getter
+@Setter
 public class CriterioFechaAcontecimiento extends Criterio{
 
   @Column(name = "fecha_acontecimiento_desde", nullable = true)

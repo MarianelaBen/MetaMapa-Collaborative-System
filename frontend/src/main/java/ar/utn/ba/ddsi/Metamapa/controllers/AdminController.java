@@ -339,27 +339,24 @@ public class AdminController {
         }
     }
 
-  @GetMapping("/coleccion/{handle}/editar")
-  @PreAuthorize("hasAnyRole('ADMIN')")
-  public String editarColeccionForm(@PathVariable String handle, Model model, RedirectAttributes redirect) {
-    try {
-      ColeccionDTO coleccion = coleccionService.getColeccionByHandle(handle);
+    @GetMapping("/coleccion/{handle}/editar")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String editarColeccionForm(@PathVariable String handle, Model model, RedirectAttributes redirect) {
+        try {
+            ColeccionDTO coleccion = coleccionService.getColeccionByHandle(handle);
 
-      /*String criterioCsv = (coleccion.getCriterioIds() == null) ? "" :
-          coleccion.getCriterioIds().stream().map(String::valueOf).collect(java.util.stream.Collectors.joining(","));
-      */
-      model.addAttribute("titulo", "Editar Colección");
-      model.addAttribute("coleccion", coleccion);
-      //model.addAttribute("criterioIdsCsv", criterioCsv);
-      model.addAttribute("algoritmosDisponibles", java.util.List.of("CONSENSO_ABSOLUTO", "MAYORIA_SIMPLE", "MULTIPLES_MENCIONES"));
+            model.addAttribute("titulo", "Editar Colección");
+            model.addAttribute("coleccion", coleccion);
 
-      return "administrador/editarColeccion";
+            model.addAttribute("listaCategorias", metamapaApiService.getCategorias());
+            model.addAttribute("listaOrigenes", List.of("OFICIAL", "ONG", "CIUDADANA"));
+            model.addAttribute("algoritmosDisponibles", List.of("CONSENSO_ABSOLUTO", "MAYORIA_SIMPLE", "MULTIPLES_MENCIONES"));
 
-    } catch (NotFoundException e) {
-      redirect.addFlashAttribute("mensaje", e.getMessage());
-      return "redirect:/404";
+            return "administrador/editarColeccion";
+        } catch (NotFoundException e) {
+            return "redirect:/404";
+        }
     }
-  }
 
   @PostMapping("/coleccion/{handle}/editar")
   @PreAuthorize("hasAnyRole('ADMIN')")

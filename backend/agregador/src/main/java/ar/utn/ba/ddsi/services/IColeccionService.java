@@ -14,4 +14,5 @@ public interface IColeccionService {
   public Coleccion findById(String id);
   ColeccionOutputDTO crearColeccion(ColeccionInputDTO dto);
     Hecho obtenerHechoPorId(Long id);
+    Coleccion filtrarHechos(Coleccion coleccion);
 }

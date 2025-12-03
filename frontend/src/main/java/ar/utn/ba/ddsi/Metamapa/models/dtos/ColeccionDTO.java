@@ -13,18 +13,24 @@ public class ColeccionDTO {
     private String descripcion;
     private String handle;
     private String algoritmoDeConsenso;
+
+    // IDs (Mantenemos por compatibilidad)
     private Set<Long> fuenteIds;
     private Set<Long> criterioIds;
-    private List<CriterioDTO> nuevosCriterios = new ArrayList<>();
     private Set<Long> hechoIds;
+
     private Integer cantVistas;
 
-  public ColeccionDTO() {}
+    private List<FuenteDTO> fuentes = new ArrayList<>();
+    private List<CriterioDTO> criterios = new ArrayList<>();
 
-  public ColeccionDTO(String titulo, String descripcion, String handle) {
-    this.titulo = titulo;
-    this.descripcion = descripcion;
-    this.handle = handle;
+    private List<CriterioDTO> nuevosCriterios = new ArrayList<>();
 
-  }
+    public ColeccionDTO() {}
+
+    public ColeccionDTO(String titulo, String descripcion, String handle) {
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.handle = handle;
+    }
 }

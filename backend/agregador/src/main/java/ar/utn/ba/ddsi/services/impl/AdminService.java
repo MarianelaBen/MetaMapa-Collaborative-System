@@ -4,6 +4,7 @@ import ar.utn.ba.ddsi.Exceptions.ColeccionCreacionException;
 import ar.utn.ba.ddsi.models.dtos.input.*;
 import ar.utn.ba.ddsi.models.dtos.output.*;
 import ar.utn.ba.ddsi.models.entities.*;
+import ar.utn.ba.ddsi.models.entities.criterios.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
@@ -81,6 +82,7 @@ public class AdminService implements IAdminService {
                 .collect(Collectors.toList());
     }
     @Override
+    @Transactional(readOnly = true)
     public ColeccionOutputDTO getColeccionByHandle(String handle) {
         var coleccion = coleccionRepo.findByHandle(handle)
                 .orElseThrow(() -> new NoSuchElementException("Coleccion no encontrada con handle: " + handle));
@@ -96,28 +98,102 @@ public class AdminService implements IAdminService {
         return ColeccionOutputDTO.fromEntity(coleccionRepo.save(coleccion));
     }
 
-    //Actualiza una coleccion si la encuentra por ID
     @Override
+    @Transactional
     public ColeccionOutputDTO actualizarColeccion(String id, ColeccionInputDTO dto) {
         Coleccion existing = coleccionRepo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Coleccion no encontrada: " + id));
-       // existing.setTitulo(dto.getTitulo());
-       // existing.setDescripcion(dto.getDescripcion());
 
-        //AGREGO PARA CORREGIR ERRORES; CUANDO EDITAMOS COLECCION NO SE ACTUALIZA EL ALGORITMO
-        if (dto.getTitulo()!=null){
-           existing.setTitulo(dto.getTitulo());
-       }
-        if (dto.getDescripcion() != null) {
-            existing.setDescripcion(dto.getDescripcion());
-        }
-        if (dto.getAlgoritmoDeConsenso() != null) {
-            existing.setAlgoritmoDeConsenso(dto.getAlgoritmoDeConsenso());
+
+        if (dto.getTitulo() != null) existing.setTitulo(dto.getTitulo());
+        if (dto.getDescripcion() != null) existing.setDescripcion(dto.getDescripcion());
+        if (dto.getAlgoritmoDeConsenso() != null) existing.setAlgoritmoDeConsenso(dto.getAlgoritmoDeConsenso());
+
+        List<CriterioInputDTO> nuevos = dto.getNuevosCriterios() != null ? dto.getNuevosCriterios() : new ArrayList<>();
+
+        existing.getCriterios().clear();
+
+        for (CriterioInputDTO criterioDto : nuevos) {
+            Criterio nuevoCriterio = convertirCriterio(criterioDto);
+            if (nuevoCriterio != null) {
+                existing.getCriterios().add(nuevoCriterio);
+            }
         }
 
-        return ColeccionOutputDTO.fromEntity(coleccionRepo.save(existing));
+        existing = coleccionRepo.save(existing);
+
+        existing = coleccionService.filtrarHechos(existing);
+
+        existing = coleccionRepo.save(existing);
+
+        return ColeccionOutputDTO.fromEntity(existing);
     }
+    private Criterio convertirCriterio(CriterioInputDTO dto) {
+        if (dto.getTipoCriterio() == null) return null;
 
+        String tipo = dto.getTipoCriterio().toUpperCase();
+
+        try {
+            switch (tipo) {
+                case "TITULO":
+                    return new CriterioTitulo(dto.getValorString());
+
+                case "DESCRIPCION":
+                    return new CriterioDescripcion(dto.getValorString());
+
+                case "CATEGORIA":
+                    Optional<Categoria> catOpt = categoriaRepo.findByNombreIgnoreCase(dto.getValorString());
+                    if (catOpt.isPresent()) {
+                        return new CriterioCategoria(catOpt.get());
+                    } else {
+                        return null;
+                    }
+
+                case "ORIGEN":
+                    // Convertir String a Enum
+                    return new CriterioOrigen(Origen.valueOf(dto.getValorString()));
+
+                case "FECHA_CARGA":
+
+                    LocalDate fcDesde = (dto.getFechaDesde() != null && !dto.getFechaDesde().isBlank())
+                            ? LocalDate.parse(dto.getFechaDesde()) : null;
+                    LocalDate fcHasta = (dto.getFechaHasta() != null && !dto.getFechaHasta().isBlank())
+                            ? LocalDate.parse(dto.getFechaHasta()) : null;
+                    return new CriterioFechaCarga(fcDesde, fcHasta);
+
+                case "FECHA_ACONTECIMIENTO":
+                    LocalDateTime faDesde = null;
+                    LocalDateTime faHasta = null;
+
+                    if (dto.getFechaDesde() != null && !dto.getFechaDesde().isBlank()) {
+                        faDesde = LocalDate.parse(dto.getFechaDesde()).atStartOfDay();
+                    }
+                    if (dto.getFechaHasta() != null && !dto.getFechaHasta().isBlank()) {
+                        // Hasta el final del día
+                        faHasta = LocalDate.parse(dto.getFechaHasta()).atTime(23, 59, 59);
+                    }
+                    return new CriterioFechaAcontecimiento(faDesde, faHasta);
+
+                case "LUGAR":
+                    if (dto.getLatitud() == null || dto.getLongitud() == null) return null;
+
+                    Ubicacion ubicacion = new Ubicacion();
+                    ubicacion.setLatitud(dto.getLatitud());
+                    ubicacion.setLongitud(dto.getLongitud());
+
+                    int rango = (dto.getRango() != null) ? dto.getRango() : 0;
+
+                    return new CriterioLugar(ubicacion, rango, dto.getProvincia());
+
+                default:
+                    System.out.println("Tipo de criterio no soportado o desconocido: " + tipo);
+                    return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     @Override
     @Transactional
