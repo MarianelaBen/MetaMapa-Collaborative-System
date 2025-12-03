@@ -72,40 +72,52 @@ public class AdminController {
         return "administrador/gestorSolicitudes";
     }
 
-  @GetMapping("/gestor-hechos")
-  @PreAuthorize("hasAnyRole('ADMIN')")
-  public String mostrarGestorHechos(
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "50") int size,
-      Model model
-  ) {
-        List<CategoriaDTO> categorias = adminService.obtenerCategorias();
-    PaginaDTO<HechoDTO> resp = adminService.obtenerHechosPaginado(page, size);
 
-    long from = resp.number * (long) resp.size + (resp.numberOfElements > 0 ? 1 : 0);
-    long to   = resp.number * (long) resp.size + resp.numberOfElements;
-    boolean hasPrev = resp.number > 0;
-    boolean hasNext = (resp.number + 1) < resp.totalPages;
+    @GetMapping("/gestor-hechos")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String mostrarGestorHechos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int catPage,
+            @RequestParam(defaultValue = "5") int catSize,
+            Model model
+    ) {
 
-    model.addAttribute("titulo", "Gestor de Hechos");
-    model.addAttribute("hechos", resp.content);
-    model.addAttribute("categorias", categorias);
+        PaginaDTO<HechoDTO> respHechos = adminService.obtenerHechosPaginado(page, size);
 
-    // paginación
-    model.addAttribute("page", resp.number);
-    model.addAttribute("size", resp.size);
-    model.addAttribute("totalPages", resp.totalPages);
-    model.addAttribute("totalElements", resp.totalElements);
-    model.addAttribute("numberOfElements", resp.numberOfElements);
-    model.addAttribute("hasPrev", hasPrev);
-    model.addAttribute("hasNext", hasNext);
-    model.addAttribute("prevPage", resp.number - 1);
-    model.addAttribute("nextPage", resp.number + 1);
-    model.addAttribute("from", from);
-    model.addAttribute("to", to);
+        long from = respHechos.getNumber() * (long) respHechos.getSize() + (respHechos.getNumberOfElements() > 0 ? 1 : 0);
+        long to   = respHechos.getNumber() * (long) respHechos.getSize() + respHechos.getNumberOfElements();
 
-    return "administrador/gestorHechos";
-  }
+        model.addAttribute("hechos", respHechos.getContent());
+        model.addAttribute("page", respHechos.getNumber());
+        model.addAttribute("size", respHechos.getSize());
+        model.addAttribute("totalPages", respHechos.getTotalPages());
+        model.addAttribute("totalElements", respHechos.getTotalElements());
+        model.addAttribute("hasPrev", !respHechos.isFirst());
+        model.addAttribute("hasNext", !respHechos.isLast());
+        model.addAttribute("prevPage", respHechos.getNumber() - 1);
+        model.addAttribute("nextPage", respHechos.getNumber() + 1);
+        model.addAttribute("from", from);
+        model.addAttribute("to", to);
+
+
+        PaginaDTO<CategoriaDTO> respCat = adminService.obtenerCategoriasPaginado(catPage, catSize);
+
+        model.addAttribute("categorias", respCat.getContent());
+
+        model.addAttribute("catPage", respCat.getNumber());
+        model.addAttribute("catSize", respCat.getSize());
+        model.addAttribute("catTotalPages", respCat.getTotalPages());
+        model.addAttribute("catTotalElements", respCat.getTotalElements());
+        model.addAttribute("catHasPrev", !respCat.isFirst());
+        model.addAttribute("catHasNext", !respCat.isLast());
+        model.addAttribute("catPrevPage", respCat.getNumber() - 1);
+        model.addAttribute("catNextPage", respCat.getNumber() + 1);
+
+        model.addAttribute("titulo", "Gestor de Hechos");
+
+        return "administrador/gestorHechos";
+    }
 
   @GetMapping("/importarCSV")
   @PreAuthorize("hasAnyRole('ADMIN')")

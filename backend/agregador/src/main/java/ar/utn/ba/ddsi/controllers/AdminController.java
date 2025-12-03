@@ -5,6 +5,7 @@ import ar.utn.ba.ddsi.models.dtos.input.ColeccionInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.FuenteInputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.*;
+import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
@@ -16,6 +17,9 @@ import ar.utn.ba.ddsi.services.ISolicitudService;
 import ar.utn.ba.ddsi.services.InformeDeResultados;
 import ar.utn.ba.ddsi.services.impl.ColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -318,6 +322,9 @@ public class AdminController {
       ));
     }
   }
+
+
+
 }
 
 

@@ -155,4 +155,19 @@ public class AdminService {
             throw new RuntimeException("Error al descargar CSV: " + e.getMessage());
         }
     }
+
+    // En AdminService.java
+
+    public PaginaDTO<CategoriaDTO> obtenerCategoriasPaginado(int page, int size) {
+
+        return webClientPublic.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/categorias/paginado")
+                        .queryParam("page", page)
+                        .queryParam("size", size)
+                        .build())
+                .retrieve()
+                .bodyToMono(new org.springframework.core.ParameterizedTypeReference<PaginaDTO<CategoriaDTO>>() {})
+                .block();
+    }
 }

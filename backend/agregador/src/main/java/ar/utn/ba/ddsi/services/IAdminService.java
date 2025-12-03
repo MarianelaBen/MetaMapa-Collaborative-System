@@ -45,4 +45,5 @@ public interface IAdminService {
     void eliminarCategoria(Long id);
     public CategoriaOutputDTO actualizarCategoria(Long id, CategoriaInputDTO dto);
 
+
 }

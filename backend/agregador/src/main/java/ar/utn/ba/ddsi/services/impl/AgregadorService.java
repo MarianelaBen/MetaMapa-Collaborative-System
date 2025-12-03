@@ -18,6 +18,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -473,5 +474,36 @@ public class AgregadorService implements IAgregadorService {
 
         // 3. Reutilizamos el mapeo inteligente que ya calcula el booleano 'consensuado'
         return mapearConConsenso(hecho, algoritmoActual);
+    }
+
+    public PaginaDTO<CategoriaOutputDTO> obtenerPaginado(int page, int size) {
+        // 1. Obtener la página de la entidad (JPA)
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Categoria> paginaEntidad = categoriaRepository.findAll(pageable);
+
+        // 2. Mapear de Entidad a DTO
+        // Esto soluciona el warning "Serializing PageImpl instances"
+        List<CategoriaOutputDTO> contenidoDTO = paginaEntidad.getContent().stream()
+                .map(this::mapearADTO)
+                .collect(Collectors.toList());
+
+        // 3. Construir tu PaginaDTO
+        PaginaDTO<CategoriaOutputDTO> paginaDTO = new PaginaDTO<>();
+        paginaDTO.setContent(contenidoDTO);
+        paginaDTO.setNumber(paginaEntidad.getNumber());
+        paginaDTO.setSize(paginaEntidad.getSize());
+        paginaDTO.setTotalElements(paginaEntidad.getTotalElements());
+        paginaDTO.setTotalPages(paginaEntidad.getTotalPages());
+        paginaDTO.setNumberOfElements(paginaEntidad.getNumberOfElements());
+        paginaDTO.setFirst(paginaEntidad.isFirst());
+        paginaDTO.setLast(paginaEntidad.isLast());
+
+        return paginaDTO;
+    }
+
+    private CategoriaOutputDTO mapearADTO(Categoria entidad) {
+        CategoriaOutputDTO dto = new CategoriaOutputDTO(entidad.getNombre());
+        dto.setId(entidad.getId());
+        return dto;
     }
 }

@@ -1,9 +1,6 @@
 package ar.utn.ba.ddsi.services;
 
-import ar.utn.ba.ddsi.models.dtos.output.ColeccionOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.HechoOutputDTO;
-import ar.utn.ba.ddsi.models.dtos.output.PaginaDTO;
-import ar.utn.ba.ddsi.models.dtos.output.SolicitudOutputDTO;
+import ar.utn.ba.ddsi.models.dtos.output.*;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
@@ -41,5 +38,6 @@ public interface IAgregadorService {
     List<HechoOutputDTO> obtenerHechosPorContribuyente(Long contribuyenteId);
     List<HechoOutputDTO> obtenerHechosPorContribuyenteFiltrado(
       Long contribuyenteId, String titulo, String categoria, String estado);
+    PaginaDTO<CategoriaOutputDTO> obtenerPaginado(int page, int size);
 
 }
