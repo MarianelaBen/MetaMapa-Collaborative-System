@@ -2,7 +2,7 @@ package ar.utn.ba.ddsi.models.entities.criterios;
 
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.Ubicacion;
-import jakarta.persistence.*; // Importamos todo para usar @Embedded
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,16 +37,13 @@ public class CriterioLugar extends Criterio {
     public boolean cumpleCriterio(Hecho hecho) {
         if (hecho.getUbicacion() == null) return false;
 
-        boolean cumpleProvincia = true;
-        boolean cumpleRadio = true;
+        boolean busquedaPorMapaActiva = this.ubicacion != null
+                && this.ubicacion.getLatitud() != null
+                && this.ubicacion.getLongitud() != null
+                && this.rangoMaximo >= 0;
 
-        if (this.provinciaBuscada != null && !this.provinciaBuscada.isBlank()) {
-            String provHecho = hecho.getUbicacion().getProvincia();
-            if (provHecho == null) return false;
-            cumpleProvincia = this.provinciaBuscada.equalsIgnoreCase(provHecho);
-        }
+        if (busquedaPorMapaActiva) {
 
-        if (this.ubicacion != null && this.rangoMaximo >= 0) {
             if (hecho.getUbicacion().getLatitud() == null || hecho.getUbicacion().getLongitud() == null) {
                 return false;
             }
@@ -56,16 +53,21 @@ public class CriterioLugar extends Criterio {
                     hecho.getUbicacion().getLatitud(), hecho.getUbicacion().getLongitud()
             );
 
-            System.out.println("Hecho: " + hecho.getTitulo() + " | Distancia: " + distanciaKm + " km | Rango Max: " + this.rangoMaximo);
 
-            cumpleRadio = distanciaKm <= this.rangoMaximo;
+            return distanciaKm <= this.rangoMaximo;
         }
 
-        return cumpleProvincia && cumpleRadio;
+        if (this.provinciaBuscada != null && !this.provinciaBuscada.isBlank()) {
+            String provHecho = hecho.getUbicacion().getProvincia();
+            if (provHecho == null) return false;
+            return this.provinciaBuscada.equalsIgnoreCase(provHecho);
+        }
+
+        return true;
     }
 
     private double calcularDistanciaHaversine(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371;
+        final int R = 6371; // Radio Tierra KM
         double latDist = Math.toRadians(lat2 - lat1);
         double lonDist = Math.toRadians(lon2 - lon1);
         double a = Math.sin(latDist / 2) * Math.sin(latDist / 2)
