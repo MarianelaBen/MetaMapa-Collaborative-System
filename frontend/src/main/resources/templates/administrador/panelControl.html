@@ -51,13 +51,6 @@
               <i class="fas fa-search"></i>
               <input type="text" placeholder="Buscar colecciones..." />
             </div>
-            <form th:action="@{/colecciones/actualizar-todas}" method="post" style="display:inline;">
-              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-              <button type="submit" class="btn-refresh-table">
-                <i class="fas fa-sync-alt"></i>
-                Actualizar Colecciones
-              </button>
-            </form>
             <a th:href="@{/colecciones/nueva}" class="btn-add-new">
               <i class="fas fa-plus"></i>
               Nueva Colección
