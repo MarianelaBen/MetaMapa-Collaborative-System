@@ -25,23 +25,48 @@ public class ColeccionController {
   private final ColeccionService coleccionService;
     private final MetaMapaApiService metaMapaApiService;
 
+// En ColeccionController.java
+
     @GetMapping
-  public String listarColecciones(Model model){
-    List<ColeccionDTO> colecciones;
+    public String listarColecciones(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
+            Model model
+    ) {
+        try {
 
-    //Agrego esto por que no levante el back
-    try{
-      colecciones = this.coleccionService.getColecciones();
-    } catch (Exception e) {
-      colecciones = List.of();
+            PaginaDTO<ColeccionDTO> pagina = this.coleccionService.getColeccionesPaginadas(page, size);
+
+
+            long from = pagina.getNumber() * (long) pagina.getSize() + (pagina.getNumberOfElements() > 0 ? 1 : 0);
+            long to   = pagina.getNumber() * (long) pagina.getSize() + pagina.getNumberOfElements();
+
+            model.addAttribute("colecciones", pagina.getContent());
+            model.addAttribute("titulo", "Explorador de Colecciones");
+            model.addAttribute("descripcion", "Navega por las diferentes colecciones...");
+
+
+            model.addAttribute("page", pagina.getNumber());
+            model.addAttribute("size", pagina.getSize());
+            model.addAttribute("totalPages", pagina.getTotalPages());
+            model.addAttribute("totalElements", pagina.getTotalElements());
+            model.addAttribute("hasPrev", !pagina.isFirst());
+            model.addAttribute("hasNext", !pagina.isLast());
+            model.addAttribute("prevPage", pagina.getNumber() - 1);
+            model.addAttribute("nextPage", pagina.getNumber() + 1);
+            model.addAttribute("from", from);
+            model.addAttribute("to", to);
+
+        } catch (Exception e) {
+
+            model.addAttribute("colecciones", List.of());
+            model.addAttribute("titulo", "Explorador de Colecciones");
+            model.addAttribute("descripcion", "Hubo un error al cargar las colecciones.");
+            model.addAttribute("totalPages", 0);
+        }
+
+        return "hechosYColecciones/exploradorColecciones";
     }
-
-    model.addAttribute("colecciones", colecciones);
-    model.addAttribute("titulo", "Explorador de Colecciones");
-    model.addAttribute("descripcion", "Navega por las diferentes colecciones de hechos disponibles en esta instancia de MetaMapa. Cada colección contiene información organizada temáticamente y geográficamente.");
-    model.addAttribute("totalColecciones", colecciones.size());
-    return "hechosYColecciones/exploradorColecciones";
-  }
 
     @GetMapping("/{handle}")
     public String verDetalleColeccion(
