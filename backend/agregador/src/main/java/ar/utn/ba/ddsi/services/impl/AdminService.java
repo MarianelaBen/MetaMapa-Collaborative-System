@@ -18,6 +18,7 @@ import lombok.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -459,5 +460,29 @@ public class AdminService implements IAdminService {
         return new CategoriaOutputDTO(existing.getNombre());
     }
 
+
+    @Override
+    public PaginaDTO<SolicitudOutputDTO> obtenerSolicitudesPaginadas(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("fechaEntrada").descending());
+
+        Page<SolicitudDeEliminacion> paginaEntidades = solicitudRepo.findAll(pageable);
+
+        List<SolicitudOutputDTO> contenidoDTO = paginaEntidades.getContent().stream()
+                .map(SolicitudOutputDTO::fromEntity)
+                .collect(Collectors.toList());
+
+        PaginaDTO<SolicitudOutputDTO> respuesta = new PaginaDTO<>();
+        respuesta.setContent(contenidoDTO);
+        respuesta.setNumber(paginaEntidades.getNumber());
+        respuesta.setSize(paginaEntidades.getSize());
+        respuesta.setTotalElements(paginaEntidades.getTotalElements());
+        respuesta.setTotalPages(paginaEntidades.getTotalPages());
+        respuesta.setNumberOfElements(paginaEntidades.getNumberOfElements());
+        respuesta.setFirst(paginaEntidades.isFirst());
+        respuesta.setLast(paginaEntidades.isLast());
+
+        return respuesta;
+    }
 
 }

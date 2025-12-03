@@ -156,7 +156,6 @@ public class AdminService {
         }
     }
 
-    // En AdminService.java
 
     public PaginaDTO<CategoriaDTO> obtenerCategoriasPaginado(int page, int size) {
 
@@ -170,4 +169,18 @@ public class AdminService {
                 .bodyToMono(new org.springframework.core.ParameterizedTypeReference<PaginaDTO<CategoriaDTO>>() {})
                 .block();
     }
+
+
+    public PaginaDTO<SolicitudDTO> obtenerSolicitudesPaginado(int page, int size) {
+        return webClientAdmin.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/solicitudes/paginado")
+                        .queryParam("page", page)
+                        .queryParam("size", size)
+                        .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<PaginaDTO<SolicitudDTO>>() {})
+                .block();
+    }
+
 }

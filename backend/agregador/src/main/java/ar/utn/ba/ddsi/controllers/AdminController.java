@@ -324,6 +324,14 @@ public class AdminController {
   }
 
 
+    @GetMapping("/solicitudes/paginado")
+    public ResponseEntity<PaginaDTO<SolicitudOutputDTO>> obtenerSolicitudes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PaginaDTO<SolicitudOutputDTO> resultado = servicio.obtenerSolicitudesPaginadas(page, size);
+        return ResponseEntity.ok(resultado);
+    }
 
 }
 

@@ -44,6 +44,6 @@ public interface IAdminService {
     CategoriaOutputDTO crearCategoria(CategoriaInputDTO dto);
     void eliminarCategoria(Long id);
     public CategoriaOutputDTO actualizarCategoria(Long id, CategoriaInputDTO dto);
-
+    PaginaDTO<SolicitudOutputDTO> obtenerSolicitudesPaginadas(int page, int size);
 
 }

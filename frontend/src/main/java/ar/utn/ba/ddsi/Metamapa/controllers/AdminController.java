@@ -57,16 +57,41 @@ public class AdminController {
         return "administrador/panelControl";
     }
 
+// En AdminController.java
+
     @GetMapping("/gestor-solicitudes")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public String mostrarGestorSolicitudes(Model model, RedirectAttributes redirectAttributes) {
+    public String mostrarGestorSolicitudes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
         try {
-            List<SolicitudDTO> solicitudes = this.metamapaApiService.getSolicitudes();
+
+            PaginaDTO<SolicitudDTO> resp = adminService.obtenerSolicitudesPaginado(page, size);
+
+
+            long from = resp.getNumber() * (long) resp.getSize() + (resp.getNumberOfElements() > 0 ? 1 : 0);
+            long to   = resp.getNumber() * (long) resp.getSize() + resp.getNumberOfElements();
+
             model.addAttribute("titulo", "Gestor de Solicitudes");
-            model.addAttribute("solicitudes", solicitudes);
+            model.addAttribute("solicitudes", resp.getContent());
+
+            model.addAttribute("page", resp.getNumber());
+            model.addAttribute("size", resp.getSize());
+            model.addAttribute("totalPages", resp.getTotalPages());
+            model.addAttribute("totalElements", resp.getTotalElements());
+            model.addAttribute("hasPrev", !resp.isFirst());
+            model.addAttribute("hasNext", !resp.isLast());
+            model.addAttribute("prevPage", resp.getNumber() - 1);
+            model.addAttribute("nextPage", resp.getNumber() + 1);
+            model.addAttribute("from", from);
+            model.addAttribute("to", to);
 
         } catch (Exception ex) {
             System.err.println("[/admin/gestor-solicitudes] " + ex.getMessage());
+            model.addAttribute("error", "Error al cargar solicitudes: " + ex.getMessage());
         }
 
         return "administrador/gestorSolicitudes";
