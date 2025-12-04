@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -197,11 +198,35 @@ public class AgregadorService implements IAgregadorService {
     }
 
 
-
     @Override
-    public Page<HechoOutputDTO> obtenerHechosConPaginacion(Pageable pageable) {
-        return hechoRepository.findAll(pageable).map(this::hechoOutputDTO);
+    @Transactional(readOnly = true)
+    public Page<HechoOutputDTO> obtenerHechosConPaginacion(
+            int page, int size, String sort, // Paginación
+            Long id, String ubicacion, String estado, LocalDate fecha // Filtros
+    ) {
+        // 1. Construir el objeto Sort
+        Sort sortObj;
+        String[] parts = sort.split(",", 2);
+        if (parts.length == 2) {
+            sortObj = "desc".equalsIgnoreCase(parts[1]) ? Sort.by(parts[0]).descending() : Sort.by(parts[0]).ascending();
+        } else {
+            sortObj = Sort.by(sort);
+        }
+
+        Pageable pageable = PageRequest.of(page, Math.max(1, Math.min(size, 200)), sortObj);
+
+        Boolean eliminado = null;
+        if ("approved".equalsIgnoreCase(estado)) {
+            eliminado = false;
+        } else if ("rejected".equalsIgnoreCase(estado)) {
+            eliminado = true;
+        }
+
+        Page<Hecho> paginaEntidad = hechoRepository.buscarConFiltros(id, ubicacion, eliminado, fecha, pageable);
+
+        return paginaEntidad.map(this::hechoOutputDTO);
     }
+
 
     @Override
     public void sumarVistaColeccion(String handle) {

@@ -34,10 +34,13 @@ public interface IAgregadorService {
     public void sumarVistaHecho(Long id);
     List<HechoOutputDTO> top3Hechos();
     List<ColeccionOutputDTO> top4Colecciones();
-    Page<HechoOutputDTO> obtenerHechosConPaginacion(Pageable pageable);
     List<HechoOutputDTO> obtenerHechosPorContribuyente(Long contribuyenteId);
     List<HechoOutputDTO> obtenerHechosPorContribuyenteFiltrado(
       Long contribuyenteId, String titulo, String categoria, String estado);
     PaginaDTO<CategoriaOutputDTO> obtenerPaginado(int page, int size);
     List<HechoOutputDTO> getUltimosHechos();
+    public Page<HechoOutputDTO> obtenerHechosConPaginacion(
+            int page, int size, String sort, // Paginación
+            Long id, String ubicacion, String estado, LocalDate fecha // Filtros
+    );
 }

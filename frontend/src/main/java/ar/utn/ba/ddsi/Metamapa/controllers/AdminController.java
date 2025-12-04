@@ -9,6 +9,7 @@ import ar.utn.ba.ddsi.Metamapa.services.SolicitudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,15 +103,30 @@ public class AdminController {
     public String mostrarGestorHechos(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+
+            @RequestParam(required = false) Long idHecho,
+            @RequestParam(required = false) String ubicacion,
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            // --------------------------------------
+
             @RequestParam(defaultValue = "0") int catPage,
             @RequestParam(defaultValue = "5") int catSize,
             Model model
     ) {
-        PaginaDTO<HechoDTO> respHechos = adminService.obtenerHechosPaginado(page, size);
+
+        PaginaDTO<HechoDTO> respHechos = adminService.obtenerHechosPaginado(page, size, idHecho, ubicacion, estado, fecha);
+
         long from = respHechos.getNumber() * (long) respHechos.getSize() + (respHechos.getNumberOfElements() > 0 ? 1 : 0);
         long to   = respHechos.getNumber() * (long) respHechos.getSize() + respHechos.getNumberOfElements();
 
         model.addAttribute("hechos", respHechos.getContent());
+
+        model.addAttribute("filtroId", idHecho);
+        model.addAttribute("filtroUbicacion", ubicacion);
+        model.addAttribute("filtroEstado", estado);
+        model.addAttribute("filtroFecha", fecha);
+
         model.addAttribute("page", respHechos.getNumber());
         model.addAttribute("size", respHechos.getSize());
         model.addAttribute("totalPages", respHechos.getTotalPages());
@@ -120,6 +137,7 @@ public class AdminController {
         model.addAttribute("nextPage", respHechos.getNumber() + 1);
         model.addAttribute("from", from);
         model.addAttribute("to", to);
+
 
         PaginaDTO<CategoriaDTO> respCat = adminService.obtenerCategoriasPaginado(catPage, catSize);
         model.addAttribute("categorias", respCat.getContent());

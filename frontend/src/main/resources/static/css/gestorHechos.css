@@ -9,7 +9,80 @@ body {
     color: #333;
 }
 
+/* Contenedor para alinear los botones abajo */
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end; /* Alinea con la base de los inputs */
+    padding-bottom: 2px; /* Ajuste fino de alineación */
+}
 
+/* Botón Buscar (Estilo Principal) */
+.btn-search {
+    background-color: #004080; /* Azul MetaMapa */
+    color: white;
+    border: 1px solid #004080;
+    height: 42px; /* Misma altura que los inputs estándar */
+    padding: 0 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-search:hover {
+    background-color: #003366; /* Azul más oscuro al pasar mouse */
+    border-color: #003366;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 64, 128, 0.2);
+}
+
+.btn-search:active {
+    transform: translateY(0);
+}
+
+/* Botón Limpiar (Estilo Secundario) */
+.btn-clear {
+    background-color: #ffffff;
+    color: #64748b; /* Gris azulado */
+    border: 1px solid #cbd5e1;
+    height: 42px;
+    padding: 0 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    box-sizing: border-box; /* Asegura que el borde cuente en el height */
+}
+
+.btn-clear:hover {
+    background-color: #f1f5f9;
+    color: #334155;
+    border-color: #94a3b8;
+}
+
+/* Responsive: En móviles, que ocupen todo el ancho */
+@media (max-width: 768px) {
+    .filter-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    .btn-search, .btn-clear {
+        width: 100%;
+        justify-content: center;
+    }
+}
 
 div.container {
     margin: 0 auto; /* Centra el contenido */

@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -38,17 +39,28 @@ public class AdminService {
             .build();
   }
 
-  public PaginaDTO<HechoDTO> obtenerHechosPaginado(int page, int size) {
-    return webClientPublic.get()
-        .uri(uriBuilder -> uriBuilder
-            .path("/paginado")
-            .queryParam("page", page)
-            .queryParam("size", size)
-            .build())
-        .retrieve()
-        .bodyToMono(new org.springframework.core.ParameterizedTypeReference<PaginaDTO<HechoDTO>>() {})
-        .block();
-  }
+    public PaginaDTO<HechoDTO> obtenerHechosPaginado(
+            int page, int size,
+            Long id, String ubicacion, String estado, LocalDate fecha
+    ) {
+        return webClientPublic.get()
+                .uri(uriBuilder -> {
+                    var builder = uriBuilder.path("/paginado")
+                            .queryParam("page", page)
+                            .queryParam("size", size)
+                            .queryParam("sort", "fechaCarga,desc");
+
+                    if (id != null) builder.queryParam("idHecho", id);
+                    if (ubicacion != null && !ubicacion.isBlank()) builder.queryParam("ubicacion", ubicacion);
+                    if (estado != null && !estado.isBlank()) builder.queryParam("estado", estado);
+                    if (fecha != null) builder.queryParam("fecha", fecha);
+
+                    return builder.build();
+                })
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<PaginaDTO<HechoDTO>>() {})
+                .block();
+    }
 
   public List<CategoriaDTO> obtenerCategorias() {
       return webClientPublic.get()

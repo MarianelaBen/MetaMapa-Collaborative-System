@@ -3,10 +3,13 @@ package ar.utn.ba.ddsi.models.repositories;
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Hecho;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,4 +36,18 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
     List<Hecho> findUltimosHechos(@Param("limit") int limit);
 
     List<Hecho> findTop1000ByFueEliminadoFalseOrderByFechaCargaDesc();
+    // En IHechoRepository.java
+
+    @Query("SELECT h FROM Hecho h WHERE " +
+            "(:id IS NULL OR h.id = :id) AND " +
+            "(:ubicacion IS NULL OR LOWER(h.ubicacion.provincia) LIKE LOWER(CONCAT('%', :ubicacion, '%'))) AND " +
+            "(:eliminado IS NULL OR h.fueEliminado = :eliminado) AND " +
+            "(:fecha IS NULL OR CAST(h.fechaAcontecimiento AS LocalDate) = :fecha)")
+    Page<Hecho> buscarConFiltros(
+            @Param("id") Long id,
+            @Param("ubicacion") String ubicacion,
+            @Param("eliminado") Boolean eliminado,
+            @Param("fecha") LocalDate fecha,
+            Pageable pageable
+    );
 }

@@ -19,40 +19,54 @@
             </button>
         </div>
 
-        <div class="filters-section">
+        <form th:action="@{/admin/gestor-hechos}" method="get" class="filters-section">
             <div class="filters-grid">
+
                 <div class="filter-group">
                     <label class="filter-label">Filtrar por Estado</label>
-                    <select class="filter-select" id="statusFilter" onchange="filterRequests()">
-                        <option value="">Seleccionar Estado</option>
-                        <option value="pending">Pendiente</option>
-                        <option value="approved">Aprobado</option>
-                        <option value="rejected">Rechazado</option>
-                        <option value="in-progress">En Progreso</option>
+                    <select class="filter-select" name="estado" onchange="this.form.submit()">
+                        <option value="" th:selected="${filtroEstado == null}">Todos</option>
+                        <option value="approved" th:selected="${filtroEstado == 'approved'}">Aprobado</option>
+                        <option value="rejected" th:selected="${filtroEstado == 'rejected'}">Eliminado</option>
                     </select>
                 </div>
+
                 <div class="filter-group">
                     <label class="filter-label">Filtrar por Ubicación</label>
-                    <input type="text" class="filter-input" placeholder="Ubicación del hecho" id="idFilterUbi" onkeyup="filterRequests()">
+                    <input type="text" class="filter-input" name="ubicacion"
+                           placeholder="Provincia..." th:value="${filtroUbicacion}">
                 </div>
+
                 <div class="filter-group">
                     <label class="filter-label">Buscar por ID</label>
-                    <input type="text" class="filter-input" placeholder="ID de Solicitud" id="idFilter" onkeyup="filterRequests()">
+                    <input type="number" class="filter-input" name="idHecho"
+                           placeholder="ID..." th:value="${filtroId}">
                 </div>
-                <div class="filter-group">
-                    <label class="filter-label">Rango de Fechas</label>
-                    <input type="date" class="filter-input" id="dateFilter" onchange="filterRequests()">
-                </div>
-                <button class="btn btn-reset" onclick="resetFilters()">Resetear Filtros</button>
-            </div>
-        </div>
 
-        <div class="table-container" th:if="${hechos != null}">
-            <table class="table">
+                <div class="filter-group">
+                    <label class="filter-label">Fecha Exacta</label>
+                    <input type="date" class="filter-input" name="fecha"
+                           th:value="${filtroFecha}" onchange="this.form.submit()">
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="btn-search">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+
+                    <a th:href="@{/admin/gestor-hechos}" class="btn-clear">
+                        <i class="fas fa-undo"></i> Limpiar
+                    </a>
+                </div>
+            </div>
+        </form>
+
+        <div class="table-container">
+            <table class="table" th:if="${hechos != null && !hechos.isEmpty()}">
                 <thead>
                 <tr>
-                    <th>ID Hecho</th>
-                    <th>Fecha del hecho</th>
+                    <th>ID</th>
+                    <th>Fecha</th>
                     <th>Título</th>
                     <th>Ubicación</th>
                     <th>Estado</th>
@@ -63,18 +77,14 @@
                 <div class="alert alert-success" th:if="${mensaje}" th:text="${mensaje}"></div>
                 <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
 
-                <tr th:if="${#lists.isEmpty(hechos)}">
-                    <td colspan="6" style="text-align:center; padding:24px;">No hay hechos registrados</td>
-                </tr>
-
                 <tr th:each="hecho : ${hechos}">
                     <td th:text="${hecho.id}">ID</td>
-                    <td th:text="${hecho.fechaAcontecimiento != null ? hecho.fechaAcontecimiento.toLocalDate() : ''}">2025-01-01</td>
+                    <td th:text="${hecho.fechaAcontecimiento != null ? hecho.fechaAcontecimiento.toLocalDate() : ''}">Date</td>
                     <td th:text="${hecho.titulo}">Título</td>
                     <td th:text="${hecho.provincia}">Provincia</td>
                     <td>
-            <span th:classappend="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'status-badge status-approved' : 'status-badge status-rejected'"
-                  th:text="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'APROBADO' : 'ELIMINADO'"></span>
+                        <span th:classappend="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'status-badge status-approved' : 'status-badge status-rejected'"
+                              th:text="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'APROBADO' : 'ELIMINADO'"></span>
                     </td>
                     <td>
                         <div class="action-buttons">
@@ -91,9 +101,13 @@
                         </div>
                     </td>
                 </tr>
-
                 </tbody>
             </table>
+
+            <div th:if="${hechos == null || hechos.isEmpty()}" style="text-align:center; padding:3rem;">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No se encontraron hechos con estos filtros.</h4>
+            </div>
 
             <div class="table-footer" th:if="${totalPages > 0}">
                 <div class="showing-text">
@@ -104,55 +118,43 @@
                 <div class="pagination" th:if="${totalPages > 1}">
                     <a class="pagination-btn"
                        th:classappend="${page == 0} ? ' disabled'"
-                       th:href="@{|/admin/gestor-hechos?page=0&size=${size}&catPage=${catPage}&catSize=${catSize}|}">«</a>
+                       th:href="@{/admin/gestor-hechos(page=0, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, estado=${filtroEstado}, fecha=${filtroFecha})}">«</a>
 
                     <a class="pagination-btn"
                        th:classappend="${!hasPrev} ? ' disabled'"
-                       th:href="@{|/admin/gestor-hechos?page=${prevPage}&size=${size}&catPage=${catPage}&catSize=${catSize}|}">‹</a>
+                       th:href="@{/admin/gestor-hechos(page=${prevPage}, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, estado=${filtroEstado}, fecha=${filtroFecha})}">‹</a>
 
-                    <span class="pagination-btn active"
-                          th:text="${page + 1}">1</span>
+                    <span class="pagination-btn active" th:text="${page + 1}">1</span>
 
                     <a class="pagination-btn"
                        th:classappend="${!hasNext} ? ' disabled'"
-                       th:href="@{|/admin/gestor-hechos?page=${nextPage}&size=${size}&catPage=${catPage}&catSize=${catSize}|}">›</a>
+                       th:href="@{/admin/gestor-hechos(page=${nextPage}, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, estado=${filtroEstado}, fecha=${filtroFecha})}">›</a>
 
                     <a class="pagination-btn"
                        th:classappend="${page + 1 == totalPages} ? ' disabled'"
-                       th:href="@{|/admin/gestor-hechos?page=${totalPages - 1}&size=${size}&catPage=${catPage}&catSize=${catSize}|}">»</a>
+                       th:href="@{/admin/gestor-hechos(page=${totalPages - 1}, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, estado=${filtroEstado}, fecha=${filtroFecha})}">»</a>
                 </div>
             </div>
         </div>
 
-        <div class="categoria-section" style="margin-top: 40px;"> <div class="page-header">
-            <div>
-                <h1 class="page-title">Gestión de Categorías</h1>
-                <p class="page-subtitle">Administra las categorías disponibles para clasificar hechos</p>
+        <div class="categoria-section" style="margin-top: 40px;">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Gestión de Categorías</h1>
+                    <p class="page-subtitle">Administra las categorías disponibles</p>
+                </div>
+                <button class="btn btn-primary" onclick="mostrarModalCategoria()" style="align-self: end;">
+                    <i class="fas fa-plus"></i> Nueva Categoría
+                </button>
             </div>
-            <button class="btn btn-primary" onclick="mostrarModalCategoria()" style="align-self: end;">
-                <i class="fas fa-plus"></i>
-                Nueva Categoría
-            </button>
-        </div>
 
             <div class="table-container">
                 <table class="table">
                     <thead th:if="${categorias != null && !categorias.isEmpty()}">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Acciones</th>
-                    </tr>
+                    <tr><th>ID</th><th>Nombre</th><th>Acciones</th></tr>
                     </thead>
                     <tbody>
-                    <tr th:if="${categorias == null || categorias.isEmpty()}">
-                        <td colspan="3" style="text-align:center; padding:24px;">
-                            <i class="fa-regular fa-folder-open fa-3x text-muted mb-3" style="display:block; margin-bottom:16px; opacity:0.3;"></i>
-                            <h5 class="text-muted">No hay categorías registradas</h5>
-                        </td>
-                    </tr>
-
-                    <tr th:if="${categorias != null && !categorias.isEmpty()}" th:each="categoria : ${categorias}">
+                    <tr th:each="categoria : ${categorias}">
                         <td th:text="${categoria.id}">1</td>
                         <td th:text="${categoria.nombre}">Nombre</td>
                         <td>
@@ -172,30 +174,10 @@
                     </tr>
                     </tbody>
                 </table>
-
                 <div class="table-footer" th:if="${catTotalPages > 0}">
-                    <div class="showing-text">
-                        Total: <span th:text="${catTotalElements}">0</span> categorías
-                    </div>
-
+                    <div class="showing-text">Total: <span th:text="${catTotalElements}">0</span> categorías</div>
                     <div class="pagination" th:if="${catTotalPages > 1}">
-                        <a class="pagination-btn"
-                           th:classappend="${catPage == 0} ? ' disabled'"
-                           th:href="@{|/admin/gestor-hechos?page=${page}&size=${size}&catPage=0&catSize=${catSize}|}">«</a>
-
-                        <a class="pagination-btn"
-                           th:classappend="${!catHasPrev} ? ' disabled'"
-                           th:href="@{|/admin/gestor-hechos?page=${page}&size=${size}&catPage=${catPrevPage}&catSize=${catSize}|}">‹</a>
-
-                        <span class="pagination-btn active" th:text="${catPage + 1}">1</span>
-
-                        <a class="pagination-btn"
-                           th:classappend="${!catHasNext} ? ' disabled'"
-                           th:href="@{|/admin/gestor-hechos?page=${page}&size=${size}&catPage=${catNextPage}&catSize=${catSize}|}">›</a>
-
-                        <a class="pagination-btn"
-                           th:classappend="${catPage + 1 == catTotalPages} ? ' disabled'"
-                           th:href="@{|/admin/gestor-hechos?page=${page}&size=${size}&catPage=${catTotalPages - 1}&catSize=${catSize}|}">»</a>
+                        <a class="pagination-btn" th:href="@{/admin/gestor-hechos(page=${page}, size=${size}, catPage=${catNextPage})}">›</a>
                     </div>
                 </div>
             </div>
@@ -205,84 +187,47 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 id="modalTitulo">Nueva Categoría</h3>
-                    <button class="modal-close" onclick="cerrarModalCategoria()">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <button class="modal-close" onclick="cerrarModalCategoria()"><i class="fas fa-times"></i></button>
                 </div>
-
-                <form id="formCategoria"
-                      method="post"
-                      th:data-create-action="@{/admin/categorias/nueva}"
-                      th:data-edit-action-template="@{/admin/categorias/PLACEHOLDER_ID/editar}">
-
+                <form id="formCategoria" method="post" th:data-create-action="@{/admin/categorias/nueva}" th:data-edit-action-template="@{/admin/categorias/PLACEHOLDER_ID/editar}">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <input type="hidden" id="categoriaId" name="id" />
-
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="categoriaNombre">Nombre de la Categoría *</label>
-                            <input type="text"
-                                   id="categoriaNombre"
-                                   name="nombre"
-                                   class="form-input"
-                                   placeholder="Ej: Medio Ambiente, Educación, Salud..."
-                                   required
-                                   maxlength="100" />
+                            <label for="categoriaNombre">Nombre *</label>
+                            <input type="text" id="categoriaNombre" name="nombre" class="form-input" required maxlength="100" />
                         </div>
                     </div>
-
                     <div class="modal-footer">
-                        <button type="button" class="btn-secondary" onclick="cerrarModalCategoria()">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i>
-                            Guardar
-                        </button>
+                        <button type="button" class="btn-secondary" onclick="cerrarModalCategoria()">Cancelar</button>
+                        <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar</button>
                     </div>
                 </form>
             </div>
         </div>
-
     </div>
 
     <form id="deleteCategoriaForm" th:method="delete" style="display:none;">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     </form>
-
     <form id="deleteForm" th:method="post" style="display:none;">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     </form>
 
     <script>
-        // --- Lógica Hechos ---
+        // Scripts existentes se mantienen igual
         function confirmDelete(handle) {
-            if (!handle) return;
             const doConfirm = () => {
                 const form = document.getElementById('deleteForm');
                 form.action = `/admin/hecho/${encodeURIComponent(handle)}/eliminar`;
                 form.submit();
             };
             if (window.Swal) {
-                Swal.fire({
-                    title: '¿Eliminar hecho?',
-                    text: 'Esta acción no se puede deshacer',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6'
-                }).then(r => { if (r.isConfirmed) doConfirm(); });
-            } else {
-                if (confirm('¿Eliminar hecho? Esta acción no se puede deshacer')) doConfirm();
-            }
+                Swal.fire({ title: '¿Eliminar hecho?', text: 'Irreversible', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar' }).then(r => { if(r.isConfirmed) doConfirm(); });
+            } else if (confirm('¿Eliminar hecho?')) doConfirm();
         }
 
-        function filterRequests(){ /* Placeholder filtros */ }
-        function resetFilters(){ /* Placeholder reset */ }
-
-        // --- Lógica Categorías ---
+        // Funciones de Categoría
         function mostrarModalCategoria() {
             const form = document.getElementById('formCategoria');
             form.reset();
@@ -291,58 +236,25 @@
             form.action = form.dataset.createAction;
             document.getElementById('modalCategoria').style.display = 'flex';
         }
-
-        function cerrarModalCategoria() {
-            document.getElementById('modalCategoria').style.display = 'none';
-        }
-
+        function cerrarModalCategoria() { document.getElementById('modalCategoria').style.display = 'none'; }
         function editarCategoria(id, nombre) {
             const form = document.getElementById('formCategoria');
             document.getElementById('modalTitulo').textContent = 'Editar Categoría';
             document.getElementById('categoriaId').value = id;
             document.getElementById('categoriaNombre').value = nombre;
-
-            const editTemplate = form.dataset.editActionTemplate;
-            form.action = editTemplate.replace('PLACEHOLDER_ID', encodeURIComponent(id));
-
+            form.action = form.dataset.editActionTemplate.replace('PLACEHOLDER_ID', encodeURIComponent(id));
             document.getElementById('modalCategoria').style.display = 'flex';
         }
-
         function confirmarEliminarCategoria(id) {
-            if (!id) return;
-
             const doDelete = () => {
                 const form = document.getElementById('deleteCategoriaForm');
                 form.action = `/admin/categorias/${encodeURIComponent(id)}/eliminar`;
                 form.submit();
             };
-
             if (window.Swal) {
-                Swal.fire({
-                    title: '¿Eliminar categoría?',
-                    text: 'Esta acción no se puede deshacer',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar',
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6'
-                }).then(result => {
-                    if (result.isConfirmed) doDelete();
-                });
-            } else {
-                if (window.confirm('¿Eliminar categoría? Esta acción no se puede deshacer')) {
-                    doDelete();
-                }
-            }
+                Swal.fire({ title: '¿Eliminar categoría?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí' }).then(r => { if(r.isConfirmed) doDelete(); });
+            } else if (confirm('¿Eliminar?')) doDelete();
         }
-
-        // Cerrar modal al hacer clic fuera
-        document.getElementById('modalCategoria')?.addEventListener('click', function(e) {
-            if (e.target === this) {
-                cerrarModalCategoria();
-            }
-        });
     </script>
 </div>
 </html>

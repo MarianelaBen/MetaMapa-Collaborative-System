@@ -136,23 +136,23 @@ public class AgregadorController {
   }
 
 
-  @GetMapping("/paginado")
+    @GetMapping("/paginado")
     public ResponseEntity<Page<HechoOutputDTO>> getHechosPaginado(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "50") int size,
-        @RequestParam(defaultValue = "fechaAcontecimiento,desc") String sort
-    ) {
-      Sort sortObj;
-      String[] parts = sort.split(",", 2);
-      if (parts.length == 2) {
-        sortObj = "desc".equalsIgnoreCase(parts[1]) ? Sort.by(parts[0]).descending() : Sort.by(parts[0]).ascending();
-      } else {
-        sortObj = Sort.by(sort);
-      }
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(defaultValue = "fechaAcontecimiento,desc") String sort,
 
-      Pageable pageable = PageRequest.of(page, Math.max(1, Math.min(size, 200)), sortObj);
-      Page<HechoOutputDTO> pagina = agregadorService.obtenerHechosConPaginacion(pageable);
-      return ResponseEntity.ok(pagina);
+            @RequestParam(required = false) Long idHecho,
+            @RequestParam(required = false) String ubicacion,
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha
+    ) {
+
+        Page<HechoOutputDTO> pagina = agregadorService.obtenerHechosConPaginacion(
+                page, size, sort, idHecho, ubicacion, estado, fecha
+        );
+
+        return ResponseEntity.ok(pagina);
     }
 
     @PostMapping(value = "/hechos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
