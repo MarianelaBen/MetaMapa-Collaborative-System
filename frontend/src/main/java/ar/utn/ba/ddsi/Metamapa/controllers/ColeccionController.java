@@ -198,6 +198,7 @@ public class ColeccionController {
         ColeccionDTO creada = metaMapaApiService.crearColeccion(coleccion);
 
         redirect.addFlashAttribute("mensaje", "Colección creada exitosamente: " + creada.getTitulo());
+        redirect.addFlashAttribute("tipoMensaje", "success");
         return "redirect:/colecciones";
     }
 
