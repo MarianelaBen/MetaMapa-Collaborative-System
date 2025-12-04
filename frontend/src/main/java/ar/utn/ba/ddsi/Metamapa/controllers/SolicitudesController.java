@@ -3,14 +3,15 @@ package ar.utn.ba.ddsi.Metamapa.controllers;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.HechoDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.SolicitudDTO;
 import ar.utn.ba.ddsi.Metamapa.services.HechoService;
+import ar.utn.ba.ddsi.Metamapa.services.SolicitudService;
+import ar.utn.ba.ddsi.Metamapa.exceptions.NotFoundException; // Asegurate de importar tu excepción
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import ar.utn.ba.ddsi.Metamapa.services.SolicitudService;
+
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping
@@ -19,17 +20,16 @@ public class SolicitudesController {
     private final SolicitudService solicitudService;
     private final HechoService hechoService;
 
-
     @GetMapping("/solicitud/{hechoId}")
     public String mostrarFormulario(@PathVariable Long hechoId, Model model) {
         HechoDTO hecho = hechoService.getHechoPorId(hechoId);
+        // Validamos lanzando excepcion para que lo atrape el handler
         if (hecho == null) {
-            model.addAttribute("error", "No se encontró el hecho con id " + hechoId);
-            return "hechosYColecciones/mostrarHecho";
+            throw new NoSuchElementException("No se encontró el hecho con id " + hechoId);
         }
+
         model.addAttribute("titulo", "Solicitar eliminación de hecho");
         model.addAttribute("hecho", hecho);
-
 
         if (!model.containsAttribute("justificacion")) {
             model.addAttribute("justificacion", "");
@@ -41,27 +41,18 @@ public class SolicitudesController {
     public String verDetalleSolicitud(@PathVariable Long solicitudId, Model model){
         SolicitudDTO solicitud = solicitudService.obtenerSolicitud(solicitudId);
 
-        // PRIMERO chequeo si vino la solicitud
         if (solicitud == null) {
-            model.addAttribute("error", "No se encontró la solicitud con id " + solicitudId);
-            System.out.println("no se encontró la solicitud  con id " + solicitudId);
-            return "administrador/gestorSolicitudes";
+            throw new NoSuchElementException("No se encontró la solicitud con id " + solicitudId);
         }
 
         Long hechoId = solicitud.getHechoId();
         if (hechoId == null) {
-            model.addAttribute("error", "La solicitud no contiene un hecho asociado (solicitud id " + solicitudId + ")");
-            System.out.println("La solicitud no contiene un hecho asociado, solicitud id " + solicitudId + " hecho id " + hechoId );
-
-            return "administrador/gestorSolicitudes";
+            throw new IllegalStateException("La solicitud no contiene un hecho asociado");
         }
 
         HechoDTO hecho = hechoService.getHechoPorId(hechoId);
         if (hecho == null) {
-            model.addAttribute("error", "No se encontró el hecho con id " + hechoId);
-            System.out.println("No se encontró el hecho con id "+ hechoId) ;
-
-            return "administrador/gestorSolicitudes";
+            throw new NoSuchElementException("No se encontró el hecho con id " + hechoId);
         }
 
         model.addAttribute("titulo", "Solicitud de eliminación de hecho");
@@ -78,36 +69,22 @@ public class SolicitudesController {
                         RedirectAttributes flash) {
 
         String texto = (justificacion == null) ? "" : justificacion.trim();
+        // Validación de negocio local (vuelve al formulario)
         if (texto.length() < 500) {
-            // cargar el hecho para la vista de error
             HechoDTO hecho = hechoService.getHechoPorId(hechoId);
             model.addAttribute("titulo", "Solicitar eliminación de hecho");
-            model.addAttribute("hecho", hecho);          // <-- importante
+            model.addAttribute("hecho", hecho);
             model.addAttribute("hechoId", hechoId);
             model.addAttribute("justificacion", justificacion);
             model.addAttribute("error", "La justificación debe tener al menos 500 caracteres. Actualmente: " + texto.length());
             return "hechosYColecciones/solicitudEliminacion";
         }
 
-        try {
-            String solicitudId = solicitudService.crearSolicitudEliminacion(hechoId, texto);
+        // Sin try-catch. Si falla al crear, error 500.
+        solicitudService.crearSolicitudEliminacion(hechoId, texto);
 
-            flash.addFlashAttribute("mensaje", "Solicitud creada correctamente. Quedó en estado pendiente.");
-            flash.addFlashAttribute("tipoMensaje", "success");
-            return "redirect:/solicitud/" + hechoId;
-
-        } catch (Exception e) {
-            // cargar el hecho para la vista de error
-            HechoDTO hecho = hechoService.getHechoPorId(hechoId);
-            model.addAttribute("titulo", "Solicitar eliminación de hecho");
-            model.addAttribute("hecho", hecho);          // <-- importante
-            model.addAttribute("hechoId", hechoId);
-            model.addAttribute("justificacion", justificacion);
-            model.addAttribute("error", "Error al crear la solicitud");
-            return "hechosYColecciones/solicitudEliminacion";
-        }
+        flash.addFlashAttribute("mensaje", "Solicitud creada correctamente. Quedó en estado pendiente.");
+        flash.addFlashAttribute("tipoMensaje", "success");
+        return "redirect:/solicitud/" + hechoId;
     }
-
-
-
 }
