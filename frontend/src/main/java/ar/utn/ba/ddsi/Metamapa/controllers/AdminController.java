@@ -39,11 +39,12 @@ public class AdminController {
     public String mostrarPanelControl(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
             Model model
     ) {
-        // Sin try-catch. Si la API está caída, error 500.
         ResumenDTO resumen = metamapaApiService.getPanelDeControl();
-        PaginaDTO<ColeccionDTO> resp = this.coleccionService.getColeccionesPaginadas(page, size);
+
+        PaginaDTO<ColeccionDTO> resp = this.coleccionService.getColeccionesPaginadas(page, size, keyword);
 
         long from = resp.getNumber() * (long) resp.getSize() + (resp.getNumberOfElements() > 0 ? 1 : 0);
         long to   = resp.getNumber() * (long) resp.getSize() + resp.getNumberOfElements();
@@ -51,6 +52,7 @@ public class AdminController {
         model.addAttribute("resumen", resumen);
         model.addAttribute("titulo", "Panel de Control");
         model.addAttribute("colecciones", resp.getContent());
+        model.addAttribute("keyword", keyword);
         model.addAttribute("page", resp.getNumber());
         model.addAttribute("size", resp.getSize());
         model.addAttribute("totalPages", resp.getTotalPages());

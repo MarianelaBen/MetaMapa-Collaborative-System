@@ -561,9 +561,15 @@ public class AdminService implements IAdminService {
         return respuesta;
     }
 
-    public PaginaDTO<ColeccionOutputDTO> obtenerColeccionesPaginadas(int page, int size) {
+    public PaginaDTO<ColeccionOutputDTO> obtenerColeccionesPaginadas(int page, int size, String keyword) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Coleccion> paginaEntidad = coleccionRepo.findAll(pageable);
+        Page<Coleccion> paginaEntidad;
+
+        if (keyword != null && !keyword.isBlank()) {
+            paginaEntidad = coleccionRepo.findByTituloContainingIgnoreCaseOrDescripcionContainingIgnoreCase(keyword, keyword, pageable);
+        } else {
+            paginaEntidad = coleccionRepo.findAll(pageable);
+        }
 
         List<ColeccionOutputDTO> contenidoDTO = paginaEntidad.getContent().stream()
                 .map(ColeccionOutputDTO::fromEntity)

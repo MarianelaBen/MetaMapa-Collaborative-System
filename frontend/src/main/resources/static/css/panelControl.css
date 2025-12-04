@@ -727,6 +727,11 @@ header .logo {
     cursor: default;
 }
 
+.search-form {
+    display: inline-block;
+    margin: 0;
+}
+
 /* Estado Deshabilitado (flechas cuando no hay más páginas) */
 .pagination-btn.disabled {
     color: #cbd5e1;

@@ -4,6 +4,17 @@
 <div th:fragment="css">
     <link rel="stylesheet" th:href="@{/css/panelControl.css}" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Ajuste pequeño para que el buscador y el botón queden alineados */
+        .section-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-form {
+            margin: 0;
+        }
+    </style>
 </div>
 
 <div class="admin-layout" th:fragment="contenido" sec:authorize="hasRole('ADMIN')">
@@ -43,10 +54,13 @@
             <div class="section-header">
                 <h3>Gestión de Colecciones</h3>
                 <div class="section-actions">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Buscar colecciones..." />
-                    </div>
+                    <form th:action="@{/admin/panel-control}" method="get" class="search-form">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" name="keyword" th:value="${keyword}" placeholder="Buscar colecciones..." />
+                        </div>
+                    </form>
+
                     <a th:href="@{/colecciones/nueva}" class="btn-add-new">
                         <i class="fas fa-plus"></i>
                         Nueva Colección
@@ -112,21 +126,21 @@
                     <div class="pagination" th:if="${totalPages > 1}">
                         <a class="pagination-btn"
                            th:classappend="${page == 0} ? ' disabled'"
-                           th:href="@{|/admin/panel-control?page=0&size=${size}|}">«</a>
+                           th:href="@{/admin/panel-control(page=0, size=${size}, keyword=${keyword})}">«</a>
 
                         <a class="pagination-btn"
                            th:classappend="${!hasPrev} ? ' disabled'"
-                           th:href="@{|/admin/panel-control?page=${prevPage}&size=${size}|}">‹</a>
+                           th:href="@{/admin/panel-control(page=${prevPage}, size=${size}, keyword=${keyword})}">‹</a>
 
                         <span class="pagination-btn active" th:text="${page + 1}">1</span>
 
                         <a class="pagination-btn"
                            th:classappend="${!hasNext} ? ' disabled'"
-                           th:href="@{|/admin/panel-control?page=${nextPage}&size=${size}|}">›</a>
+                           th:href="@{/admin/panel-control(page=${nextPage}, size=${size}, keyword=${keyword})}">›</a>
 
                         <a class="pagination-btn"
                            th:classappend="${page + 1 == totalPages} ? ' disabled'"
-                           th:href="@{|/admin/panel-control?page=${totalPages - 1}&size=${size}|}">»</a>
+                           th:href="@{/admin/panel-control(page=${totalPages - 1}, size=${size}, keyword=${keyword})}">»</a>
                     </div>
                 </div>
             </div>

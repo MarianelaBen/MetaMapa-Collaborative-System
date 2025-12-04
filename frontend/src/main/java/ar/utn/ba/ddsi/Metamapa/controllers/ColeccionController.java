@@ -27,10 +27,11 @@ public class ColeccionController {
     public String listarColecciones(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "9") int size,
+            @RequestParam(required = false) String keyword,
             Model model
     ) {
-        // Sin try-catch. Si falla, va a la página de error 500.
-        PaginaDTO<ColeccionDTO> pagina = this.coleccionService.getColeccionesPaginadas(page, size);
+
+        PaginaDTO<ColeccionDTO> pagina = this.coleccionService.getColeccionesPaginadas(page, size, keyword);
 
         long from = pagina.getNumber() * (long) pagina.getSize() + (pagina.getNumberOfElements() > 0 ? 1 : 0);
         long to   = pagina.getNumber() * (long) pagina.getSize() + pagina.getNumberOfElements();
@@ -38,6 +39,8 @@ public class ColeccionController {
         model.addAttribute("colecciones", pagina.getContent());
         model.addAttribute("titulo", "Explorador de Colecciones");
         model.addAttribute("descripcion", "Navega por las diferentes colecciones...");
+
+        model.addAttribute("keyword", keyword);
 
         model.addAttribute("page", pagina.getNumber());
         model.addAttribute("size", pagina.getSize());

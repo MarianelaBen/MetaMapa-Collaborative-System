@@ -49,13 +49,18 @@ public class ColeccionService {
     }
 
 
-    public PaginaDTO<ColeccionDTO> getColeccionesPaginadas(int page, int size) {
+    public PaginaDTO<ColeccionDTO> getColeccionesPaginadas(int page, int size, String keyword) {
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/colecciones/paginado")
-                        .queryParam("page", page)
-                        .queryParam("size", size)
-                        .build())
+                .uri(uriBuilder -> {
+                    var builder = uriBuilder.path("/colecciones/paginado")
+                            .queryParam("page", page)
+                            .queryParam("size", size);
+
+                    if (keyword != null && !keyword.isBlank()) {
+                        builder.queryParam("keyword", keyword);
+                    }
+                    return builder.build();
+                })
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<PaginaDTO<ColeccionDTO>>() {})
                 .block();
