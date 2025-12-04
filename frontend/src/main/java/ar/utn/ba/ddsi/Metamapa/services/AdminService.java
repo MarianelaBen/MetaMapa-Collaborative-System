@@ -183,13 +183,24 @@ public class AdminService {
     }
 
 
-    public PaginaDTO<SolicitudDTO> obtenerSolicitudesPaginado(int page, int size) {
+// En AdminService.java (Frontend)
+
+    public PaginaDTO<SolicitudDTO> obtenerSolicitudesPaginado(
+            int page, int size,
+            Long id, String estado, LocalDate fecha
+    ) {
         return webClientAdmin.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/solicitudes/paginado")
-                        .queryParam("page", page)
-                        .queryParam("size", size)
-                        .build())
+                .uri(uriBuilder -> {
+                    var builder = uriBuilder.path("/solicitudes/paginado")
+                            .queryParam("page", page)
+                            .queryParam("size", size);
+
+                    if (id != null) builder.queryParam("id", id);
+                    if (estado != null && !estado.isBlank()) builder.queryParam("estado", estado);
+                    if (fecha != null) builder.queryParam("fecha", fecha);
+
+                    return builder.build();
+                })
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<PaginaDTO<SolicitudDTO>>() {})
                 .block();

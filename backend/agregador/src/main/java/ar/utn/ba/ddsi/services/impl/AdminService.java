@@ -536,27 +536,44 @@ public class AdminService implements IAdminService {
         return new CategoriaOutputDTO(existing.getNombre());
     }
 
-
     @Override
-    public PaginaDTO<SolicitudOutputDTO> obtenerSolicitudesPaginadas(int page, int size) {
-
+    @Transactional(readOnly = true)
+    public PaginaDTO<SolicitudOutputDTO> obtenerSolicitudesPaginadas(
+            int page, int size,
+            Long id, String estadoStr, LocalDate fecha
+    ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("fechaEntrada").descending());
+        Page<SolicitudDeEliminacion> paginaEntidad;
 
-        Page<SolicitudDeEliminacion> paginaEntidades = solicitudRepo.findAll(pageable);
+        // 1. Convertir String a Enum
+        EstadoSolicitud estadoEnum = null;
+        if (estadoStr != null && !estadoStr.isBlank()) {
+            try {
+                // Mapeo flexible: "approved" -> ACEPTADA, "rejected" -> RECHAZADA, "pending" -> PENDIENTE
+                if("approved".equalsIgnoreCase(estadoStr)) estadoEnum = EstadoSolicitud.ACEPTADA;
+                else if("rejected".equalsIgnoreCase(estadoStr)) estadoEnum = EstadoSolicitud.RECHAZADA;
+                else if("pending".equalsIgnoreCase(estadoStr)) estadoEnum = EstadoSolicitud.PENDIENTE;
+                else estadoEnum = EstadoSolicitud.valueOf(estadoStr.toUpperCase());
+            } catch (Exception e) {
+                // Si el estado no existe, ignoramos el filtro
+            }
+        }
 
-        List<SolicitudOutputDTO> contenidoDTO = paginaEntidades.getContent().stream()
+        paginaEntidad = solicitudRepo.buscarConFiltros(id, estadoEnum, fecha, pageable);
+
+        List<SolicitudOutputDTO> contenidoDTO = paginaEntidad.getContent().stream()
                 .map(SolicitudOutputDTO::fromEntity)
                 .collect(Collectors.toList());
 
         PaginaDTO<SolicitudOutputDTO> respuesta = new PaginaDTO<>();
         respuesta.setContent(contenidoDTO);
-        respuesta.setNumber(paginaEntidades.getNumber());
-        respuesta.setSize(paginaEntidades.getSize());
-        respuesta.setTotalElements(paginaEntidades.getTotalElements());
-        respuesta.setTotalPages(paginaEntidades.getTotalPages());
-        respuesta.setNumberOfElements(paginaEntidades.getNumberOfElements());
-        respuesta.setFirst(paginaEntidades.isFirst());
-        respuesta.setLast(paginaEntidades.isLast());
+        respuesta.setNumber(paginaEntidad.getNumber());
+        respuesta.setSize(paginaEntidad.getSize());
+        respuesta.setTotalElements(paginaEntidad.getTotalElements());
+        respuesta.setTotalPages(paginaEntidad.getTotalPages());
+        respuesta.setNumberOfElements(paginaEntidad.getNumberOfElements());
+        respuesta.setFirst(paginaEntidad.isFirst());
+        respuesta.setLast(paginaEntidad.isLast());
 
         return respuesta;
     }

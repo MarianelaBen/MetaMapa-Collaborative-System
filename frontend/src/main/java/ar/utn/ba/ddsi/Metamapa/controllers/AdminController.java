@@ -74,16 +74,23 @@ public class AdminController {
     public String mostrarGestorSolicitudes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Long idSolicitud,
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             Model model
     ) {
-        // Sin try-catch.
-        PaginaDTO<SolicitudDTO> resp = adminService.obtenerSolicitudesPaginado(page, size);
+        PaginaDTO<SolicitudDTO> resp = adminService.obtenerSolicitudesPaginado(page, size, idSolicitud, estado, fecha);
 
         long from = resp.getNumber() * (long) resp.getSize() + (resp.getNumberOfElements() > 0 ? 1 : 0);
         long to   = resp.getNumber() * (long) resp.getSize() + resp.getNumberOfElements();
 
         model.addAttribute("titulo", "Gestor de Solicitudes");
         model.addAttribute("solicitudes", resp.getContent());
+
+        model.addAttribute("filtroId", idSolicitud);
+        model.addAttribute("filtroEstado", estado);
+        model.addAttribute("filtroFecha", fecha);
+
         model.addAttribute("page", resp.getNumber());
         model.addAttribute("size", resp.getSize());
         model.addAttribute("totalPages", resp.getTotalPages());

@@ -16,6 +16,7 @@ import ar.utn.ba.ddsi.models.dtos.output.ConsensoOutputDTO;
 import ar.utn.ba.ddsi.models.dtos.input.ConsensoInputDTO;
 */
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +45,9 @@ public interface IAdminService {
     CategoriaOutputDTO crearCategoria(CategoriaInputDTO dto);
     void eliminarCategoria(Long id);
     public CategoriaOutputDTO actualizarCategoria(Long id, CategoriaInputDTO dto);
-    PaginaDTO<SolicitudOutputDTO> obtenerSolicitudesPaginadas(int page, int size);
+    public PaginaDTO<SolicitudOutputDTO> obtenerSolicitudesPaginadas(
+            int page, int size,
+            Long id, String estadoStr, LocalDate fecha
+    );
     PaginaDTO<ColeccionOutputDTO> obtenerColeccionesPaginadas(int page, int size, String keyword);
 }

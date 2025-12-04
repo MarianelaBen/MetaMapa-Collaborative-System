@@ -20,10 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -327,9 +330,13 @@ public class AdminController {
     @GetMapping("/solicitudes/paginado")
     public ResponseEntity<PaginaDTO<SolicitudOutputDTO>> obtenerSolicitudes(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha
     ) {
-        PaginaDTO<SolicitudOutputDTO> resultado = servicio.obtenerSolicitudesPaginadas(page, size);
+        PaginaDTO<SolicitudOutputDTO> resultado = servicio.obtenerSolicitudesPaginadas(page, size, id, estado, fecha);
         return ResponseEntity.ok(resultado);
     }
 
@@ -337,7 +344,7 @@ public class AdminController {
     public ResponseEntity<PaginaDTO<ColeccionOutputDTO>> getColeccionesPaginadas(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String keyword // <--- Nuevo param
+            @RequestParam(required = false) String keyword
     ) {
 
         PaginaDTO<ColeccionOutputDTO> respuesta = servicio.obtenerColeccionesPaginadas(page, size, keyword);
