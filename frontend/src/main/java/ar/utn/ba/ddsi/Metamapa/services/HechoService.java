@@ -65,6 +65,23 @@ public class HechoService {
         return hechos;
     }
 
+    public List<HechoDTO> getUltimosHechos() {
+        try {
+            List<HechoDTO> hechos = webClientPublic.get()
+                    .uri("/ultimos-hechos")
+                    .retrieve()
+                    .bodyToFlux(HechoDTO.class)
+                    .collectList()
+                    .block();
+
+            return (hechos != null) ? hechos : List.of();
+
+        } catch (Exception e) {
+            System.err.println("Error obteniendo últimos hechos: " + e.getMessage());
+            return List.of();
+        }
+    }
+
     public HechoDTO getHechoPorId(Long id) {
         if (id == null) return null;
         try {

@@ -39,5 +39,5 @@ public interface IAgregadorService {
     List<HechoOutputDTO> obtenerHechosPorContribuyenteFiltrado(
       Long contribuyenteId, String titulo, String categoria, String estado);
     PaginaDTO<CategoriaOutputDTO> obtenerPaginado(int page, int size);
-
+    List<HechoOutputDTO> getUltimosHechos();
 }

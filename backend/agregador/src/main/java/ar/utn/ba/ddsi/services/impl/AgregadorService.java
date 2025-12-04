@@ -125,6 +125,18 @@ public class AgregadorService implements IAgregadorService {
                 .collect(Collectors.toList());
     }
 
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<HechoOutputDTO> getUltimosHechos() {
+        List<Hecho> hechos = hechoRepository.findTop1000ByFueEliminadoFalseOrderByFechaCargaDesc();
+
+        return hechos.stream()
+                .map(this::hechoOutputDTO)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public List<HechoOutputDTO> obtenerHechosPorContribuyente(Long contribuyenteId) {
         List<Hecho> hechos = hechoRepository.buscarPorIdContribuyente(contribuyenteId);

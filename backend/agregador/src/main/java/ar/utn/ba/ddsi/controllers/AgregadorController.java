@@ -95,6 +95,24 @@ public class AgregadorController {
         }
     }
 
+    @GetMapping("/ultimos-hechos")
+    public ResponseEntity<?> getUltimosHechos(){
+        try{
+            return ResponseEntity.ok(this.agregadorService.getUltimosHechos());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error","Solicitud no valida","mensaje", e.getMessage()));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error","Hechos no encontrados","mensaje", e.getMessage()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
+        }
+    }
+
+
   @GetMapping("/hechos/mis")
   public ResponseEntity<List<HechoOutputDTO>> getHechosDelContribuyente(
       @RequestParam("contribuyenteId") Long contribuyenteId) {

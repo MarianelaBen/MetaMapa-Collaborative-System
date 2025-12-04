@@ -29,4 +29,8 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
     //List<Hecho> findByContribuyente_IdAndFueEliminadoFalseOrderByFechaCargaDesc(Long contribuyenteId);
     //List<Hecho> findAllByContribuyenteWithJoins(@Param("contribuyenteId") Long contribuyenteId);
     Optional<Hecho> findByIdEnFuente(Long idEnFuente);
+    @Query(value = "SELECT * FROM hecho h WHERE h.fue_eliminado = false ORDER BY h.fecha_carga DESC LIMIT :limit", nativeQuery = true)
+    List<Hecho> findUltimosHechos(@Param("limit") int limit);
+
+    List<Hecho> findTop1000ByFueEliminadoFalseOrderByFechaCargaDesc();
 }
