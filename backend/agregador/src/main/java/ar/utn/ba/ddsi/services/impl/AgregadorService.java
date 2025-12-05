@@ -73,26 +73,26 @@ public class AgregadorService implements IAgregadorService {
 
         List<Hecho> hechosNuevos = fuentes.stream()
 
-                .flatMap(f -> {
-                    try {
-                        return obtenerTodosLosHechosDeFuente(f).stream();
-                    } catch (Exception e) {
-                        System.err.println("⚠️ ALERTA: Falló la fuente " + f.getUrl() + " (" + f.getTipo() + "). Causa: " + e.getMessage());
-                        return java.util.stream.Stream.empty();
-                    }
-                })
+            .flatMap(f -> {
+                try {
+                    return obtenerTodosLosHechosDeFuente(f).stream();
+                } catch (Exception e) {
+                    System.err.println("⚠️ ALERTA: Falló la fuente " + f.getUrl() + " (" + f.getTipo() + "). Causa: " + e.getMessage());
+                    return java.util.stream.Stream.empty();
+                }
+            })
 
-                .map(h -> {
-                    try {
-                        normalizadorService.normalizar(h);
-                        return h;
-                    } catch (IllegalArgumentException e) {
-                        System.err.println("Error normalizando hecho: " + h.getTitulo());
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+            .map(h -> {
+                try {
+                    normalizadorService.normalizar(h);
+                    return h;
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Error normalizando hecho: " + h.getTitulo());
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
 
         if (hechosNuevos.isEmpty()) {
             System.err.println("No se pudieron obtener hechos nuevos (o todas las fuentes fallaron).");
@@ -101,23 +101,47 @@ public class AgregadorService implements IAgregadorService {
 
         List<Hecho> hechosParaGuardar = new ArrayList<>();
 
+        // 🔽 🔽 🔽 ÚNICA PARTE CAMBIADA 🔽 🔽 🔽
         for (Hecho hechoNuevo : hechosNuevos) {
-            Optional<Hecho> hechoExistente = hechoRepository.findByTitulo(hechoNuevo.getTitulo());
+
+            Optional<Hecho> hechoExistente;
+
+            // Si tiene idEnFuente (Dinámica / Estática) → identifico por idEnFuente
+            if (hechoNuevo.getIdEnFuente() != null) {
+                hechoExistente = hechoRepository.findByIdEnFuenteAndOrigen(
+                    hechoNuevo.getIdEnFuente(),
+                    hechoNuevo.getOrigen()
+                );
+
+            } else {
+                // Si no tiene idEnFuente (Proxy) → identifico por título como antes
+                hechoExistente = hechoRepository.findByTitulo(hechoNuevo.getTitulo());
+            }
 
             if (hechoExistente.isPresent()) {
                 Hecho existente = hechoExistente.get();
-                existente.setFechaCarga(LocalDate.now());
-                existente.setFueEliminado(false);
+
+                // Si NO cambió el contenido, no hago nada
+                if (!existente.huboEdicion(hechoNuevo)) {
+                    continue;
+                }
+
+                // Si SÍ hubo cambios → actualizo el existente con los datos nuevos
+                existente.actualizarDesde(hechoNuevo);
                 hechosParaGuardar.add(existente);
+
             } else {
+                // No existía → se guarda como nuevo
                 hechosParaGuardar.add(hechoNuevo);
             }
         }
+        // 🔼 🔼 🔼 ÚNICA PARTE CAMBIADA 🔼 🔼 🔼
 
         hechoRepository.saveAll(hechosParaGuardar);
 
         return hechosParaGuardar;
     }
+
     @Override
     @Transactional(readOnly = true)
     public List<HechoOutputDTO> obtenerHechos() {

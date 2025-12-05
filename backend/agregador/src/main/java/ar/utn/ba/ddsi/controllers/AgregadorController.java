@@ -9,6 +9,7 @@ import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.Hecho;
 import ar.utn.ba.ddsi.models.entities.SolicitudDeEliminacion;
+import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
 import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
 import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
@@ -404,8 +405,7 @@ public class AgregadorController {
 
   @GetMapping("/hechos/id-por-fuente/{idEnFuente}")
   public ResponseEntity<Long> getIdHechoPorIdEnFuente(@PathVariable Long idEnFuente) {
-    return hechoRepository.findByIdEnFuente(idEnFuente)
-        .map(Hecho::getId)
+    return hechoRepository.findByIdEnFuenteAndOrigen(idEnFuente, Origen.PROVISTO_POR_CONTRIBUYENTE).map(Hecho::getId)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }

@@ -137,4 +137,69 @@ public class Hecho {
   public void limpiarConsensos() {
     this.consensoPorAlgoritmo.clear();
   }
+
+  public boolean huboEdicion(Hecho otro) {
+    if (otro == null) return false;
+
+    boolean tituloCambio = !Objects.equals(this.titulo, otro.titulo);
+    boolean descripcionCambio = !Objects.equals(this.descripcion, otro.descripcion);
+
+    boolean categoriaCambio = !Objects.equals(
+        this.categoria != null ? this.categoria.getNombre() : null,
+        otro.categoria != null ? otro.categoria.getNombre() : null
+    );
+
+    boolean fechaAcontecimientoCambio = !Objects.equals(this.fechaAcontecimiento, otro.fechaAcontecimiento);
+
+    boolean ubicacionCambio = false;
+    if (this.ubicacion != null && otro.ubicacion != null) {
+      ubicacionCambio =
+          !Objects.equals(this.ubicacion.getLatitud(), otro.ubicacion.getLatitud()) ||
+              !Objects.equals(this.ubicacion.getLongitud(), otro.ubicacion.getLongitud()) ||
+              !Objects.equals(this.ubicacion.getProvincia(), otro.ubicacion.getProvincia());
+    } else if (this.ubicacion != otro.ubicacion) {
+      ubicacionCambio = true;
+    }
+
+    boolean multimediaCambio = !Objects.equals(this.pathMultimedia, otro.pathMultimedia);
+
+    boolean eliminadoCambio = !Objects.equals(this.fueEliminado, otro.fueEliminado);
+
+    return tituloCambio ||
+        descripcionCambio ||
+        categoriaCambio ||
+        fechaAcontecimientoCambio ||
+        ubicacionCambio ||
+        multimediaCambio ||
+        eliminadoCambio;
+  }
+
+  public void actualizarDesde(Hecho otro) {
+    if (otro == null) return;
+
+    this.titulo = otro.titulo;
+    this.descripcion = otro.descripcion;
+    this.categoria = otro.categoria;
+
+    this.fechaAcontecimiento = otro.fechaAcontecimiento;
+
+    // Actualizar ubicación campo por campo
+    if (this.ubicacion != null && otro.ubicacion != null) {
+      this.ubicacion.setLatitud(otro.ubicacion.getLatitud());
+      this.ubicacion.setLongitud(otro.ubicacion.getLongitud());
+      this.ubicacion.setProvincia(otro.ubicacion.getProvincia());
+    } else {
+      this.ubicacion = otro.ubicacion;
+    }
+
+    this.pathMultimedia = otro.pathMultimedia != null ?
+        new ArrayList<>(otro.pathMultimedia) :
+        new ArrayList<>();
+
+    this.fueEliminado = otro.fueEliminado;
+
+    this.fechaActualizacion = LocalDate.now();
+  }
+
+
 }

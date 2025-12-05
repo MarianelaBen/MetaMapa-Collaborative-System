@@ -3,6 +3,7 @@ package ar.utn.ba.ddsi.models.repositories;
 import ar.utn.ba.ddsi.models.entities.Categoria;
 import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.enumerados.Origen;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,7 +32,7 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
     Optional<Hecho> findByTitulo(String titulo);
     //List<Hecho> findByContribuyente_IdAndFueEliminadoFalseOrderByFechaCargaDesc(Long contribuyenteId);
     //List<Hecho> findAllByContribuyenteWithJoins(@Param("contribuyenteId") Long contribuyenteId);
-    Optional<Hecho> findByIdEnFuente(Long idEnFuente);
+    Optional<Hecho> findByIdEnFuenteAndOrigen(Long idEnFuente, Origen origen);
     @Query(value = "SELECT * FROM hecho h WHERE h.fue_eliminado = false ORDER BY h.fecha_carga DESC LIMIT :limit", nativeQuery = true)
     List<Hecho> findUltimosHechos(@Param("limit") int limit);
 

@@ -133,6 +133,7 @@ public class HechoService implements IHechoService {
     dto.setUbicacion(ubicacionOutputDTO(hecho.getUbicacion()));
     dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     dto.setFechaCarga(hecho.getFechaCarga());
+    dto.setFueEliminado(hecho.getFueEliminado());
     //dto.setOrigen(hecho.getOrigen());       // extrae el id de cada etiqueta y los junta en un Set<Integer>
     // dto.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
     //dto.setContribuyente(contribuyenteOutputDTO(hecho.getContribuyente()));
