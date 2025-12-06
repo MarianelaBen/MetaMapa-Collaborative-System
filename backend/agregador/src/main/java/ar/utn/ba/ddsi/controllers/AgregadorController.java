@@ -146,13 +146,17 @@ public class AgregadorController {
             @RequestParam(required = false) Long idHecho,
             @RequestParam(required = false) String ubicacion,
             @RequestParam(required = false) String estado,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+
+            // NUEVOS PARAMETROS
+            @RequestParam(required = false) Double latitud,
+            @RequestParam(required = false) Double longitud,
+            @RequestParam(required = false) Double radio
     ) {
-
+        // Pasamos los nuevos datos al servicio
         Page<HechoOutputDTO> pagina = agregadorService.obtenerHechosConPaginacion(
-                page, size, sort, idHecho, ubicacion, estado, fecha
+                page, size, sort, idHecho, ubicacion, estado, fecha, latitud, longitud, radio
         );
-
         return ResponseEntity.ok(pagina);
     }
 

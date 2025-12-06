@@ -41,7 +41,9 @@ public class AdminService {
 
     public PaginaDTO<HechoDTO> obtenerHechosPaginado(
             int page, int size,
-            Long id, String ubicacion, String estado, LocalDate fecha
+            Long id, String ubicacion, String estado, LocalDate fecha,
+            // NUEVOS
+            Double lat, Double lon, Double radio
     ) {
         return webClientPublic.get()
                 .uri(uriBuilder -> {
@@ -54,6 +56,11 @@ public class AdminService {
                     if (ubicacion != null && !ubicacion.isBlank()) builder.queryParam("ubicacion", ubicacion);
                     if (estado != null && !estado.isBlank()) builder.queryParam("estado", estado);
                     if (fecha != null) builder.queryParam("fecha", fecha);
+
+                    // NUEVOS
+                    if (lat != null) builder.queryParam("latitud", lat);
+                    if (lon != null) builder.queryParam("longitud", lon);
+                    if (radio != null) builder.queryParam("radio", radio);
 
                     return builder.build();
                 })

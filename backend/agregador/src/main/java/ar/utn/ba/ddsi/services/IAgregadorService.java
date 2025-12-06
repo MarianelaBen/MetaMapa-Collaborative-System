@@ -41,7 +41,8 @@ public interface IAgregadorService {
     PaginaDTO<CategoriaOutputDTO> obtenerPaginado(int page, int size);
     List<HechoOutputDTO> getUltimosHechos();
     public Page<HechoOutputDTO> obtenerHechosConPaginacion(
-            int page, int size, String sort, // Paginación
-            Long id, String ubicacion, String estado, LocalDate fecha // Filtros
+            int page, int size, String sort,
+            Long id, String ubicacion, String estado, LocalDate fecha,
+            Double latitud, Double longitud, Double radio
     );
 }

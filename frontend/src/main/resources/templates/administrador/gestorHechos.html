@@ -4,6 +4,46 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <style>
+        /* CSS Extra para el autocompletado en el Admin */
+        .geo-filter-wrapper {
+            display: flex;
+            gap: 5px;
+            position: relative;
+        }
+        .geo-container {
+            flex-grow: 1;
+            position: relative;
+        }
+        .sugerencias-geo {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .sugerencias-geo li {
+            padding: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+        }
+        .sugerencias-geo li:hover { background-color: #f0f0f0; color: #007bff; }
+
+        .radio-input-group { width: 70px; flex-shrink: 0; }
+        .radio-input-group input { width: 100%; }
+    </style>
 </div>
 
 <div class="container" th:fragment="contenido">
@@ -15,15 +55,18 @@
             </div>
             <button class="btn-add-new" onclick="location.href='/admin/importarCSV'">
                 <i class="fas fa-file-upload"></i>
-                Nueva Importación CSV
+                Importar CSV
             </button>
         </div>
 
-        <form th:action="@{/admin/gestor-hechos}" method="get" class="filters-section">
+        <form th:action="@{/admin/gestor-hechos}" method="get" class="filters-section" id="filterForm">
+            <input type="hidden" id="latitud" name="latitud" th:value="${filtroLat}">
+            <input type="hidden" id="longitud" name="longitud" th:value="${filtroLon}">
+
             <div class="filters-grid">
 
                 <div class="filter-group">
-                    <label class="filter-label">Filtrar por Estado</label>
+                    <label class="filter-label">Estado</label>
                     <select class="filter-select" name="estado" onchange="this.form.submit()">
                         <option value="" th:selected="${filtroEstado == null}">Todos</option>
                         <option value="approved" th:selected="${filtroEstado == 'approved'}">Aprobado</option>
@@ -31,31 +74,41 @@
                     </select>
                 </div>
 
-                <div class="filter-group">
-                    <label class="filter-label">Filtrar por Ubicación</label>
-                    <input type="text" class="filter-input" name="ubicacion"
-                           placeholder="Provincia..." th:value="${filtroUbicacion}">
+                <div class="filter-group" style="grid-column: span 2;">
+                    <label class="filter-label">Ubicación y Radio</label>
+                    <div class="geo-filter-wrapper">
+                        <div class="geo-container">
+                            <input type="text" id="buscador-geo" class="filter-input"
+                                   placeholder="Dirección..." th:value="${filtroUbicacion}"
+                                   autocomplete="off" name="ubicacion">
+                            <ul id="sugerencias-geo" class="sugerencias-geo"></ul>
+                        </div>
+                        <div class="radio-input-group">
+                            <input type="number" name="radio" class="filter-input"
+                                   th:value="${filtroRadio != null ? filtroRadio : 10}"
+                                   min="1" placeholder="Km" title="Radio en Km">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="filter-group">
-                    <label class="filter-label">Buscar por ID</label>
+                    <label class="filter-label">ID</label>
                     <input type="number" class="filter-input" name="idHecho"
                            placeholder="ID..." th:value="${filtroId}">
                 </div>
 
                 <div class="filter-group">
-                    <label class="filter-label">Fecha Exacta</label>
+                    <label class="filter-label">Fecha</label>
                     <input type="date" class="filter-input" name="fecha"
                            th:value="${filtroFecha}" onchange="this.form.submit()">
                 </div>
 
                 <div class="filter-actions">
                     <button type="submit" class="btn-search">
-                        <i class="fas fa-search"></i> Buscar
+                        <i class="fas fa-search"></i>
                     </button>
-
-                    <a th:href="@{/admin/gestor-hechos}" class="btn-clear">
-                        <i class="fas fa-undo"></i> Limpiar
+                    <a th:href="@{/admin/gestor-hechos}" class="btn-clear" title="Limpiar filtros">
+                        <i class="fas fa-undo"></i>
                     </a>
                 </div>
             </div>
@@ -78,10 +131,10 @@
                 <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
 
                 <tr th:each="hecho : ${hechos}">
-                    <td th:text="${hecho.id}">ID</td>
-                    <td th:text="${hecho.fechaAcontecimiento != null ? hecho.fechaAcontecimiento.toLocalDate() : ''}">Date</td>
-                    <td th:text="${hecho.titulo}">Título</td>
-                    <td th:text="${hecho.provincia}">Provincia</td>
+                    <td th:text="${hecho.id}"></td>
+                    <td th:text="${hecho.fechaAcontecimiento != null ? hecho.fechaAcontecimiento.toLocalDate() : ''}"></td>
+                    <td th:text="${hecho.titulo}"></td>
+                    <td th:text="${hecho.provincia}"></td>
                     <td>
                         <span th:classappend="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'status-badge status-approved' : 'status-badge status-rejected'"
                               th:text="${hecho.fueEliminado != null and !hecho.fueEliminado} ? 'APROBADO' : 'ELIMINADO'"></span>
@@ -91,11 +144,8 @@
                             <a class="btn-action view" title="Ver" th:href="@{/hechos/{id}(id=${hecho.id})}">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <button type="button"
-                                    class="btn-action delete"
-                                    title="Eliminar"
-                                    th:attr="data-handle=${hecho.id}"
-                                    onclick="confirmDelete(this.dataset.handle)">
+                            <button type="button" class="btn-action delete" title="Eliminar"
+                                    th:attr="data-handle=${hecho.id}" onclick="confirmDelete(this.dataset.handle)">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -106,48 +156,44 @@
 
             <div th:if="${hechos == null || hechos.isEmpty()}" style="text-align:center; padding:3rem;">
                 <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                <h4 class="text-muted">No se encontraron hechos con estos filtros.</h4>
+                <h4 class="text-muted">No se encontraron hechos.</h4>
             </div>
 
             <div class="table-footer" th:if="${totalPages > 0}">
                 <div class="showing-text">
-                    Mostrando <span th:text="${from}">1</span>–<span th:text="${to}">50</span>
-                    de <span th:text="${totalElements}">0</span> hechos.
+                    Mostrando <span th:text="${from}"></span>–<span th:text="${to}"></span>
+                    de <span th:text="${totalElements}"></span> hechos.
                 </div>
 
                 <div class="pagination" th:if="${totalPages > 1}">
                     <a class="pagination-btn"
                        th:classappend="${page == 0} ? ' disabled'"
-                       th:href="@{/admin/gestor-hechos(page=0, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, estado=${filtroEstado}, fecha=${filtroFecha})}">«</a>
+                       th:href="@{/admin/gestor-hechos(page=0, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, latitud=${filtroLat}, longitud=${filtroLon}, radio=${filtroRadio}, estado=${filtroEstado}, fecha=${filtroFecha})}">«</a>
 
                     <a class="pagination-btn"
                        th:classappend="${!hasPrev} ? ' disabled'"
-                       th:href="@{/admin/gestor-hechos(page=${prevPage}, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, estado=${filtroEstado}, fecha=${filtroFecha})}">‹</a>
+                       th:href="@{/admin/gestor-hechos(page=${prevPage}, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, latitud=${filtroLat}, longitud=${filtroLon}, radio=${filtroRadio}, estado=${filtroEstado}, fecha=${filtroFecha})}">‹</a>
 
-                    <span class="pagination-btn active" th:text="${page + 1}">1</span>
+                    <span class="pagination-btn active" th:text="${page + 1}"></span>
 
                     <a class="pagination-btn"
                        th:classappend="${!hasNext} ? ' disabled'"
-                       th:href="@{/admin/gestor-hechos(page=${nextPage}, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, estado=${filtroEstado}, fecha=${filtroFecha})}">›</a>
+                       th:href="@{/admin/gestor-hechos(page=${nextPage}, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, latitud=${filtroLat}, longitud=${filtroLon}, radio=${filtroRadio}, estado=${filtroEstado}, fecha=${filtroFecha})}">›</a>
 
                     <a class="pagination-btn"
                        th:classappend="${page + 1 == totalPages} ? ' disabled'"
-                       th:href="@{/admin/gestor-hechos(page=${totalPages - 1}, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, estado=${filtroEstado}, fecha=${filtroFecha})}">»</a>
+                       th:href="@{/admin/gestor-hechos(page=${totalPages - 1}, size=${size}, idHecho=${filtroId}, ubicacion=${filtroUbicacion}, latitud=${filtroLat}, longitud=${filtroLon}, radio=${filtroRadio}, estado=${filtroEstado}, fecha=${filtroFecha})}">»</a>
                 </div>
             </div>
         </div>
 
         <div class="categoria-section" style="margin-top: 40px;">
             <div class="page-header">
-                <div>
-                    <h1 class="page-title">Gestión de Categorías</h1>
-                    <p class="page-subtitle">Administra las categorías disponibles</p>
-                </div>
+                <div><h1 class="page-title">Gestión de Categorías</h1></div>
                 <button class="btn btn-primary" onclick="mostrarModalCategoria()" style="align-self: end;">
-                    <i class="fas fa-plus"></i> Nueva Categoría
+                    <i class="fas fa-plus"></i> Nueva
                 </button>
             </div>
-
             <div class="table-container">
                 <table class="table">
                     <thead th:if="${categorias != null && !categorias.isEmpty()}">
@@ -174,12 +220,6 @@
                     </tr>
                     </tbody>
                 </table>
-                <div class="table-footer" th:if="${catTotalPages > 0}">
-                    <div class="showing-text">Total: <span th:text="${catTotalElements}">0</span> categorías</div>
-                    <div class="pagination" th:if="${catTotalPages > 1}">
-                        <a class="pagination-btn" th:href="@{/admin/gestor-hechos(page=${page}, size=${size}, catPage=${catNextPage})}">›</a>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -200,7 +240,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn-secondary" onclick="cerrarModalCategoria()">Cancelar</button>
-                        <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                        <button type="submit" class="btn-primary">Guardar</button>
                     </div>
                 </form>
             </div>
@@ -215,19 +255,70 @@
     </form>
 
     <script>
-        // Scripts existentes se mantienen igual
+        document.addEventListener('DOMContentLoaded', () => {
+            // Lógica de Autocompletado Geoespacial
+            const $buscador = document.getElementById('buscador-geo');
+            const $sugs = document.getElementById('sugerencias-geo');
+            const $lat = document.getElementById('latitud');
+            const $lon = document.getElementById('longitud');
+            let timer = null;
+
+            function limpiarSugerencias() {
+                if ($sugs) { $sugs.innerHTML = ''; $sugs.style.display = 'none'; }
+            }
+
+            async function buscar(q) {
+                // API Local
+                const url = `http://localhost:8083/api/geo/sugerencias?query=${encodeURIComponent(q)}&max=5`;
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) return limpiarSugerencias();
+                    const data = await res.json();
+                    const items = data.direcciones || data;
+
+                    if (!items || items.length === 0) return limpiarSugerencias();
+
+                    $sugs.innerHTML = '';
+                    items.forEach((it) => {
+                        const li = document.createElement('li');
+                        li.textContent = it.label || it.direccion;
+                        li.addEventListener('click', () => {
+                            if ($lat) $lat.value = it.latitud;
+                            if ($lon) $lon.value = it.longitud;
+                            if ($buscador) $buscador.value = it.label || it.direccion;
+                            limpiarSugerencias();
+                        });
+                        $sugs.appendChild(li);
+                    });
+                    $sugs.style.display = 'block';
+                } catch (e) { console.error(e); limpiarSugerencias(); }
+            }
+
+            if ($buscador) {
+                $buscador.addEventListener('input', () => {
+                    const q = $buscador.value.trim();
+                    if (q.length === 0) { if ($lat) $lat.value = ''; if ($lon) $lon.value = ''; }
+                    if (timer) clearTimeout(timer);
+                    if (q.length < 3) { limpiarSugerencias(); return; }
+                    timer = setTimeout(() => buscar(q), 300);
+                });
+                document.addEventListener('click', (e) => {
+                    if ($sugs && !$sugs.contains(e.target) && e.target !== $buscador) limpiarSugerencias();
+                });
+            }
+        });
+
+        // Funciones de Confirmación y Modales (Legacy)
         function confirmDelete(handle) {
             const doConfirm = () => {
                 const form = document.getElementById('deleteForm');
                 form.action = `/admin/hecho/${encodeURIComponent(handle)}/eliminar`;
                 form.submit();
             };
-            if (window.Swal) {
-                Swal.fire({ title: '¿Eliminar hecho?', text: 'Irreversible', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar' }).then(r => { if(r.isConfirmed) doConfirm(); });
-            } else if (confirm('¿Eliminar hecho?')) doConfirm();
+            if (window.Swal) Swal.fire({ title: '¿Eliminar hecho?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí' }).then(r => { if(r.isConfirmed) doConfirm(); });
+            else if (confirm('¿Eliminar hecho?')) doConfirm();
         }
 
-        // Funciones de Categoría
         function mostrarModalCategoria() {
             const form = document.getElementById('formCategoria');
             form.reset();
@@ -251,9 +342,8 @@
                 form.action = `/admin/categorias/${encodeURIComponent(id)}/eliminar`;
                 form.submit();
             };
-            if (window.Swal) {
-                Swal.fire({ title: '¿Eliminar categoría?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí' }).then(r => { if(r.isConfirmed) doDelete(); });
-            } else if (confirm('¿Eliminar?')) doDelete();
+            if (window.Swal) Swal.fire({ title: '¿Eliminar categoría?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí' }).then(r => { if(r.isConfirmed) doDelete(); });
+            else if (confirm('¿Eliminar?')) doDelete();
         }
     </script>
 </div>

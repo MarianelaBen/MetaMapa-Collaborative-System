@@ -227,16 +227,39 @@ public class AgregadorService implements IAgregadorService {
     @Override
     @Transactional(readOnly = true)
     public Page<HechoOutputDTO> obtenerHechosConPaginacion(
-            int page, int size, String sort, // Paginación
-            Long id, String ubicacion, String estado, LocalDate fecha // Filtros
+            int page, int size, String sort,
+            Long id, String ubicacion, String estado, LocalDate fecha,
+            Double latitud, Double longitud, Double radio
     ) {
-        // 1. Construir el objeto Sort
+
         Sort sortObj;
         String[] parts = sort.split(",", 2);
-        if (parts.length == 2) {
-            sortObj = "desc".equalsIgnoreCase(parts[1]) ? Sort.by(parts[0]).descending() : Sort.by(parts[0]).ascending();
+        String campo = parts[0];
+        String direccion = (parts.length == 2) ? parts[1] : "asc";
+
+        switch (campo) {
+            case "fechaAcontecimiento":
+                campo = "fecha_acontecimiento";
+                break;
+            case "fechaCarga":
+                campo = "fecha_carga";
+                break;
+            case "titulo":
+
+                campo = "titulo";
+                break;
+            case "id":
+                campo = "id";
+                break;
+            default:
+                campo = "fecha_carga";
+                break;
+        }
+
+        if ("desc".equalsIgnoreCase(direccion)) {
+            sortObj = Sort.by(campo).descending();
         } else {
-            sortObj = Sort.by(sort);
+            sortObj = Sort.by(campo).ascending();
         }
 
         Pageable pageable = PageRequest.of(page, Math.max(1, Math.min(size, 200)), sortObj);
@@ -248,7 +271,9 @@ public class AgregadorService implements IAgregadorService {
             eliminado = true;
         }
 
-        Page<Hecho> paginaEntidad = hechoRepository.buscarConFiltros(id, ubicacion, eliminado, fecha, pageable);
+        Page<Hecho> paginaEntidad = hechoRepository.buscarConFiltros(
+                id, ubicacion, eliminado, fecha, latitud, longitud, radio, pageable
+        );
 
         return paginaEntidad.map(this::hechoOutputDTO);
     }
