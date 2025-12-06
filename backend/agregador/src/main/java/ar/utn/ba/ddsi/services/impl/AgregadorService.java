@@ -29,6 +29,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.text.Normalizer;
+
 
 @Service
 public class AgregadorService implements IAgregadorService {
@@ -491,7 +493,7 @@ public class AgregadorService implements IAgregadorService {
             }
         }
 
-        if (keyword != null && !keyword.isBlank()) {
+        /*if (keyword != null && !keyword.isBlank()) {
             String k = keyword.toLowerCase();
             String titulo = (hecho.getTitulo() != null) ? hecho.getTitulo().toLowerCase() : "";
             String desc = (hecho.getDescripcion() != null) ? hecho.getDescripcion().toLowerCase() : "";
@@ -499,7 +501,17 @@ public class AgregadorService implements IAgregadorService {
             if (!titulo.contains(k) && !desc.contains(k)) {
                 return false;
             }
+        }*/
+      //AGREGO ESTE PARA QUE LOS EL FILTRO POR KEYWORD FUNCIONE NO DISTINGA TILDES NI MAYUSCULAS
+      if (keyword != null && !keyword.isBlank()) {
+        String k = normalizar(keyword);
+        String tituloNorm = normalizar(hecho.getTitulo());
+        String descNorm   = normalizar(hecho.getDescripcion());
+
+        if (!tituloNorm.contains(k) && !descNorm.contains(k)) {
+          return false;
         }
+      }
 
         if (fechaDesde != null) {
             if (hecho.getFechaAcontecimiento() == null ||
@@ -566,5 +578,13 @@ public class AgregadorService implements IAgregadorService {
         CategoriaOutputDTO dto = new CategoriaOutputDTO(entidad.getNombre());
         dto.setId(entidad.getId());
         return dto;
+    }
+
+    //AGREGO PARA FILTROS
+    private String normalizar(String s) {
+      if (s == null) return "";
+      String sinTildes = Normalizer.normalize(s, Normalizer.Form.NFD)
+          .replaceAll("\\p{M}", "");
+      return sinTildes.toLowerCase();
     }
 }

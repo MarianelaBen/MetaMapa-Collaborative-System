@@ -1,0 +1,14 @@
+titulo,descripcion,categoria,latitud,longitud,fecha,origen,coleccionId
+Incendio en depósito,Se observó humo saliendo de un depósito abandonado.,Incendio,-34.603722,-58.381592,2024-09-12,Vecino,1
+Rescate de mascota,Bomberos rescataron un gato atrapado en un árbol.,Rescate,-34.62,-58.43,2024-11-02,Bomberos,1
+Protesta barrial,Vecinos se reunieron para reclamar mejoras.,Protesta,-34.5901,-58.4205,2024-10-05,ONG,2
+Arroyo contaminado,Apareció espuma blanca en la superficie del arroyo.,Contaminación,-34.7,-58.5,2024-07-22,Denuncia Web,2
+Pozo en la calle,Hay un pozo profundo sin señalización.,Infraestructura,-34.6109,-58.3801,2024-12-01,Vecino,3
+Evento sin latitud,Prueba de error por latitud vacía.,ErrorLat,,-58.45,2024-08-02,Test,2
+Evento sin longitud,Prueba de error por longitud vacía.,ErrorLong,-34.59,,2024-08-02,Test,2
+Fecha inválida,Esta fecha es inválida.,ErrorFecha,-34.5,-58.45,2024-99-99,Test,1
+Coordenada fuera de rango,Latitud imposible.,ErrorCoord,95.0,-58.4,2024-09-01,Test,1
+Descripción muy larga,"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",Test,-34.62,-58.42,2024-07-10,ONG,4
+Hecho duplicado,Este hecho está duplicado para probar validación.,Duplicado,-34.6005,-58.3902,2024-06-01,Vecino,1
+Hecho duplicado,Este hecho está duplicado para probar validación.,Duplicado,-34.6005,-58.3902,2024-06-01,Vecino,1
+ID inexistente,Colección que no existe.,ErrorCol,-34.65,-58.49,2024-05-11,Test,999
