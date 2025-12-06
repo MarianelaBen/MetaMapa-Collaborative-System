@@ -196,7 +196,6 @@ public class Hecho {
         new ArrayList<>(otro.pathMultimedia) :
         new ArrayList<>();
 
-    this.fueEliminado = otro.fueEliminado;
 
     this.fechaActualizacion = LocalDate.now();
   }
