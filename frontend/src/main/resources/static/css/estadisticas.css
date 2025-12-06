@@ -2,7 +2,12 @@
 .main-content {
     flex: 1;
     padding: 32px;
-    background-color: #f8f9fa;
+    background-color: #ffffff;
+}
+
+body,
+.container {
+    background-color: #ffffff;
 }
 
 /* Header */
