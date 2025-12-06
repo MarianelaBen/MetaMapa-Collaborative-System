@@ -102,14 +102,14 @@ public class ColeccionService {
     public PaginaDTO<HechoDTO> buscarHechos(String handle, String categoria, String fuente,
                                             String ubicacion, String keyword,
                                             LocalDate fechaDesde, LocalDate fechaHasta,
-                                            Boolean modoCurado, int page, int size) {
+                                            Boolean modoCurado,
+                                            Double latitud, Double longitud, Double radio, // <--- Nuevos parámetros
+                                            int page, int size) {
         try {
-            // CORRECCIÓN: El tipo de retorno es PaginaDTO, no List
             return webClientPublic.get()
                     .uri(uriBuilder -> {
                         uriBuilder.path("/colecciones/{handle}/hechos");
 
-                        // Agregamos parámetros solo si tienen valor
                         if (categoria != null && !categoria.isBlank()) {
                             uriBuilder.queryParam("categoria", categoria);
                         }
@@ -117,7 +117,7 @@ public class ColeccionService {
                             uriBuilder.queryParam("fuente", fuente);
                         }
                         if (ubicacion != null && !ubicacion.isBlank()) {
-                            uriBuilder.queryParam("ubicacion", ubicacion);
+                            uriBuilder.queryParam("ubicacion", ubicacion); // Texto de referencia
                         }
                         if (keyword != null && !keyword.isBlank()) {
                             uriBuilder.queryParam("q", keyword);
@@ -129,19 +129,27 @@ public class ColeccionService {
                             uriBuilder.queryParam("fecha_acontecimiento_hasta", fechaHasta.toString());
                         }
 
-                        // Lógica del modo curado
+                        if (latitud != null) {
+                            uriBuilder.queryParam("latitud", latitud);
+                        }
+                        if (longitud != null) {
+                            uriBuilder.queryParam("longitud", longitud);
+                        }
+                        if (radio != null) {
+                            uriBuilder.queryParam("radio", radio);
+                        }
+
+
                         if (Boolean.TRUE.equals(modoCurado)) {
                             uriBuilder.queryParam("modo", "CURADO");
                         }
 
-                        // Parámetros de paginación
                         uriBuilder.queryParam("page", page);
                         uriBuilder.queryParam("size", size);
 
                         return uriBuilder.build(handle);
                     })
                     .retrieve()
-
                     .bodyToMono(new ParameterizedTypeReference<PaginaDTO<HechoDTO>>() {})
                     .block();
 
@@ -149,7 +157,7 @@ public class ColeccionService {
             PaginaDTO<HechoDTO> vacio = new PaginaDTO<>();
             vacio.setContent(new ArrayList<>());
             vacio.setTotalPages(0);
-            vacio.setTotalElements(0);
+            vacio.setTotalElements(0L);
             vacio.setNumber(0);
             return vacio;
         } catch (Exception e) {

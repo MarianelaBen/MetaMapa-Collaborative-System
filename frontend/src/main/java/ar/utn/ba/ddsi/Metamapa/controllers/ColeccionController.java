@@ -62,19 +62,29 @@ public class ColeccionController {
             @PathVariable String handle,
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) String fuente,
-            @RequestParam(required = false) String ubicacion,
+            @RequestParam(required = false) String ubicacion, // Queda como texto de referencia
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesde,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta,
             @RequestParam(required = false, defaultValue = "false") Boolean modoCurado,
+
+            // --- NUEVOS PARÁMETROS ---
+            @RequestParam(required = false) Double latitud,
+            @RequestParam(required = false) Double longitud,
+            @RequestParam(required = false) Double radio,
+            // -------------------------
+
             @RequestParam(defaultValue = "0") int page
     ) {
-        // Si no existe, el service lanza NotFoundException y el GlobalHandler muestra error 404
+        // Llamada al servicio con los nuevos parametros
         ColeccionDTO coleccion = this.coleccionService.getColeccionByHandle(handle);
         List<CategoriaDTO> categorias = this.coleccionService.getCategorias();
 
         PaginaDTO<HechoDTO> pagina = this.coleccionService.buscarHechos(
-                handle, categoria, fuente, ubicacion, keyword, fechaDesde, fechaHasta, modoCurado, page, 12
+                handle, categoria, fuente, ubicacion, keyword,
+                fechaDesde, fechaHasta, modoCurado,
+                latitud, longitud, radio, // Pasamos los nuevos datos
+                page, 12
         );
 
         model.addAttribute("coleccion", coleccion);
@@ -82,6 +92,7 @@ public class ColeccionController {
         model.addAttribute("titulo", "Coleccion " + coleccion.getHandle());
         model.addAttribute("modoCurado", modoCurado);
         model.addAttribute("hechos", pagina.getContent());
+
         model.addAttribute("paginaActual", pagina.getNumber());
         model.addAttribute("totalPaginas", pagina.getTotalPages());
         model.addAttribute("totalElementos", pagina.getTotalElements());
