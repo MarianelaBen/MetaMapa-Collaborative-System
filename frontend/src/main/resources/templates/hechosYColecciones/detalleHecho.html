@@ -19,8 +19,13 @@
     <div class="fact-container">
         <div class="fact-main">
             <div class="fact-header">
-                <h1 class="fact-title" th:text="${hecho.titulo}">Título del hecho</h1>
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <h1 class="fact-title mb-0" th:text="${hecho.titulo}">Título del hecho</h1>
+                    <span th:if="${hecho.fueEliminado}" class="badge bg-danger fs-6">Eliminado</span>
+                </div>
+
                 <div class="fact-category" th:text="${hecho.categoria}">Categoría</div>
+
                 <div class="fact-status">
                     <div class="consensus-indicator">
                         <div class="consensus-dot"
@@ -28,9 +33,9 @@
                         </div>
 
                         <span>
-            <strong>Estado:</strong>
-            <span th:text="${hecho.consensuado} ? 'Verificado por consenso' : 'Sin verificar'"></span>
-        </span>
+                            <strong>Estado:</strong>
+                            <span th:text="${hecho.consensuado} ? 'Verificado por consenso' : 'Sin verificar'"></span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -77,9 +82,16 @@
                 </section>
 
                 <a class="btn btn-danger"
+                   th:if="${!hecho.fueEliminado}"
                    th:href="@{/solicitud/{hechoId}(hechoId=${hecho.id})}">
                     Solicitar Eliminación
                 </a>
+
+                <button class="btn btn-secondary disabled"
+                        th:if="${hecho.fueEliminado}"
+                        disabled>
+                    Hecho Eliminado
+                </button>
             </div>
         </div>
 

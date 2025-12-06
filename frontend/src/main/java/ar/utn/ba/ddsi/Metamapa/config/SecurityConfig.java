@@ -24,18 +24,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(auth -> auth
 
-        http
-                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/hechos/mis-filtrado").authenticated()
                         .requestMatchers(
                                 "/login/**", "/signup/**",
                                 "/inicio/**", "/landing/**",
                                 "/css/**", "/js/**", "/img/**", "/webjars/**",
                                 "/colecciones/**",
-                                "/hechos/**",
+                                "/hechos", "/hechos/{id}",
                                 "/hechos/nuevo/**",
                                 "/privacidad/**", "/error/**", "/403/**"
                         ).permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
