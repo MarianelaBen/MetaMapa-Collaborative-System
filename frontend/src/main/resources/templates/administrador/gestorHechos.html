@@ -6,16 +6,27 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 
     <style>
-        /* CSS Extra para el autocompletado en el Admin */
+
         .geo-filter-wrapper {
             display: flex;
-            gap: 5px;
+            gap: 10px;
             position: relative;
+            align-items: stretch;
         }
+
         .geo-container {
             flex-grow: 1;
             position: relative;
+            display: flex;
         }
+
+
+        .geo-container input {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+        }
+
         .sugerencias-geo {
             list-style: none;
             margin: 0;
@@ -33,16 +44,29 @@
             max-height: 200px;
             overflow-y: auto;
         }
+
         .sugerencias-geo li {
-            padding: 8px;
+            padding: 8px 12px;
             cursor: pointer;
             border-bottom: 1px solid #eee;
             font-size: 0.9em;
+            color: #333;
         }
-        .sugerencias-geo li:hover { background-color: #f0f0f0; color: #007bff; }
 
-        .radio-input-group { width: 70px; flex-shrink: 0; }
-        .radio-input-group input { width: 100%; }
+        .sugerencias-geo li:hover {
+            background-color: #f0f0f0;
+            color: #007bff;
+        }
+
+        .radio-input-group {
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        .radio-input-group input {
+            width: 100%;
+            text-align: center;
+        }
     </style>
 </div>
 
