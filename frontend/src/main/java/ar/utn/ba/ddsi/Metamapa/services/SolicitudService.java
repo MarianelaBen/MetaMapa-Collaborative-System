@@ -3,18 +3,14 @@ package ar.utn.ba.ddsi.Metamapa.services;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.SolicitudDTO;
 import ar.utn.ba.ddsi.Metamapa.models.dtos.SolicitudEdicionCreacionDTO;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class SolicitudService {
@@ -33,12 +29,11 @@ public class SolicitudService {
                 .baseUrl(baseUrlAdmin)
                 .build();
         this.webClientDin = webClientBuilder
-            .baseUrl(backendDinamica)
-            .build();
+                .baseUrl(backendDinamica)
+                .build();
     }
 
     public List<SolicitudDTO> getSolicitudes() {
-        // 1) obtener colecciones (salida del backend)
         List<SolicitudDTO> solicitudes = webClientPublic.get()
                 .uri("/solicitudes")
                 .retrieve()
@@ -53,9 +48,10 @@ public class SolicitudService {
         return solicitudes;
     }
 
-    public String crearSolicitudEliminacion(Long hechoId, String justificacion) {
+    public SolicitudDTO crearSolicitudEliminacion(Long hechoId, String justificacion) {
         try {
-            ResponseEntity<SolicitudDTO> resp = webClientPublic.post()
+
+            return webClientPublic.post()
                     .uri("/solicitudes")
                     .bodyValue(Map.of("hechoId", hechoId, "justificacion", justificacion))
                     .retrieve()
@@ -65,30 +61,8 @@ public class SolicitudService {
                                             new RuntimeException("Backend error: " + body)
                                     ))
                     )
-                    .toEntity(SolicitudDTO.class)
+                    .bodyToMono(SolicitudDTO.class)
                     .block();
-
-            // 1) Si llegó body, devolvemos su id
-            if (resp != null && resp.getBody() != null && resp.getBody().getId() != null) {
-                return String.valueOf(resp.getBody().getId());
-            }
-
-            // 2) Si no hay body, intentar extraer id del header Location
-            if (resp != null && resp.getHeaders() != null && resp.getHeaders().getLocation() != null) {
-                URI loc = resp.getHeaders().getLocation();
-                String path = loc.getPath(); // p.ej. "/api/solicitudes/1234"
-                String id = path.substring(path.lastIndexOf('/') + 1);
-                return id;
-            }
-
-            // 3) Intentar header personalizado (ej: X-Resource-Id)
-            if (resp != null && resp.getHeaders().containsKey("X-Resource-Id")) {
-                String headerId = resp.getHeaders().getFirst("X-Resource-Id");
-                if (headerId != null && !headerId.isBlank()) return headerId;
-            }
-
-            // 4) Fallback: crear un id local (o lanzar excepción si preferís)
-            return "SOL-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
         } catch (Exception e) {
             throw new RuntimeException("No se pudo crear la solicitud: " + e.getMessage(), e);
@@ -135,11 +109,11 @@ public class SolicitudService {
         String urlDinamica = "/solicitudes";
 
         List<SolicitudEdicionCreacionDTO> solicitudes = webClientDin.get()
-            .uri(urlDinamica)
-            .retrieve()
-            .bodyToFlux(SolicitudEdicionCreacionDTO.class)
-            .collectList()
-            .block();
+                .uri(urlDinamica)
+                .retrieve()
+                .bodyToFlux(SolicitudEdicionCreacionDTO.class)
+                .collectList()
+                .block();
 
         if (solicitudes == null) return List.of();
 
@@ -151,10 +125,10 @@ public class SolicitudService {
 
         try {
             webClientDin.post()
-                .uri(url, idSolicitud)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+                    .uri(url, idSolicitud)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
         } catch (WebClientResponseException e) {
             throw new RuntimeException("Error al aceptar solicitud en Dinámica: " + e.getResponseBodyAsString(), e);
         }
@@ -165,10 +139,10 @@ public class SolicitudService {
 
         try {
             webClientDin.post()
-                .uri(url, idSolicitud)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+                    .uri(url, idSolicitud)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
         } catch (WebClientResponseException e) {
             throw new RuntimeException("Error al rechazar solicitud en Dinámica: " + e.getResponseBodyAsString(), e);
         }

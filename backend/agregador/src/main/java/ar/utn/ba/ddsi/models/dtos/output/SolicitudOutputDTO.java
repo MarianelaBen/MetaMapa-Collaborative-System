@@ -14,7 +14,7 @@ public class SolicitudOutputDTO {
   private LocalDateTime fechaEntrada;
   private LocalDateTime fechaAtencion;
   private Long hechoId;
-
+    private boolean esSpam;
 
   public static SolicitudOutputDTO fromEntity(SolicitudDeEliminacion s) {
     SolicitudOutputDTO dto = new SolicitudOutputDTO();
@@ -24,6 +24,7 @@ public class SolicitudOutputDTO {
     dto.setFechaEntrada(s.getFechaEntrada());
     dto.setFechaAtencion(s.getFechaAtencion());
     dto.setHechoId(s.getHecho().getId());
+    dto.esSpam = s.isEsSpam();
     return dto;
   }
 }

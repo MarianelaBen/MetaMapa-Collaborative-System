@@ -69,22 +69,28 @@ public class SolicitudesController {
                         RedirectAttributes flash) {
 
         String texto = (justificacion == null) ? "" : justificacion.trim();
-        // Validación de negocio local (vuelve al formulario)
+
         if (texto.length() < 500) {
             HechoDTO hecho = hechoService.getHechoPorId(hechoId);
             model.addAttribute("titulo", "Solicitar eliminación de hecho");
             model.addAttribute("hecho", hecho);
             model.addAttribute("hechoId", hechoId);
             model.addAttribute("justificacion", justificacion);
+            // Esto usa el th:if="${error}" del HTML
             model.addAttribute("error", "La justificación debe tener al menos 500 caracteres. Actualmente: " + texto.length());
             return "hechosYColecciones/solicitudEliminacion";
         }
 
-        // Sin try-catch. Si falla al crear, error 500.
-        solicitudService.crearSolicitudEliminacion(hechoId, texto);
+        SolicitudDTO solicitudCreada = solicitudService.crearSolicitudEliminacion(hechoId, texto);
 
-        flash.addFlashAttribute("mensaje", "Solicitud creada correctamente. Quedó en estado pendiente.");
-        flash.addFlashAttribute("tipoMensaje", "success");
+        if (solicitudCreada.getEsSpam() || "RECHAZADA".equals(solicitudCreada.getEstado())) {
+
+            flash.addFlashAttribute("error", "Tu solicitud fue rechazada automáticamente por nuestro sistema de detección de spam y contenido no válido.");
+        } else {
+
+            flash.addFlashAttribute("mensaje", "Solicitud creada correctamente. Quedó en estado pendiente de revisión.");
+        }
+
         return "redirect:/solicitud/" + hechoId;
     }
 }

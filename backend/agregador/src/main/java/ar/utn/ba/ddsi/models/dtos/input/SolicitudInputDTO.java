@@ -10,5 +10,5 @@ import lombok.Setter;
 public class SolicitudInputDTO {
   private Long hechoId;
   private String justificacion;
-
+    private boolean esSpam;
 }

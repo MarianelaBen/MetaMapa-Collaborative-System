@@ -13,4 +13,5 @@ public class SolicitudDTO {
     private LocalDateTime fechaEntrada;
     private LocalDateTime fechaAtencion;
     private Long hechoId;
+    private Boolean esSpam;
 }
