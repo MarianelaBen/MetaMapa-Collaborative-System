@@ -5,5 +5,5 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface IDetectorDeSpam {
-  boolean esSpam(SolicitudDeEliminacion solicitudDeEliminacion);
+  boolean esSpam(String texto);
 }
