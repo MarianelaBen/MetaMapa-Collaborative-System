@@ -115,7 +115,12 @@ public class AdminController {
             @RequestParam(required = false) String ubicacion,
             @RequestParam(required = false) String estado,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
-            // --------------------------------------
+
+            // --- NUEVOS PARÁMETROS GEOESPACIALES ---
+            @RequestParam(required = false) Double latitud,
+            @RequestParam(required = false) Double longitud,
+            @RequestParam(required = false) Double radio,
+            // ----------------------------------------
 
             @RequestParam(defaultValue = "0") int catPage,
             @RequestParam(defaultValue = "5") int catSize,

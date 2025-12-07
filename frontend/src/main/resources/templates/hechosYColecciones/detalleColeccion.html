@@ -54,6 +54,7 @@
             </div>
 
             <div class="controls-grid">
+
                 <div class="control-group">
                     <label for="categoria-filter">Categoría</label>
                     <select id="categoria-filter" name="categoria">
@@ -90,6 +91,35 @@
                 </div>
 
                 <div class="control-group">
+                    <label for="busqueda-texto">Palabras clave</label>
+                    <input type="text" id="busqueda-texto" name="keyword"
+                           placeholder="Buscar en título..." th:value="${param.keyword}">
+                </div>
+
+                <div class="control-group">
+                    <label>Filtrar por Cercanía</label>
+
+                    <input type="hidden" id="latitud" name="latitud" th:value="${param.latitud}">
+                    <input type="hidden" id="longitud" name="longitud" th:value="${param.longitud}">
+
+                    <div class="geo-filter-wrapper">
+                        <div class="geo-container">
+                            <input type="text" id="buscador-geo"
+                                   placeholder="Dirección exacta..."
+                                   th:value="${param.ubicacion}"
+                                   autocomplete="off">
+                            <ul id="sugerencias-geo" class="sugerencias-geo"></ul>
+                        </div>
+
+                        <div class="radio-input-group">
+                            <input type="number" id="radio-filter" name="radio"
+                                   th:value="${param.radio != null ? param.radio : 10}"
+                                   min="1" placeholder="km" title="Radio en km">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
                     <label for="fecha-desde">Fecha desde</label>
                     <input type="date" id="fecha-desde" name="fechaDesde" th:value="${param.fechaDesde}">
                 </div>
@@ -99,17 +129,6 @@
                     <input type="date" id="fecha-hasta" name="fechaHasta" th:value="${param.fechaHasta}">
                 </div>
 
-                <div class="control-group">
-                    <label for="ubicacion-filter">Ubicación</label>
-                    <input type="text" id="ubicacion-filter" name="ubicacion"
-                           placeholder="Provincia, ciudad..." th:value="${param.ubicacion}">
-                </div>
-
-                <div class="control-group">
-                    <label for="busqueda-texto">Buscar en título/descripción</label>
-                    <input type="text" id="busqueda-texto" name="keyword"
-                           placeholder="Palabras clave..." th:value="${param.keyword}">
-                </div>
             </div>
 
             <button type="submit" class="btn btn-principal">Aplicar Filtros</button>
@@ -168,7 +187,7 @@
         </div>
     </div>
 
-    <div class="pagination" th:if="${totalPaginas > 1}" style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; align-items: center;">
+    <div class="pagination" th:if="${totalPaginas > 1}" ... >
 
         <a th:if="${paginaActual > 0}"
            th:href="@{/colecciones/{handle}(handle=${coleccion.handle},
@@ -179,14 +198,13 @@
                       fechaHasta=${param.fechaHasta},
                       ubicacion=${param.ubicacion},
                       keyword=${param.keyword},
-                      modoCurado=${modoCurado})}"
+                      modoCurado=${modoCurado},
+                      latitud=${param.latitud},
+                      longitud=${param.longitud},
+                      radio=${param.radio})}"
            class="btn btn-secondary">
             &laquo; Anterior
         </a>
-
-        <span class="current-page" style="font-weight: bold;">
-            Página <span th:text="${paginaActual + 1}"></span> de <span th:text="${totalPaginas}"></span>
-        </span>
 
         <a th:if="${paginaActual < totalPaginas - 1}"
            th:href="@{/colecciones/{handle}(handle=${coleccion.handle},
@@ -197,7 +215,10 @@
                       fechaHasta=${param.fechaHasta},
                       ubicacion=${param.ubicacion},
                       keyword=${param.keyword},
-                      modoCurado=${modoCurado})}"
+                      modoCurado=${modoCurado},
+                      latitud=${param.latitud},
+                      longitud=${param.longitud},
+                      radio=${param.radio})}"
            class="btn btn-secondary">
             Siguiente &raquo;
         </a>
@@ -205,11 +226,111 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+
+            // =========================================================
+            // 1. CONFIGURACIÓN CSRF (Necesario para sumar vistas)
+            // =========================================================
             const csrfMeta = document.querySelector('meta[name="_csrf"]');
             const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
             const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : null;
             const csrfHeader = csrfHeaderMeta ? csrfHeaderMeta.getAttribute('content') : 'X-CSRF-TOKEN';
 
+
+            // =========================================================
+            // 2. LÓGICA DE GEOLOCALIZACIÓN (AUTOCOMPLETADO)
+            // =========================================================
+            const $buscador = document.getElementById('buscador-geo'); // Input visible de texto
+            const $sugs = document.getElementById('sugerencias-geo');  // Lista <ul> para resultados
+            const $lat = document.getElementById('latitud');           // Input hidden
+            const $lon = document.getElementById('longitud');          // Input hidden
+            // const $radio = document.getElementById('radio-filter'); // Input visible de radio (opcional)
+
+            let timer = null;
+
+            function limpiarSugerencias() {
+                if ($sugs) {
+                    $sugs.innerHTML = '';
+                    $sugs.style.display = 'none';
+                }
+            }
+
+            function renderSugerencias(items) {
+                if (!items || items.length === 0) {
+                    limpiarSugerencias();
+                    return;
+                }
+                $sugs.innerHTML = '';
+                items.forEach((it) => {
+                    const li = document.createElement('li');
+                    // Ajustamos propiedades según lo que devuelve tu API (label, nombre, direccion, etc)
+                    li.textContent = it.label || it.direccion || 'Ubicación encontrada';
+
+                    // Evento al hacer click en una sugerencia
+                    li.addEventListener('click', () => {
+                        // 1. Guardamos coordenadas en inputs ocultos para el submit
+                        if ($lat) $lat.value = it.latitud;
+                        if ($lon) $lon.value = it.longitud;
+
+                        // 2. Mostramos el nombre limpio en el buscador visual
+                        if ($buscador) $buscador.value = it.label || it.direccion;
+
+                        // 3. Limpiamos la lista
+                        limpiarSugerencias();
+                    });
+                    $sugs.appendChild(li);
+                });
+                $sugs.style.display = 'block';
+            }
+
+            async function buscar(q) {
+                // URL de tu API local (Georef wrapper) puerto 8083
+                const url = `http://localhost:8083/api/geo/sugerencias?query=${encodeURIComponent(q)}&max=5`;
+
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) return limpiarSugerencias();
+                    const data = await res.json();
+
+                    // Renderizamos (ajustar si la API devuelve data.direcciones o data directo)
+                    renderSugerencias(data.direcciones || data);
+                } catch (e) {
+                    console.error("Error buscando geo:", e);
+                    limpiarSugerencias();
+                }
+            }
+
+            if ($buscador) {
+                // Escuchar escritura del usuario
+                $buscador.addEventListener('input', () => {
+                    const q = $buscador.value.trim();
+
+                    // Si el usuario borra el texto, limpiamos las coordenadas ocultas para no filtrar mal
+                    if (q.length === 0) {
+                        if ($lat) $lat.value = '';
+                        if ($lon) $lon.value = '';
+                    }
+
+                    if (timer) clearTimeout(timer);
+                    if (q.length < 3) {
+                        limpiarSugerencias();
+                        return;
+                    }
+                    // Debounce de 300ms para no saturar la API
+                    timer = setTimeout(() => buscar(q), 300);
+                });
+
+                // Cerrar sugerencias si se hace click fuera
+                document.addEventListener('click', (e) => {
+                    if ($sugs && !$sugs.contains(e.target) && e.target !== $buscador) {
+                        limpiarSugerencias();
+                    }
+                });
+            }
+
+
+            // =========================================================
+            // 3. LÓGICA DE CONTADOR DE VISTAS (EXISTENTE)
+            // =========================================================
             document.querySelectorAll('.btn-verDetalleHecho').forEach(anchor => {
                 anchor.addEventListener('click', (ev) => {
                     ev.preventDefault();

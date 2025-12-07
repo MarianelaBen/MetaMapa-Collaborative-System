@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface IAgregadorService {
+
     PaginaDTO<HechoOutputDTO> obtenerHechosPorColeccion(
             String handle,
             TipoDeModoNavegacion modo,
@@ -21,8 +22,8 @@ public interface IAgregadorService {
             String keyword,
             LocalDate fechaDesde,
             LocalDate fechaHasta,
+            Double latitud, Double longitud, Double radio,
             int page, int size
-
     );
     HechoOutputDTO obtenerDetalleHecho(String handle, Long hechoId);
     List<Hecho> obtenerTodosLosHechosDeFuente(Fuente fuente);
@@ -40,7 +41,8 @@ public interface IAgregadorService {
     PaginaDTO<CategoriaOutputDTO> obtenerPaginado(int page, int size);
     List<HechoOutputDTO> getUltimosHechos();
     public Page<HechoOutputDTO> obtenerHechosConPaginacion(
-            int page, int size, String sort, // Paginación
-            Long id, String ubicacion, String estado, LocalDate fecha // Filtros
+            int page, int size, String sort,
+            Long id, String ubicacion, String estado, LocalDate fecha,
+            Double latitud, Double longitud, Double radio
     );
 }

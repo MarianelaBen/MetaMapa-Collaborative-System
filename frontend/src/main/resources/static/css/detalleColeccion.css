@@ -4,6 +4,98 @@
     box-sizing: border-box;
 }
 
+/* Estilos para el autocompletado geoespacial */
+.geo-container {
+    position: relative;
+    flex-grow: 1;
+}
+
+/* Contenedor principal en grilla de 3 columnas */
+.controls-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+    gap: 1.5rem; /* Espacio entre columnas y filas */
+    margin-bottom: 1.5rem;
+}
+
+/* Asegurar que todos los grupos ocupen el ancho de su celda */
+.control-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.control-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+/* Inputs y selects al 100% del ancho de su contenedor */
+.control-group input:not([type="checkbox"]),
+.control-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+/* --- AJUSTE ESPECÍFICO PARA EL FILTRO DE CERCANÍA --- */
+.geo-filter-wrapper {
+    display: flex;
+    gap: 10px; /* Espacio entre la dirección y el radio */
+}
+
+.geo-container {
+    position: relative;
+    flex: 1; /* Esto hace que el input de dirección ocupe todo el espacio sobrante */
+}
+
+/* Ajuste visual para el input de Radio */
+.radio-input-group {
+    width: 90px; /* Ancho fijo pequeño para el radio */
+    flex-shrink: 0; /* Evita que se aplaste */
+}
+
+/* Responsive: En celulares, poner todo en 1 sola columna */
+@media (max-width: 768px) {
+    .controls-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.sugerencias-geo {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: none; /* Oculto por defecto */
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.sugerencias-geo li {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #eee;
+}
+
+.sugerencias-geo li:last-child {
+    border-bottom: none;
+}
+
+.sugerencias-geo li:hover {
+    background-color: #f0f0f0;
+    color: #007bff;
+}
+
 main {
     padding: 2rem 0;
 }
