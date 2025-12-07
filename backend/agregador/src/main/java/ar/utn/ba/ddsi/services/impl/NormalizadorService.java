@@ -1,8 +1,8 @@
 package ar.utn.ba.ddsi.services.impl;
 
 import ar.utn.ba.ddsi.models.entities.Hecho;
+import ar.utn.ba.ddsi.models.entities.Ubicacion; // Asegúrate de importar esto
 import ar.utn.ba.ddsi.normalizadores.NormalizadorCategoria;
-// import ar.utn.ba.ddsi.normalizadores.NormalizadorUbicacion; // Ya no lo usamos aquí, usamos GeorefService
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -10,50 +10,55 @@ import java.util.List;
 public class NormalizadorService {
 
     private final NormalizadorCategoria normalizadorCategoria;
-    private final GeorefService georefService; // Inyectamos nuestro servicio de API
+    private final GeorefService georefService;
 
-    // Lista de conectores para el formateo de texto (Title Case)
-    private static final List<String> CONECTORES = List.of("de", "del", "la", "las", "el", "los", "y", "en");
+    private static final List<String> CONECTORES = List.of("de", "del", "la", "las", "el", "los", "y", "en", "o");
 
     public NormalizadorService(NormalizadorCategoria normalizadorCategoria, GeorefService georefService){
         this.normalizadorCategoria = normalizadorCategoria;
         this.georefService = georefService;
     }
 
-    public Hecho normalizar(Hecho h) {
-        if (h == null) return null;
+    public void normalizar(Hecho hecho) {
+        if (hecho == null) return;
 
-        if (h.getCategoria() != null) {
-            h.setCategoria(normalizadorCategoria.normalizarCategoria(h.getCategoria()));
+        if (hecho.getCategoria() != null) {
+            var catNormalizada = normalizadorCategoria.normalizarCategoria(hecho.getCategoria());
+
+            if (catNormalizada.getNombre() != null) {
+                String nombreLindo = formatearTexto(catNormalizada.getNombre());
+                catNormalizada.setNombre(nombreLindo);
+            }
+            hecho.setCategoria(catNormalizada);
         }
 
-        if (h.getUbicacion() != null) {
 
-            Double lat = h.getUbicacion().getLatitud();
-            Double lon = h.getUbicacion().getLongitud();
-            String provActual = h.getUbicacion().getProvincia();
+        if (hecho.getUbicacion() == null) {
+            hecho.setUbicacion(new Ubicacion());
+        }
 
-            if ((provActual == null || provActual.isBlank()) && lat != null && lon != null) {
+        Ubicacion ubicacion = hecho.getUbicacion();
+        Double lat = ubicacion.getLatitud();
+        Double lon = ubicacion.getLongitud();
+        String provActual = ubicacion.getProvincia();
 
+        if (provActual != null && !provActual.isBlank()) {
+            String provFormateada = formatearTexto(provActual);
+            ubicacion.setProvincia(provFormateada);
+        }
+        else {
+            String nuevaProvincia = "Ubicación externa";
 
+            if (lat != null && lon != null) {
                 String provDetectada = georefService.obtenerProvincia(lat, lon);
-
                 if (provDetectada != null) {
-                    h.getUbicacion().setProvincia(provDetectada);
+                    nuevaProvincia = provDetectada;
                 }
-
             }
 
-            else if (provActual != null && !provActual.isBlank()) {
-
-                String provFormateada = formatearTexto(provActual);
-                h.getUbicacion().setProvincia(provFormateada);
-            }
+            ubicacion.setProvincia(nuevaProvincia);
         }
-
-        return h;
     }
-
 
     private String formatearTexto(String texto) {
         if (texto == null || texto.isBlank()) return texto;
@@ -72,7 +77,6 @@ public class NormalizadorService {
                     resultado.append(Character.toUpperCase(palabra.charAt(0)));
                 }
             } else {
-
                 resultado.append(palabra);
             }
 

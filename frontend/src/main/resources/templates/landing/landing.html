@@ -22,61 +22,6 @@
         </div>
     </div>
 
-    <!-- === DESTACADOS  === -->
-    <div class="destacados container">
-        <h2>Hechos y colecciones destacadas</h2>
-
-        <!-- TARJETAS DE COLECCIONES -->
-        <div class="colecciones-destacadas">
-            <div class="card coleccion-destacada" style="width: 18rem;" th:each="coleccion : ${coleccionesDestacadas}">
-                <div class="card-body">
-                    <h5 class="card-title" th:text="${coleccion.titulo}"></h5>
-                    <p class="card-text" th:text="${coleccion.titulo}"></p>
-
-                    <div style="margin-top:8px;">
-                        <a th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}" class="btn btn-signup">Ver Hechos</a>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="hechos-destacados">
-
-            <!-- Hecho -->
-            <div class="hecho-destacado" th:each="hecho : ${hechosDestacados}">
-                <div class="hecho-header">
-                    <h3 class="hecho-title" th:text="${hecho.titulo}"></h3>
-                    <div class="hecho-category category-incendio" th:text="${hecho.categoria}"></div>
-                </div>
-                <div class="hecho-content">
-                    <p class="hecho-description" th:text="${hecho.descripcion}"></p>
-                    <div class="hecho-meta d-flex gap-3 flex-wrap">
-                        <div class="meta-item">
-                            <span class="meta-label">Fecha</span><br/>
-                            <span class="meta-value" th:text="${hecho.fechaAcontecimiento}"></span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Ubicación</span><br/>
-                            <span class="meta-value" th:text="${hecho.provincia}"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="hecho-footer">
-                    <button th:onclick="|window.location.href='@{/hechos/{id}(id=${hecho.id})}'|" class="btn btn-signup">Ver Detalle</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- === MAPA INTERACTIVO (AL MEDIO) === -->
-    <div class="mapa-interactivo container" id="map-section">
-        <div id="map"></div>
-    </div>
-
-
-    <!-- === PROPÓSITO Y OBJETIVOS (AL FINAL) === -->
     <section id="propositos-objetivos" aria-labelledby="pm-title" class="pm-section">
         <div class="pm-container">
             <div class="pm-left">
@@ -158,6 +103,60 @@
             </div>
         </div>
     </section>
+
+
+    <!-- === MAPA INTERACTIVO (AL MEDIO) === -->
+    <div class="mapa-interactivo container" id="map-section">
+        <div id="map"></div>
+    </div>
+
+    <!-- === DESTACADOS  === -->
+    <div class="destacados container">
+        <h2>Hechos y colecciones destacadas</h2>
+
+        <!-- TARJETAS DE COLECCIONES -->
+        <div class="colecciones-destacadas">
+            <div class="card coleccion-destacada" style="width: 18rem;" th:each="coleccion : ${coleccionesDestacadas}">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${coleccion.titulo}"></h5>
+                    <p class="card-text" th:text="${coleccion.titulo}"></p>
+
+                    <div style="margin-top:8px;">
+                        <a th:href="@{/colecciones/{handle}(handle=${coleccion.handle})}" class="btn btn-signup">Ver Hechos</a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hechos-destacados">
+
+            <!-- Hecho -->
+            <div class="hecho-destacado" th:each="hecho : ${hechosDestacados}">
+                <div class="hecho-header">
+                    <h3 class="hecho-title" th:text="${hecho.titulo}"></h3>
+                    <div class="hecho-category category-incendio" th:text="${hecho.categoria}"></div>
+                </div>
+                <div class="hecho-content">
+                    <p class="hecho-description" th:text="${hecho.descripcion}"></p>
+                    <div class="hecho-meta d-flex gap-3 flex-wrap">
+                        <div class="meta-item">
+                            <span class="meta-label">Fecha</span><br/>
+                            <span class="meta-value" th:text="${hecho.fechaAcontecimiento}"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Ubicación</span><br/>
+                            <span class="meta-value" th:text="${hecho.provincia}"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hecho-footer">
+                    <button th:onclick="|window.location.href='@{/hechos/{id}(id=${hecho.id})}'|" class="btn btn-signup">Ver Detalle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
     <!-- === MODAL (NO LO TOQUÉ) === -->
