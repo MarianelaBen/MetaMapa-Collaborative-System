@@ -30,7 +30,7 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
     @Query("SELECT h FROM Hecho h WHERE h.contribuyente.idContribuyente = :id")
     List<Hecho> buscarPorIdContribuyente(@Param("id") Long id);
 
-    Optional<Hecho> findByTitulo(String titulo);
+    List<Hecho> findByTitulo(String titulo);
     Optional<Hecho> findByIdEnFuenteAndOrigen(Long idEnFuente, Origen origen);
 
     @Query(value = "SELECT * FROM hecho h WHERE h.fue_eliminado = false ORDER BY h.fecha_carga DESC LIMIT :limit", nativeQuery = true)

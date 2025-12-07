@@ -114,7 +114,6 @@ public class AdapterFuenteProxy {
         Ubicacion ubicacion = new Ubicacion();
         ubicacion.setLatitud(dto.getLatitud());
         ubicacion.setLongitud(dto.getLongitud());
-        ubicacion.setProvincia(dto.getProvincia() != null ? dto.getProvincia() : "Ubicación Externa");
 
         hecho.setUbicacion(ubicacion);
 

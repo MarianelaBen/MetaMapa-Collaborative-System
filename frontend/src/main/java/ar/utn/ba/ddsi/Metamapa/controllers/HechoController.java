@@ -107,7 +107,7 @@ public class HechoController {
         // Si subirHecho falla, el GlobalExceptionHandler lo atrapa (error 500)
         this.hechoService.subirHecho(hecho, multimedia, usuarioId);
 
-        redirect.addFlashAttribute("mensaje", "Tu hecho ha sido creado correctamente.");
+        redirect.addFlashAttribute("mensaje", "Tu hecho ha sido creado correctamente. Lo verás en la próxima actualización de colecciones.");
         redirect.addFlashAttribute("tipoMensaje", "success");
 
         return "redirect:/hechos/nuevo";

@@ -143,77 +143,101 @@ public class ColeccionController {
             @RequestParam(value = "criterioLugarProvincia[]", required = false) List<String> lProvincia,
             RedirectAttributes redirect) {
 
-        if (coleccion.getHandle() == null || coleccion.getHandle().isBlank()) {
-            coleccion.setHandle(makeHandle(coleccion.getTitulo()));
-        }
+        try {
 
-        List<FuenteDTO> fuentes = metaMapaApiService.getFuentes();
-        Map<String, Long> mapTipoId = fuentes.stream()
-                .collect(Collectors.toMap(f -> f.getTipo().toUpperCase(), FuenteDTO::getId));
-
-        Set<Long> fuenteIds = new HashSet<>();
-        if (fuenteTipos != null && !fuenteTipos.isBlank()) {
-            for (String tipo : fuenteTipos.split(",")) {
-                Long id = mapTipoId.get(tipo.toUpperCase());
-                if (id != null) fuenteIds.add(id);
+            if (coleccion.getTitulo() == null || coleccion.getTitulo().trim().isEmpty()) {
+                throw new IllegalArgumentException("El título de la colección es obligatorio.");
             }
-        }
-        coleccion.setFuenteIds(fuenteIds);
-
-        List<CriterioDTO> nuevosCriterios = new ArrayList<>();
-
-        if (categorias != null) {
-            categorias.stream().filter(c -> c != null && !c.trim().isEmpty())
-                    .forEach(c -> nuevosCriterios.add(new CriterioDTO("CATEGORIA", c)));
-        }
-        if (titulos != null) {
-            titulos.stream().filter(t -> t != null && !t.trim().isEmpty())
-                    .forEach(t -> nuevosCriterios.add(new CriterioDTO("TITULO", t)));
-        }
-        if (descripciones != null) descripciones.forEach(d -> nuevosCriterios.add(new CriterioDTO("DESCRIPCION", d)));
-        if (origenes != null) origenes.forEach(o -> nuevosCriterios.add(new CriterioDTO("ORIGEN", o)));
-
-        // Fechas Acontecimiento
-        if (faDesde != null) {
-            for (int i = 0; i < faDesde.size(); i++) {
-                CriterioDTO dto = new CriterioDTO();
-                dto.setTipoCriterio("FECHA_ACONTECIMIENTO");
-                if (faDesde.get(i) != null) dto.setFechaDesde(faDesde.get(i).toString());
-                if (faHasta != null && i < faHasta.size() && faHasta.get(i) != null) dto.setFechaHasta(faHasta.get(i).toString());
-                nuevosCriterios.add(dto);
+            if (coleccion.getAlgoritmoDeConsenso() == null) {
+                throw new IllegalArgumentException("Debes seleccionar un algoritmo de consenso.");
             }
-        }
-        // Fechas Carga
-        if (fcDesde != null) {
-            for (int i = 0; i < fcDesde.size(); i++) {
-                CriterioDTO dto = new CriterioDTO();
-                dto.setTipoCriterio("FECHA_CARGA");
-                if (fcDesde.get(i) != null) dto.setFechaDesde(fcDesde.get(i).toString());
-                if (fcHasta != null && i < fcHasta.size() && fcHasta.get(i) != null) dto.setFechaHasta(fcHasta.get(i).toString());
-                nuevosCriterios.add(dto);
+            if (fuenteTipos == null || fuenteTipos.trim().isEmpty()) {
+                throw new IllegalArgumentException("Debes seleccionar al menos una fuente de datos.");
             }
-        }
-        // Lugar
-        if (lLat != null) {
-            for (int i = 0; i < lLat.size(); i++) {
-                CriterioDTO dto = new CriterioDTO();
-                dto.setTipoCriterio("LUGAR");
-                dto.setLatitud(lLat.get(i));
-                if (lLon != null && i < lLon.size()) dto.setLongitud(lLon.get(i));
-                if (lRango != null && i < lRango.size()) dto.setRango(lRango.get(i));
-                if (lProvincia != null && i < lProvincia.size()) dto.setProvincia(lProvincia.get(i));
-                nuevosCriterios.add(dto);
+
+
+            // 2. Generación de Handle
+            if (coleccion.getHandle() == null || coleccion.getHandle().isBlank()) {
+                coleccion.setHandle(makeHandle(coleccion.getTitulo()));
             }
+
+            // 3. Procesamiento de Fuentes
+            List<FuenteDTO> fuentes = metaMapaApiService.getFuentes();
+            Map<String, Long> mapTipoId = fuentes.stream()
+                    .collect(Collectors.toMap(f -> f.getTipo().toUpperCase(), FuenteDTO::getId));
+
+            Set<Long> fuenteIds = new HashSet<>();
+            if (fuenteTipos != null && !fuenteTipos.isBlank()) {
+                for (String tipo : fuenteTipos.split(",")) {
+                    Long id = mapTipoId.get(tipo.toUpperCase());
+                    if (id != null) fuenteIds.add(id);
+                }
+            }
+            coleccion.setFuenteIds(fuenteIds);
+
+            // 4. Procesamiento de Criterios
+            List<CriterioDTO> nuevosCriterios = new ArrayList<>();
+
+            if (categorias != null) {
+                categorias.stream().filter(c -> c != null && !c.trim().isEmpty())
+                        .forEach(c -> nuevosCriterios.add(new CriterioDTO("CATEGORIA", c)));
+            }
+            if (titulos != null) {
+                titulos.stream().filter(t -> t != null && !t.trim().isEmpty())
+                        .forEach(t -> nuevosCriterios.add(new CriterioDTO("TITULO", t)));
+            }
+            if (descripciones != null) descripciones.forEach(d -> nuevosCriterios.add(new CriterioDTO("DESCRIPCION", d)));
+            if (origenes != null) origenes.forEach(o -> nuevosCriterios.add(new CriterioDTO("ORIGEN", o)));
+
+            // Fechas Acontecimiento
+            if (faDesde != null) {
+                for (int i = 0; i < faDesde.size(); i++) {
+                    CriterioDTO dto = new CriterioDTO();
+                    dto.setTipoCriterio("FECHA_ACONTECIMIENTO");
+                    if (faDesde.get(i) != null) dto.setFechaDesde(faDesde.get(i).toString());
+                    if (faHasta != null && i < faHasta.size() && faHasta.get(i) != null) dto.setFechaHasta(faHasta.get(i).toString());
+                    nuevosCriterios.add(dto);
+                }
+            }
+            // Fechas Carga
+            if (fcDesde != null) {
+                for (int i = 0; i < fcDesde.size(); i++) {
+                    CriterioDTO dto = new CriterioDTO();
+                    dto.setTipoCriterio("FECHA_CARGA");
+                    if (fcDesde.get(i) != null) dto.setFechaDesde(fcDesde.get(i).toString());
+                    if (fcHasta != null && i < fcHasta.size() && fcHasta.get(i) != null) dto.setFechaHasta(fcHasta.get(i).toString());
+                    nuevosCriterios.add(dto);
+                }
+            }
+            // Lugar
+            if (lLat != null) {
+                for (int i = 0; i < lLat.size(); i++) {
+                    CriterioDTO dto = new CriterioDTO();
+                    dto.setTipoCriterio("LUGAR");
+                    dto.setLatitud(lLat.get(i));
+                    if (lLon != null && i < lLon.size()) dto.setLongitud(lLon.get(i));
+                    if (lRango != null && i < lRango.size()) dto.setRango(lRango.get(i));
+                    if (lProvincia != null && i < lProvincia.size()) dto.setProvincia(lProvincia.get(i));
+                    nuevosCriterios.add(dto);
+                }
+            }
+
+            coleccion.setNuevosCriterios(nuevosCriterios);
+
+            ColeccionDTO creada = metaMapaApiService.crearColeccion(coleccion);
+
+            redirect.addFlashAttribute("mensaje", "Colección creada exitosamente. Verás los hechos en la próxima actualización de colecciones.");
+            redirect.addFlashAttribute("tipoMensaje", "success");
+            return "redirect:/colecciones";
+
+        } catch (Exception e) {
+
+            redirect.addFlashAttribute("error", e.getMessage());
+            redirect.addFlashAttribute("tipoMensaje", "error");
+
+
+            return "redirect:/colecciones/nueva";
         }
-
-        coleccion.setNuevosCriterios(nuevosCriterios);
-
-        // Sin try-catch: si falla, muestra error 500
-        ColeccionDTO creada = metaMapaApiService.crearColeccion(coleccion);
-
-        redirect.addFlashAttribute("mensaje", "Colección creada exitosamente: " + creada.getTitulo());
-        redirect.addFlashAttribute("tipoMensaje", "success");
-        return "redirect:/colecciones";
     }
 
     private String makeHandle(String titulo) {

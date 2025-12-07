@@ -274,7 +274,7 @@ public class AdminController {
         form.setHandle(handle);
         metamapaApiService.actualizarColeccion(handle, form);
 
-        redirect.addFlashAttribute("mensaje", "Colección actualizada correctamente.");
+        redirect.addFlashAttribute("mensaje", "Colección editada correctamente. Verás los hechos en la próxima actualización de colecciones.");
         redirect.addFlashAttribute("tipoMensaje", "success");
         return "redirect:/admin/panel-control";
     }

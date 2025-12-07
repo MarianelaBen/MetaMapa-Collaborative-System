@@ -122,7 +122,7 @@ public class AdminService implements IAdminService {
 
         existing = coleccionRepo.save(existing);
         //TODO: definir si actualizamos los hechos apenas editamos la colección (puede tarddar) o si esperamos a la ejecución del scheduler
-        existing = coleccionService.filtrarHechos(existing);
+        //existing = coleccionService.filtrarHechos(existing);
 
         existing = coleccionRepo.save(existing);
 

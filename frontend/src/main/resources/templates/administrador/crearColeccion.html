@@ -260,7 +260,6 @@
             }
 
             // --- 2. Gestión de Criterios ---
-
             const provinciasArg = [
                 "Buenos Aires", "Catamarca", "Chaco", "Chubut", "Ciudad Autónoma de Buenos Aires",
                 "Córdoba", "Corrientes", "Entre Ríos", "Formosa", "Jujuy", "La Pampa", "La Rioja",
@@ -271,43 +270,57 @@
             const selectCriterio = document.getElementById("criterioSelect");
             const containerCriterios = document.getElementById("criterios-container");
 
-            selectCriterio.addEventListener("change", () => {
-                const tipo = selectCriterio.value;
-                if (!tipo) return;
+            if (selectCriterio) {
+                selectCriterio.addEventListener("change", () => {
+                    const tipo = selectCriterio.value;
+                    if (!tipo) return;
 
-                // Clonar
-                const template = document.querySelector(`#criterio-templates [data-template="${tipo}"]`);
-                if (!template) return;
-                const clone = template.cloneNode(true);
+                    const template = document.querySelector(`#criterio-templates [data-template="${tipo}"]`);
+                    if (!template) return;
+                    const clone = template.cloneNode(true);
 
-                // Inicializar Mapa si corresponde
-                if (tipo === "lugar") {
-                    initMapaYProvincias(clone);
-                }
+                    if (tipo === "lugar") {
+                        initMapaYProvincias(clone);
+                    }
 
-                // Eliminar
-                const btnEliminar = clone.querySelector(".btn-remove-field");
-                if(btnEliminar) {
-                    btnEliminar.addEventListener("click", () => clone.remove());
-                }
+                    const btnEliminar = clone.querySelector(".btn-remove-field");
+                    if(btnEliminar) {
+                        btnEliminar.addEventListener("click", () => clone.remove());
+                    }
 
-                // Insertar
-                containerCriterios.appendChild(clone);
-                selectCriterio.value = "";
-            });
+                    containerCriterios.appendChild(clone);
+                    selectCriterio.value = "";
+                });
+            }
 
-            // --- 3. Envío del Formulario ---
+            // --- 3. VALIDACIÓN EN EL ENVÍO (LO NUEVO) ---
             const form = document.querySelector(".collection-form");
             if(form) {
-                form.addEventListener("submit", () => {
-                    // Lógica extra si necesitás procesar algo antes del submit
-                    // (Lo de categoriasSeleccionadas ya no es crítico si usas select, pero no molesta)
+                form.addEventListener("submit", (e) => {
+                    let errores = [];
+
+                    // A. Validar Fuentes
+                    if (!hiddenFuentes.value || hiddenFuentes.value.trim() === "") {
+                        errores.push("Debes seleccionar al menos una Fuente de datos (Dinámica, Estática o Proxy).");
+                    }
+
+                    // B. Validar Consenso
+                    const consenso = document.getElementById("consenso");
+                    if (!consenso.value || consenso.value === "") {
+                        errores.push("Debes seleccionar un Algoritmo de Consenso.");
+                    }
+
+                    // Si hay errores, frenamos el envío y avisamos
+                    if (errores.length > 0) {
+                        e.preventDefault(); // IMPORTANTE: Evita que vaya al backend
+                        // Usamos alert o inyectamos el HTML de error
+                        alert("⚠️ Atención:\n\n" + errores.join("\n"));
+                    }
                 });
             }
 
             // --- HELPER: Mapa Leaflet ---
             function initMapaYProvincias(elementoClonado) {
-                // Llenar Select Provincias
                 const selectProv = elementoClonado.querySelector(".select-provincia");
                 if(selectProv) {
                     provinciasArg.forEach(p => {
@@ -318,7 +331,6 @@
                     });
                 }
 
-                // Iniciar Leaflet
                 const mapDiv = elementoClonado.querySelector(".map-container");
                 if(!mapDiv) return;
 
@@ -349,7 +361,6 @@
                     setTimeout(() => { map.invalidateSize(); }, 200);
                 }, 100);
             }
-
         });
     </script>
 
