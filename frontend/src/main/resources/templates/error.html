@@ -14,6 +14,7 @@
             <i class="fas fa-exclamation-triangle" th:if="${status == 500}"></i>
             <i class="fas fa-search" th:if="${status == 404}"></i>
             <i class="fas fa-lock" th:if="${status == 403}"></i>
+            <i class="fas fa-hourglass-half" th:if="${status == 429}"></i>
             <i class="fas fa-bomb" th:if="${status != 404 and status != 403 and status != 500}"></i>
         </div>
 
@@ -24,6 +25,7 @@
         <p class="error-message" th:text="${message}">
             Algo salió mal. Por favor, intenta nuevamente más tarde.
         </p>
+
 
         <a th:href="@{/inicio}" class="btn-home">
             <i class="fas fa-home"></i> Volver al Inicio
