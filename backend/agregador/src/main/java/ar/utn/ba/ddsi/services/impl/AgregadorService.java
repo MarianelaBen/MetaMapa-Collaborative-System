@@ -266,7 +266,7 @@ public class AgregadorService implements IAgregadorService {
         if ("desc".equalsIgnoreCase(direccion)) {
             sortObj = Sort.by(campo).descending();
         } else {
-            sortObj = Sort.by(campo).ascending();
+            sortObj = Sort.by(sort);
         }
 
         Pageable pageable = PageRequest.of(page, Math.max(1, Math.min(size, 200)), sortObj);
@@ -278,9 +278,7 @@ public class AgregadorService implements IAgregadorService {
             eliminado = true;
         }
 
-        Page<Hecho> paginaEntidad = hechoRepository.buscarConFiltros(
-                id, ubicacion, eliminado, fecha, latitud, longitud, radio, pageable
-        );
+        Page<Hecho> paginaEntidad = hechoRepository.buscarConFiltros(id, ubicacion, eliminado, fecha, pageable);
 
         return paginaEntidad.map(this::hechoOutputDTO);
     }
@@ -420,7 +418,10 @@ public class AgregadorService implements IAgregadorService {
     }
 
 
-    // 1. Modificar la firma del método público
+    //API PUBLICA
+
+// En AgregadorService.java
+
     @Override
     public PaginaDTO<HechoOutputDTO> obtenerHechosPorColeccion(
             String handle,
@@ -431,8 +432,6 @@ public class AgregadorService implements IAgregadorService {
             String keyword,
             LocalDate fechaDesde,
             LocalDate fechaHasta,
-            // Nuevos
-            Double latitud, Double longitud, Double radio,
             int page, int size
     ) {
 
@@ -443,8 +442,7 @@ public class AgregadorService implements IAgregadorService {
         if (hechos == null) throw new NoSuchElementException("Coleccion no encontrada: " + handle);
 
         List<HechoOutputDTO> listaCompleta = hechos.stream()
-                // Pasamos los nuevos parámetros a cumpleFiltros
-                .filter(hecho -> cumpleFiltros(hecho, categoria, fuente, ubicacion, keyword, fechaDesde, fechaHasta, latitud, longitud, radio))
+                .filter(hecho -> cumpleFiltros(hecho, categoria, fuente, ubicacion, keyword, fechaDesde, fechaHasta))
                 .map(hecho -> mapearConConsenso(hecho, algoritmoActual))
                 .filter(dto -> {
                     if (TipoDeModoNavegacion.CURADO.equals(modo)) {
@@ -454,11 +452,17 @@ public class AgregadorService implements IAgregadorService {
                 })
                 .toList();
 
-        // ... (resto de la lógica de paginación igual que antes) ...
         long totalElements = listaCompleta.size();
         int start = page * size;
         int end = Math.min(start + size, (int) totalElements);
-        List<HechoOutputDTO> content = (start >= totalElements) ? new ArrayList<>() : listaCompleta.subList(start, end);
+
+        List<HechoOutputDTO> content;
+        if (start >= totalElements) {
+            content = new ArrayList<>();
+        } else {
+            content = listaCompleta.subList(start, end);
+        }
+
         int totalPages = (int) Math.ceil((double) totalElements / size);
 
         PaginaDTO<HechoOutputDTO> paginaDTO = new PaginaDTO<>();
@@ -474,103 +478,6 @@ public class AgregadorService implements IAgregadorService {
         return paginaDTO;
     }
 
-    // 2. Modificar cumpleFiltros para incluir lógica geoespacial
-    private boolean cumpleFiltros(Hecho hecho, String categoria, String fuente, String ubicacion,
-                                  String keyword, LocalDate fechaDesde, LocalDate fechaHasta,
-                                  Double latitud, Double longitud, Double radio) {
-
-        // --- LÓGICA GEOESPACIAL ---
-        if (latitud != null && longitud != null && radio != null) {
-            // Si el hecho no tiene ubicación, no pasa el filtro geográfico
-            if (hecho.getUbicacion() == null ||
-                    hecho.getUbicacion().getLatitud() == null ||
-                    hecho.getUbicacion().getLongitud() == null) {
-                return false;
-            }
-
-            double dist = calcularDistanciaKm(
-                    latitud, longitud,
-                    hecho.getUbicacion().getLatitud(),
-                    hecho.getUbicacion().getLongitud()
-            );
-
-            // Si está más lejos que el radio pedido, chau
-            if (dist > radio) {
-                return false;
-            }
-        }
-        // --------------------------
-
-        // ... resto de filtros (categoria, fuente, etc.) igual que antes ...
-
-        if (categoria != null && !categoria.isBlank()) {
-            if (hecho.getCategoria() == null ||
-                    hecho.getCategoria().getNombre() == null ||
-                    !hecho.getCategoria().getNombre().equalsIgnoreCase(categoria)) {
-                return false;
-            }
-        }
-
-        if (fuente != null && !fuente.isBlank()) {
-            if (hecho.getOrigen() == null ||
-                    !hecho.getOrigen().name().equalsIgnoreCase(fuente)) {
-                return false;
-            }
-        }
-
-        // Filtro de texto de ubicación (por si el usuario busca "Santa Cruz" y además pone coordenadas)
-        if (ubicacion != null && !ubicacion.isBlank()) {
-            if (hecho.getUbicacion() == null || hecho.getUbicacion().getProvincia() == null) {
-                return false;
-            }
-            String prov = hecho.getUbicacion().getProvincia().toLowerCase();
-            String filtro = ubicacion.toLowerCase();
-            if (!prov.contains(filtro)) {
-                return false;
-            }
-        }
-
-        if (keyword != null && !keyword.isBlank()) {
-            String k = normalizar(keyword);
-            String tituloNorm = normalizar(hecho.getTitulo());
-            String descNorm   = normalizar(hecho.getDescripcion());
-            if (!tituloNorm.contains(k) && !descNorm.contains(k)) {
-                return false;
-            }
-        }
-
-        if (fechaDesde != null) {
-            if (hecho.getFechaAcontecimiento() == null ||
-                    hecho.getFechaAcontecimiento().toLocalDate().isBefore(fechaDesde)) {
-                return false;
-            }
-        }
-
-        if (fechaHasta != null) {
-            if (hecho.getFechaAcontecimiento() == null ||
-                    hecho.getFechaAcontecimiento().toLocalDate().isAfter(fechaHasta)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    // 3. Agregar método matemático para calcular distancia (Haversine)
-    private double calcularDistanciaKm(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371; // Radio de la Tierra en km
-
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c; // Distancia en km
-    }
 
     private HechoOutputDTO mapearConConsenso(Hecho hecho, TipoAlgoritmoDeConsenso algoritmo) {
         HechoOutputDTO dto = this.hechoOutputDTO(hecho);

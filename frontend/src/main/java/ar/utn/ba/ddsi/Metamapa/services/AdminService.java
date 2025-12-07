@@ -57,11 +57,6 @@ public class AdminService {
                     if (estado != null && !estado.isBlank()) builder.queryParam("estado", estado);
                     if (fecha != null) builder.queryParam("fecha", fecha);
 
-                    // NUEVOS
-                    if (lat != null) builder.queryParam("latitud", lat);
-                    if (lon != null) builder.queryParam("longitud", lon);
-                    if (radio != null) builder.queryParam("radio", radio);
-
                     return builder.build();
                 })
                 .retrieve()

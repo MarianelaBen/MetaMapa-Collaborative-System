@@ -153,10 +153,11 @@ public class AgregadorController {
             @RequestParam(required = false) Double longitud,
             @RequestParam(required = false) Double radio
     ) {
-        // Pasamos los nuevos datos al servicio
+
         Page<HechoOutputDTO> pagina = agregadorService.obtenerHechosConPaginacion(
-                page, size, sort, idHecho, ubicacion, estado, fecha, latitud, longitud, radio
+                page, size, sort, idHecho, ubicacion, estado, fecha
         );
+
         return ResponseEntity.ok(pagina);
     }
 
@@ -208,8 +209,6 @@ public class AgregadorController {
   }
 
 
-// Busca el método getHechosPorColeccion y reemplázalo con este:
-
     @GetMapping("/colecciones/{handle}/hechos")
     public ResponseEntity<?> getHechosPorColeccion(
             @PathVariable String handle,
@@ -224,18 +223,13 @@ public class AgregadorController {
 
             @RequestParam(value = "fecha_acontecimiento_hasta", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta,
-
-            // --- NUEVOS PARÁMETROS GEOESPACIALES ---
-            @RequestParam(required = false) Double latitud,
-            @RequestParam(required = false) Double longitud,
-            @RequestParam(required = false) Double radio,
-            // ----------------------------------------
-
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "0") int page, // Página 0 por defecto
+            @RequestParam(defaultValue = "10") int size // 10 elementos por página
     ) {
         try {
+            System.out.println("Valores enum: " + Arrays.toString(TipoDeModoNavegacion.values()));
             String modoLimpio = modoStr.trim();
+
             TipoDeModoNavegacion modo = Arrays.stream(TipoDeModoNavegacion.values())
                     .filter(m -> m.name().equalsIgnoreCase(modoLimpio))
                     .findFirst()
@@ -251,10 +245,6 @@ public class AgregadorController {
                             keyword,
                             fechaDesde,
                             fechaHasta,
-                            // Pasamos los nuevos datos al servicio
-                            latitud,
-                            longitud,
-                            radio,
                             page,
                             size
                     )
@@ -264,7 +254,7 @@ public class AgregadorController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error","Coleccion no encontrada","mensaje", e.getMessage()));
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Útil para depurar en desarrollo
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error","Error al obtener los hechos","mensaje", e.getMessage()));
         }

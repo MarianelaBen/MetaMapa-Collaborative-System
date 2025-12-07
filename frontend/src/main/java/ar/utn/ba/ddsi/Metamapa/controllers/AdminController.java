@@ -127,27 +127,17 @@ public class AdminController {
             Model model
     ) {
 
-        // Llamada actualizada al servicio pasando coordenadas y radio
-        PaginaDTO<HechoDTO> respHechos = adminService.obtenerHechosPaginado(
-                page, size, idHecho, ubicacion, estado, fecha, latitud, longitud, radio
-        );
+        PaginaDTO<HechoDTO> respHechos = adminService.obtenerHechosPaginado(page, size, idHecho, ubicacion, estado, fecha);
 
         long from = respHechos.getNumber() * (long) respHechos.getSize() + (respHechos.getNumberOfElements() > 0 ? 1 : 0);
         long to   = respHechos.getNumber() * (long) respHechos.getSize() + respHechos.getNumberOfElements();
 
         model.addAttribute("hechos", respHechos.getContent());
 
-        // Filtros originales al modelo
         model.addAttribute("filtroId", idHecho);
         model.addAttribute("filtroUbicacion", ubicacion);
         model.addAttribute("filtroEstado", estado);
         model.addAttribute("filtroFecha", fecha);
-
-        // --- NUEVOS FILTROS AL MODELO (Importante para mantener estado en la vista) ---
-        model.addAttribute("filtroLat", latitud);
-        model.addAttribute("filtroLon", longitud);
-        model.addAttribute("filtroRadio", radio);
-        // -----------------------------------------------------------------------------
 
         model.addAttribute("page", respHechos.getNumber());
         model.addAttribute("size", respHechos.getSize());
@@ -160,7 +150,7 @@ public class AdminController {
         model.addAttribute("from", from);
         model.addAttribute("to", to);
 
-        // Paginación de Categorías (se mantiene igual)
+
         PaginaDTO<CategoriaDTO> respCat = adminService.obtenerCategoriasPaginado(catPage, catSize);
         model.addAttribute("categorias", respCat.getContent());
         model.addAttribute("catPage", respCat.getNumber());
