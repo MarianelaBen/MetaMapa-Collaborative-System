@@ -75,26 +75,26 @@ public class AgregadorService implements IAgregadorService {
 
         List<Hecho> hechosNuevos = fuentes.stream()
 
-            .flatMap(f -> {
-                try {
-                    return obtenerTodosLosHechosDeFuente(f).stream();
-                } catch (Exception e) {
-                    System.err.println("⚠️ ALERTA: Falló la fuente " + f.getUrl() + " (" + f.getTipo() + "). Causa: " + e.getMessage());
-                    return java.util.stream.Stream.empty();
-                }
-            })
+                .flatMap(f -> {
+                    try {
+                        return obtenerTodosLosHechosDeFuente(f).stream();
+                    } catch (Exception e) {
+                        System.err.println("⚠️ ALERTA: Falló la fuente " + f.getUrl() + " (" + f.getTipo() + "). Causa: " + e.getMessage());
+                        return java.util.stream.Stream.empty();
+                    }
+                })
 
-            .map(h -> {
-                try {
-                    normalizadorService.normalizar(h);
-                    return h;
-                } catch (IllegalArgumentException e) {
-                    System.err.println("Error normalizando hecho: " + h.getTitulo());
-                    return null;
-                }
-            })
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+                .map(h -> {
+                    try {
+                        normalizadorService.normalizar(h);
+                        return h;
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Error normalizando hecho: " + h.getTitulo());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
         if (hechosNuevos.isEmpty()) {
             System.err.println("No se pudieron obtener hechos nuevos (o todas las fuentes fallaron).");
@@ -111,8 +111,8 @@ public class AgregadorService implements IAgregadorService {
             // Si tiene idEnFuente (Dinámica / Estática) → identifico por idEnFuente
             if (hechoNuevo.getIdEnFuente() != null) {
                 hechoExistente = hechoRepository.findByIdEnFuenteAndOrigen(
-                    hechoNuevo.getIdEnFuente(),
-                    hechoNuevo.getOrigen()
+                        hechoNuevo.getIdEnFuente(),
+                        hechoNuevo.getOrigen()
                 );
 
             } else {
@@ -176,58 +176,58 @@ public class AgregadorService implements IAgregadorService {
         List<Hecho> hechos = hechoRepository.buscarPorIdContribuyente(contribuyenteId);
 
         return hechos.stream()
-            .map(this::hechoOutputDTO)
-            .collect(Collectors.toList());
+                .map(this::hechoOutputDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<HechoOutputDTO> obtenerHechosPorContribuyenteFiltrado(
-        Long contribuyenteId,
-        String titulo,
-        String categoria,
-        String estado
+            Long contribuyenteId,
+            String titulo,
+            String categoria,
+            String estado
     ) {
         List<Hecho> hechos = hechoRepository.buscarPorIdContribuyente(contribuyenteId);
 
         // Primero mapeamos todo (esto ya calcula editable y diasRestantes)
         List<HechoOutputDTO> dtos = hechos.stream()
-            .map(this::hechoOutputDTO)
-            .collect(Collectors.toList());
+                .map(this::hechoOutputDTO)
+                .collect(Collectors.toList());
 
         // Luego filtramos sobre los DTO
         return dtos.stream()
-            .filter(dto -> {
-                // FILTRO TITULO
-                if (titulo != null && !titulo.isBlank()) {
-                    if (dto.getTitulo() == null ||
-                        !dto.getTitulo().toLowerCase().contains(titulo.toLowerCase())) {
-                        return false;
+                .filter(dto -> {
+                    // FILTRO TITULO
+                    if (titulo != null && !titulo.isBlank()) {
+                        if (dto.getTitulo() == null ||
+                                !dto.getTitulo().toLowerCase().contains(titulo.toLowerCase())) {
+                            return false;
+                        }
                     }
-                }
 
-                // FILTRO CATEGORIA
-                if (categoria != null && !categoria.isBlank()) {
-                    if (dto.getCategoria() == null ||
-                        !dto.getCategoria().equalsIgnoreCase(categoria)) {
-                        return false;
+                    // FILTRO CATEGORIA
+                    if (categoria != null && !categoria.isBlank()) {
+                        if (dto.getCategoria() == null ||
+                                !dto.getCategoria().equalsIgnoreCase(categoria)) {
+                            return false;
+                        }
                     }
-                }
 
-                // FILTRO ESTADO (editable / expirado)
-                if (estado != null && !estado.isBlank()) {
-                    boolean esEditable = dto.isEditable(); // viene ya calculado
+                    // FILTRO ESTADO (editable / expirado)
+                    if (estado != null && !estado.isBlank()) {
+                        boolean esEditable = dto.isEditable(); // viene ya calculado
 
-                    if ("editable".equalsIgnoreCase(estado) && !esEditable) {
-                        return false;
+                        if ("editable".equalsIgnoreCase(estado) && !esEditable) {
+                            return false;
+                        }
+                        if ("expirado".equalsIgnoreCase(estado) && esEditable) {
+                            return false;
+                        }
                     }
-                    if ("expirado".equalsIgnoreCase(estado) && esEditable) {
-                        return false;
-                    }
-                }
 
-                return true;
-            })
-            .collect(Collectors.toList());
+                    return true;
+                })
+                .collect(Collectors.toList());
     }
 
 
@@ -266,7 +266,7 @@ public class AgregadorService implements IAgregadorService {
         if ("desc".equalsIgnoreCase(direccion)) {
             sortObj = Sort.by(campo).descending();
         } else {
-            sortObj = Sort.by(sort);
+            sortObj = Sort.by(campo).ascending();
         }
 
         Pageable pageable = PageRequest.of(page, Math.max(1, Math.min(size, 200)), sortObj);
@@ -278,7 +278,9 @@ public class AgregadorService implements IAgregadorService {
             eliminado = true;
         }
 
-        Page<Hecho> paginaEntidad = hechoRepository.buscarConFiltros(id, ubicacion, eliminado, fecha, pageable);
+        Page<Hecho> paginaEntidad = hechoRepository.buscarConFiltros(
+                id, ubicacion, eliminado, fecha, latitud, longitud, radio, pageable
+        );
 
         return paginaEntidad.map(this::hechoOutputDTO);
     }
@@ -418,10 +420,7 @@ public class AgregadorService implements IAgregadorService {
     }
 
 
-    //API PUBLICA
-
-// En AgregadorService.java
-
+    // 1. Modificar la firma del método público
     @Override
     public PaginaDTO<HechoOutputDTO> obtenerHechosPorColeccion(
             String handle,
@@ -432,6 +431,8 @@ public class AgregadorService implements IAgregadorService {
             String keyword,
             LocalDate fechaDesde,
             LocalDate fechaHasta,
+            // Nuevos
+            Double latitud, Double longitud, Double radio,
             int page, int size
     ) {
 
@@ -442,7 +443,8 @@ public class AgregadorService implements IAgregadorService {
         if (hechos == null) throw new NoSuchElementException("Coleccion no encontrada: " + handle);
 
         List<HechoOutputDTO> listaCompleta = hechos.stream()
-                .filter(hecho -> cumpleFiltros(hecho, categoria, fuente, ubicacion, keyword, fechaDesde, fechaHasta))
+                // Pasamos los nuevos parámetros a cumpleFiltros
+                .filter(hecho -> cumpleFiltros(hecho, categoria, fuente, ubicacion, keyword, fechaDesde, fechaHasta, latitud, longitud, radio))
                 .map(hecho -> mapearConConsenso(hecho, algoritmoActual))
                 .filter(dto -> {
                     if (TipoDeModoNavegacion.CURADO.equals(modo)) {
@@ -452,17 +454,11 @@ public class AgregadorService implements IAgregadorService {
                 })
                 .toList();
 
+        // ... (resto de la lógica de paginación igual que antes) ...
         long totalElements = listaCompleta.size();
         int start = page * size;
         int end = Math.min(start + size, (int) totalElements);
-
-        List<HechoOutputDTO> content;
-        if (start >= totalElements) {
-            content = new ArrayList<>();
-        } else {
-            content = listaCompleta.subList(start, end);
-        }
-
+        List<HechoOutputDTO> content = (start >= totalElements) ? new ArrayList<>() : listaCompleta.subList(start, end);
         int totalPages = (int) Math.ceil((double) totalElements / size);
 
         PaginaDTO<HechoOutputDTO> paginaDTO = new PaginaDTO<>();
@@ -478,6 +474,103 @@ public class AgregadorService implements IAgregadorService {
         return paginaDTO;
     }
 
+    // 2. Modificar cumpleFiltros para incluir lógica geoespacial
+    private boolean cumpleFiltros(Hecho hecho, String categoria, String fuente, String ubicacion,
+                                  String keyword, LocalDate fechaDesde, LocalDate fechaHasta,
+                                  Double latitud, Double longitud, Double radio) {
+
+        // --- LÓGICA GEOESPACIAL ---
+        if (latitud != null && longitud != null && radio != null) {
+            // Si el hecho no tiene ubicación, no pasa el filtro geográfico
+            if (hecho.getUbicacion() == null ||
+                    hecho.getUbicacion().getLatitud() == null ||
+                    hecho.getUbicacion().getLongitud() == null) {
+                return false;
+            }
+
+            double dist = calcularDistanciaKm(
+                    latitud, longitud,
+                    hecho.getUbicacion().getLatitud(),
+                    hecho.getUbicacion().getLongitud()
+            );
+
+            // Si está más lejos que el radio pedido, chau
+            if (dist > radio) {
+                return false;
+            }
+        }
+        // --------------------------
+
+        // ... resto de filtros (categoria, fuente, etc.) igual que antes ...
+
+        if (categoria != null && !categoria.isBlank()) {
+            if (hecho.getCategoria() == null ||
+                    hecho.getCategoria().getNombre() == null ||
+                    !hecho.getCategoria().getNombre().equalsIgnoreCase(categoria)) {
+                return false;
+            }
+        }
+
+        if (fuente != null && !fuente.isBlank()) {
+            if (hecho.getOrigen() == null ||
+                    !hecho.getOrigen().name().equalsIgnoreCase(fuente)) {
+                return false;
+            }
+        }
+
+        // Filtro de texto de ubicación (por si el usuario busca "Santa Cruz" y además pone coordenadas)
+        if (ubicacion != null && !ubicacion.isBlank()) {
+            if (hecho.getUbicacion() == null || hecho.getUbicacion().getProvincia() == null) {
+                return false;
+            }
+            String prov = hecho.getUbicacion().getProvincia().toLowerCase();
+            String filtro = ubicacion.toLowerCase();
+            if (!prov.contains(filtro)) {
+                return false;
+            }
+        }
+
+        if (keyword != null && !keyword.isBlank()) {
+            String k = normalizar(keyword);
+            String tituloNorm = normalizar(hecho.getTitulo());
+            String descNorm   = normalizar(hecho.getDescripcion());
+            if (!tituloNorm.contains(k) && !descNorm.contains(k)) {
+                return false;
+            }
+        }
+
+        if (fechaDesde != null) {
+            if (hecho.getFechaAcontecimiento() == null ||
+                    hecho.getFechaAcontecimiento().toLocalDate().isBefore(fechaDesde)) {
+                return false;
+            }
+        }
+
+        if (fechaHasta != null) {
+            if (hecho.getFechaAcontecimiento() == null ||
+                    hecho.getFechaAcontecimiento().toLocalDate().isAfter(fechaHasta)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // 3. Agregar método matemático para calcular distancia (Haversine)
+    private double calcularDistanciaKm(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Radio de la Tierra en km
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c; // Distancia en km
+    }
 
     private HechoOutputDTO mapearConConsenso(Hecho hecho, TipoAlgoritmoDeConsenso algoritmo) {
         HechoOutputDTO dto = this.hechoOutputDTO(hecho);
@@ -532,16 +625,16 @@ public class AgregadorService implements IAgregadorService {
                 return false;
             }
         }*/
-      //AGREGO ESTE PARA QUE LOS EL FILTRO POR KEYWORD FUNCIONE NO DISTINGA TILDES NI MAYUSCULAS
-      if (keyword != null && !keyword.isBlank()) {
-        String k = normalizar(keyword);
-        String tituloNorm = normalizar(hecho.getTitulo());
-        String descNorm   = normalizar(hecho.getDescripcion());
+        //AGREGO ESTE PARA QUE LOS EL FILTRO POR KEYWORD FUNCIONE NO DISTINGA TILDES NI MAYUSCULAS
+        if (keyword != null && !keyword.isBlank()) {
+            String k = normalizar(keyword);
+            String tituloNorm = normalizar(hecho.getTitulo());
+            String descNorm   = normalizar(hecho.getDescripcion());
 
-        if (!tituloNorm.contains(k) && !descNorm.contains(k)) {
-          return false;
+            if (!tituloNorm.contains(k) && !descNorm.contains(k)) {
+                return false;
+            }
         }
-      }
 
         if (fechaDesde != null) {
             if (hecho.getFechaAcontecimiento() == null ||
@@ -612,9 +705,9 @@ public class AgregadorService implements IAgregadorService {
 
     //AGREGO PARA FILTROS
     private String normalizar(String s) {
-      if (s == null) return "";
-      String sinTildes = Normalizer.normalize(s, Normalizer.Form.NFD)
-          .replaceAll("\\p{M}", "");
-      return sinTildes.toLowerCase();
+        if (s == null) return "";
+        String sinTildes = Normalizer.normalize(s, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return sinTildes.toLowerCase();
     }
 }

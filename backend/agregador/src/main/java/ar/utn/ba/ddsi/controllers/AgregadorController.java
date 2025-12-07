@@ -42,27 +42,27 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/public")
 public class AgregadorController {
 
-  private final IAgregadorService agregadorService;
-  private final ISolicitudService solicitudService;
-  private final IFuenteRepository fuenteRepository;
-  private final IConsensoService consensoService;
-  private final ICategoriaRepository categoriaRepository;
-  private final ISolicitudRepository solicitudRepository;
-  private final IHechoRepository hechoRepository;
-  private final ColeccionService coleccionService;
+    private final IAgregadorService agregadorService;
+    private final ISolicitudService solicitudService;
+    private final IFuenteRepository fuenteRepository;
+    private final IConsensoService consensoService;
+    private final ICategoriaRepository categoriaRepository;
+    private final ISolicitudRepository solicitudRepository;
+    private final IHechoRepository hechoRepository;
+    private final ColeccionService coleccionService;
 
     public AgregadorController(IAgregadorService agregadorService, ISolicitudService solicitudService, IFuenteRepository fuenteRepository, IConsensoService consensoService, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudRepository, IHechoRepository hechoRepository, ColeccionService coleccionService){
-    this.agregadorService = agregadorService;
-    this.solicitudService = solicitudService;
-    this.fuenteRepository = fuenteRepository;
-    this.consensoService = consensoService;
-    this.categoriaRepository = categoriaRepository;
-    this.solicitudRepository = solicitudRepository;
-    this.hechoRepository = hechoRepository;
-    this.coleccionService = coleccionService;
+        this.agregadorService = agregadorService;
+        this.solicitudService = solicitudService;
+        this.fuenteRepository = fuenteRepository;
+        this.consensoService = consensoService;
+        this.categoriaRepository = categoriaRepository;
+        this.solicitudRepository = solicitudRepository;
+        this.hechoRepository = hechoRepository;
+        this.coleccionService = coleccionService;
     }
 
-  //pruebas
+    //pruebas
   /*@GetMapping("/hechos")
   public ResponseEntity<?> getHechos(Set<Fuente> fuentes){
     try{
@@ -114,27 +114,27 @@ public class AgregadorController {
     }
 
 
-  @GetMapping("/hechos/mis")
-  public ResponseEntity<List<HechoOutputDTO>> getHechosDelContribuyente(
-      @RequestParam("contribuyenteId") Long contribuyenteId) {
+    @GetMapping("/hechos/mis")
+    public ResponseEntity<List<HechoOutputDTO>> getHechosDelContribuyente(
+            @RequestParam("contribuyenteId") Long contribuyenteId) {
 
-    List<HechoOutputDTO> hechos = agregadorService.obtenerHechosPorContribuyente(contribuyenteId);
-    return ResponseEntity.ok(hechos);
-  }
+        List<HechoOutputDTO> hechos = agregadorService.obtenerHechosPorContribuyente(contribuyenteId);
+        return ResponseEntity.ok(hechos);
+    }
 
-  @GetMapping("/hechos/mis-filtrado")
-  public ResponseEntity<List<HechoOutputDTO>> getHechosDelContribuyenteFiltrado(
-      @RequestParam("contribuyenteId") Long contribuyenteId,
-      @RequestParam(required = false) String titulo,
-      @RequestParam(required = false) String categoria,
-      @RequestParam(required = false) String estado
-  ) {
-    List<HechoOutputDTO> hechos =
-        agregadorService.obtenerHechosPorContribuyenteFiltrado(
-            contribuyenteId, titulo, categoria, estado);
+    @GetMapping("/hechos/mis-filtrado")
+    public ResponseEntity<List<HechoOutputDTO>> getHechosDelContribuyenteFiltrado(
+            @RequestParam("contribuyenteId") Long contribuyenteId,
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String estado
+    ) {
+        List<HechoOutputDTO> hechos =
+                agregadorService.obtenerHechosPorContribuyenteFiltrado(
+                        contribuyenteId, titulo, categoria, estado);
 
-    return ResponseEntity.ok(hechos);
-  }
+        return ResponseEntity.ok(hechos);
+    }
 
 
     @GetMapping("/paginado")
@@ -153,11 +153,10 @@ public class AgregadorController {
             @RequestParam(required = false) Double longitud,
             @RequestParam(required = false) Double radio
     ) {
-
+        // Pasamos los nuevos datos al servicio
         Page<HechoOutputDTO> pagina = agregadorService.obtenerHechosConPaginacion(
-                page, size, sort, idHecho, ubicacion, estado, fecha
+                page, size, sort, idHecho, ubicacion, estado, fecha, latitud, longitud, radio
         );
-
         return ResponseEntity.ok(pagina);
     }
 
@@ -177,37 +176,39 @@ public class AgregadorController {
         }
     }
 
-// para precargar el form
-  @GetMapping("/hechos/{id}")
-  public ResponseEntity<Object> getHechoPorId(@PathVariable Long id) {
-    return hechoRepository.findById(id)
-        .map(h -> ResponseEntity.ok().<Object>body(agregadorService.hechoOutputDTO(h)))
-        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .<Object>body(Map.of("error","Hecho no encontrado","mensaje","id="+id)));
-  }
-
-  // para guardar cambios
-  @PutMapping(value = "/hechos/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<?> actualizarHecho(
-      @PathVariable Long id,
-      @RequestPart("hecho") HechoInputDTO hechoInput,
-      @RequestPart(value = "multimedia", required = false) MultipartFile[] multimedia,
-      @RequestParam(name = "replaceMedia", defaultValue = "false") boolean replaceMedia,
-      @RequestParam(value = "deleteExisting", required = false) List<String> deleteExisting) {
-
-    try {
-      HechoOutputDTO actualizado = coleccionService.actualizarHecho(id, hechoInput, multimedia, replaceMedia, deleteExisting == null ? List.of() : deleteExisting);
-      return ResponseEntity.ok(actualizado);
-    } catch (NoSuchElementException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hecho no encontrado");
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.badRequest().body(e.getMessage());
-    } catch (Exception e) {
-      e.printStackTrace();
-      return ResponseEntity.status(500).body("Error actualizando hecho: " + e.getMessage());
+    // para precargar el form
+    @GetMapping("/hechos/{id}")
+    public ResponseEntity<Object> getHechoPorId(@PathVariable Long id) {
+        return hechoRepository.findById(id)
+                .map(h -> ResponseEntity.ok().<Object>body(agregadorService.hechoOutputDTO(h)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .<Object>body(Map.of("error","Hecho no encontrado","mensaje","id="+id)));
     }
-  }
 
+    // para guardar cambios
+    @PutMapping(value = "/hechos/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> actualizarHecho(
+            @PathVariable Long id,
+            @RequestPart("hecho") HechoInputDTO hechoInput,
+            @RequestPart(value = "multimedia", required = false) MultipartFile[] multimedia,
+            @RequestParam(name = "replaceMedia", defaultValue = "false") boolean replaceMedia,
+            @RequestParam(value = "deleteExisting", required = false) List<String> deleteExisting) {
+
+        try {
+            HechoOutputDTO actualizado = coleccionService.actualizarHecho(id, hechoInput, multimedia, replaceMedia, deleteExisting == null ? List.of() : deleteExisting);
+            return ResponseEntity.ok(actualizado);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Hecho no encontrado");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error actualizando hecho: " + e.getMessage());
+        }
+    }
+
+
+// Busca el método getHechosPorColeccion y reemplázalo con este:
 
     @GetMapping("/colecciones/{handle}/hechos")
     public ResponseEntity<?> getHechosPorColeccion(
@@ -223,13 +224,18 @@ public class AgregadorController {
 
             @RequestParam(value = "fecha_acontecimiento_hasta", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta,
-            @RequestParam(defaultValue = "0") int page, // Página 0 por defecto
-            @RequestParam(defaultValue = "10") int size // 10 elementos por página
+
+            // --- NUEVOS PARÁMETROS GEOESPACIALES ---
+            @RequestParam(required = false) Double latitud,
+            @RequestParam(required = false) Double longitud,
+            @RequestParam(required = false) Double radio,
+            // ----------------------------------------
+
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
         try {
-            System.out.println("Valores enum: " + Arrays.toString(TipoDeModoNavegacion.values()));
             String modoLimpio = modoStr.trim();
-
             TipoDeModoNavegacion modo = Arrays.stream(TipoDeModoNavegacion.values())
                     .filter(m -> m.name().equalsIgnoreCase(modoLimpio))
                     .findFirst()
@@ -245,6 +251,10 @@ public class AgregadorController {
                             keyword,
                             fechaDesde,
                             fechaHasta,
+                            // Pasamos los nuevos datos al servicio
+                            latitud,
+                            longitud,
+                            radio,
                             page,
                             size
                     )
@@ -254,7 +264,7 @@ public class AgregadorController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error","Coleccion no encontrada","mensaje", e.getMessage()));
         } catch (Exception e) {
-            e.printStackTrace(); // Útil para depurar en desarrollo
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error","Error al obtener los hechos","mensaje", e.getMessage()));
         }
@@ -330,90 +340,90 @@ public class AgregadorController {
         return ResponseEntity.ok(top);
     }
 
-  @PostMapping("/fuentes")
-  public ResponseEntity<?> guardarFuente(@RequestBody FuenteInputDTO dto) {
-    try {
-      if (dto.getUrl() == null || dto.getUrl().isBlank() || dto.getTipo() == null) {
-        return ResponseEntity.badRequest()
-            .body(Map.of("error", "Datos inválidos", "mensaje", "url y tipo son obligatorios"));
-      }
+    @PostMapping("/fuentes")
+    public ResponseEntity<?> guardarFuente(@RequestBody FuenteInputDTO dto) {
+        try {
+            if (dto.getUrl() == null || dto.getUrl().isBlank() || dto.getTipo() == null) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Datos inválidos", "mensaje", "url y tipo son obligatorios"));
+            }
 
-      Fuente fuente = new Fuente(dto.getUrl(), dto.getTipo());
-      Fuente guardada = fuenteRepository.save(fuente);
+            Fuente fuente = new Fuente(dto.getUrl(), dto.getTipo());
+            Fuente guardada = fuenteRepository.save(fuente);
 
-      return ResponseEntity.status(HttpStatus.CREATED).body(guardada);
+            return ResponseEntity.status(HttpStatus.CREATED).body(guardada);
 
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error", "Error al guardar la fuente", "mensaje", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al guardar la fuente", "mensaje", e.getMessage()));
+        }
     }
-  }
 
-  @GetMapping("/fuentes")
-  public ResponseEntity<?> obtenerFuentes() {
-    try {
-      return ResponseEntity.ok(fuenteRepository.findAll());
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error", "Error al obtener las fuentes", "mensaje", e.getMessage()));
+    @GetMapping("/fuentes")
+    public ResponseEntity<?> obtenerFuentes() {
+        try {
+            return ResponseEntity.ok(fuenteRepository.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al obtener las fuentes", "mensaje", e.getMessage()));
+        }
     }
-  }
 
-  @PostMapping("/algoritmo")
-  public ResponseEntity<?> aplicarAlgoritmo() {
-    try {
-      consensoService.aplicarAlgoritmoDeConsenso();
-      return ResponseEntity.ok("Algoritmo aplicado");
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error", "Error al aplicar el algoritmo", "mensaje", e.getMessage()));
+    @PostMapping("/algoritmo")
+    public ResponseEntity<?> aplicarAlgoritmo() {
+        try {
+            consensoService.aplicarAlgoritmoDeConsenso();
+            return ResponseEntity.ok("Algoritmo aplicado");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al aplicar el algoritmo", "mensaje", e.getMessage()));
+        }
     }
-  }
 
-  //NUEVO
-  @GetMapping("/categorias/{categoriaId}")
-  public ResponseEntity<?> getCategoria(@PathVariable Long categoriaId) {
-    Categoria categoria = categoriaRepository.findById(categoriaId)
-        .orElseThrow(() -> new ResponseStatusException(
-            HttpStatus.NOT_FOUND, "Categoria no encontrada"));
-    return ResponseEntity.ok(categoria);
-  }
-
-  @GetMapping("/categorias")
-  public ResponseEntity<?> getCategorias() {
-    return ResponseEntity.ok(categoriaRepository.findAll());
-  }
-
-  @GetMapping("/solicitudes")
-  public ResponseEntity<?> getSolicitudes() {
-    return ResponseEntity.ok(this.agregadorService.getSolicitudes());
-  }
-
-
-  @GetMapping("/hechos/fuentes")
-  public ResponseEntity<?> getHechosTodasLasFuentes(){
-    try{
-      Set<Fuente> fuentes = fuenteRepository.findAll().stream().collect(Collectors.toSet());
-      return ResponseEntity.ok(this.agregadorService.obtenerTodosLosHechos(fuentes).stream().map(agregadorService::hechoOutputDTO));
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(Map.of("error","Solicitud no valida","mensaje", e.getMessage()));
-    } catch (NoSuchElementException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(Map.of("error","Hechos no encontrados","mensaje", e.getMessage()));
+    //NUEVO
+    @GetMapping("/categorias/{categoriaId}")
+    public ResponseEntity<?> getCategoria(@PathVariable Long categoriaId) {
+        Categoria categoria = categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Categoria no encontrada"));
+        return ResponseEntity.ok(categoria);
     }
-    catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
-    }
-  }
 
-  @GetMapping("/hechos/id-por-fuente/{idEnFuente}")
-  public ResponseEntity<Long> getIdHechoPorIdEnFuente(@PathVariable Long idEnFuente) {
-    return hechoRepository.findByIdEnFuenteAndOrigen(idEnFuente, Origen.PROVISTO_POR_CONTRIBUYENTE).map(Hecho::getId)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
-  }
+    @GetMapping("/categorias")
+    public ResponseEntity<?> getCategorias() {
+        return ResponseEntity.ok(categoriaRepository.findAll());
+    }
+
+    @GetMapping("/solicitudes")
+    public ResponseEntity<?> getSolicitudes() {
+        return ResponseEntity.ok(this.agregadorService.getSolicitudes());
+    }
+
+
+    @GetMapping("/hechos/fuentes")
+    public ResponseEntity<?> getHechosTodasLasFuentes(){
+        try{
+            Set<Fuente> fuentes = fuenteRepository.findAll().stream().collect(Collectors.toSet());
+            return ResponseEntity.ok(this.agregadorService.obtenerTodosLosHechos(fuentes).stream().map(agregadorService::hechoOutputDTO));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error","Solicitud no valida","mensaje", e.getMessage()));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error","Hechos no encontrados","mensaje", e.getMessage()));
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error al buscar los hechos", "mensaje" , e.getMessage()));
+        }
+    }
+
+    @GetMapping("/hechos/id-por-fuente/{idEnFuente}")
+    public ResponseEntity<Long> getIdHechoPorIdEnFuente(@PathVariable Long idEnFuente) {
+        return hechoRepository.findByIdEnFuenteAndOrigen(idEnFuente, Origen.PROVISTO_POR_CONTRIBUYENTE).map(Hecho::getId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
 
     @GetMapping("/categorias/paginado")
