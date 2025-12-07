@@ -116,8 +116,15 @@ public class AgregadorService implements IAgregadorService {
                 );
 
             } else {
-                // Si no tiene idEnFuente (Proxy) → identifico por título como antes
-                hechoExistente = hechoRepository.findByTitulo(hechoNuevo.getTitulo());
+
+                List<Hecho> encontrados = hechoRepository.findByTitulo(hechoNuevo.getTitulo());
+
+                if (!encontrados.isEmpty()) {
+                    hechoExistente = Optional.of(encontrados.get(0));
+
+                } else {
+                    hechoExistente = Optional.empty();
+                }
             }
 
             if (hechoExistente.isPresent()) {

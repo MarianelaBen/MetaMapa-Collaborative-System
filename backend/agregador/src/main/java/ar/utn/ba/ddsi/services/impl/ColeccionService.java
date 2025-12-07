@@ -61,7 +61,7 @@ public class ColeccionService implements IColeccionService {
 
     @Override
   public Coleccion crearColeccion(Coleccion coleccion){
-    if (!coleccion.getFuentes().isEmpty()){ this.filtrarHechos(coleccion); }
+    //if (!coleccion.getFuentes().isEmpty()){ this.filtrarHechos(coleccion); } TODO: esto lo comento para que no se filtren los hechos apenas se crea la colección, porque puede tardar mucho si hay varios hechos
 
       System.out.println("Fuentes en coleccion: " + coleccion.getFuentes().size());
       coleccion.getFuentes().forEach(f -> System.out.println("Fuente ID: " + f.getId()));
