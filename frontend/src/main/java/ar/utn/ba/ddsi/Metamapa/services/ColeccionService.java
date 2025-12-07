@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -66,7 +67,8 @@ public class ColeccionService {
                 .block();
     }
 
-    public List<CategoriaDTO> getCategorias(){
+
+  public List<CategoriaDTO> getCategorias(){
         List<CategoriaDTO> categorias = webClientPublic.get()
                 .uri("/categorias")
                 .retrieve()
