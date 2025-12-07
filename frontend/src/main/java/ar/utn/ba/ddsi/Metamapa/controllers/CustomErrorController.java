@@ -3,9 +3,12 @@ package ar.utn.ba.ddsi.Metamapa.controllers;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.HttpClientErrorException;
+
 
 @Controller
 public class CustomErrorController implements ErrorController {
@@ -27,7 +30,10 @@ public class CustomErrorController implements ErrorController {
             } else if (statusCode == 500) {
                 model.addAttribute("error", "Error Interno");
                 model.addAttribute("message", "Ocurrió un error inesperado en el servidor.");
-            } else {
+            } else if (statusCode == 429) {
+                model.addAttribute("error", "Demasiadas solicitudes");
+                model.addAttribute("message", "Superaste el límite de solicitudes permitido. Esperá unos segundos y volvé a intentar.");
+            }else {
                 model.addAttribute("error", "Error inesperado");
                 model.addAttribute("message", "Algo salió mal.");
             }
@@ -35,4 +41,5 @@ public class CustomErrorController implements ErrorController {
 
         return "error";
     }
+
 }
