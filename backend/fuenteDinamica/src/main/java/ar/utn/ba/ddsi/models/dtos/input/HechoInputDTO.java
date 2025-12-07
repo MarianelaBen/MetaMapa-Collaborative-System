@@ -38,4 +38,5 @@ public class HechoInputDTO {
     @Schema(description = "Fotos o videos sobre el hecho", example = "Inserte o arrastre una foto/video")
     private List<String> pathsMultimedia;
     private Boolean fueEliminado;
+    private boolean tieneEdicionPendiente;
 }

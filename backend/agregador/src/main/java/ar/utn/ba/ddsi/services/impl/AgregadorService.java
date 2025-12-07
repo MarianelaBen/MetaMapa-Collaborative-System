@@ -8,10 +8,8 @@ import ar.utn.ba.ddsi.models.dtos.output.*;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
-import ar.utn.ba.ddsi.models.repositories.ICategoriaRepository;
-import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
-import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
-import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
+import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuente;
+import ar.utn.ba.ddsi.models.repositories.*;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IColeccionService;
 import jakarta.persistence.EntityManager;
@@ -44,7 +42,8 @@ public class AgregadorService implements IAgregadorService {
     private final ICategoriaRepository categoriaRepository; //TODO BORRAR CUANDO SE ARREGLE NORMALIZADOR
     private final ISolicitudRepository solicitudesRepo;
     private final IColeccionRepository coleccionRepo;
-
+    @Autowired
+    private IFuenteRepository fuenteRepository;
     public AgregadorService(AdapterFuenteDinamica adapterFuenteDinamica, AdapterFuenteEstatica adapterFuenteEstatica, AdapterFuenteProxy adapterFuenteProxy, NormalizadorService normalizadorService, IHechoRepository hechoRepository, ICategoriaRepository categoriaRepository, ISolicitudRepository solicitudesRepo, IColeccionRepository coleccionRepo) {
         this.adapterFuenteDinamica = adapterFuenteDinamica;
         this.adapterFuenteEstatica = adapterFuenteEstatica;
@@ -172,7 +171,37 @@ public class AgregadorService implements IAgregadorService {
     }
 
     @Override
+    @Transactional
     public List<HechoOutputDTO> obtenerHechosPorContribuyente(Long contribuyenteId) {
+
+        Fuente fuenteDinamica = fuenteRepository.findByTipo(TipoFuente.DINAMICA).stream().findFirst().orElse(null);
+
+        if (fuenteDinamica != null) {
+            try {
+                List<Hecho> hechosFrescos = adapterFuenteDinamica.obtenerHechos(fuenteDinamica.getUrl());
+
+                List<Hecho> hechosUsuario = hechosFrescos.stream()
+                        .filter(h -> h.getContribuyente() != null && h.getContribuyente().getIdContribuyente().equals(contribuyenteId))
+                        .collect(Collectors.toList());
+
+                for (Hecho fresco : hechosUsuario) {
+                    Hecho local = hechoRepository.findByIdEnFuenteAndOrigen(fresco.getIdEnFuente(), fresco.getOrigen())
+                            .orElse(null);
+
+                    if (local != null) {
+                        local.setTieneEdicionPendiente(fresco.getTieneEdicionPendiente());
+                        local.actualizarDesde(fresco);
+                        hechoRepository.save(local);
+                    } else {
+                        hechoRepository.save(fresco);
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ No se pudo sincronizar hechos del usuario en tiempo real: " + e.getMessage());
+
+            }
+        }
+
         List<Hecho> hechos = hechoRepository.buscarPorIdContribuyente(contribuyenteId);
 
         return hechos.stream()
@@ -373,11 +402,10 @@ public class AgregadorService implements IAgregadorService {
         if (hecho.getEtiquetas() != null) {
             hechoOutputDTO.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
         }
-
+        hechoOutputDTO.setTieneEdicionPendiente(Boolean.TRUE.equals(hecho.getTieneEdicionPendiente()));
         hechoOutputDTO.setIdContenidoMultimedia(
                 hecho.getPathMultimedia() != null ? hecho.getPathMultimedia() : List.of()
         );
-
         if (hechoOutputDTO.getIdContenidoMultimedia() != null) {
             hechoOutputDTO.setIdContenidoMultimedia(
                     hechoOutputDTO.getIdContenidoMultimedia().stream()

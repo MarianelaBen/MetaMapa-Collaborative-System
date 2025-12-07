@@ -27,4 +27,6 @@ public interface ISolicitudRepository extends JpaRepository<SolicitudDeEliminaci
             @Param("fecha") LocalDate fecha,
             Pageable pageable
     );
+
+
 }

@@ -31,6 +31,7 @@ public class HechoDTO {
   private int diasRestantes;
   private Long idEnFuente;
   private Boolean consensuado;
+    private boolean tieneEdicionPendiente;
 
 
   public HechoDTO(String titulo, String descripcion, String categoria, LocalDateTime fechaAcontecimiento, String provincia, Long id) {

@@ -89,6 +89,7 @@ public class AdapterFuenteDinamica {
             }
         }
         hecho.setIdEnFuente(dto.getId());
+        hecho.setTieneEdicionPendiente(dto.isTieneEdicionPendiente());
         return hecho;
     }
 

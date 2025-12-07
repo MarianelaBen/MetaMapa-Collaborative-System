@@ -124,13 +124,19 @@
                     </a>
 
                     <a class="btn btn-primary"
-                       th:if="${h.editable and !h.fueEliminado}"
+                       th:if="${h.editable and !h.fueEliminado and !h.tieneEdicionPendiente}"
                        th:href="@{/hechos/{id}/editar(id=${h.id})}">
                         <i class="fas fa-edit"></i> Editar
                     </a>
 
+                    <span class="btn btn-warning disabled"
+                          th:if="${h.tieneEdicionPendiente}"
+                          title="Edición pendiente de revisión">
+                        <i class="fas fa-clock"></i> Pendiente de aprobación
+                    </span>
+
                     <span class="btn btn-secondary disabled"
-                          th:if="${!h.editable and !h.fueEliminado}">
+                          th:if="${(!h.editable and !h.fueEliminado and !h.tieneEdicionPendiente)}">
                         <i class="fas fa-lock"></i> No editable
                     </span>
 

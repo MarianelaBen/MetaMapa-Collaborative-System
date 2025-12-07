@@ -66,6 +66,9 @@ public class Hecho {
   @Column(name = "fue_eliminado")
   private Boolean fueEliminado;
 
+    @Column(name = "tiene_edicion_pendiente")
+    private Boolean tieneEdicionPendiente = false;
+
   @ManyToMany
   @JoinTable(name = "hecho_etiqueta",
       joinColumns = @JoinColumn(name = "hecho_id", referencedColumnName = "id"),

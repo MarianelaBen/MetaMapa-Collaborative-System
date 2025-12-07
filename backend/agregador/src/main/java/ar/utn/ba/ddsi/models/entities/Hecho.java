@@ -84,6 +84,9 @@ public class Hecho {
   @Column(name = "idEnFuente")
   private Long idEnFuente;
 
+    @Column(name = "tiene_edicion_pendiente")
+    private Boolean tieneEdicionPendiente = false;
+
   //@Column(name = "editable" )
   //private boolean editable;
 
@@ -191,6 +194,10 @@ public class Hecho {
     } else {
       this.ubicacion = otro.ubicacion;
     }
+
+      if (otro.getTieneEdicionPendiente() != null) {
+          this.tieneEdicionPendiente = otro.getTieneEdicionPendiente();
+      }
 
     this.pathMultimedia = otro.pathMultimedia != null ?
         new ArrayList<>(otro.pathMultimedia) :

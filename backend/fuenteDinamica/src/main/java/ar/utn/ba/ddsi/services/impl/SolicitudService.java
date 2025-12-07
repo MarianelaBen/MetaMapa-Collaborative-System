@@ -38,10 +38,12 @@ public class SolicitudService implements ISolicitudService {
       switch (estado) {
         case ACEPTADA:
           solicitud.setEstado(EstadoSolicitud.ACEPTADA);
+          solicitud.getHecho().setTieneEdicionPendiente(false);
           guardadoDeCredencial(solicitud, comentario, idAdministrador);
           break;
         case RECHAZADA:
             solicitud.setEstado(EstadoSolicitud.RECHAZADA);
+            solicitud.getHecho().setTieneEdicionPendiente(false);
             guardadoDeCredencial(solicitud, comentario, idAdministrador);
           if (solicitud.getTipoSolicitud() == TipoSolicitud.CREACION){
             this.hechoService.creacionRechazada(solicitud.getHecho());
@@ -89,4 +91,13 @@ public class SolicitudService implements ISolicitudService {
     }
     return dto;
   }
+    @Override
+    public boolean existeSolicitudPendiente(Long idHecho, TipoSolicitud tipo) {
+        return solicitudRepository.existsByHecho_IdAndTipoSolicitudAndEstado(
+                idHecho,
+                tipo,
+                EstadoSolicitud.PENDIENTE
+        );
+    }
+
 }

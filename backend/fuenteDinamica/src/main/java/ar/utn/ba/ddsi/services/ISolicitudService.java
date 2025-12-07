@@ -11,4 +11,5 @@ public interface ISolicitudService {
   List<SolicitudOutputDTO> obtenerTodas();
   void create(Hecho hecho, TipoSolicitud tipo);
   void atencionDeSolicitud(Long idSolicitud, EstadoSolicitud estado, String comentario, Long idAdministrador);
+    boolean existeSolicitudPendiente(Long idHecho, TipoSolicitud tipo);
 }

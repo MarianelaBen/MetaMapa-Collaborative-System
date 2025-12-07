@@ -33,4 +33,5 @@ public class HechoInputComunDTO {
 
   // Campos especificos de cada fuente
   private JsonNode particulares;
+    private boolean tieneEdicionPendiente;
 }

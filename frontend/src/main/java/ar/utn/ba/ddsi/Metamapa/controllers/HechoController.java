@@ -181,7 +181,7 @@ public class HechoController {
                 usuarioId
         );
 
-        redirect.addFlashAttribute("mensaje", "Su hecho fue editado con éxito.");
+        redirect.addFlashAttribute("mensaje", "Su solicitud de modificación se ha enviado con éxito.");
         redirect.addFlashAttribute("tipoMensaje", "success");
 
         return "redirect:/hechos/" + id;

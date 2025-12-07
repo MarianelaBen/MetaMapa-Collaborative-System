@@ -39,4 +39,5 @@ public class HechoOutputDTO {
   private JsonNode particulares;
 
   private List<String> pathContenidoMultimedia;
+    private boolean tieneEdicionPendiente;
 }

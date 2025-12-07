@@ -134,6 +134,7 @@ public class HechoService implements IHechoService {
     dto.setFechaAcontecimiento(hecho.getFechaAcontecimiento());
     dto.setFechaCarga(hecho.getFechaCarga());
     dto.setFueEliminado(hecho.getFueEliminado());
+
     //dto.setOrigen(hecho.getOrigen());       // extrae el id de cada etiqueta y los junta en un Set<Integer>
     // dto.setIdEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getId).collect(Collectors.toSet()));
     //dto.setContribuyente(contribuyenteOutputDTO(hecho.getContribuyente()));
@@ -154,7 +155,8 @@ public class HechoService implements IHechoService {
       }
       extras.set("contribuyente", c);
     }
-
+      boolean pendiente = solicitudService.existeSolicitudPendiente(hecho.getId(), TipoSolicitud.EDICION);
+      dto.setTieneEdicionPendiente(pendiente);
     dto.setParticulares(extras);
     dto.setEtiquetas(hecho.getEtiquetas().stream().map(Etiqueta::getNombre).collect(Collectors.toSet()));
     dto.setPathContenidoMultimedia(hecho.getContenidosMultimedia().stream().map(ContenidoMultimedia::getPath).collect(Collectors.toList()));

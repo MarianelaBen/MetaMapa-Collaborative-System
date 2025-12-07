@@ -36,6 +36,7 @@ public class HechoOutputDTO {
   private boolean editable;    // 7 días desde fechaCarga
   private int diasRestantes;
   //private int diasRestantesEdicion;
+  private boolean tieneEdicionPendiente;
 
   public static HechoOutputDTO fromEntity(Hecho h) {
     HechoOutputDTO dto = new HechoOutputDTO();
