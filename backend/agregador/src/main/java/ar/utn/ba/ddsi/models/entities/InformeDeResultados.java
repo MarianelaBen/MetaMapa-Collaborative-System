@@ -1,4 +1,4 @@
-package ar.utn.ba.ddsi.services;
+package ar.utn.ba.ddsi.models.entities;
 
 import lombok.Builder;
 import lombok.Data;
