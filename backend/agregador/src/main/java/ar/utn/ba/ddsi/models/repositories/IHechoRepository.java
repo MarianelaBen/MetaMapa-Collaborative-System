@@ -87,4 +87,6 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
     List<Hecho> buscarPorRadio(@Param("latUser") double latUser,
                                @Param("lonUser") double lonUser,
                                @Param("radioKm") double radioKm);
+    // En IHechoRepository
+    List<Hecho> findByIdEnFuenteInAndOrigen(List<Long> ids, Origen origen);
 }
