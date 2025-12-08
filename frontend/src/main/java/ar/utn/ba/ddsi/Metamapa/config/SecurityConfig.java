@@ -15,70 +15,71 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    @Bean
-    public AuthenticationManager authManager(HttpSecurity http, CustomAuthProvider provider) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .authenticationProvider(provider)
-                .build();
-    }
+  @Bean
+  public AuthenticationManager authManager(HttpSecurity http, CustomAuthProvider provider) throws Exception {
+    return http.getSharedObject(AuthenticationManagerBuilder.class)
+        .authenticationProvider(provider)
+        .build();
+  }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/hechos/mis-filtrado").authenticated()
-                        .requestMatchers(
-                                "/login/**", "/signup/**",
-                                "/inicio/**", "/landing/**",
-                                "/css/**", "/js/**", "/img/**", "/webjars/**",
-                                "/colecciones/**",
-                                "/hechos", "/hechos/{id}",
-                                "/hechos/nuevo/**",
-                                "/privacidad/**", "/error/**", "/403/**"
-                        ).permitAll()
+            .requestMatchers("/hechos/mis-filtrado").authenticated()
+            .requestMatchers(
+                "/login/**", "/signup/**",
+                "/inicio/**", "/landing/**",
+                "/css/**", "/js/**", "/img/**", "/webjars/**",
+                "/colecciones/**",
+                "/hechos", "/hechos/{id}",
+                "/hechos/nuevo/**",
+                "/privacidad/**", "/error/**", "/403/**",
+                "/actuator/**"
+            ).permitAll()
 
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                                .loginPage("/login")
-                                .permitAll()
-                                .defaultSuccessUrl("/inicio?login=ok", true)
-                        //.defaultSuccessUrl("/inicio", true)
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")  //ruta para cerrar sesion
-                        .deleteCookies("JSESSIONID")
-                        .invalidateHttpSession(true)
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            // limpiar tokens guardados en sesión (nombres reales que usás)
-                            var session = request.getSession(false);
-                            if (session != null) {
-                                session.removeAttribute("accessToken");
-                                session.removeAttribute("refreshToken");
-                            }
-                            // redirigir con mensaje simple
-                            response.sendRedirect("/login?logout");
-                        })
-                )
+            .anyRequest().authenticated()
+        )
+        .formLogin(form -> form
+                .loginPage("/login")
+                .permitAll()
+                .defaultSuccessUrl("/inicio?login=ok", true)
+            //.defaultSuccessUrl("/inicio", true)
+        )
+        .logout(logout -> logout
+            .logoutUrl("/logout")  //ruta para cerrar sesion
+            .deleteCookies("JSESSIONID")
+            .invalidateHttpSession(true)
+            .logoutSuccessHandler((request, response, authentication) -> {
+              // limpiar tokens guardados en sesión (nombres reales que usás)
+              var session = request.getSession(false);
+              if (session != null) {
+                session.removeAttribute("accessToken");
+                session.removeAttribute("refreshToken");
+              }
+              // redirigir con mensaje simple
+              response.sendRedirect("/login?logout");
+            })
+        )
 
 
 
-                .exceptionHandling(ex -> ex
-                        // Usuario no autenticado → redirigir a login
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.sendRedirect("/login?unauthorized")
-                        )
-                        // Usuario autenticado pero sin permisos → redirigir a página de error
-                        .accessDeniedHandler((request, response, accessDeniedException) ->
-                                response.sendRedirect("/403")
-                        )
-                );
+        .exceptionHandling(ex -> ex
+            // Usuario no autenticado → redirigir a login
+            .authenticationEntryPoint((request, response, authException) ->
+                response.sendRedirect("/login?unauthorized")
+            )
+            // Usuario autenticado pero sin permisos → redirigir a página de error
+            .accessDeniedHandler((request, response, accessDeniedException) ->
+                response.sendRedirect("/403")
+            )
+        );
 
-        return http.build();
-    }
+    return http.build();
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }
