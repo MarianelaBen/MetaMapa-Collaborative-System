@@ -14,7 +14,7 @@ import ar.utn.ba.ddsi.models.repositories.IHechoRepository;
 import ar.utn.ba.ddsi.models.repositories.ISolicitudRepository;
 import ar.utn.ba.ddsi.services.IAdminService;
 import ar.utn.ba.ddsi.services.ISolicitudService;
-import ar.utn.ba.ddsi.services.InformeDeResultados;
+import ar.utn.ba.ddsi.models.entities.InformeDeResultados;
 import ar.utn.ba.ddsi.services.impl.ColeccionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
