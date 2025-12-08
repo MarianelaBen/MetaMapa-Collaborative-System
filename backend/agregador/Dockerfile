@@ -18,7 +18,7 @@ WORKDIR /app
 COPY --from=build /app/agregador/target/*.jar app.jar
 
 # Railway te inyecta PORT, pero exponemos 8080 como valor por defecto
-EXPOSE 8084
+EXPOSE 8083
 
 # Comando de arranque
 CMD ["java", "-jar", "app.jar"]
