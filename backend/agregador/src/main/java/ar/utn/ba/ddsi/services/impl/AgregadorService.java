@@ -5,6 +5,7 @@ import ar.utn.ba.ddsi.adapters.AdapterFuenteEstatica;
 import ar.utn.ba.ddsi.adapters.AdapterFuenteProxy;
 import ar.utn.ba.ddsi.models.dtos.input.SolicitudInputDTO;
 import ar.utn.ba.ddsi.models.dtos.output.*;
+import ar.utn.ba.ddsi.models.dtos.input.*;
 import ar.utn.ba.ddsi.models.entities.*;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoDeModoNavegacion;
@@ -738,4 +739,37 @@ public class AgregadorService implements IAgregadorService {
                 .replaceAll("\\p{M}", "");
         return sinTildes.toLowerCase();
     }
+
+    public List<HechoOutputDTO> obtenerHechosConFiltro(FiltroHechosInput filtro) {
+
+        // 1. Tomamos todos los hechos existentes
+        List<HechoOutputDTO> hechos = this.obtenerHechos();
+
+        if (filtro == null) return hechos;
+
+        return hechos.stream()
+            .filter(h -> filtro.getCategoria() == null ||
+                h.getCategoria().equalsIgnoreCase(filtro.getCategoria()))
+            .filter(h -> filtro.getProvincia() == null ||
+                (h.getProvincia() != null && h.getProvincia().equalsIgnoreCase(filtro.getProvincia())))
+            .filter(h -> filtro.getTituloContiene() == null ||
+                (h.getTitulo() != null &&
+                    h.getTitulo().toLowerCase().contains(filtro.getTituloContiene().toLowerCase())))
+            .filter(h -> {
+                if (filtro.getFechaDesde() == null && filtro.getFechaHasta() == null) return true;
+
+                if (h.getFechaAcontecimiento() == null) return false;
+
+                LocalDate fecha = h.getFechaAcontecimiento().toLocalDate();
+
+                boolean okDesde = filtro.getFechaDesde() == null ||
+                    fecha.isAfter(LocalDate.parse(filtro.getFechaDesde()));
+                boolean okHasta = filtro.getFechaHasta() == null ||
+                    fecha.isBefore(LocalDate.parse(filtro.getFechaHasta()));
+
+                return okDesde && okHasta;
+            })
+            .collect(Collectors.toList());
+    }
+
 }
