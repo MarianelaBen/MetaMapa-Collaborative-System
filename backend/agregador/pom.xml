@@ -2,7 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- Hereda WebFlux porque viene del POM general -->
     <parent>
         <groupId>ar.utn.ba.ddsi</groupId>
         <artifactId>MetaMapa</artifactId>
@@ -10,39 +13,64 @@
     </parent>
 
     <artifactId>agregador</artifactId>
+    <name>agregador</name>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>17</java.version>
     </properties>
+
     <dependencies>
-    <!--    <dependency>
-            <groupId>ar.utn.ba.ddsi</groupId>
-            <artifactId>fuenteDinamica</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency> -->
+
+        <!-- Web MVC  -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- WebFlux SIGUE ESTANDO porque es heredado del parent -->
+
+        <!-- Actuator (expone /actuator/**) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Registro Prometheus (habilita /actuator/prometheus) -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>1.15.4</version>
+        </dependency>
+
+        <!-- Seguridad -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
         </dependency>
+
+        <!-- CSV -->
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>5.9</version>
         </dependency>
-        <!--   <dependency>
-               <groupId>ar.utn.ba.ddsi</groupId>
-               <artifactId>fuenteProxy</artifactId>
-               <version>0.0.1-SNAPSHOT</version>
-               <scope>compile</scope>
-           </dependency> -->
+
+        <!-- Tests -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
