@@ -89,4 +89,39 @@ public interface IHechoRepository extends JpaRepository<Hecho,Long> {
                                @Param("radioKm") double radioKm);
     // En IHechoRepository
     List<Hecho> findByIdEnFuenteInAndOrigen(List<Long> ids, Origen origen);
+
+
+
+    @Query("SELECT DISTINCT h FROM Coleccion c " +
+            "JOIN c.hechos h " +
+            "LEFT JOIN h.consensoPorAlgoritmo c_map " + // Join al mapa de consensos
+            "WHERE c.handle = :handle " +
+
+            // Filtros básicos
+            "AND (:categoria IS NULL OR h.categoria.nombre = :categoria) " +
+            "AND (:fuente IS NULL OR h.origen = :fuente) " +
+            "AND (:keyword IS NULL OR (LOWER(h.titulo) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(h.descripcion) LIKE LOWER(CONCAT('%', :keyword, '%')))) " +
+            "AND (:provincia IS NULL OR LOWER(h.ubicacion.provincia) LIKE LOWER(CONCAT('%', :provincia, '%'))) " +
+
+            // Filtros de fecha (Casteamos LocalDateTime a LocalDate para comparar solo fechas)
+            "AND (cast(:fechaDesde as date) IS NULL OR CAST(h.fechaAcontecimiento AS date) >= :fechaDesde) " +
+            "AND (cast(:fechaHasta as date) IS NULL OR CAST(h.fechaAcontecimiento AS date) <= :fechaHasta) " +
+
+            // LÓGICA DE MODO CURADO (Consenso)
+            "AND (" +
+            "   :modoCurado = false " + // Si no es curado, trae todo
+            "   OR c.algoritmoDeConsenso IS NULL " + // Si la colección no define algoritmo, trae todo
+            "   OR (KEY(c_map) = c.algoritmoDeConsenso AND c_map = true)" + // Coincide Algoritmo y es True
+            ")")
+    Page<Hecho> findHechosByColeccionHandlePaginado(
+            @Param("handle") String handle,
+            @Param("categoria") String categoria,
+            @Param("fuente") Origen fuente,
+            @Param("keyword") String keyword,
+            @Param("fechaDesde") LocalDate fechaDesde,
+            @Param("fechaHasta") LocalDate fechaHasta,
+            @Param("provincia") String provincia,
+            @Param("modoCurado") boolean modoCurado,
+            Pageable pageable
+    );
 }

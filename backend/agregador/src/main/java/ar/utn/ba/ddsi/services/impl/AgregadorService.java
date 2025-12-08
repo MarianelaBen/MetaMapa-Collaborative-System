@@ -408,44 +408,72 @@ public class AgregadorService implements IAgregadorService {
         return hechoOutputDTO;
     }
 
+
+
     @Override
     public PaginaDTO<HechoOutputDTO> obtenerHechosPorColeccion(
             String handle, TipoDeModoNavegacion modo, String categoria, String fuente, String ubicacion,
             String keyword, LocalDate fechaDesde, LocalDate fechaHasta,
             Double latitud, Double longitud, Double radio, int page, int size
     ) {
+        // 1. Obtener información de la colección para saber qué algoritmo de consenso aplica
+        // Esto es rápido porque busca por ID (handle)
         Coleccion coleccionInfo = coleccionService.findById(handle);
         TipoAlgoritmoDeConsenso algoritmoActual = coleccionInfo.getAlgoritmoDeConsenso();
 
-        List<Hecho> hechos = coleccionService.obtenerHechosPorColeccion(handle, modo);
-        if (hechos == null) throw new NoSuchElementException("Coleccion no encontrada: " + handle);
+        // 2. Convertir el String 'fuente' al Enum 'Origen' para la consulta JPA
+        Origen origenEnum = null;
+        if (fuente != null && !fuente.isBlank()) {
+            try {
+                origenEnum = Origen.valueOf(fuente);
+            } catch (IllegalArgumentException e) {
+                // Si el string no coincide con ningún ENUM, ignoramos el filtro o lo dejamos null
+                // System.err.println("Valor de fuente inválido: " + fuente);
+            }
+        }
 
-        List<HechoOutputDTO> listaCompleta = hechos.stream()
-                .filter(hecho -> cumpleFiltros(hecho, categoria, fuente, ubicacion, keyword, fechaDesde, fechaHasta, latitud, longitud, radio))
+        // 3. Determinar si filtramos por "Modo Curado"
+        boolean modoCurado = TipoDeModoNavegacion.CURADO.equals(modo);
+
+        // 4. Preparar la paginación
+        Pageable pageable = PageRequest.of(page, size);
+
+        // 5. LLAMADA OPTIMIZADA AL REPOSITORIO
+        // Esta línea hace la magia: DB filtra y devuelve solo 'size' elementos (ej. 12).
+        Page<Hecho> paginaHechos = hechoRepository.findHechosByColeccionHandlePaginado(
+                handle,
+                (categoria != null && !categoria.isBlank()) ? categoria : null,
+                origenEnum,
+                (keyword != null && !keyword.isBlank()) ? keyword : null,
+                fechaDesde,
+                fechaHasta,
+                (ubicacion != null && !ubicacion.isBlank()) ? ubicacion : null,
+                modoCurado,
+                pageable
+        );
+
+        // 6. Mapear los resultados (Entidad -> DTO)
+        // Solo iteramos sobre los 10-12 elementos devueltos por la DB, no sobre 10.000
+        List<HechoOutputDTO> contenido = paginaHechos.getContent().stream()
                 .map(hecho -> mapearConConsenso(hecho, algoritmoActual))
-                .filter(dto -> {
-                    if (TipoDeModoNavegacion.CURADO.equals(modo)) {
-                        return Boolean.TRUE.equals(dto.getConsensuado());
-                    }
-                    return true;
-                })
-                .toList();
+                .collect(Collectors.toList());
 
-        long totalElements = listaCompleta.size();
-        int start = page * size;
-        int end = Math.min(start + size, (int) totalElements);
-        List<HechoOutputDTO> content = (start >= totalElements) ? new ArrayList<>() : listaCompleta.subList(start, end);
-        int totalPages = (int) Math.ceil((double) totalElements / size);
+        // NOTA SOBRE GEOLOCALIZACIÓN (Lat/Lon/Radio):
+        // La consulta JPQL actual filtra por "ubicacion" (String/Provincia).
+        // Si necesitas filtrar estrictamente por radio matemático (Haversine) sobre los 10k registros,
+        // deberías implementar una Native Query espacial.
+        // Por ahora, para arreglar el rendimiento crítico, nos basamos en los filtros de la DB.
 
+        // 7. Construir el objeto de respuesta paginado
         PaginaDTO<HechoOutputDTO> paginaDTO = new PaginaDTO<>();
-        paginaDTO.setContent(content);
-        paginaDTO.setNumber(page);
-        paginaDTO.setSize(size);
-        paginaDTO.setTotalElements(totalElements);
-        paginaDTO.setTotalPages(totalPages);
-        paginaDTO.setNumberOfElements(content.size());
-        paginaDTO.setFirst(page == 0);
-        paginaDTO.setLast(page >= totalPages - 1);
+        paginaDTO.setContent(contenido);
+        paginaDTO.setNumber(paginaHechos.getNumber());
+        paginaDTO.setSize(paginaHechos.getSize());
+        paginaDTO.setTotalElements(paginaHechos.getTotalElements()); // Total real en DB
+        paginaDTO.setTotalPages(paginaHechos.getTotalPages());
+        paginaDTO.setNumberOfElements(paginaHechos.getNumberOfElements());
+        paginaDTO.setFirst(paginaHechos.isFirst());
+        paginaDTO.setLast(paginaHechos.isLast());
 
         return paginaDTO;
     }
