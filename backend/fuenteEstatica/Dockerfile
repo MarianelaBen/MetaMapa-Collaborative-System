@@ -1,25 +1,24 @@
-# Etapa 1: build con Maven
+# Etapa 1: Build
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Copiamos TODO el backend (incluye agregador y los otros módulos)
-COPY .. .
+# Copiamos TODO el repositorio (necesario para que encuentre el pom padre)
+COPY . .
 
-# Compilamos SOLO fuenteEstatica y salteamos tests
-RUN mvn -f fuenteEstatica/pom.xml -DskipTests clean package
+# COMANDO CLAVE:
+# -pl backend/fuenteEstatica: "Project List", compila solo este módulo.
+# -am: "Also Make", compila también las dependencias (el padre MetaMapa).
+RUN mvn clean package -DskipTests -pl backend/fuenteEstatica -am
 
-# Etapa 2: imagen liviana solo con el JAR
+# Etapa 2: Ejecución
 FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
-# Copiamos el jar generado en la etapa anterior
-COPY --from=build /app/fuenteEstatica/target/*.jar app.jar
+# Copiamos el JAR generado
+COPY --from=build /app/backend/fuenteEstatica/target/*.jar app.jar
 
-# Puerto interno del servicio (podés cambiarlo si en application.properties usás otro)
 EXPOSE 8081
 
-# Comando de arranque
 CMD ["java", "-jar", "app.jar"]
-
