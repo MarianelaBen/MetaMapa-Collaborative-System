@@ -3,8 +3,8 @@ FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Copiamos TODO el backend (igual que en agregador)
-COPY .. .
+# Copiamos TODO el backend (el contexto ya es /backend)
+COPY . .
 
 # Compilamos SOLO fuenteEstatica y salteamos tests
 RUN mvn -f fuenteEstatica/pom.xml -DskipTests clean package
