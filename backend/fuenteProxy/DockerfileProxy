@@ -1,0 +1,29 @@
+# ==========================
+# Etapa 1: build con Maven
+# ==========================
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+
+WORKDIR /app
+
+# El contexto de build va a ser /backend,
+# así que esto copia TODO el backend adentro de /app
+COPY . .
+
+# Compilamos SOLO fuenteProxy usando el pom padre MetaMapa
+RUN mvn -DskipTests -pl fuenteProxy -am clean package
+
+# ==========================
+# Etapa 2: Imagen liviana
+# ==========================
+FROM eclipse-temurin:17-jre
+
+WORKDIR /app
+
+# Copiamos el JAR generado del módulo fuenteProxy
+COPY --from=build /app/fuenteProxy/target/*.jar app.jar
+
+# Puerto por defecto del servicio fuenteProxy
+EXPOSE 8082
+
+CMD ["java", "-jar", "app.jar"]
+
