@@ -3,12 +3,11 @@ FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# IMPORTANTE: Usamos un solo punto (.)
-# Como tu Root Directory es "/backend", este punto YA SIGNIFICA "todo el backend".
+# Copiamos TODO el backend (incluye agregador y los otros módulos)
 COPY .. .
 
-# Compilamos usando la lista de proyectos (-pl) para ubicar la carpeta hija
-RUN mvn clean package -DskipTests -pl fuenteEstatica -am
+# Compilamos SOLO el agregador y salteamos tests
+RUN mvn -f fuenteEstatica/pom.xml -DskipTests clean package
 
 # Etapa 2: Run
 FROM eclipse-temurin:17-jre
