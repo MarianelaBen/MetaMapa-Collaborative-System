@@ -12,12 +12,14 @@ public class MinioService{
 
   private final MinioClient minioClient;
   private final String bucketName;
+  private final String publicBaseUrl;
 
   public MinioService(
       @Value("${minio.endpoint}") String endpoint,
       @Value("${minio.access-key}") String accessKey,
       @Value("${minio.secret-key}") String secretKey,
-      @Value("${minio.bucket}") String bucketName) {
+      @Value("${minio.bucket}") String bucketName,
+      @Value("${minio.public-base-url}") String publicBaseUrl) {
 
     this.minioClient = MinioClient.builder()
         .endpoint(endpoint)
@@ -25,6 +27,7 @@ public class MinioService{
         .build();
 
     this.bucketName = bucketName;
+    this.publicBaseUrl = publicBaseUrl;
   }
 
   public String upload(MultipartFile file) {
@@ -40,11 +43,13 @@ public class MinioService{
               .build()
       );
 
-      return "http://localhost:9000/" + bucketName + "/" + fileName;
+      // URL COMPLETA → igual que antes, pero ahora configurable
+      return publicBaseUrl + "/" + bucketName + "/" + fileName;
 
     } catch (Exception e) {
       throw new RuntimeException("Error subiendo archivo a MinIO", e);
     }
   }
 }
+
 
