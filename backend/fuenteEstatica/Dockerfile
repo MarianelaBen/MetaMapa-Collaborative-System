@@ -1,8 +1,9 @@
+# Etapa 1: build con Maven
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+
 WORKDIR /app
 
-# Copiamos TODO el backend (incluye agregador, fuenteEstatica, etc)
-# OJO: este Dockerfile está en backend/fuenteEstatica,
-# por eso ".." apunta a la carpeta backend completa.
+# Copiamos TODO el backend (incluye agregador y los otros módulos)
 COPY .. .
 
 # Compilamos SOLO fuenteEstatica y salteamos tests
@@ -16,8 +17,9 @@ WORKDIR /app
 # Copiamos el jar generado en la etapa anterior
 COPY --from=build /app/fuenteEstatica/target/*.jar app.jar
 
-# Puerto interno del servicio (distinto al de agregador)
-EXPOSE 8082
+# Puerto interno del servicio (podés cambiarlo si en application.properties usás otro)
+EXPOSE 8081
 
 # Comando de arranque
 CMD ["java", "-jar", "app.jar"]
+
