@@ -1,13 +1,21 @@
-# Etapa 1 — Build
+# =========================
+# 1) BUILD STAGE
+# =========================
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-COPY . .
+# Copio SOLO el módulo frontend
+COPY pom.xml .
+COPY src ./src
 
-RUN mvn -f pom.xml -DskipTests clean package
+# Build del frontend (Spring MVC + Thymeleaf)
+RUN mvn -DskipTests clean package
 
-# Etapa 2 — Runtime
+
+# =========================
+# 2) RUN STAGE
+# =========================
 FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
