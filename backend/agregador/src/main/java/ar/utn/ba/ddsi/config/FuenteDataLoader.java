@@ -4,6 +4,7 @@ import ar.utn.ba.ddsi.models.entities.Fuente;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoFuente;
 import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -21,17 +22,17 @@ public class FuenteDataLoader implements CommandLineRunner{
 
     Fuente dinamica = new Fuente();
     dinamica.setTipo(TipoFuente.DINAMICA);
-    dinamica.setUrl("http://localhost:8084/api/hechos");
+    dinamica.setUrl("https://fuentedinamica-production-b73f.up.railway.app/api/hechos");
     fuenteRepository.save(dinamica);
 
     Fuente estatica = new Fuente();
     estatica.setTipo(TipoFuente.ESTATICA);
-    estatica.setUrl("http://localhost:8081/api/hechos");
+    estatica.setUrl("https://fuenteestatica-production-f039.up.railway.app/api/hechos");
     fuenteRepository.save(estatica);
 
     Fuente proxy = new Fuente();
     proxy.setTipo(TipoFuente.PROXY);
-    proxy.setUrl("http://localhost:8082/api/hechos");
+    proxy.setUrl("https://fuenteproxy-production-8655.up.railway.app/api/hechos");
     fuenteRepository.save(proxy);
 
     System.out.println("=== Fuentes iniciales creadas ===");
