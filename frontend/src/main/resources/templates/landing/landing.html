@@ -144,10 +144,7 @@
                             <span class="meta-label">Fecha</span><br/>
                             <span class="meta-value" th:text="${hecho.fechaAcontecimiento}"></span>
                         </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Ubicación</span><br/>
-                            <span class="meta-value" th:text="${hecho.provincia}"></span>
-                        </div>
+
                     </div>
                 </div>
                 <div class="hecho-footer">
@@ -279,7 +276,7 @@
             body.innerHTML = `
                 <h5>${escapeHtml(h.titulo)}</h5>
                 <p><strong>Fecha:</strong> ${escapeHtml(h.fechaAcontecimiento || '')}</p>
-                <p><strong>Ubicación:</strong> ${escapeHtml(h.provincia || '')}</p>
+
                 <p>${escapeHtml(h.descripcion || '')}</p>
                 <p><strong>Coordenadas:</strong> ${coordsText}</p>
             `;
