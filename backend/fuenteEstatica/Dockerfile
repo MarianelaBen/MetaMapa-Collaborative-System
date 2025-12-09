@@ -3,22 +3,20 @@ FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# 1. Copiamos TODO el repositorio (Contexto Raíz)
-# Esto soluciona el problema de "COPY .. .". 
-# Al copiar ".", estamos copiando todo lo que Railway ve en el "Root Directory".
+# IMPORTANTE: Usamos un solo punto (.)
+# Como tu Root Directory es "/backend", este punto YA SIGNIFICA "todo el backend".
 COPY . .
 
-# 2. Compilamos apuntando a la ruta específica del pom
-# Asumiendo que la estructura es /backend/fuenteEstatica según tu captura
-RUN mvn -f backend/fuenteEstatica/pom.xml -DskipTests clean package
+# Compilamos usando la lista de proyectos (-pl) para ubicar la carpeta hija
+RUN mvn clean package -DskipTests -pl fuenteEstatica -am
 
 # Etapa 2: Run
 FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
-# 3. Buscamos el JAR en la ruta completa generada en la etapa anterior
-COPY --from=build /app/backend/fuenteEstatica/target/*.jar app.jar
+# Copiamos el jar desde la ruta compilada
+COPY --from=build /app/fuenteEstatica/target/*.jar app.jar
 
 EXPOSE 8081
 
