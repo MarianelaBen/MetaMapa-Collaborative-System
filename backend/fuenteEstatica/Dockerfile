@@ -5,7 +5,7 @@ WORKDIR /app
 
 # IMPORTANTE: Usamos un solo punto (.)
 # Como tu Root Directory es "/backend", este punto YA SIGNIFICA "todo el backend".
-COPY . .
+COPY .. .
 
 # Compilamos usando la lista de proyectos (-pl) para ubicar la carpeta hija
 RUN mvn clean package -DskipTests -pl fuenteEstatica -am
