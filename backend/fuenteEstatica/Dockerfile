@@ -3,22 +3,20 @@ FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Copiamos TODO el backend (incluye agregador y los otros módulos)
-COPY .. .
+# Copiamos TODO el repositorio (dos niveles arriba)
+COPY ./../.. .
 
 # Compilamos SOLO fuenteEstatica y salteamos tests
-RUN mvn -f fuenteEstatica/pom.xml -DskipTests clean package
+RUN mvn -f backend/fuenteEstatica/pom.xml -DskipTests clean package
 
-# Etapa 2: imagen liviana solo con el JAR
+# Etapa 2: imagen liviana
 FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
-# Copiamos el jar generado en la etapa anterior
-COPY --from=build /app/fuenteEstatica/target/*.jar app.jar
+# Copiamos el jar generado
+COPY --from=build /app/backend/fuenteEstatica/target/*.jar app.jar
 
-# Puerto interno del servicio (podés cambiarlo si en application.properties usás otro)
 EXPOSE 8081
 
-# Comando de arranque
 CMD ["java", "-jar", "app.jar"]
