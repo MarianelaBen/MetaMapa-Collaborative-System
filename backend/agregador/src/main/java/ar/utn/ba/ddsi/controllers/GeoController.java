@@ -9,7 +9,7 @@ import java.util.List;
 @RequestMapping("/api/geo")
 @CrossOrigin(origins = {
     "http://localhost:8080",
-    "https://TU-FRONTEND.up.railway.app"
+    "https://frontend-production-d131.up.railway.app"
 })
 public class GeoController {
 
