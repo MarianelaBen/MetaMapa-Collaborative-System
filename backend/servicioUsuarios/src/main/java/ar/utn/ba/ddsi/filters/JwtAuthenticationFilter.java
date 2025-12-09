@@ -34,30 +34,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String header = request.getHeader("Authorization"); //se fija si tenes el header autorization
-        if (header != null && header.startsWith("Bearer ")) {
+        String header = request.getHeader("Authorization");
+
+        // 1. Verificación extra para evitar procesar "Bearer null"
+        if (header != null && header.startsWith("Bearer ") && !header.endsWith("null")) {
             String token = header.substring(7);
             try {
-                String username = JwtUtil.validarToken(token);  //trata de validar tu token y devuelve el username
+                String username = JwtUtil.validarToken(token);
 
                 Usuario user = usuarioRepo.findBymail(username)
                         .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
                 Rol rolUsuario = user.getRol();
-                var auth = new UsernamePasswordAuthenticationToken( //crea un objeto de autenticacion
+                var auth = new UsernamePasswordAuthenticationToken(
                         username,
-                        null, //sin contraseña
-                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + rolUsuario.toString())) //con sus roles
-                );                              //(new SimpleGrantedAuthority("ROLE_" + rolUsuario.name()))
-                SecurityContextHolder.getContext().setAuthentication(auth); //una vez que tenemos al usuario logueado con sus datos lo seteamos en el contexto
+                        null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + rolUsuario.toString()))
+                );
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
             } catch (Exception e) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
-                return;
+                // 2. CAMBIO CRÍTICO: No retornar error. Solo loguear y continuar.
+                // Si el token está mal, el usuario queda como "Anónimo".
+                // SecurityConfig decidirá si el anónimo puede pasar o no.
+                System.out.println("Token inválido o expirado, continuando como anónimo: " + e.getMessage());
+                SecurityContextHolder.clearContext(); // Limpiar por seguridad
             }
         } else {
-            System.out.println("No hay token de autorización");
+            System.out.println("No hay token de autorización válido o es null");
         }
 
+        // 3. Siempre continuar la cadena
         filterChain.doFilter(request, response);
     }
 

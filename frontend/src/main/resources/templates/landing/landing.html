@@ -105,12 +105,12 @@
     </section>
 
 
-    <!-- === MAPA INTERACTIVO (AL MEDIO) === -->
+    <!-- === MAPA INTERACTIVO === -->
     <div class="mapa-interactivo container" id="map-section">
         <div id="map"></div>
     </div>
 
-    <!-- === DESTACADOS  === -->
+    <!-- === DESTACADOS === -->
     <div class="destacados container">
         <h2>Hechos y colecciones destacadas</h2>
 
@@ -144,10 +144,7 @@
                             <span class="meta-label">Fecha</span><br/>
                             <span class="meta-value" th:text="${hecho.fechaAcontecimiento}"></span>
                         </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Ubicación</span><br/>
-                            <span class="meta-value" th:text="${hecho.provincia}"></span>
-                        </div>
+
                     </div>
                 </div>
                 <div class="hecho-footer">
@@ -158,8 +155,7 @@
     </div>
 
 
-
-    <!-- === MODAL (NO LO TOQUÉ) === -->
+    <!-- === MODAL === -->
     <div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -178,14 +174,21 @@
         </div>
     </div>
 
+
+    <!-- Leaflet core -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- 🔵 MarkerCluster CSS + JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
 
     <script th:inline="javascript">
         /*<![CDATA[*/
         const hechos = /*[[${hechos}]]*/ '[]';
         /*]]>*/
 
-        // normalizo para usar latitud/longitud como nombres
         const hechosNorm = (hechos || []).map(h => ({
             id: h.id,
             titulo: h.titulo,
@@ -194,59 +197,63 @@
             provincia: h.provincia,
             latitud: h.latitud,
             longitud: h.longitud,
-            detalleUrl: h.detalleUrl // si existe
+            detalleUrl: h.detalleUrl
         }));
 
-        // ======= Inicializar mapa Leaflet =======
         const map = L.map('map').setView([-34.626, -58.426], 5);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // marcador por cada hecho (con chequeo de coords)
+        // ============================
+        //  MARKER CLUSTER
+        // ============================
+        const markerCluster = L.markerClusterGroup();
         const markers = {};
+
         hechosNorm.forEach(h => {
             const lat = Number(h.latitud);
             const lng = Number(h.longitud);
 
-            // chequeo robusto: si lat o lng no son números válidos, salto este hecho
             if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-                console.warn('Hecho sin coordenadas válidas, se saltea:', h.id, h.titulo, 'lat:', h.latitud, 'lng:', h.longitud);
+                console.warn('Hecho sin coordenadas válidas, se saltea:', h.id);
                 return;
             }
 
-            const mk = L.marker([lat, lng]).addTo(map);
+            const mk = L.marker([lat, lng]);
 
-            // contenido del popup
             const popupHtml = `
-    <div>
-      <div class="popup-title">${escapeHtml(h.titulo)}</div>
-      <div style="font-size:0.9rem; margin-bottom:6px;">${escapeHtml(h.provincia || '')} • ${escapeHtml(h.fechaAcontecimiento || '')}</div>
-      <div style="font-size:0.85rem; margin-bottom:8px;">${escapeHtml(h.descripcion || '')}</div>
-      <button id="popupBtn-${h.id}" class="btn btn-sm btn-primary">Ver detalles</button>
-    </div>
-  `;
+                <div>
+                    <div class="popup-title">${escapeHtml(h.titulo)}</div>
+                    <div style="font-size:0.9rem; margin-bottom:6px;">
+                        ${escapeHtml(h.provincia || '')} • ${escapeHtml(h.fechaAcontecimiento || '')}
+                    </div>
+                    <div style="font-size:0.85rem; margin-bottom:8px;">
+                        ${escapeHtml(h.descripcion || '')}
+                    </div>
+                    <button id="popupBtn-${h.id}" class="btn btn-sm btn-primary">Ver detalles</button>
+                </div>
+            `;
             mk.bindPopup(popupHtml);
 
             mk.on('popupopen', () => {
                 const btn = document.getElementById(`popupBtn-${h.id}`);
                 if (btn) {
-                    btn.addEventListener('click', (ev) => {
+                    btn.addEventListener('click', ev => {
                         ev.preventDefault();
                         abrirDetalleModal(h);
                     });
                 }
             });
 
-            mk.on('click', () => {
-                map.setView([lat, lng], 12, { animate: true });
-            });
-
             markers[h.id] = mk;
+            markerCluster.addLayer(mk);
         });
 
-        // helper para escapar texto y evitar inyección
+        map.addLayer(markerCluster);
+
+
         function escapeHtml(str) {
             if (str === null || str === undefined) return '';
             return String(str)
@@ -257,11 +264,9 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // abrir modal seguro (no usar toFixed sobre null)
         function abrirDetalleModal(h) {
             const body = document.getElementById('detalleModalBody');
 
-            // preparar coords presentables
             const lat = Number(h.latitud);
             const lng = Number(h.longitud);
             const coordsText = (Number.isFinite(lat) && Number.isFinite(lng))
@@ -269,35 +274,32 @@
                 : 'Sin coordenadas';
 
             body.innerHTML = `
-    <h5>${escapeHtml(h.titulo)}</h5>
-    <p><strong>Fecha:</strong> ${escapeHtml(h.fechaAcontecimiento || '')}</p>
-    <p><strong>Ubicación:</strong> ${escapeHtml(h.provincia || '')}</p>
-    <p>${escapeHtml(h.descripcion || '')}</p>
-    <p><strong>Coordenadas:</strong> ${coordsText}</p>
-  `;
+                <h5>${escapeHtml(h.titulo)}</h5>
+                <p><strong>Fecha:</strong> ${escapeHtml(h.fechaAcontecimiento || '')}</p>
+
+                <p>${escapeHtml(h.descripcion || '')}</p>
+                <p><strong>Coordenadas:</strong> ${coordsText}</p>
+            `;
 
             const btnIr = document.getElementById('btnIrADetalle');
-            if (btnIr) btnIr.href = h.detalleUrl || '/hechos/'+h.id;
+            if (btnIr) btnIr.href = h.detalleUrl || '/hechos/' + h.id;
 
-            const modalEl = document.getElementById('detalleModal');
-            const modal = new bootstrap.Modal(modalEl);
-            modal.show();
+            new bootstrap.Modal(document.getElementById('detalleModal')).show();
         }
 
-        // ======= Botones "Ver en Mapa" en las cards =======
-        // IMPORTANTE: usar hechosNorm (no hechos) ya que es la lista con latitud/longitud normalizados
+
         document.querySelectorAll('.ver-en-mapa').forEach(btn => {
-            btn.addEventListener('click', (ev) => {
+            btn.addEventListener('click', ev => {
                 const id = parseInt(btn.getAttribute('data-id'));
                 const h = hechosNorm.find(x => x.id === id);
                 if (!h) return;
+
                 const lat = Number(h.latitud);
                 const lng = Number(h.longitud);
-                if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-                    console.warn('Intentaron ver en mapa un hecho sin coords:', id);
-                    return;
-                }
-                map.setView([lat, lng], 12, { animate: true });
+
+                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+                map.setView([lat, lng], 12);
                 if (markers[id]) markers[id].openPopup();
             });
         });
@@ -320,13 +322,13 @@
             background: rgba(255,255,255,0.85);
             padding: 2px 6px;
             border-radius: 3px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.25);}
-
+            box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+        }
     </style>
 
 </div>
 
-    <script src="/js/include-footer.js" defer></script>
+<script src="/js/include-footer.js" defer></script>
 </body>
 
 </html>

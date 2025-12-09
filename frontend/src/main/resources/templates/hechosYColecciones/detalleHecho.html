@@ -110,21 +110,10 @@
                         <td><strong th:text="${#temporals.format(hecho.fechaAcontecimiento, 'HH:mm')}">09:15</strong>
                         </td>
                     </tr>
-                    <tr>
-                        <td>Provincia:</td>
-                        <td><strong th:text="${hecho.provincia}"></strong></td>
-                    </tr>
                 </table>
             </div>
 
             <div class="info-card">
-                <h3>Ubicación</h3>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <span class="info-label">Provincia</span>
-                        <span class="info-value" th:text="${hecho.provincia}">Santa Cruz</span>
-                    </div>
-                </div>
 
 
                 <div class="mapa-interactivo container">

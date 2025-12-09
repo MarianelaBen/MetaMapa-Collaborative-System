@@ -25,39 +25,39 @@ public class NormalizadorService {
         if (hecho.getCategoria() != null) {
             var catNormalizada = normalizadorCategoria.normalizarCategoria(hecho.getCategoria());
 
-            if (catNormalizada.getNombre() != null) {
-                String nombreLindo = formatearTexto(catNormalizada.getNombre());
-                catNormalizada.setNombre(nombreLindo);
-            }
+//            if (catNormalizada.getNombre() != null) {
+//                String nombreLindo = formatearTexto(catNormalizada.getNombre());
+//                catNormalizada.setNombre(nombreLindo);
+//            }
             hecho.setCategoria(catNormalizada);
         }
 
 
-        if (hecho.getUbicacion() == null) {
-            hecho.setUbicacion(new Ubicacion());
-        }
-
-        Ubicacion ubicacion = hecho.getUbicacion();
-        Double lat = ubicacion.getLatitud();
-        Double lon = ubicacion.getLongitud();
-        String provActual = ubicacion.getProvincia();
-
-        if (provActual != null && !provActual.isBlank()) {
-            String provFormateada = formatearTexto(provActual);
-            ubicacion.setProvincia(provFormateada);
-        }
-        else {
-            String nuevaProvincia = "Ubicación externa";
-
-            if (lat != null && lon != null) {
-                String provDetectada = georefService.obtenerProvincia(lat, lon);
-                if (provDetectada != null) {
-                    nuevaProvincia = provDetectada;
-                }
-            }
-
-            ubicacion.setProvincia(nuevaProvincia);
-        }
+//        if (hecho.getUbicacion() == null) {
+//            hecho.setUbicacion(new Ubicacion());
+//        }
+//
+//        Ubicacion ubicacion = hecho.getUbicacion();
+//        Double lat = ubicacion.getLatitud();
+//        Double lon = ubicacion.getLongitud();
+//        String provActual = ubicacion.getProvincia();
+//
+//        if (provActual != null && !provActual.isBlank()) {
+//            String provFormateada = formatearTexto(provActual);
+//            ubicacion.setProvincia(provFormateada);
+//        }
+//        else {
+//            String nuevaProvincia = "Ubicación externa";
+//
+//            if (lat != null && lon != null) {
+//                String provDetectada = georefService.obtenerProvincia(lat, lon);
+//                if (provDetectada != null) {
+//                    nuevaProvincia = provDetectada;
+//                }
+//            }
+//
+//            ubicacion.setProvincia(nuevaProvincia);
+//        }
     }
 
     private String formatearTexto(String texto) {

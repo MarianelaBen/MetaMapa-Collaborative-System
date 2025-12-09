@@ -9,6 +9,7 @@ import ar.utn.ba.ddsi.models.repositories.IColeccionRepository;
 import ar.utn.ba.ddsi.models.repositories.IFuenteRepository;
 import ar.utn.ba.ddsi.services.IAgregadorService;
 import ar.utn.ba.ddsi.services.IConsensoService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
@@ -27,8 +28,9 @@ public class ConsensoService implements IConsensoService {
   private AlgoritmoDeConsensoFactory algoritmoFactory;
 
   @Override
+  @Transactional
   public void aplicarAlgoritmoDeConsenso() {
-    List<Coleccion> colecciones = coleccionRepository.findAll();
+    List<Coleccion> colecciones = coleccionRepository.findAllWithHechos();
 
     List<Coleccion> coleccionesConAlgoritmo = colecciones.stream()
         .filter(coleccion -> coleccion.getAlgoritmoDeConsenso() != null)
