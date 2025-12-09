@@ -1,24 +1,17 @@
-# Etapa 1: build con Maven
+# Etapa 1: Build
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
+COPY . .
 
-# Copiamos TODO el backend (incluye agregador y los otros módulos)
-COPY .. .
-
-# Compilamos SOLO el agregador y salteamos tests
 RUN mvn -f agregador/pom.xml -DskipTests clean package
 
-# Etapa 2: imagen liviana solo con el JAR
-FROM eclipse-temurin:17-jre
+# Etapa 2: Runtime
+FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
-
-# Copiamos el jar generado en la etapa anterior
 COPY --from=build /app/agregador/target/*.jar app.jar
 
-# Railway te inyecta PORT, pero exponemos 8080 como valor por defecto
 EXPOSE 8083
 
-# Comando de arranque
-CMD ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xmx700m", "-Xms256m", "-jar", "app.jar"]
