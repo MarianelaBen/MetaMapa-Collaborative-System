@@ -4,7 +4,7 @@ FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # Copiamos TODO el backend (incluye todos los módulos, como en agregador)
-COPY .. .
+COPY ..
 
 # Compilamos SOLO fuenteProxy y salteamos tests
 RUN mvn -f fuenteProxy/pom.xml -DskipTests clean package
