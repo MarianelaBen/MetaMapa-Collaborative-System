@@ -7,7 +7,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/geo")
-@CrossOrigin(origins = "http://localhost:8080") //para llamdos con JS del front
+@CrossOrigin(origins = {
+    "http://localhost:8080",
+    "https://frontend-production-d131.up.railway.app"
+})
 public class GeoController {
 
   private final GeoService geoService;

@@ -9,7 +9,7 @@ import ar.utn.ba.ddsi.models.entities.Coleccion;
 import ar.utn.ba.ddsi.models.entities.enumerados.EstadoSolicitud;
 import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import org.springframework.web.multipart.MultipartFile;
-import ar.utn.ba.ddsi.services.InformeDeResultados;
+import ar.utn.ba.ddsi.models.entities.InformeDeResultados;
 
 /* TODO DTOs Consenso
 import ar.utn.ba.ddsi.models.dtos.output.ConsensoOutputDTO;

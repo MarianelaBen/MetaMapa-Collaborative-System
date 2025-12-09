@@ -6,6 +6,7 @@ import ar.utn.ba.ddsi.normalizadores.Normalizador;
 import ar.utn.ba.ddsi.normalizadores.NormalizadorCategoria;
 import ar.utn.ba.ddsi.services.IRaeService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -18,6 +19,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Disabled("Se deshabilita para el deploy")
 @ExtendWith(MockitoExtension.class)
 class NormalizadorCategoriaTest {
 

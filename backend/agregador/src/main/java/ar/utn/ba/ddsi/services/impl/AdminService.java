@@ -11,7 +11,7 @@ import ar.utn.ba.ddsi.models.entities.enumerados.TipoAlgoritmoDeConsenso;
 import ar.utn.ba.ddsi.models.repositories.*;
 import ar.utn.ba.ddsi.services.IAdminService;
 import ar.utn.ba.ddsi.services.IColeccionService;
-import ar.utn.ba.ddsi.services.InformeDeResultados;
+import ar.utn.ba.ddsi.models.entities.InformeDeResultados;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;

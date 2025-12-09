@@ -19,7 +19,7 @@ public class EstadisticaService implements IEstadisticaService {
 
     private final WebClient webClient;
     private final IEstadisticaRepository estadisticaRepository;
-    private final String agregadorUrl = "http://localhost:8083/api/public";
+    private final String agregadorUrl = "https://agregador-production-0577.up.railway.app/api/public";
 
     @Autowired
     public EstadisticaService(IEstadisticaRepository estadisticaRepository,
